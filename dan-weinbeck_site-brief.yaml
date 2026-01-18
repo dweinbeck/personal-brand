@@ -1,0 +1,137 @@
+meta:
+  project: dan-weinbeck.com personal brand site
+  updated_utc: '2026-01-14T14:26:12.255337Z'
+  note: Claude Code ready brief. Answers captured via chat, consolidated here.
+answers:
+  brand_positioning:
+    primary_audience:
+    - Potential employers (link in resume)
+    - Current colleagues / professional network (share on LinkedIn)
+    - Friends (share for fun; possibly link from Instagram)
+    - Dan himself as a home-base + personal assistant hub (AI assistant built into
+      the site to help organize life and manage side-projects)
+    primary_action_60s:
+      primary_action: Quickly understand who Dan is (professional skillset + personal
+        interests) from a casual-but-professional summary.
+      supporting_actions:
+      - Discover and use a chatbot to ask questions about Dan and/or navigate the
+        site
+      - View Dan's public GitHub repositories
+      - Find Dan's email address quickly for contact
+      tone_note: One step more casual than LinkedIn, still professional.
+    keywords:
+    - Accomplished
+    - Self-taught AI Developer
+    - Analytics Professional
+    - Data Scientist
+  content:
+    assets_ready:
+      linkedin_bio_text: 'I’m a business intelligence and data science professional
+        with over 10 years of experience in analytics leadership and business strategy.
+        I''ve helped transform the analytics function at 3 Fortune 500 companies and
+        am currently working as a Director of Data & Analytics at Transparent Partners.
+        I''m the account lead for a Fortune 25 health care company and my current
+        passion is AI Agent Development.
+
+
+        Some examples of my impact include:
+
+        - In current role as a marketing consultant, I am helping to design the customer
+        data platform architecture for an industry-leading healthcare services company.
+
+        - As a data intelligence leader supporting a $2 billion sales organization,
+        I helped design, build, and deploy a sales reporting system used by over 600
+        sales reps and managers on a daily basis, resulting in more efficient sales
+        coverage and increased sales per visit.
+
+        - I’ve pushed for strategic change within every organization I’ve worked for
+        - for example by establishing and managing a 6 person data science team consisting
+        of statisticians, software developers, and analysts. This team helped 3M Industrial
+        Business leaders optimize their strategic and operational plans using statistical
+        models.
+
+        - As a marketing analytics leader supporting a $12 billion global organization
+        at 3M Company, I created and implemented a strategic plan to establish a marketing
+        analytics function. This resulted in a 10-person team building a suite of
+        reporting & analysis tools for over 1000 marketers. This organization enabled
+        granular measurement to quantify the impact of marketing campaigns in real-time.'
+      resume:
+        available: true
+        path: /mnt/data/Dan_Weinbeck_Resume.docx
+        freshness_note: Exists but has not been updated for ~2 years.
+      headshot:
+        available: true
+        path: /mnt/data/headshot.jpeg
+      project_writeups:
+        available: false
+        note: No strong project writeups yet; can add later.
+      links:
+        github: https://github.com/dweinbeck
+        linkedin: https://www.linkedin.com/in/dw789/
+      contact:
+        email: daniel.weinbeck@gmail.com
+        instagram: dan_weinbeck_photos
+    v1_sections_nonnegotiable:
+    - Home
+    - Projects
+    - Writing / Blog
+    - AI Assistant
+    - Contact
+    blog_state_v1: Stub (empty state + coming soon)
+  visual_direction:
+    style_direction: Hybrid of minimal editorial + bold modern
+    reference_sites: default_it
+  ops:
+    mvp_deadline: 24 hours
+    privacy_constraints:
+      analytics: OK with Google Analytics
+      ai_assistant_chat_logs: OK to store chat logs
+      security_expectation: Not privacy-focused; wants secure-by-design defaults so
+        he doesn't worry.
+  tech:
+    hosting_platform: Google Cloud Platform (GCP)
+    gcp_target:
+      runtime: Cloud Run
+      data_storage:
+      - Cloud Storage
+      - Firestore
+    framework: Next.js (TypeScript)
+    contact:
+      display_email: true
+      display_instagram: true
+      contact_form: true
+      contact_form_handling: First-party endpoint on Cloud Run
+derived:
+  goals:
+  - 'Give first-time visitors a fast, casual-but-professional understanding of who
+    Dan is: skillset + interests'
+  - 'Provide clear ways to engage: chatbot Q&A / site navigation, and obvious contact
+    options'
+  - 'Show proof-of-work: public GitHub repos and (later) richer case studies'
+  - 'Serve as Dan’s personal home-base: AI assistant + organization for life and side-projects'
+  constraints:
+  - Ship MVP in 24 hours
+  - Host on GCP Cloud Run; use Firestore + Cloud Storage
+  - Secure-by-default (least privilege, secret management, basic abuse protection)
+  tech_preferences:
+    frontend: Next.js (TypeScript) + Tailwind
+    hosting: Cloud Run
+    data:
+      firestore: chat logs + metadata
+      cloud_storage: assets
+    analytics: Google Analytics
+    content: MDX/Markdown (blog is stub in v1)
+    contact: Email + IG + contact form (Cloud Run API)
+  edge_cases:
+  - 'Mobile/slow network: still readable; optimized images and fast initial render'
+  - 'Chat assistant unavailable: show fallback message + email CTA'
+  - 'Spam/abuse: contact form spam; prompt injection attempts; rate limiting'
+  - 'JS disabled / GA blocked: site content still works; chatbot degrades gracefully'
+  - '404/500: custom pages and safe navigation back home'
+  - 'Chat logs retention/PII risk: avoid sensitive inputs; retention + deletion plan'
+  success_metrics_v1:
+  - 'Visitor can find: summary, GitHub, chatbot, and contact within 60 seconds'
+  - 'Chatbot engagement: open + first message'
+  - 'Contact intent: email clicks / form submissions'
+  - Lighthouse >= 90 for Perf/A11y/Best/SEO
+  - Error rate < 0.1% on Cloud Run requests (basic monitoring)
