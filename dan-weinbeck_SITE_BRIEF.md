@@ -66,3 +66,30 @@
 - Contact intent: email clicks / form submissions
 - Lighthouse >= 90 for Perf/A11y/Best/SEO
 - Error rate < 0.1% on Cloud Run requests (basic monitoring)
+
+## Home page wireframe (MVP)
+┌─────────────────────────────────────────────────────────┐
+│ Dan Weinbeck     Home  Projects  Writing  Assistant  Contact   [Ask Dan] │
+└─────────────────────────────────────────────────────────┘
+
+[ Headshot ]   Dan Weinbeck
+              Self-taught AI developer • analytics pro • data scientist
+              I build practical AI agents + data products that ship.
+              Interests: experimentation, UX, automation, side projects.
+
+              [ Ask Dan ]  [ View Projects ]  [ Email ]  [ GitHub ] [ LinkedIn ]
+
+───────────────────────────────────────────────────────────
+Proof of work
+[Repo Card] [Repo Card] [Repo Card]
+[Repo Card] [Repo Card] [Repo Card]
+                         [See all projects →]
+
+───────────────────────────────────────────────────────────
+Writing
+Coming soon… (Ask Dan what I’m working on)  [Ask Dan]
+
+───────────────────────────────────────────────────────────
+Contact
+Email: dan@... (Copy)   LinkedIn   Instagram   Contact Form
+
