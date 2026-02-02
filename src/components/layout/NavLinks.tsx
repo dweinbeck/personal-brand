@@ -8,6 +8,7 @@ import { useState } from "react";
 const links = [
   { name: "Home", href: "/" },
   { name: "Projects", href: "/projects" },
+  { name: "Building Blocks", href: "/building-blocks" },
   { name: "Writing", href: "/writing" },
   { name: "Assistant", href: "/assistant" },
   { name: "Contact", href: "/contact" },
@@ -31,7 +32,7 @@ export function NavLinks() {
             key={link.href}
             href={link.href}
             className={clsx(
-              "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              "px-2 py-2 text-sm font-medium rounded-md transition-colors",
               isActive(link.href)
                 ? "text-blue-600 bg-blue-50"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
