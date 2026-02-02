@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Biome handles linting (no ESLint config needed in Next.js 16)
+  images: {
+    qualities: [25, 50, 75, 100],
+  },
 };
 
 export default nextConfig;
