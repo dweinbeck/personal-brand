@@ -56,16 +56,17 @@ Plans:
 ### Phase 2.1: Building Blocks (INSERTED)
 **Goal**: Visitors can browse and read practical, step-by-step tutorials on common development tasks
 **Depends on**: Phase 2
-**Requirements**: N/A (urgent insertion — no pre-existing requirements)
+**Requirements**: N/A (urgent insertion -- no pre-existing requirements)
 **Success Criteria** (what must be TRUE):
   1. Visitor can navigate to a "Building Blocks" section from the site navigation
   2. Visitor sees a list of available tutorials with titles and short descriptions
   3. Visitor can read a full tutorial page with clear, step-by-step instructions
   4. First tutorial ("Setting up a repo for a new project") is published and readable
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 2.1 to break down)
+- [ ] 02.1-01-PLAN.md -- MDX infrastructure, typography plugin, and navigation update
+- [ ] 02.1-02-PLAN.md -- Tutorial listing page, detail page, and first tutorial content
 
 ### Phase 3: Projects
 **Goal**: Visitors can browse Dan's real GitHub projects with live data
@@ -143,7 +144,7 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 |-------|---------------|--------|-----------|
 | 1. Scaffold and Navigation | 2/2 | ✓ Complete | 2026-02-02 |
 | 2. Home Page | 0/2 | Not started | - |
-| 2.1. Building Blocks (INSERTED) | 0/? | Not started | - |
+| 2.1. Building Blocks (INSERTED) | 0/2 | Not started | - |
 | 3. Projects | 0/3 | Not started | - |
 | 4. Contact | 0/3 | Not started | - |
 | 5. SEO, Polish, and Stubs | 0/3 | Not started | - |
