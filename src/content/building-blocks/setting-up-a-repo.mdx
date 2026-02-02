@@ -1,0 +1,105 @@
+export const metadata = {
+  title: "Setting up a repo for a new project",
+  description: "Initialize a Git repository with proper structure, .gitignore, README, and license.",
+  publishedAt: "2026-02-02",
+  tags: ["git", "tooling", "beginner"],
+};
+
+# Setting up a repo for a new project
+
+Every project starts the same way: a clean repository with the right foundation. This tutorial walks through setting up a Git repo from scratch with all the essentials.
+
+## Create the project directory
+
+Pick a name and create your project folder. Keep names lowercase with hyphens -- it makes URLs and paths easier to work with.
+
+```bash
+mkdir my-project
+cd my-project
+```
+
+## Initialize Git
+
+Turn the directory into a Git repository. This creates a hidden `.git` folder that tracks all your changes.
+
+```bash
+git init
+```
+
+You now have an empty repo with no commits.
+
+## Create a .gitignore
+
+A `.gitignore` file tells Git which files to skip. Without one, build artifacts, dependencies, and secrets end up in your history.
+
+Create the file with common Node.js patterns:
+
+```bash title=".gitignore"
+node_modules/
+.env
+.env.local
+dist/
+.next/
+*.log
+.DS_Store
+```
+
+Every ecosystem has its own set of patterns. GitHub maintains a useful collection at [github.com/github/gitignore](https://github.com/github/gitignore).
+
+## Create a README
+
+The README is the first thing people see when they visit your repo. Keep it simple: what the project is, how to run it, and how to contribute.
+
+```markdown title="README.md"
+# my-project
+
+A short description of what this project does.
+
+## Getting started
+
+1. Clone the repo
+2. Install dependencies: `npm install`
+3. Start the dev server: `npm run dev`
+
+## License
+
+MIT
+```
+
+You can always expand it later. A short README is better than no README.
+
+## Choose a license
+
+A license tells others what they can do with your code. Without one, the default is "all rights reserved" -- nobody can legally use or modify it.
+
+For most open-source projects, the **MIT License** is a solid default. It lets anyone use, modify, and distribute your code with minimal restrictions.
+
+Visit [choosealicense.com](https://choosealicense.com) to compare options, then copy the license text into a `LICENSE` file at the root of your project.
+
+## Make the first commit
+
+Stage everything and create your initial commit:
+
+```bash
+git add .
+git commit -m "initial commit"
+```
+
+Keep the first commit small. It should contain only the scaffolding -- no real code yet.
+
+## Push to GitHub
+
+If you have the [GitHub CLI](https://cli.github.com) installed, creating and pushing is one command:
+
+```bash
+gh repo create my-project --public --source=. --push
+```
+
+Without the CLI, create the repo on GitHub first, then add the remote manually:
+
+```bash
+git remote add origin git@github.com:your-username/my-project.git
+git push -u origin main
+```
+
+Your project now has a clean foundation: version control, a sensible ignore list, documentation, and a license. Everything else builds on top of this.
