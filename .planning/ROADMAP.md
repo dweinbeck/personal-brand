@@ -14,6 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Scaffold and Navigation** - Project setup, layout shell, and responsive navigation ✓
 - [ ] **Phase 2: Home Page** - Hero section, CTAs, featured projects preview, and visual polish
+- [ ] **Phase 2.1: Building Blocks** - Tutorials section with concrete, simple guides for common dev tasks (INSERTED)
 - [ ] **Phase 3: Projects** - GitHub API integration with project cards and ISR caching
 - [ ] **Phase 4: Contact** - Contact form with validation, Firestore storage, and social links
 - [ ] **Phase 5: SEO, Polish, and Stubs** - Meta tags, Lighthouse optimization, and placeholder pages
@@ -46,12 +47,25 @@ Plans:
   3. Visitor sees featured project cards on the home page (placeholder data acceptable until Phase 3 wires up API)
   4. Visitor sees a blog teaser section linking to the Writing page
   5. Images load optimized (Next.js Image component) and subtle animations are visible on page transitions and card hovers
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md -- Hero section with headshot, bio, CTA buttons, and animation/config foundations
+- [ ] 02-02-PLAN.md -- Featured projects grid, blog teaser, and final page composition
+
+### Phase 2.1: Building Blocks (INSERTED)
+**Goal**: Visitors can browse and read practical, step-by-step tutorials on common development tasks
+**Depends on**: Phase 2
+**Requirements**: N/A (urgent insertion — no pre-existing requirements)
+**Success Criteria** (what must be TRUE):
+  1. Visitor can navigate to a "Building Blocks" section from the site navigation
+  2. Visitor sees a list of available tutorials with titles and short descriptions
+  3. Visitor can read a full tutorial page with clear, step-by-step instructions
+  4. First tutorial ("Setting up a repo for a new project") is published and readable
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Hero section with headshot, bio, and CTA buttons
-- [ ] 02-02: Featured projects section and blog teaser
-- [ ] 02-03: Image optimization and animations
+- [ ] TBD (run /gsd:plan-phase 2.1 to break down)
 
 ### Phase 3: Projects
 **Goal**: Visitors can browse Dan's real GitHub projects with live data
@@ -122,13 +136,14 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 (Phase 4 can run in parallel with Phase 3 since both depend on Phase 1)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Scaffold and Navigation | 2/2 | ✓ Complete | 2026-02-02 |
-| 2. Home Page | 0/3 | Not started | - |
+| 2. Home Page | 0/2 | Not started | - |
+| 2.1. Building Blocks (INSERTED) | 0/? | Not started | - |
 | 3. Projects | 0/3 | Not started | - |
 | 4. Contact | 0/3 | Not started | - |
 | 5. SEO, Polish, and Stubs | 0/3 | Not started | - |
