@@ -30,12 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. On mobile, visitor can open and close a hamburger menu smoothly
   3. Visitor can identify which page they are on from the active navigation indicator
   4. All pages render correctly on mobile, tablet, and desktop viewports
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Next.js project scaffold with Tailwind and Biome
-- [ ] 01-02: Layout shell with responsive navbar and page routing
-- [ ] 01-03: Mobile menu and active page indicator
+- [ ] 01-01-PLAN.md -- Next.js 16 project scaffold with Tailwind v4, Biome v2, and clsx
+- [ ] 01-02-PLAN.md -- Layout shell with responsive navbar, mobile menu, active indicator, and page stubs
 
 ### Phase 2: Home Page
 **Goal**: Visitors immediately understand who Dan is and what he builds
