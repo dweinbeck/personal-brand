@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 2.1 in progress -- MDX pipeline configured, next: tutorial page layout
+**Current focus:** Phase 2.1 complete -- Building Blocks tutorials functional, next: Phase 3
 
 ## Current Position
 
 Phase: 2.1 of 6 (Building Blocks)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-02 -- Completed 02.1-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-02 -- Completed 02.1-02-PLAN.md
 
-Progress: [█████░░░░░] ~38%
+Progress: [██████░░░░] ~46%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~2.8 min
-- Total execution time: ~14 min
+- Total plans completed: 6
+- Average duration: ~2.7 min
+- Total execution time: ~16 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [█████░░░░░] ~38%
 |-------|-------|-------|----------|
 | 01-scaffold | 2/2 | ~5 min | ~2.5 min |
 | 02-home-page | 2/2 | ~6 min | ~3 min |
-| 02.1-building-blocks | 1/2 | ~3 min | ~3 min |
+| 02.1-building-blocks | 2/2 | ~5 min | ~2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (~3 min), 02-01 (~3 min), 02-02 (~3 min), 02.1-01 (~3 min)
+- Last 5 plans: 02-01 (~3 min), 02-02 (~3 min), 02.1-01 (~3 min), 02.1-02 (~2 min)
 - Trend: consistent
 
 *Updated after each plan completion*
@@ -56,6 +56,9 @@ Recent decisions affecting current work:
 - [02-02]: Biome enforces alphabetical import ordering; use biome check --write to auto-fix
 - [02.1-01]: Use string plugin names in createMDX for Turbopack serialization compatibility (not imports)
 - [02.1-01]: Desktop nav padding reduced from px-3 to px-2 to accommodate 6 links without wrapping
+- [02.1-02]: Dynamic MDX import lives in [slug]/page.tsx for Next.js static analysis compatibility
+- [02.1-02]: Tutorial metadata uses exported const objects (not YAML frontmatter) for type-safe extraction
+- [02.1-02]: Content pattern: MDX files in src/content/{section}/ with exported metadata objects
 
 ### Roadmap Evolution
 
@@ -72,5 +75,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 02.1-01-PLAN.md. Next: 02.1-02-PLAN.md (tutorial page layout and content)
+Stopped at: Completed 02.1-02-PLAN.md. Phase 2.1 complete. Next: Phase 3
 Resume file: None
