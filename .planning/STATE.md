@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 2 complete -- ready for Phase 2.1 (Building Blocks) or Phase 3 (Projects)
+**Current focus:** Phase 2.1 in progress -- MDX pipeline configured, next: tutorial page layout
 
 ## Current Position
 
-Phase: 2 of 6 (Home Page) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-02 -- Completed 02-02-PLAN.md (checkpoint approved)
+Phase: 2.1 of 6 (Building Blocks)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-02 -- Completed 02.1-01-PLAN.md
 
-Progress: [████░░░░░░] ~33%
+Progress: [█████░░░░░] ~38%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: ~2.8 min
-- Total execution time: ~11 min
+- Total execution time: ~14 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [████░░░░░░] ~33%
 |-------|-------|-------|----------|
 | 01-scaffold | 2/2 | ~5 min | ~2.5 min |
 | 02-home-page | 2/2 | ~6 min | ~3 min |
+| 02.1-building-blocks | 1/2 | ~3 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~2 min), 01-02 (~3 min), 02-01 (~3 min), 02-02 (~3 min)
+- Last 5 plans: 01-02 (~3 min), 02-01 (~3 min), 02-02 (~3 min), 02.1-01 (~3 min)
 - Trend: consistent
 
 *Updated after each plan completion*
@@ -53,6 +54,8 @@ Recent decisions affecting current work:
 - [02-01]: Icon-only buttons need sr-only spans for Biome's useAnchorContent rule and WCAG compliance
 - [02-01]: External links use anchor tags with target="_blank" rel="noopener noreferrer", NOT next/link
 - [02-02]: Biome enforces alphabetical import ordering; use biome check --write to auto-fix
+- [02.1-01]: Use string plugin names in createMDX for Turbopack serialization compatibility (not imports)
+- [02.1-01]: Desktop nav padding reduced from px-3 to px-2 to accommodate 6 links without wrapping
 
 ### Roadmap Evolution
 
@@ -69,5 +72,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Phase 2 complete. Next: Phase 2.1 (Building Blocks) or Phase 3 (Projects)
+Stopped at: Completed 02.1-01-PLAN.md. Next: 02.1-02-PLAN.md (tutorial page layout and content)
 Resume file: None
