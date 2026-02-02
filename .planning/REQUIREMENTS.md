@@ -97,9 +97,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | Phase 1 | Pending |
-| NAV-02 | Phase 1 | Pending |
-| NAV-03 | Phase 1 | Pending |
+| NAV-01 | Phase 1 | Complete |
+| NAV-02 | Phase 1 | Complete |
+| NAV-03 | Phase 1 | Complete |
 | HOME-01 | Phase 2 | Pending |
 | HOME-02 | Phase 2 | Pending |
 | HOME-03 | Phase 2 | Pending |
@@ -116,7 +116,7 @@
 | CONT-04 | Phase 4 | Pending |
 | CONT-05 | Phase 4 | Pending |
 | PERF-01 | Phase 5 | Pending |
-| PERF-02 | Phase 1 | Pending |
+| PERF-02 | Phase 1 | Complete |
 | PERF-03 | Phase 2 | Pending |
 | PERF-04 | Phase 2 | Pending |
 | SEO-01 | Phase 5 | Pending |

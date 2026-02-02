@@ -12,7 +12,7 @@ This roadmap delivers Dan's personal website in six phases, progressing from a n
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Scaffold and Navigation** - Project setup, layout shell, and responsive navigation
+- [x] **Phase 1: Scaffold and Navigation** - Project setup, layout shell, and responsive navigation ✓
 - [ ] **Phase 2: Home Page** - Hero section, CTAs, featured projects preview, and visual polish
 - [ ] **Phase 3: Projects** - GitHub API integration with project cards and ISR caching
 - [ ] **Phase 4: Contact** - Contact form with validation, Firestore storage, and social links
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 1. Scaffold and Navigation | 0/3 | Not started | - |
+| 1. Scaffold and Navigation | 2/2 | ✓ Complete | 2026-02-02 |
 | 2. Home Page | 0/3 | Not started | - |
 | 3. Projects | 0/3 | Not started | - |
 | 4. Contact | 0/3 | Not started | - |
