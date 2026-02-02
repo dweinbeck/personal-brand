@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 2 (Home Page) -- Building hero section and content sections
+**Current focus:** Phase 2 complete -- ready for Phase 2.1 (Building Blocks) or Phase 3 (Projects)
 
 ## Current Position
 
-Phase: 2 of 6 (Home Page)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-02 -- Completed 02-01-PLAN.md
+Phase: 2 of 6 (Home Page) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-02 -- Completed 02-02-PLAN.md (checkpoint approved)
 
-Progress: [███░░░░░░░] ~25%
+Progress: [████░░░░░░] ~33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~2.7 min
-- Total execution time: ~8 min
+- Total plans completed: 4
+- Average duration: ~2.8 min
+- Total execution time: ~11 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-scaffold | 2/2 | ~5 min | ~2.5 min |
-| 02-home-page | 1/2 | ~3 min | ~3 min |
+| 02-home-page | 2/2 | ~6 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~2 min), 01-02 (~3 min), 02-01 (~3 min)
+- Last 5 plans: 01-01 (~2 min), 01-02 (~3 min), 02-01 (~3 min), 02-02 (~3 min)
 - Trend: consistent
 
 *Updated after each plan completion*
@@ -52,6 +52,7 @@ Recent decisions affecting current work:
 - [02-01]: Use preload (not priority) for Next.js 16 Image component
 - [02-01]: Icon-only buttons need sr-only spans for Biome's useAnchorContent rule and WCAG compliance
 - [02-01]: External links use anchor tags with target="_blank" rel="noopener noreferrer", NOT next/link
+- [02-02]: Biome enforces alphabetical import ordering; use biome check --write to auto-fix
 
 ### Roadmap Evolution
 
@@ -68,5 +69,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 02-01-PLAN.md
+Stopped at: Phase 2 complete. Next: Phase 2.1 (Building Blocks) or Phase 3 (Projects)
 Resume file: None
