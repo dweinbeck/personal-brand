@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 4 complete -- Contact page fully functional with form, email copy, social links
+**Current focus:** Phase 5 in progress -- SEO metadata and stubs
 
 ## Current Position
 
-Phase: 4 of 6 (Contact)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-02 -- Completed 04-02-PLAN.md
+Phase: 5 of 6 (SEO, Polish & Stubs)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-03 -- Completed 05-01-PLAN.md
 
-Progress: [████████░░] ~77%
+Progress: [█████████░] ~85%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~2.4 min
-- Total execution time: ~24 min
+- Total plans completed: 11
+- Average duration: ~2.5 min
+- Total execution time: ~27 min
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: [████████░░] ~77%
 | 02.1-building-blocks | 2/2 | ~5 min | ~2.5 min |
 | 03-projects | 2/2 | ~4 min | ~2 min |
 | 04-contact | 2/2 | ~4 min | ~2 min |
+| 05-seo-polish-and-stubs | 1/2 | ~3 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (~2 min), 03-02 (~2 min), 04-01 (~3 min), 04-02 (~1 min)
+- Last 5 plans: 03-02 (~2 min), 04-01 (~3 min), 04-02 (~1 min), 05-01 (~3 min)
 - Trend: consistent
 
 *Updated after each plan completion*
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - [04-01]: Server Action pattern: useActionState + Zod safeParse + flatten for field-level errors
 - [04-01]: Use <output> element for status messages per Biome useSemanticElements rule
 - [04-02]: Whitelist .env.local.example in .gitignore (negation rule for .env* pattern)
+- [05-01]: Child pages omit openGraph to inherit from root layout (avoids Next.js shallow merge pitfall)
+- [05-01]: Biome-ignore inline comment for dangerouslySetInnerHTML on JSON-LD script (standard Next.js pattern)
+- [05-01]: Placeholder OG image needs replacement with proper 1200x630 branded image before production
 
 ### Roadmap Evolution
 
@@ -82,9 +86,10 @@ None.
 ### Blockers/Concerns
 
 - Firebase env vars (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) needed for production Firestore writes
+- OG image is a 1x1 placeholder -- replace with branded 1200x630 image before production
 
 ## Session Continuity
 
-Last session: 2026-02-02
-Stopped at: Completed 04-02-PLAN.md. Phase 04 (Contact) complete. Next: Phase 05 (About)
+Last session: 2026-02-03
+Stopped at: Completed 05-01-PLAN.md. Phase 05 plan 1 complete. Next: 05-02-PLAN.md
 Resume file: None
