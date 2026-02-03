@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Scaffold and Navigation** - Project setup, layout shell, and responsive navigation ✓
 - [x] **Phase 2: Home Page** - Hero section, CTAs, featured projects preview, and visual polish ✓
 - [x] **Phase 2.1: Building Blocks** - Tutorials section with concrete, simple guides for common dev tasks (INSERTED) ✓
-- [ ] **Phase 3: Projects** - GitHub API integration with project cards and ISR caching
+- [x] **Phase 3: Projects** - GitHub API integration with project cards and ISR caching ✓
 - [ ] **Phase 4: Contact** - Contact form with validation, Firestore storage, and social links
 - [ ] **Phase 5: SEO, Polish, and Stubs** - Meta tags, Lighthouse optimization, and placeholder pages
 - [ ] **Phase 6: Infrastructure and Deploy** - Docker build, Cloud Run deployment, and security hardening
@@ -144,7 +144,7 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 1. Scaffold and Navigation | 2/2 | ✓ Complete | 2026-02-02 |
 | 2. Home Page | 2/2 | ✓ Complete | 2026-02-02 |
 | 2.1. Building Blocks (INSERTED) | 2/2 | ✓ Complete | 2026-02-02 |
-| 3. Projects | 0/2 | Not started | - |
+| 3. Projects | 2/2 | ✓ Complete | 2026-02-02 |
 | 4. Contact | 0/3 | Not started | - |
 | 5. SEO, Polish, and Stubs | 0/3 | Not started | - |
 | 6. Infrastructure and Deploy | 0/3 | Not started | - |
