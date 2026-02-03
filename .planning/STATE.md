@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 3 complete -- Ready for Phase 4 (About page)
+**Current focus:** Phase 4 in progress -- Contact form core built, page integration next
 
 ## Current Position
 
-Phase: 3 of 6 (Projects)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-02 -- Completed 03-02-PLAN.md
+Phase: 4 of 6 (Contact)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-02 -- Completed 04-01-PLAN.md
 
-Progress: [██████░░░░] ~62%
+Progress: [███████░░░] ~69%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: ~2.5 min
-- Total execution time: ~20 min
+- Total execution time: ~23 min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [██████░░░░] ~62%
 | 02-home-page | 2/2 | ~6 min | ~3 min |
 | 02.1-building-blocks | 2/2 | ~5 min | ~2.5 min |
 | 03-projects | 2/2 | ~4 min | ~2 min |
+| 04-contact | 1/2 | ~3 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02.1-01 (~3 min), 02.1-02 (~2 min), 03-01 (~2 min), 03-02 (~2 min)
+- Last 5 plans: 02.1-02 (~2 min), 03-01 (~2 min), 03-02 (~2 min), 04-01 (~3 min)
 - Trend: consistent
 
 *Updated after each plan completion*
@@ -64,6 +65,10 @@ Recent decisions affecting current work:
 - [03-01]: ISR data fetching pattern: { next: { revalidate: 3600 } } on fetch for hourly cache
 - [03-01]: External API layer pattern: src/lib/{service}.ts exports typed async functions
 - [03-02]: FeaturedProjects converted to async server component; all placeholder data removed
+- [04-01]: Firebase Admin gracefully handles missing env vars (warns at import, throws at write)
+- [04-01]: In-memory rate limiting (3/15min/IP) sufficient for single-server personal site
+- [04-01]: Server Action pattern: useActionState + Zod safeParse + flatten for field-level errors
+- [04-01]: Use <output> element for status messages per Biome useSemanticElements rule
 
 ### Roadmap Evolution
 
@@ -75,10 +80,10 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- Firebase env vars (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) needed for production Firestore writes
 
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 03-02-PLAN.md. Phase 3 complete. Next: Phase 4 (About page)
+Stopped at: Completed 04-01-PLAN.md. Contact form core built. Next: 04-02 (page integration)
 Resume file: None
