@@ -15,8 +15,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dan Weinbeck",
+  metadataBase: new URL("https://dweinbeck.com"),
+  title: {
+    template: "%s | Dan Weinbeck",
+    default: "Dan Weinbeck - AI Developer & Data Scientist",
+  },
   description: "AI developer, analytics professional, and data scientist",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://dweinbeck.com",
+    siteName: "Dan Weinbeck",
+    title: "Dan Weinbeck - AI Developer & Data Scientist",
+    description: "AI developer, analytics professional, and data scientist",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
