@@ -93,12 +93,11 @@ Plans:
   3. Successful form submissions are stored in Firestore
   4. Visitor can click Dan's email address to copy it to clipboard
   5. Visitor can click social links to reach Dan's LinkedIn, Instagram, and GitHub profiles
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Contact form UI with validation
-- [ ] 04-02: Server-side API route with spam protection and Firestore storage
-- [ ] 04-03: Email copy-to-clipboard and social links
+- [ ] 04-01-PLAN.md -- Contact form with Zod validation, Server Action, honeypot, rate limiting, and Firestore storage
+- [ ] 04-02-PLAN.md -- CopyEmailButton, social links, and full contact page composition
 
 ### Phase 5: SEO, Polish, and Stubs
 **Goal**: The site is discoverable by search engines, scores well on Lighthouse, and has placeholder pages for future features
@@ -145,6 +144,6 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 2. Home Page | 2/2 | ✓ Complete | 2026-02-02 |
 | 2.1. Building Blocks (INSERTED) | 2/2 | ✓ Complete | 2026-02-02 |
 | 3. Projects | 2/2 | ✓ Complete | 2026-02-02 |
-| 4. Contact | 0/3 | Not started | - |
+| 4. Contact | 0/2 | Not started | - |
 | 5. SEO, Polish, and Stubs | 0/3 | Not started | - |
 | 6. Infrastructure and Deploy | 0/3 | Not started | - |
