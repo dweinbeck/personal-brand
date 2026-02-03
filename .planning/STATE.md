@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 3 in progress -- Projects page with live GitHub data
+**Current focus:** Phase 3 complete -- Ready for Phase 4 (About page)
 
 ## Current Position
 
 Phase: 3 of 6 (Projects)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-02 -- Completed 03-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-02 -- Completed 03-02-PLAN.md
 
-Progress: [███████░░░] ~54%
+Progress: [██████░░░░] ~62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~2.6 min
-- Total execution time: ~18 min
+- Total plans completed: 8
+- Average duration: ~2.5 min
+- Total execution time: ~20 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [███████░░░] ~54%
 | 01-scaffold | 2/2 | ~5 min | ~2.5 min |
 | 02-home-page | 2/2 | ~6 min | ~3 min |
 | 02.1-building-blocks | 2/2 | ~5 min | ~2.5 min |
-| 03-projects | 1/2 | ~2 min | ~2 min |
+| 03-projects | 2/2 | ~4 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (~3 min), 02.1-01 (~3 min), 02.1-02 (~2 min), 03-01 (~2 min)
+- Last 5 plans: 02.1-01 (~3 min), 02.1-02 (~2 min), 03-01 (~2 min), 03-02 (~2 min)
 - Trend: consistent
 
 *Updated after each plan completion*
@@ -63,6 +63,7 @@ Recent decisions affecting current work:
 - [03-01]: ProjectCard restructured from single <a> to <div> with separate GitHub + Live Demo links
 - [03-01]: ISR data fetching pattern: { next: { revalidate: 3600 } } on fetch for hourly cache
 - [03-01]: External API layer pattern: src/lib/{service}.ts exports typed async functions
+- [03-02]: FeaturedProjects converted to async server component; all placeholder data removed
 
 ### Roadmap Evolution
 
@@ -79,5 +80,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 03-01-PLAN.md. Next: 03-02 (FeaturedProjects live data)
+Stopped at: Completed 03-02-PLAN.md. Phase 3 complete. Next: Phase 4 (About page)
 Resume file: None
