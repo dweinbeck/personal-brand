@@ -109,12 +109,11 @@ Plans:
   3. JSON-LD Person schema is present on the home page
   4. Lighthouse scores are 90+ across Performance, Accessibility, Best Practices, and SEO
   5. Writing and AI Assistant pages show clear "coming soon" messages
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: Meta tags, Open Graph, and JSON-LD structured data
-- [ ] 05-02: Sitemap, robots.txt, and Lighthouse optimization
-- [ ] 05-03: Writing and AI Assistant stub pages
+- [ ] 05-01-PLAN.md -- Meta tags, Open Graph, JSON-LD structured data, and polished stub pages
+- [ ] 05-02-PLAN.md -- Sitemap, robots.txt convention files, and Lighthouse audit
 
 ### Phase 6: Infrastructure and Deploy
 **Goal**: The site is live on GCP Cloud Run with secure, reproducible deployments
@@ -145,5 +144,5 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 2.1. Building Blocks (INSERTED) | 2/2 | ✓ Complete | 2026-02-02 |
 | 3. Projects | 2/2 | ✓ Complete | 2026-02-02 |
 | 4. Contact | 2/2 | ✓ Complete | 2026-02-02 |
-| 5. SEO, Polish, and Stubs | 0/3 | Not started | - |
+| 5. SEO, Polish, and Stubs | 0/2 | Not started | - |
 | 6. Infrastructure and Deploy | 0/3 | Not started | - |
