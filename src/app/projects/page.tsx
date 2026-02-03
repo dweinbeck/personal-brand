@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { ProjectCard } from "@/components/home/ProjectCard";
 import { fetchGitHubProjects } from "@/lib/github";
+
+export const metadata: Metadata = {
+  title: "Projects",
+  description: "Open-source projects and experiments by Dan Weinbeck.",
+};
 
 export default async function ProjectsPage() {
   const projects = await fetchGitHubProjects();

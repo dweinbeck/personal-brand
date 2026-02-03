@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { CopyEmailButton } from "@/components/contact/CopyEmailButton";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Get in touch with Dan Weinbeck.",
+};
 
 const SOCIAL_LINKS = [
   { name: "LinkedIn", href: "https://www.linkedin.com/in/dw789/" },

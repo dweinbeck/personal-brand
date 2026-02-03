@@ -3,7 +3,7 @@ import { TutorialCard } from "@/components/building-blocks/TutorialCard";
 import { getAllTutorials } from "@/lib/tutorials";
 
 export const metadata: Metadata = {
-  title: "Building Blocks | Dan Weinbeck",
+  title: "Building Blocks",
   description: "Practical, step-by-step tutorials on common development tasks.",
 };
 

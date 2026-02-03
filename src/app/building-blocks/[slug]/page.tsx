@@ -23,8 +23,12 @@ export async function generateMetadata({
     const mod = await import(`@/content/building-blocks/${slug}.mdx`);
     const meta = mod.metadata as TutorialMeta;
     return {
-      title: `${meta.title} | Building Blocks | Dan Weinbeck`,
+      title: `${meta.title} | Building Blocks`,
       description: meta.description,
+      openGraph: {
+        title: `${meta.title} | Building Blocks`,
+        description: meta.description,
+      },
     };
   } catch {
     return {};
