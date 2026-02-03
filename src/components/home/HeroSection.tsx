@@ -12,6 +12,7 @@ export function HeroSection() {
             alt="Dan Weinbeck"
             width={160}
             height={160}
+            priority
             preload
             className="rounded-full object-cover"
           />

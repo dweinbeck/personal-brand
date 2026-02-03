@@ -24,7 +24,7 @@ export async function FeaturedProjects() {
             href="https://github.com/dweinbeck"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800"
+            className="text-blue-600 hover:text-blue-800 underline"
           >
             my GitHub
           </a>{" "}

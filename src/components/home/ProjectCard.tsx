@@ -33,7 +33,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           href={project.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+          className="text-xs text-blue-600 hover:text-blue-800 font-medium underline"
         >
           GitHub <span className="sr-only">repository for {project.name}</span>
         </a>
@@ -42,7 +42,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             href={project.homepage}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium underline"
           >
             Live Demo <span className="sr-only">for {project.name}</span>
           </a>
