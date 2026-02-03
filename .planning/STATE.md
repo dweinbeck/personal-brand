@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 5 complete -- ready for Phase 6 deploy
+**Current focus:** Phase 6 in progress -- Docker and deploy infrastructure
 
 ## Current Position
 
-Phase: 5 of 6 (SEO, Polish & Stubs)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-03 -- Completed 05-02-PLAN.md
+Phase: 6 of 6 (Infrastructure & Deploy)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-03 -- Completed 06-01-PLAN.md
 
-Progress: [██████████░] ~92%
+Progress: [█████████████░] ~96%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: ~2.7 min
-- Total execution time: ~32 min
+- Total plans completed: 13
+- Average duration: ~2.6 min
+- Total execution time: ~34 min
 
 **By Phase:**
 
@@ -33,10 +33,11 @@ Progress: [██████████░] ~92%
 | 03-projects | 2/2 | ~4 min | ~2 min |
 | 04-contact | 2/2 | ~4 min | ~2 min |
 | 05-seo-polish-and-stubs | 2/2 | ~8 min | ~4 min |
+| 06-infrastructure-and-deploy | 1/2 | ~2 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (~3 min), 04-02 (~1 min), 05-01 (~3 min), 05-02 (~5 min)
-- Trend: consistent, 05-02 slightly longer due to Lighthouse iteration
+- Last 5 plans: 04-02 (~1 min), 05-01 (~3 min), 05-02 (~5 min), 06-01 (~2 min)
+- Trend: consistent
 
 *Updated after each plan completion*
 
@@ -76,6 +77,8 @@ Recent decisions affecting current work:
 - [05-01]: Placeholder OG image needs replacement with proper 1200x630 branded image before production
 - [05-02]: Added priority prop to headshot Image for LCP optimization (fetchpriority=high)
 - [05-02]: Added underline to inline text links for WCAG link-in-text-block compliance
+- [06-01]: ADC detection via K_SERVICE env var for Cloud Run; cert() fallback for local dev
+- [06-01]: Three-stage Dockerfile (deps, builder, runner) on node:20-alpine with non-root user
 
 ### Roadmap Evolution
 
@@ -89,9 +92,10 @@ None.
 
 - Firebase env vars (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) needed for production Firestore writes
 - OG image is a 1x1 placeholder -- replace with branded 1200x630 image before production
+- Docker not installed locally -- Dockerfile build/size/runtime not yet verified
 
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 05-02-PLAN.md. Phase 05 complete. Next: Phase 06 deploy.
+Stopped at: Completed 06-01-PLAN.md. Next: 06-02 (Cloud Run deploy).
 Resume file: None
