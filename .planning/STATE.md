@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 5 in progress -- SEO metadata and stubs
+**Current focus:** Phase 5 complete -- ready for Phase 6 deploy
 
 ## Current Position
 
 Phase: 5 of 6 (SEO, Polish & Stubs)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 -- Completed 05-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 -- Completed 05-02-PLAN.md
 
-Progress: [█████████░] ~85%
+Progress: [██████████░] ~92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: ~2.5 min
-- Total execution time: ~27 min
+- Total plans completed: 12
+- Average duration: ~2.7 min
+- Total execution time: ~32 min
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [█████████░] ~85%
 | 02.1-building-blocks | 2/2 | ~5 min | ~2.5 min |
 | 03-projects | 2/2 | ~4 min | ~2 min |
 | 04-contact | 2/2 | ~4 min | ~2 min |
-| 05-seo-polish-and-stubs | 1/2 | ~3 min | ~3 min |
+| 05-seo-polish-and-stubs | 2/2 | ~8 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (~2 min), 04-01 (~3 min), 04-02 (~1 min), 05-01 (~3 min)
-- Trend: consistent
+- Last 5 plans: 04-01 (~3 min), 04-02 (~1 min), 05-01 (~3 min), 05-02 (~5 min)
+- Trend: consistent, 05-02 slightly longer due to Lighthouse iteration
 
 *Updated after each plan completion*
 
@@ -74,6 +74,8 @@ Recent decisions affecting current work:
 - [05-01]: Child pages omit openGraph to inherit from root layout (avoids Next.js shallow merge pitfall)
 - [05-01]: Biome-ignore inline comment for dangerouslySetInnerHTML on JSON-LD script (standard Next.js pattern)
 - [05-01]: Placeholder OG image needs replacement with proper 1200x630 branded image before production
+- [05-02]: Added priority prop to headshot Image for LCP optimization (fetchpriority=high)
+- [05-02]: Added underline to inline text links for WCAG link-in-text-block compliance
 
 ### Roadmap Evolution
 
@@ -91,5 +93,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 05-01-PLAN.md. Phase 05 plan 1 complete. Next: 05-02-PLAN.md
+Stopped at: Completed 05-02-PLAN.md. Phase 05 complete. Next: Phase 06 deploy.
 Resume file: None
