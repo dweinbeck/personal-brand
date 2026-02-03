@@ -1,24 +1,40 @@
-import { cert, getApps, initializeApp } from "firebase-admin/app";
+import {
+  applicationDefault,
+  type Credential,
+  cert,
+  getApps,
+  initializeApp,
+} from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import type { ContactFormData } from "@/lib/schemas/contact";
 
-const projectId = process.env.FIREBASE_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+function getCredential(): Credential | undefined {
+  if (process.env.K_SERVICE) {
+    return applicationDefault();
+  }
 
-if (!projectId || !clientEmail || !privateKey) {
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+
+  if (projectId && clientEmail && privateKey) {
+    return cert({ projectId, clientEmail, privateKey });
+  }
+
   console.warn(
-    "Firebase environment variables are missing. Firestore writes will fail.",
+    "Firebase credentials not found. On Cloud Run, ADC is used automatically. For local dev, set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.",
   );
+
+  return undefined;
 }
+
+const credential = getCredential();
 
 const app =
   getApps().length > 0
     ? getApps()[0]
-    : projectId && clientEmail && privateKey
-      ? initializeApp({
-          credential: cert({ projectId, clientEmail, privateKey }),
-        })
+    : credential
+      ? initializeApp({ credential })
       : undefined;
 
 export const db = app ? getFirestore(app) : undefined;
