@@ -124,12 +124,11 @@ Plans:
   2. Docker image uses Next.js standalone output and is under 150MB
   3. Environment variables and secrets are managed via Cloud Run / Secret Manager (no credentials in code)
   4. Service runs with least-privilege permissions and no credential exposure
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: Dockerfile with standalone build and multi-stage optimization
-- [ ] 06-02: Cloud Run deployment with env vars and Secret Manager
-- [ ] 06-03: Security audit and least-privilege verification
+- [ ] 06-01-PLAN.md -- Dockerfile, standalone config, firebase.ts ADC refactor, and Docker image build verification
+- [ ] 06-02-PLAN.md -- Deploy script, env var documentation, and security audit
 
 ## Progress
 
@@ -145,4 +144,4 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 3. Projects | 2/2 | ✓ Complete | 2026-02-02 |
 | 4. Contact | 2/2 | ✓ Complete | 2026-02-02 |
 | 5. SEO, Polish, and Stubs | 2/2 | ✓ Complete | 2026-02-03 |
-| 6. Infrastructure and Deploy | 0/3 | Not started | - |
+| 6. Infrastructure and Deploy | 0/2 | Not started | - |
