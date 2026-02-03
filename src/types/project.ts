@@ -4,5 +4,6 @@ export interface Project {
   language: string | null;
   stars: number;
   url: string;
+  homepage: string | null;
   topics: string[];
 }

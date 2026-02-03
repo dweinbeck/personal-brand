@@ -10,6 +10,7 @@ const FEATURED_PROJECTS: Project[] = [
     language: "TypeScript",
     stars: 0,
     url: "https://github.com/dweinbeck/personal-brand",
+    homepage: null,
     topics: ["nextjs", "typescript", "tailwind"],
   },
   {
@@ -19,6 +20,7 @@ const FEATURED_PROJECTS: Project[] = [
     language: "Python",
     stars: 12,
     url: "https://github.com/dweinbeck",
+    homepage: null,
     topics: ["ai", "agents", "python"],
   },
   {
@@ -28,6 +30,7 @@ const FEATURED_PROJECTS: Project[] = [
     language: "Python",
     stars: 8,
     url: "https://github.com/dweinbeck",
+    homepage: null,
     topics: ["data", "etl", "automation"],
   },
   {
@@ -37,6 +40,7 @@ const FEATURED_PROJECTS: Project[] = [
     language: "TypeScript",
     stars: 5,
     url: "https://github.com/dweinbeck",
+    homepage: null,
     topics: ["experimentation", "analytics", "react"],
   },
   {
@@ -46,6 +50,7 @@ const FEATURED_PROJECTS: Project[] = [
     language: "TypeScript",
     stars: 3,
     url: "https://github.com/dweinbeck",
+    homepage: null,
     topics: ["ux", "analytics", "dashboard"],
   },
   {
@@ -55,6 +60,7 @@ const FEATURED_PROJECTS: Project[] = [
     language: "Python",
     stars: 2,
     url: "https://github.com/dweinbeck",
+    homepage: null,
     topics: ["automation", "scripts", "devtools"],
   },
 ];
