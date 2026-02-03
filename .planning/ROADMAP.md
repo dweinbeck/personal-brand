@@ -77,12 +77,11 @@ Plans:
   2. Project grid is responsive across mobile, tablet, and desktop
   3. Each project card links to its GitHub repo (and live demo if a homepage URL is set)
   4. GitHub data is cached via ISR and revalidates hourly (not fetched on every request)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: GitHub API integration and data fetching with ISR
-- [ ] 03-02: Project card components and responsive grid
-- [ ] 03-03: Wire featured projects on home page to live API data
+- [ ] 03-01-PLAN.md -- GitHub API data layer, ProjectCard homepage link, and full Projects page
+- [ ] 03-02-PLAN.md -- Wire home page featured projects to live GitHub API data
 
 ### Phase 4: Contact
 **Goal**: Visitors can reach Dan through a working contact form or direct channels
@@ -145,7 +144,7 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 1. Scaffold and Navigation | 2/2 | ✓ Complete | 2026-02-02 |
 | 2. Home Page | 2/2 | ✓ Complete | 2026-02-02 |
 | 2.1. Building Blocks (INSERTED) | 2/2 | ✓ Complete | 2026-02-02 |
-| 3. Projects | 0/3 | Not started | - |
+| 3. Projects | 0/2 | Not started | - |
 | 4. Contact | 0/3 | Not started | - |
 | 5. SEO, Polish, and Stubs | 0/3 | Not started | - |
 | 6. Infrastructure and Deploy | 0/3 | Not started | - |
