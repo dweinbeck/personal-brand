@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with featured project cards pulled from GitHub, clear contact options, and a professional-but-approachable light design. It also serves as the foundation for a future personal control center and AI assistant.
+A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with featured project cards pulled live from GitHub, a tutorials section, a working contact form backed by Firestore, and production deployment on GCP Cloud Run. It also serves as the foundation for a future personal control center and AI assistant.
 
 ## Core Value
 
@@ -12,51 +12,53 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Home page with hero section (headshot, tagline, CTAs) — v1.0
+- ✓ Project cards pulled from GitHub API (featured/curated display) — v1.0
+- ✓ Projects page with full project listing — v1.0
+- ✓ Writing/Blog stub page (coming soon placeholder) — v1.0
+- ✓ AI Assistant placeholder page (coming soon) — v1.0
+- ✓ Contact page with email, LinkedIn, Instagram, and contact form — v1.0
+- ✓ Navigation across all sections (Home, Projects, Building Blocks, Writing, Assistant, Contact) — v1.0
+- ✓ Light + clean visual design, professional but approachable — v1.0
+- ✓ Mobile responsive, optimized images, fast initial render — v1.0
+- ✓ Deployed on GCP Cloud Run — v1.0
+- ✓ Firestore for contact form data — v1.0
+- ✓ Lighthouse >= 90 for Performance, Accessibility, Best Practices, SEO — v1.0
+- ✓ Contact form with spam protection (honeypot + rate limiting) — v1.0
+- ✓ Secure-by-default (least privilege, secret management, basic abuse protection) — v1.0
+- ✓ Tutorials section with MDX content (Building Blocks) — v1.0
 
 ### Active
 
-- [ ] Home page with hero section (headshot, tagline, CTAs)
-- [ ] Project cards pulled from GitHub API (featured/curated display, connorbutch-style)
-- [ ] Projects page with full project listing
-- [ ] Writing/Blog stub page (coming soon placeholder)
-- [ ] AI Assistant placeholder page (coming soon, built in later phase)
-- [ ] Contact page with email, LinkedIn, Instagram, and contact form
-- [ ] Navigation across all 5 sections (Home, Projects, Writing, Assistant, Contact)
-- [ ] Light + clean visual design, professional but approachable
-- [ ] Mobile responsive, optimized images, fast initial render
-- [ ] Deployed on GCP Cloud Run
-- [ ] Firestore + Cloud Storage for data/assets
-- [ ] Lighthouse >= 90 for Performance, Accessibility, Best Practices, SEO
-- [ ] Custom 404/500 error pages with navigation back home
-- [ ] Contact form with spam protection (first-party endpoint on Cloud Run)
-- [ ] Secure-by-default (least privilege, secret management, basic abuse protection)
+(None — ready for next milestone requirements)
 
 ### Out of Scope
 
-- AI chatbot / assistant functionality — deferred to later phase in this milestone
+- AI chatbot / assistant functionality — deferred to future milestone
 - Todoist integration / control center — future milestone
-- OAuth / magic link login — no auth needed for v1 public site
+- OAuth / magic link login — no auth needed for public site
 - Real-time chat — not relevant for personal site
-- Video content — unnecessary complexity for v1
+- Video content — unnecessary complexity
 - Mobile app — web only
 - Google Analytics — can add later if needed
 
 ## Context
 
-- Dan's site brief (`dan-weinbeck_SITE_BRIEF.md`) contains wireframe, audience details, and success metrics
-- YAML version of brief also in repo (`dan-weinbeck_site-brief.yaml`)
+- **Live site:** https://dan-weinbeck.com
+- **Shipped:** v1.0 MVP on 2026-02-03
+- **Codebase:** ~1,638 LOC TypeScript/TSX/CSS/MDX across 105 files
+- **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK
+- **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
+- **GitHub profile:** https://github.com/dweinbeck
+- **LinkedIn:** https://www.linkedin.com/in/dw789/
+- **Design inspiration:** connorbutch.com — clean minimal layout, featured tutorial/project cards
 - Headshot asset available in repo root (`headshot.jpeg`)
-- Resume available as source material (Dan_Weinbeck_Resume.docx — not in repo)
-- GitHub profile: https://github.com/dweinbeck
-- LinkedIn: https://www.linkedin.com/in/dw789/
-- Design inspiration: connorbutch.com — clean minimal layout, featured tutorial/project cards
-- The chatbot and control center vision are important to Dan but intentionally deferred to keep v1 focused on the public-facing site
+- The chatbot and control center vision are important to Dan but intentionally deferred
 
 ## Constraints
 
-- **Tech stack**: Next.js (TypeScript), GCP Cloud Run, Firestore, Cloud Storage — Dan's explicit preference
-- **Hosting**: GCP Cloud Run — already decided
+- **Tech stack**: Next.js (TypeScript), GCP Cloud Run, Firestore — Dan's explicit preference
+- **Hosting**: GCP Cloud Run — already deployed
 - **Security**: Secure-by-default with least privilege, secret management, basic abuse protection
 - **Performance**: Lighthouse >= 90 across all categories
 - **Mobile**: Must be responsive and fast on slow networks
@@ -65,13 +67,18 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Next.js + TypeScript | Dan's stated preference, good fit for SSR/SSG personal site | — Pending |
-| GCP Cloud Run hosting | Dan's stated preference, familiar infrastructure | — Pending |
-| GitHub API for project data | Automatic, always current, no manual curation needed | — Pending |
-| Chatbot deferred to later phase | Get the UI foundation right first, then layer on AI features | — Pending |
+| Next.js 16 + TypeScript | Dan's stated preference, good fit for SSR/SSG personal site | ✓ Good |
+| GCP Cloud Run hosting | Dan's stated preference, familiar infrastructure | ✓ Good |
+| GitHub API for project data | Automatic, always current, no manual curation needed | ✓ Good |
+| Tailwind v4 + Biome v2.3 | Modern tooling, Biome replaces ESLint + Prettier | ✓ Good |
+| Firebase Admin SDK only | No client SDK needed for v1; server-side Firestore writes only | ✓ Good |
+| SSG + ISR rendering strategy | SSG for most pages, ISR (hourly) for GitHub data, SSR for contact action | ✓ Good |
+| MDX for tutorial content | Type-safe metadata with exported const objects, filesystem-based discovery | ✓ Good |
+| Three-stage Dockerfile | Deps → builder → runner on node:20-alpine with non-root user | ✓ Good |
+| Cloud Build for deploys | Serverless Docker builds, no local Docker needed | ✓ Good |
+| Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | — Pending |
 | Control center deferred to future milestone | v1 is public-facing site; personal tools come later | — Pending |
-| Light + clean design | Professional but approachable aesthetic, Dan's preference | — Pending |
 | Blog as stub | Content creation comes after the site is live | — Pending |
 
 ---
-*Last updated: 2026-02-01 after initialization*
+*Last updated: 2026-02-04 after v1.0 milestone*
