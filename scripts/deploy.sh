@@ -50,9 +50,11 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
   --quiet
 
 # 6. Build and push image via Cloud Build
+# NEXT_PUBLIC_* vars must be available at build time (baked into client JS bundle)
 echo "==> Building image with Cloud Build..."
 gcloud builds submit \
-  --tag "${IMAGE_URI}" \
+  --config cloudbuild.yaml \
+  --substitutions="_IMAGE_URI=${IMAGE_URI},_NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY:-},_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-},_NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-${PROJECT_ID}}" \
   --quiet
 
 # 7. Deploy to Cloud Run
@@ -66,7 +68,7 @@ gcloud run deploy "${SERVICE_NAME}" \
   --cpu 1 \
   --min-instances 0 \
   --max-instances 3 \
-  --set-env-vars "FIREBASE_PROJECT_ID=${PROJECT_ID}" \
+  --set-env-vars "FIREBASE_PROJECT_ID=${PROJECT_ID},NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY:-},NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-},NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-${PROJECT_ID}},GITHUB_TOKEN=${GITHUB_TOKEN:-},TODOIST_API_TOKEN=${TODOIST_API_TOKEN:-}" \
   --allow-unauthenticated
 
 # NOTE: Secret Manager is NOT needed for this deployment.
