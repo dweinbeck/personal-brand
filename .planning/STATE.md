@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-01)
 ## Current Position
 
 Phase: 6 of 6 (Infrastructure & Deploy)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 -- Completed 06-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 -- Completed 06-02-PLAN.md
 
-Progress: [█████████████░] ~96%
+Progress: [██████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
-- Average duration: ~2.6 min
-- Total execution time: ~34 min
+- Total plans completed: 14
+- Average duration: ~3.0 min
+- Total execution time: ~42 min
 
 **By Phase:**
 
@@ -33,11 +33,11 @@ Progress: [█████████████░] ~96%
 | 03-projects | 2/2 | ~4 min | ~2 min |
 | 04-contact | 2/2 | ~4 min | ~2 min |
 | 05-seo-polish-and-stubs | 2/2 | ~8 min | ~4 min |
-| 06-infrastructure-and-deploy | 1/2 | ~2 min | ~2 min |
+| 06-infrastructure-and-deploy | 2/2 | ~10 min | ~5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (~1 min), 05-01 (~3 min), 05-02 (~5 min), 06-01 (~2 min)
-- Trend: consistent
+- Last 5 plans: 05-01 (~3 min), 05-02 (~5 min), 06-01 (~2 min), 06-02 (~8 min)
+- Trend: increasing (deployment complexity)
 
 *Updated after each plan completion*
 
@@ -79,6 +79,9 @@ Recent decisions affecting current work:
 - [05-02]: Added underline to inline text links for WCAG link-in-text-block compliance
 - [06-01]: ADC detection via K_SERVICE env var for Cloud Run; cert() fallback for local dev
 - [06-01]: Three-stage Dockerfile (deps, builder, runner) on node:20-alpine with non-root user
+- [06-02]: Cloud Build pattern (gcloud builds submit) for serverless Docker builds (no local Docker needed)
+- [06-02]: Dedicated service account per Cloud Run service with least-privilege IAM (roles/datastore.user only)
+- [06-02]: Custom domain mapping via Cloud Run with auto-provisioned SSL certificates
 
 ### Roadmap Evolution
 
@@ -90,12 +93,33 @@ None.
 
 ### Blockers/Concerns
 
-- Firebase env vars (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) needed for production Firestore writes
-- OG image is a 1x1 placeholder -- replace with branded 1200x630 image before production
-- Docker not installed locally -- Dockerfile build/size/runtime not yet verified
+- OG image is a 1x1 placeholder -- replace with branded 1200x630 image for better social media sharing
 
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 06-01-PLAN.md. Next: 06-02 (Cloud Run deploy).
+Stopped at: Completed 06-02-PLAN.md. Phase 6 complete - site live at https://dan-weinbeck.com
 Resume file: None
+
+## Project Status
+
+**All phases complete!** Personal brand site is built and deployed.
+
+**Live site:** https://dan-weinbeck.com
+
+**What was delivered:**
+- Home page with hero, about, skills, and CTA sections
+- Projects page with GitHub integration and live project cards
+- Tutorials section with MDX content
+- Contact page with Firestore-backed form and rate limiting
+- Full SEO optimization (metadata, OG tags, sitemap, robots.txt)
+- Responsive design with Tailwind v4
+- Docker containerization with non-root user
+- GCP Cloud Run deployment with custom domain and SSL
+- Least-privilege service account with ADC authentication
+
+**Future enhancements (not in scope):**
+- Replace placeholder OG image with branded 1200x630 image
+- Add CI/CD pipeline for automated deployments
+- Add more tutorial content
+- Add blog section
