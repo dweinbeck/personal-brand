@@ -18,7 +18,7 @@ const personJsonLd: WithContext<Person> = {
   jobTitle: "AI Developer & Data Scientist",
   description:
     "AI developer, analytics professional, and data scientist. Explore projects, tutorials, and more.",
-  email: "dan@dweinbeck.com",
+  email: "daniel.weinbeck@gmail.com",
   sameAs: [
     "https://www.linkedin.com/in/dw789/",
     "https://github.com/dweinbeck",
@@ -28,7 +28,7 @@ const personJsonLd: WithContext<Person> = {
 
 export default function HomePage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data requires dangerouslySetInnerHTML per Next.js convention

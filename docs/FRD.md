@@ -11,8 +11,6 @@
 ## Non-Goals
 
 - AI chatbot / assistant functionality (deferred to v2)
-- Todoist integration / personal control center (future milestone)
-- User authentication or login
 - Real-time features (WebSockets, live chat)
 - Video content hosting
 - Mobile app
@@ -51,6 +49,12 @@ A visitor fills out the contact form (name, email, message). The form validates 
 ### S5: Mobile Browsing
 A visitor on a phone sees a hamburger menu. Tapping it reveals smooth navigation to all sections. All pages render correctly on mobile viewports. Images are optimized and load quickly.
 
+### S6: Admin Sign-In
+Dan clicks "Sign In" in the navbar. A Google sign-in popup appears. After authenticating with `daniel.weinbeck@gmail.com`, the button is replaced by a blue circle with his initial. A "Control Center" link appears in the navigation.
+
+### S7: Admin Control Center
+Dan navigates to the Control Center. He sees a grid of all GitHub repos (public and private) with names, last commit dates, and purposes extracted from READMEs. Below that, he sees Todoist project cards with task counts. Clicking a Todoist project shows a board view with tasks grouped by section.
+
 ## End-to-End Workflows
 
 ### Home Page Flow
@@ -64,6 +68,9 @@ A visitor on a phone sees a hamburger menu. Tapping it reveals smooth navigation
 
 ### Tutorial Flow
 `Navigate to Building Blocks` -> `Browse tutorial list` -> `Click tutorial` -> `Read step-by-step guide`
+
+### Admin Flow
+`Click Sign In` -> `Google popup` -> `Authenticate` -> `See Control Center in nav` -> `Browse repos and Todoist projects` -> `Click Todoist project` -> `View task board`
 
 ## v1 Requirements
 
@@ -108,6 +115,18 @@ A visitor on a phone sees a hamburger menu. Tapping it reveals smooth navigation
 | CONT-03 | Form submissions stored in Firestore | Complete |
 | CONT-04 | Email address with click-to-copy | Complete |
 | CONT-05 | Social links (LinkedIn, Instagram, GitHub) | Complete |
+
+### Authentication & Admin
+| ID | Requirement | Status |
+|----|-------------|--------|
+| AUTH-01 | Google Sign-In via Firebase Auth | Complete |
+| AUTH-02 | Signed-in state shown as avatar circle in navbar | Complete |
+| AUTH-03 | Sign-out dropdown menu | Complete |
+| ADMIN-01 | Admin-only Control Center route (email guard) | Complete |
+| ADMIN-02 | Control Center nav link visible only to admin | Complete |
+| ADMIN-03 | GitHub repo cards (all repos, public + private) with name, last commit, purpose | Complete |
+| ADMIN-04 | Todoist project cards with task counts | Complete |
+| ADMIN-05 | Todoist board view (sections as columns, tasks as cards) | Complete |
 
 ### Design & Performance
 | ID | Requirement | Status |

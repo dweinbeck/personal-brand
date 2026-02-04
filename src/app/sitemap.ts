@@ -7,12 +7,14 @@ const BASE_URL = "https://dweinbeck.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tutorials = await getAllTutorials();
 
-  const tutorialUrls: MetadataRoute.Sitemap = tutorials.map((t) => ({
-    url: `${BASE_URL}/building-blocks/${t.slug}`,
-    lastModified: new Date(t.metadata.publishedAt),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+  const tutorialUrls: MetadataRoute.Sitemap = tutorials
+    .filter((t) => !Number.isNaN(new Date(t.metadata.publishedAt).getTime()))
+    .map((t) => ({
+      url: `${BASE_URL}/building-blocks/${t.slug}`,
+      lastModified: new Date(t.metadata.publishedAt),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
 
   const now = new Date();
 

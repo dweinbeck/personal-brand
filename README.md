@@ -4,7 +4,7 @@ A personal website for Dan Weinbeck — self-taught AI developer, analytics prof
 
 ## Purpose
 
-Give visitors a fast, clear understanding of who Dan is and what he's built. The site showcases real projects pulled from GitHub, provides contact options, and serves as the foundation for a future AI assistant and personal control center.
+Give visitors a fast, clear understanding of who Dan is and what he's built. The site showcases real projects pulled from GitHub, provides contact options, and serves as the foundation for a future AI assistant. Includes an authenticated admin control center for managing GitHub repos and Todoist tasks.
 
 ## Problem Solved
 
@@ -23,6 +23,7 @@ Replaces the need for a static resume or scattered online presence with a single
 3. Visitor reads step-by-step tutorials in the Building Blocks section
 4. Visitor reaches out via the contact form (stored in Firestore) or direct social links
 5. Stub pages for Writing and AI Assistant signal future content
+6. Admin signs in via Google Auth to access the Control Center (all GitHub repos + Todoist boards)
 
 ## Success Metrics
 
@@ -37,7 +38,8 @@ Replaces the need for a static resume or scattered online presence with a single
 - **Styling:** Tailwind CSS v4
 - **Linting:** Biome v2.3
 - **Animation:** Motion v12
-- **Data:** GitHub REST API (ISR), Firebase Admin SDK (Firestore)
+- **Auth:** Firebase Client SDK (Google Sign-In)
+- **Data:** GitHub REST API (ISR), Firebase Admin SDK (Firestore), Todoist REST API
 - **Content:** MDX for tutorials
 - **Hosting:** GCP Cloud Run (Docker standalone build)
 

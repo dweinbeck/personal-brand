@@ -20,15 +20,15 @@ Next.js 16 application using App Router with React Server Components. Hybrid ren
 │ (Cloud Run)   │            │ (External)       │
 │               │            └─────────────────┘
 │ - Contact form│
-│ - (Future AI) │
-└───────┬───────┘
-        │
-        ▼
+│ - (Future AI) │            ┌─────────────────┐
+└───────┬───────┘            │ Todoist REST API │
+        │                    │ (External)       │
+        ▼                    └─────────────────┘
 ┌───────────────┐
-│ Firestore     │
-│ - Contact msgs│
-│ - (Future)    │
-└───────────────┘
+│ Firestore     │            ┌─────────────────┐
+│ - Contact msgs│            │ Firebase Auth    │
+│ - (Future)    │            │ (Google Sign-In) │
+└───────────────┘            └─────────────────┘
 ```
 
 ## Component Hierarchy
@@ -37,7 +37,7 @@ Next.js 16 application using App Router with React Server Components. Hybrid ren
 
 ```
 src/app/
-├── layout.tsx              # Root layout (Navbar, Footer, metadata, JSON-LD)
+├── layout.tsx              # Root layout (AuthProvider, Navbar, Footer, metadata)
 ├── page.tsx                # Home (Hero, FeaturedProjects, BlogTeaser)
 ├── projects/
 │   └── page.tsx            # Full project grid (GitHub API via ISR)
@@ -50,6 +50,12 @@ src/app/
 │   └── page.tsx            # Coming soon stub
 ├── contact/
 │   └── page.tsx            # Contact form + social links
+├── control-center/
+│   ├── layout.tsx          # AdminGuard wrapper
+│   ├── page.tsx            # Admin dashboard (GitHub repos + Todoist projects)
+│   └── todoist/
+│       └── [projectId]/
+│           └── page.tsx    # Todoist board view per project
 ├── sitemap.ts              # Generated sitemap.xml
 └── robots.ts               # Generated robots.txt
 ```
@@ -60,8 +66,14 @@ src/app/
 src/components/
 ├── layout/
 │   ├── Navbar.tsx          # Server component — site navigation
-│   ├── NavLinks.tsx        # Client component — active link state, mobile menu
+│   ├── NavLinks.tsx        # Client component — active link state, mobile menu, admin link
+│   ├── AuthButton.tsx      # Client component — Google sign-in/sign-out with dropdown
 │   └── Footer.tsx          # Footer with social links
+├── admin/
+│   ├── AdminGuard.tsx      # Client component — email-based admin route guard
+│   ├── RepoCard.tsx        # GitHub repo card (name, last commit, purpose)
+│   ├── TodoistProjectCard.tsx # Todoist project card (name, task count)
+│   └── TodoistBoard.tsx    # Board layout (sections as columns, tasks as cards)
 ├── home/
 │   ├── Hero.tsx            # Headshot, tagline, CTA buttons
 │   ├── FeaturedProjects.tsx # Async server component — top project cards from GitHub
@@ -94,6 +106,31 @@ src/components/
 5. In-memory rate limiter enforces 3 submissions per 15 minutes per IP
 6. On success, submission is written to Firestore via Firebase Admin SDK
 7. Success/error status returned to client via `<output>` element
+
+### Firebase Auth (Google Sign-In)
+
+1. `AuthProvider` context wraps app in root layout
+2. `onAuthStateChanged` listener tracks user state client-side
+3. `AuthButton` renders "Sign In" or avatar circle based on auth state
+4. Sign-in uses `signInWithPopup` with `GoogleAuthProvider`
+5. Firebase client SDK initialized lazily via getter to avoid SSR errors during prerender
+
+### Admin Control Center
+
+1. `AdminGuard` checks `user.email === "daniel.weinbeck@gmail.com"` via `AuthContext`
+2. Non-admin users are redirected to home
+3. `NavLinks` conditionally renders "Control Center" link for admin
+4. Server component fetches all GitHub repos via authenticated `/user/repos` endpoint
+5. README purpose extracted by decoding base64 content and finding first meaningful paragraph
+6. Todoist projects fetched server-side; task counts resolved in parallel
+
+### Todoist Integration
+
+1. Server-side API client uses bearer token auth (`TODOIST_API_TOKEN`)
+2. Projects listed via `GET /rest/v2/projects`
+3. Board view fetches sections and tasks in parallel for a given project
+4. Tasks grouped by `section_id` and rendered as columns
+5. ISR caching with 5-minute revalidation
 
 ### MDX Tutorials
 
@@ -136,6 +173,31 @@ Fetches public repos from GitHub REST API.
 **Caching:** ISR with 1-hour revalidation
 **Returns:** Typed array of repo objects (name, description, html_url, homepage, language, topics, stargazers_count)
 
+### `fetchAllGitHubRepos(): Promise<AdminRepo[]>`
+
+Fetches all repos (public + private) via authenticated GitHub API. Admin only.
+
+**Endpoint:** `https://api.github.com/user/repos` (paginated)
+**Auth:** `GITHUB_TOKEN` with `repo` scope
+**Caching:** ISR with 1-hour revalidation
+**Returns:** Array of `{ name, url, isPrivate, lastCommit, purpose }`
+
+### `fetchTodoistProjects(): Promise<TodoistProject[]>`
+
+Fetches all Todoist projects.
+
+**Endpoint:** `https://api.todoist.com/rest/v2/projects`
+**Auth:** Bearer token (`TODOIST_API_TOKEN`)
+**Caching:** ISR with 5-minute revalidation
+
+### `fetchProjectSections(projectId)` / `fetchProjectTasks(projectId)`
+
+Fetches sections and tasks for a given Todoist project.
+
+**Endpoints:** `/rest/v2/sections?project_id={id}`, `/rest/v2/tasks?project_id={id}`
+**Auth:** Bearer token (`TODOIST_API_TOKEN`)
+**Caching:** ISR with 5-minute revalidation
+
 ## Error Handling
 
 - **Contact form validation:** Zod schema with `safeParse` returns field-level errors displayed inline
@@ -146,19 +208,28 @@ Fetches public repos from GitHub REST API.
 
 ## Integration Points
 
-### Firebase (Firestore)
+### Firebase (Firestore + Auth)
 
-- **SDK:** `firebase-admin` (server-side only, no client SDK in v1)
-- **Auth:** Application Default Credentials (ADC) on Cloud Run; env vars in development
-- **Env vars needed:** `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`
+- **Admin SDK:** `firebase-admin` (server-side) for Firestore writes
+- **Client SDK:** `firebase` for Google Sign-In (browser-side)
+- **Auth:** ADC on Cloud Run for admin SDK; `NEXT_PUBLIC_*` env vars for client SDK
+- **Env vars needed:** `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
 - **Collection:** Contact form submissions
-- **Graceful init:** Warns if env vars missing (dev without Firebase works), throws on actual write
+- **Auth provider:** Google Sign-In via `signInWithPopup`
+- **Admin check:** Client-side email comparison (`daniel.weinbeck@gmail.com`)
 
 ### GitHub REST API
 
 - **Auth:** Unauthenticated for public repos (60 req/hour limit); optional `GITHUB_TOKEN` for higher limits
 - **Endpoint:** `/users/dweinbeck/repos`
 - **Caching:** Next.js ISR fetch cache with `revalidate: 3600`
+
+### Todoist REST API
+
+- **Auth:** Bearer token via `TODOIST_API_TOKEN`
+- **Endpoints:** `/rest/v2/projects`, `/rest/v2/sections`, `/rest/v2/tasks`
+- **Caching:** ISR with 5-minute revalidation
+- **Usage:** Admin-only Control Center
 
 ### MDX / Content
 
@@ -182,6 +253,9 @@ Fetches public repos from GitHub REST API.
 | 10 | MDX with exported metadata objects | Type-safe extraction without YAML frontmatter parsing |
 | 11 | `preload` over `priority` for Next.js 16 Image | Follows Next.js 16 Image component API |
 | 12 | NavLinks as only `use client` component in layout | Minimal client JS; server/client split pattern |
+| 17 | Firebase client SDK lazy initialization | Getter function avoids SSR errors during Next.js prerender |
+| 18 | Client-side admin email check | Simple guard for personal site; no server-side token verification needed |
+| 19 | Todoist ISR with 5-minute revalidation | Shorter than GitHub (1h) since task data changes more frequently |
 | 13 | Child pages omit openGraph config | Inherit from root layout; avoids Next.js shallow merge pitfall |
 | 14 | String plugin names in createMDX | Required for Turbopack serialization compatibility |
 | 15 | `<output>` element for form status messages | Per Biome `useSemanticElements` rule |
@@ -206,7 +280,8 @@ GitHub Repo -> Docker Build -> GCP Cloud Run
 
 - **In-memory rate limiting resets on deploy** — acceptable for a personal site; would need Redis for multi-instance
 - **Unauthenticated GitHub API has 60 req/hour limit** — ISR caching mitigates this; add token if needed
-- **No client-side Firebase SDK** — real-time features (AI chat) will require adding it in v2
+- **Admin guard is client-side only** — email check happens in browser; acceptable for a personal admin dashboard
+- **Todoist API token is server-side only** — never exposed to client
 - **OG image is a placeholder** — needs replacement with branded 1200x630 image before production
 - **Firebase env vars required for production** — contact form silently degrades without them in dev
 - **No dark mode in v1** — deferred to v2 (DESIGN-01)

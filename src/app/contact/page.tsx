@@ -32,7 +32,7 @@ export default function ContactPage() {
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Email</h2>
             <div className="mt-2">
-              <CopyEmailButton email="dan@dweinbeck.com" />
+              <CopyEmailButton email="daniel.weinbeck@gmail.com" />
             </div>
           </div>
 

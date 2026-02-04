@@ -24,7 +24,8 @@ gcloud config set project "${PROJECT_ID}"
 echo "==> Enabling APIs..."
 gcloud services enable \
   run.googleapis.com \
-  artifactregistry.googleapis.com
+  artifactregistry.googleapis.com \
+  cloudbuild.googleapis.com
 
 # 3. Create Artifact Registry repository (idempotent)
 echo "==> Creating Artifact Registry repository..."
@@ -34,17 +35,13 @@ gcloud artifacts repositories create "${REPO_NAME}" \
   --description="Personal brand site Docker images" \
   2>/dev/null || echo "    Repository already exists."
 
-# 4. Configure Docker authentication
-echo "==> Configuring Docker auth..."
-gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
-
-# 5. Create dedicated service account (idempotent)
+# 4. Create dedicated service account (idempotent)
 echo "==> Creating service account..."
 gcloud iam service-accounts create "${SA_NAME}" \
   --display-name="Cloud Run Personal Brand Site" \
   2>/dev/null || echo "    Service account already exists."
 
-# 6. Grant Firestore access (least privilege -- datastore.user only)
+# 5. Grant Firestore access (least privilege -- datastore.user only)
 echo "==> Granting Firestore access..."
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
   --member="serviceAccount:${SA_EMAIL}" \
@@ -52,15 +49,13 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
   --condition=None \
   --quiet
 
-# 7. Build Docker image
-echo "==> Building Docker image..."
-docker build -t "${IMAGE_URI}" .
+# 6. Build and push image via Cloud Build
+echo "==> Building image with Cloud Build..."
+gcloud builds submit \
+  --tag "${IMAGE_URI}" \
+  --quiet
 
-# 8. Push to Artifact Registry
-echo "==> Pushing image to Artifact Registry..."
-docker push "${IMAGE_URI}"
-
-# 9. Deploy to Cloud Run
+# 7. Deploy to Cloud Run
 echo "==> Deploying to Cloud Run..."
 gcloud run deploy "${SERVICE_NAME}" \
   --image "${IMAGE_URI}" \
@@ -82,7 +77,7 @@ gcloud run deploy "${SERVICE_NAME}" \
 #   gcloud secrets create MY_SECRET --data-file=-
 #   gcloud run deploy ... --update-secrets=MY_ENV_VAR=MY_SECRET:latest
 
-# 10. Print the service URL
+# 8. Print the service URL
 echo ""
 echo "==> Deployment complete!"
 gcloud run services describe "${SERVICE_NAME}" \

@@ -1,4 +1,5 @@
 import type { Project } from "@/types/project";
+import { Card } from "@/components/ui/Card";
 
 interface ProjectCardProps {
   project: Project;
@@ -6,7 +7,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <div className="rounded-lg border border-gray-200 p-6 transition-all duration-200 hover:shadow-md hover:border-gray-300 motion-safe:hover:-translate-y-0.5">
+    <Card variant="default">
       <h3 className="font-semibold text-gray-900">{project.name}</h3>
       <p className="mt-2 text-sm text-gray-600 line-clamp-2">
         {project.description}
@@ -48,6 +49,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </a>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

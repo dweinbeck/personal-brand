@@ -3,9 +3,12 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useAuth } from "@/context/AuthContext";
 
-const links = [
+const ADMIN_EMAIL = "daniel.weinbeck@gmail.com";
+
+const baseLinks = [
   { name: "Home", href: "/" },
   { name: "Projects", href: "/projects" },
   { name: "Building Blocks", href: "/building-blocks" },
@@ -17,6 +20,14 @@ const links = [
 export function NavLinks() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
+
+  const links = useMemo(() => {
+    if (user?.email === ADMIN_EMAIL) {
+      return [...baseLinks, { name: "Control Center", href: "/control-center" }];
+    }
+    return baseLinks;
+  }, [user]);
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -32,13 +43,16 @@ export function NavLinks() {
             key={link.href}
             href={link.href}
             className={clsx(
-              "px-2 py-2 text-sm font-medium rounded-md transition-colors",
+              "px-2 py-2 text-sm font-medium rounded-md transition-colors relative",
               isActive(link.href)
-                ? "text-blue-600 bg-blue-50"
+                ? "text-blue-600"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
             )}
           >
             {link.name}
+            {isActive(link.href) && (
+              <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-600 rounded-full" />
+            )}
           </Link>
         ))}
       </nav>
@@ -78,7 +92,7 @@ export function NavLinks() {
       {/* Mobile menu */}
       <div
         className={clsx(
-          "absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-sm md:hidden transition-all duration-200 overflow-hidden",
+          "absolute top-full left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200/60 shadow-sm md:hidden transition-all duration-200 overflow-hidden",
           mobileOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0",
         )}
       >
@@ -91,7 +105,7 @@ export function NavLinks() {
               className={clsx(
                 "px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
                 isActive(link.href)
-                  ? "text-blue-600 bg-blue-50"
+                  ? "text-blue-600 border-l-2 border-blue-600"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
               )}
             >
