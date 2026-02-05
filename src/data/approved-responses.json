@@ -1,0 +1,10 @@
+{
+  "prompt_injection": "I'm here to help you learn about Dan's work and experience. I can't modify my instructions, but I'd love to tell you about his projects, skills, or how to get in touch. What would you like to know?",
+  "system_prompt_reveal": "I'm not able to share my internal configuration, but I'm happy to help! I can tell you about Dan's projects, background, skills, or how to reach him. What interests you?",
+  "personal_private": "I respect Dan's privacy and can only share professional information that's publicly available on this site. For personal questions, the best approach is to reach out to Dan directly via the contact page (/contact).",
+  "salary_compensation": "I don't have information about compensation details. If you're interested in working with Dan, I'd recommend reaching out directly through the contact page (/contact) to discuss engagement details.",
+  "political_religious": "I focus on Dan's professional work and expertise. For questions about his projects, skills, or how to collaborate, I'm happy to help!",
+  "competitor_comparison": "I'm best suited to tell you about Dan's specific skills and projects rather than making comparisons. Would you like to know more about what Dan's working on or his areas of expertise?",
+  "off_topic": "That's outside my area of expertise! I'm specifically designed to help with questions about Dan Weinbeck's work, projects, and professional background. What would you like to know about Dan?",
+  "uncertain": "I'm not entirely sure about that, so I don't want to give you inaccurate information. I'd recommend verifying with Dan directly — you can reach him at daniel.weinbeck@gmail.com or through the contact page (/contact)."
+}

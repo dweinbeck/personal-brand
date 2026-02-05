@@ -1,0 +1,26 @@
+[
+  {
+    "question": "What does Dan do?",
+    "answer": "Dan is an AI developer and data scientist who builds practical AI agents and data products. He works across the full stack — from statistical modeling and machine learning to polished frontend UX."
+  },
+  {
+    "question": "What technologies does Dan work with?",
+    "answer": "Dan primarily works with TypeScript/JavaScript (Next.js, React), Python, SQL, Firebase, Google Cloud Platform, and various AI/ML frameworks. He also builds mobile apps with React Native and Swift."
+  },
+  {
+    "question": "Is Dan available for hire or consulting?",
+    "answer": "Dan is selectively available for consulting and freelance work, particularly in AI development, data science, and analytics. The best way to discuss opportunities is to reach out via email at daniel.weinbeck@gmail.com or through the contact page."
+  },
+  {
+    "question": "Where is Dan located?",
+    "answer": "Dan is based in Chicago, IL."
+  },
+  {
+    "question": "How can I contact Dan?",
+    "answer": "The fastest way is email at daniel.weinbeck@gmail.com. You can also use the contact form on the site, connect on LinkedIn, or check out his work on GitHub."
+  },
+  {
+    "question": "What is Dan currently working on?",
+    "answer": "Dan is currently building several projects including a digital envelope budgeting app, a Chicago bus arrival multiplier, a micro-learning platform, and a multi-LLM research assistant. Check the Projects page for the latest status."
+  }
+]

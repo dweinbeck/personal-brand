@@ -2,7 +2,7 @@
 
 ## System Architecture
 
-Next.js 16 application using App Router with React Server Components. Hybrid rendering: SSG for static pages, ISR for GitHub data (hourly revalidation), server actions for the contact form. Deployed as a Docker standalone build on GCP Cloud Run.
+Next.js 16 application using App Router with React Server Components. Hybrid rendering: SSG for static pages, ISR for GitHub data (hourly revalidation), server actions for the contact form, streaming route handlers for the AI assistant. Deployed as a Docker standalone build on GCP Cloud Run.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -20,15 +20,21 @@ Next.js 16 application using App Router with React Server Components. Hybrid ren
 │ (Cloud Run)   │            │ (External)       │
 │               │            └─────────────────┘
 │ - Contact form│
-│ - (Future AI) │            ┌─────────────────┐
-└───────┬───────┘            │ Todoist REST API │
-        │                    │ (External)       │
-        ▼                    └─────────────────┘
-┌───────────────┐
-│ Firestore     │            ┌─────────────────┐
-│ - Contact msgs│            │ Firebase Auth    │
-│ - (Future)    │            │ (Google Sign-In) │
-└───────────────┘            └─────────────────┘
+│               │            ┌─────────────────┐
+│ Route Handlers│            │ Todoist REST API │
+│ - AI chat API │            │ (External)       │
+│ - Feedback API│            └─────────────────┘
+│ - Facts CRUD  │
+└───────┬───────┘            ┌─────────────────┐
+        │                    │ Gemini 2.0 Flash │
+        ▼                    │ (Google AI)      │
+┌───────────────┐            └─────────────────┘
+│ Firestore     │
+│ - Contact msgs│            ┌─────────────────┐
+│ - Conversations│           │ Firebase Auth    │
+│ - Feedback    │            │ (Google Sign-In) │
+│ - Facts/Config│            └─────────────────┘
+└───────────────┘
 ```
 
 ## Component Hierarchy
@@ -50,12 +56,22 @@ src/app/
 ├── writing/
 │   └── page.tsx            # Article listing with placeholder cards (2-col grid)
 ├── assistant/
-│   └── page.tsx            # Coming soon stub
+│   └── page.tsx            # AI chat interface (ChatInterface client component)
+├── api/assistant/
+│   ├── chat/route.ts       # Streaming chat API (Gemini 2.0 Flash)
+│   ├── feedback/route.ts   # Feedback collection endpoint
+│   ├── facts/route.ts      # Facts CRUD endpoint (admin)
+│   ├── reindex/route.ts    # Knowledge cache clear endpoint
+│   └── prompt-versions/route.ts # Prompt version rollback
 ├── contact/
 │   └── page.tsx            # Contact page — hero CTAs, form, "Other Ways", privacy note
 ├── control-center/
 │   ├── layout.tsx          # AdminGuard wrapper
 │   ├── page.tsx            # Admin dashboard (GitHub repos + Todoist projects)
+│   ├── assistant/
+│   │   ├── page.tsx        # AI assistant analytics dashboard
+│   │   └── facts/
+│   │       └── page.tsx    # Canonical facts editor + prompt versions
 │   └── todoist/
 │       └── [projectId]/
 │           └── page.tsx    # Todoist board view per project
@@ -72,11 +88,30 @@ src/components/
 │   ├── NavLinks.tsx        # Client component — pill-style active state, mobile menu, admin link
 │   ├── AuthButton.tsx      # Client component — gold-bordered sign-in pill, avatar with gold border
 │   └── Footer.tsx          # Navy background footer with social links
+├── assistant/
+│   ├── ChatInterface.tsx   # Client component — useChat + DefaultChatTransport
+│   ├── ChatMessage.tsx     # User/assistant message bubbles with feedback
+│   ├── ChatInput.tsx       # Auto-resize textarea with Enter-to-send
+│   ├── ChatHeader.tsx      # Title, status, brief description
+│   ├── SuggestedPrompts.tsx # Prompt chips for core jobs-to-be-done
+│   ├── MarkdownRenderer.tsx # Bold, links, lists, code rendering
+│   ├── ExitRamps.tsx       # Email/LinkedIn/GitHub/Contact quick links
+│   ├── TypingIndicator.tsx # Animated dots during streaming
+│   ├── FeedbackButtons.tsx # Thumbs up/down after assistant responses
+│   ├── HumanHandoff.tsx    # "Talk to Dan" mailto with conversation summary
+│   ├── LeadCaptureFlow.tsx # In-chat lead form for hiring/consulting
+│   └── PrivacyDisclosure.tsx # Privacy notice footer
 ├── admin/
 │   ├── AdminGuard.tsx      # Client component — email-based admin route guard
 │   ├── RepoCard.tsx        # GitHub repo card (name, last commit, purpose)
 │   ├── TodoistProjectCard.tsx # Todoist project card (name, task count)
-│   └── TodoistBoard.tsx    # Board layout (sections as columns, tasks as cards)
+│   ├── TodoistBoard.tsx    # Board layout (sections as columns, tasks as cards)
+│   ├── AssistantAnalytics.tsx # Stats cards (conversations, messages, satisfaction)
+│   ├── TopQuestions.tsx     # Question ranking table
+│   ├── UnansweredQuestions.tsx # Safety-blocked conversation list
+│   ├── FactsEditor.tsx     # CRUD form (tabbed by category)
+│   ├── PromptVersions.tsx  # Version history with rollback
+│   └── ReindexButton.tsx   # Clear knowledge cache button
 ├── home/
 │   ├── HeroSection.tsx     # Headshot, Playfair Display name, tagline pills, bio, social links, gold HR
 │   ├── FeaturedProjects.tsx # Static curated project data (6 projects with status)
@@ -97,6 +132,28 @@ src/components/
 ```
 
 ## Data Flows
+
+### AI Assistant
+
+1. `ChatInterface` (client component) uses `useChat` from `@ai-sdk/react` with `DefaultChatTransport` pointing to `/api/assistant/chat`
+2. User sends message via `sendMessage({ text })` — transport POSTs UI messages to route handler
+3. Route handler validates with Zod, checks rate limit (10 msg/15min per IP), runs safety pipeline
+4. Safety pipeline: sanitizes input (zero-width chars, HTML, encoding tricks), checks blocklist patterns and sensitive topics
+5. If blocked: returns pre-approved refusal via `createUIMessageStream` without calling Gemini
+6. If safe: builds system prompt from knowledge base (`src/data/` JSON/MD files), streams via `streamText()` with Gemini 2.0 Flash
+7. Response streamed back via `toUIMessageStreamResponse()` — client renders incrementally
+8. Conversation logged to Firestore `assistant_conversations` collection (fire-and-forget)
+9. Feedback buttons (thumbs up/down) POST to `/api/assistant/feedback`
+10. Admin dashboard at `/control-center/assistant` queries Firestore for analytics
+11. Facts editor at `/control-center/assistant/facts` provides CRUD for Firestore-based fact overrides
+
+**Knowledge Base (RAG approach):** Curated JSON/MD files in `src/data/` (~3K tokens total) loaded into the system prompt. No vector DB needed — fits entirely in context window. File-based data with optional Firestore overrides via admin editor.
+
+**System Prompt Layers:**
+1. Identity & behavior rules (~500 tokens) — tone, format, response structure
+2. Canonical facts from `src/data/` (~2000 tokens) — bio, projects, services, FAQ
+3. Site content index (~500 tokens) — page summaries with URLs for citations
+4. Safety guardrails (~300 tokens) — immutable rules, content boundaries, manipulation defense
 
 ### Home Page Projects
 
@@ -232,6 +289,56 @@ Fetches sections and tasks for a given Todoist project.
 **Auth:** Bearer token (`TODOIST_API_TOKEN`)
 **Caching:** ISR with 5-minute revalidation
 
+### `POST /api/assistant/chat`
+
+Streaming chat API for the AI assistant.
+
+**Input (JSON):**
+```typescript
+{
+  id?: string;           // Conversation ID
+  messages: {
+    id: string;
+    role: "user" | "assistant";
+    parts?: { type: string; text?: string }[];
+  }[];                   // Max 20 messages, max 1000 chars per message
+}
+```
+
+**Output:** SSE stream (UI Message Stream format)
+
+**Rate Limit:** 10 requests per 15 minutes per IP (429 with Retry-After header)
+
+**Safety:** Input sanitized and checked against blocklist before reaching Gemini
+
+### `POST /api/assistant/feedback`
+
+Feedback collection for assistant responses.
+
+**Input (JSON):**
+```typescript
+{
+  conversationId: string;
+  messageId: string;
+  rating: "up" | "down";
+  reason?: string;        // Max 500 chars
+}
+```
+
+**Output:** `{ success: true }`
+
+### `POST /api/assistant/facts` | `DELETE /api/assistant/facts?id={id}`
+
+Admin CRUD for canonical facts (Firestore overrides).
+
+### `POST /api/assistant/reindex`
+
+Clears the in-memory knowledge cache, forcing reload from files on next request.
+
+### `POST /api/assistant/prompt-versions`
+
+Rolls back to a previous prompt version. Input: `{ action: "rollback", versionId: string }`.
+
 ## Error Handling
 
 - **Contact form validation:** Zod schema with `safeParse` returns field-level errors displayed inline
@@ -239,6 +346,11 @@ Fetches sections and tasks for a given Todoist project.
 - **Firebase connection:** Graceful degradation — warns at import if env vars missing, throws at write time
 - **GitHub API:** ISR serves stale cache if API is unreachable; no client-side error state needed
 - **Navigation:** Active link uses exact match for `/` and `startsWith` for other routes
+- **AI Assistant rate limit:** In-memory Map tracking IP + timestamps; returns 429 with Retry-After header
+- **AI Assistant safety:** Multi-layer pipeline (sanitize → detect → refuse) before Gemini call; blocked queries return pre-approved static refusals
+- **AI Assistant streaming:** Error during Gemini streaming displays generic error in chat UI
+- **AI conversation logging:** Fire-and-forget Firestore writes; failures logged to console only
+- **AI knowledge cache:** In-memory cache of parsed data files; cleared via admin reindex endpoint
 
 ## Integration Points
 
@@ -248,7 +360,7 @@ Fetches sections and tasks for a given Todoist project.
 - **Client SDK:** `firebase` for Google Sign-In (browser-side)
 - **Auth:** ADC on Cloud Run for admin SDK; `NEXT_PUBLIC_*` env vars for client SDK
 - **Env vars needed:** `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-- **Collection:** Contact form submissions
+- **Collections:** `contact_submissions`, `assistant_conversations`, `assistant_feedback`, `assistant_facts`, `assistant_prompt_versions`, `assistant_leads`
 - **Auth provider:** Google Sign-In via `signInWithPopup`
 - **Admin check:** Client-side email comparison (`daniel.weinbeck@gmail.com`)
 
@@ -264,6 +376,16 @@ Fetches sections and tasks for a given Todoist project.
 - **Endpoints:** `/rest/v2/projects`, `/rest/v2/sections`, `/rest/v2/tasks`
 - **Caching:** ISR with 5-minute revalidation
 - **Usage:** Admin-only Control Center
+
+### Google AI (Gemini)
+
+- **SDK:** `ai` + `@ai-sdk/google` (Vercel AI SDK)
+- **Model:** `gemini-2.0-flash` ($0.10/$0.40 per 1M tokens)
+- **Auth:** `GOOGLE_GENERATIVE_AI_API_KEY` env var
+- **Streaming:** `streamText()` → `toUIMessageStreamResponse()`
+- **Client:** `useChat()` from `@ai-sdk/react` with `DefaultChatTransport`
+- **Max output:** 1024 tokens per response
+- **Temperature:** 0.7
 
 ### MDX / Content
 
@@ -307,6 +429,15 @@ Fetches sections and tasks for a given Todoist project.
 | 30 | Analytics stubs via console.log `trackEvent` | No analytics provider until event volume justifies it; stubs capture intent and integration points |
 | 31 | Client-side inline validation alongside server Zod validation | Immediate UX feedback on blur; server validation is authoritative; no duplication of schema |
 | 32 | Noscript fallback for contact form | Email-only fallback ensures contact is always possible without JS |
+| 33 | Gemini 2.0 Flash for AI assistant | GCP ecosystem, cheapest capable model ($0.10/$0.40 per 1M tokens) |
+| 34 | Vercel AI SDK (`ai` + `@ai-sdk/google` + `@ai-sdk/react`) | Cloud-agnostic, `streamText()` + `useChat()` pairing |
+| 35 | Curated JSON/MD knowledge base over vector DB | ~3K tokens fits in system prompt; deterministic, cheap, reliable |
+| 36 | Route Handler over Server Action for chat API | Streaming requires persistent HTTP connection |
+| 37 | In-memory rate limit for chat (same pattern as contact) | Proven pattern, acceptable for personal site traffic |
+| 38 | Pre-approved static refusals for safety | Safer than LLM-generated refusals; blocked queries never reach API |
+| 39 | SHA-256 hashed IPs in Firestore | Privacy-preserving; consistent with contact form approach |
+| 40 | Fire-and-forget conversation logging | Non-blocking; failures don't affect user experience |
+| 41 | Dedicated /assistant page (not floating widget) | Simpler, intentional UX; avoids layout complexity on other pages |
 
 ## Deployment Architecture
 
@@ -333,3 +464,7 @@ GitHub Repo -> Docker Build -> GCP Cloud Run
 - **Firebase env vars required for production** — contact form silently degrades without them in dev
 - **No dark mode in v1** — deferred to v2 (DESIGN-01)
 - **No custom error pages in v1** — deferred to v2 (DESIGN-02)
+- **AI assistant rate limit resets on deploy** — same as contact form; acceptable for personal site
+- **AI knowledge base is file-based with optional Firestore overrides** — changes to src/data/ require redeploy; Firestore overrides are immediate
+- **No vector DB for RAG** — knowledge fits in system prompt (~3K tokens); would need vector DB if knowledge exceeds ~8K tokens
+- **AI conversation logging is best-effort** — Firestore write failures are silently caught; no retry mechanism

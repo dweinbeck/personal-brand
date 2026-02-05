@@ -18,7 +18,12 @@ function getCredential(): Credential | undefined {
   const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
   if (projectId && clientEmail && privateKey) {
-    return cert({ projectId, clientEmail, privateKey });
+    try {
+      return cert({ projectId, clientEmail, privateKey });
+    } catch (error) {
+      console.warn("Failed to create Firebase credential from env vars:", error);
+      return undefined;
+    }
   }
 
   console.warn(

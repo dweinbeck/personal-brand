@@ -10,11 +10,9 @@
 
 ## Non-Goals
 
-- AI chatbot / assistant functionality (deferred to v2)
-- Real-time features (WebSockets, live chat)
+- Real-time features (WebSockets, live chat beyond AI streaming)
 - Video content hosting
 - Mobile app
-- Custom analytics dashboard
 - Multi-language support
 - Comments system
 
@@ -125,7 +123,7 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 ### AI Assistant
 | ID | Requirement | Status |
 |----|-------------|--------|
-| ASST-01 | Placeholder page with coming soon message | Complete |
+| ASST-01 | Full-page chat interface at /assistant | Complete |
 
 ### Contact
 | ID | Requirement | Status |
@@ -223,15 +221,61 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 | CONT-V11-16 | Analytics event stubs (copy, click, form start, submit, error) | Complete |
 | CONT-V11-17 | Mobile single-column layout with large tap targets (min 44px) | Complete |
 
-## v2 Requirements (Planned)
+## v2 Requirements
 
+### AI Assistant (Chat Engine)
+| ID | Requirement | Status |
+|----|-------------|--------|
+| ASST-02 | Streaming API route at /api/assistant/chat using Gemini 2.0 Flash | Complete |
+| ASST-03 | Curated knowledge base from src/data/ (canon, projects, FAQ, services, contact, writing) | Complete |
+| ASST-04 | Rate limiting: 10 messages per 15 minutes per IP | Complete |
+| ASST-05 | Zod request validation with 1000-char input limit and 20-turn cap | Complete |
+| ASST-06 | System prompt with identity, canonical facts, site index, and safety layers | Complete |
+| ASST-07 | 1024 max output tokens per response | Complete |
+
+### AI Assistant (Chat UI)
+| ID | Requirement | Status |
+|----|-------------|--------|
+| ASST-08 | Full-height chat interface with input, send button, and message history | Complete |
+| ASST-09 | 5 suggested prompt chips before first message | Complete |
+| ASST-10 | Markdown rendering with clickable citation links | Complete |
+| ASST-11 | Mobile: bottom-anchored input, auto-scroll, safe-area-inset | Complete |
+| ASST-12 | ARIA labels and keyboard navigation on all interactive elements | Complete |
+| ASST-13 | Typing indicator animation during streaming | Complete |
+| ASST-14 | Exit ramp buttons (Email, LinkedIn, GitHub, Contact) | Complete |
+| ASST-15 | "Talk to Dan directly" handoff button with mailto conversation summary | Complete |
+
+### AI Assistant (Safety)
+| ID | Requirement | Status |
+|----|-------------|--------|
+| ASST-16 | Input sanitization (zero-width chars, HTML tags, encoding tricks) | Complete |
+| ASST-17 | Pattern detection for prompt injection attempts | Complete |
+| ASST-18 | Pre-approved refusal messages for sensitive topics (salary, politics, private repos) | Complete |
+| ASST-19 | Safety pipeline runs before Gemini — blocked queries never reach API | Complete |
+| ASST-20 | Configurable blocklist patterns in safety-rules.json | Complete |
+
+### AI Assistant (Observability)
+| ID | Requirement | Status |
+|----|-------------|--------|
+| ASST-21 | Conversation logging to Firestore (hashed IP, messages, safety flags) | Complete |
+| ASST-22 | Thumbs up/down feedback buttons after each assistant response | Complete |
+| ASST-23 | Admin analytics dashboard at /control-center/assistant (7d/30d stats) | Complete |
+| ASST-24 | Top questions ranking and safety-blocked conversation list | Complete |
+
+### AI Assistant (Content Ops)
+| ID | Requirement | Status |
+|----|-------------|--------|
+| ASST-25 | Admin facts editor at /control-center/assistant/facts (CRUD by category) | Complete |
+| ASST-26 | Prompt version history with rollback capability | Complete |
+| ASST-27 | Knowledge cache clear button (reindex) | Complete |
+| ASST-28 | Privacy disclosure on /assistant page | Complete |
+| ASST-29 | Lead capture detection for hiring/consulting intent | Complete |
+
+### Other v2 (Planned)
 | ID | Requirement |
 |----|-------------|
 | DESIGN-01 | Dark/light mode toggle |
 | DESIGN-02 | Custom 404/500 error pages with branded design |
-| ASST-02 | Conversational AI chatbot for portfolio exploration |
-| ASST-03 | Answers questions about Dan's background, skills, and projects |
-| ASST-04 | Site navigation assistance via chatbot |
 | BLOG-02 | MDX-powered blog with content pages |
 | BLOG-03 | Blog listing page with post previews |
 
@@ -242,3 +286,5 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 - Pending: 4 (Infrastructure -- Phase 6)
 - v1.1 requirements: 25 total (3 branding + 5 projects + 17 contact redesign)
 - Complete: 25
+- v2 AI Assistant requirements: 29 total
+- Complete: 29
