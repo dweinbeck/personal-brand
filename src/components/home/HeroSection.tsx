@@ -3,8 +3,7 @@ import Image from "next/image";
 const taglines = [
   "AI Developer",
   "Analytics Professional",
-  "Data Science Background",
-  "Curiosity Mindset",
+  "Data Visualization Specialist",
 ];
 
 export function HeroSection() {
@@ -14,14 +13,16 @@ export function HeroSection() {
       <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
         {/* Headshot */}
         <div className="flex-shrink-0">
-          <Image
-            src="/headshot.jpeg"
-            alt="Dan Weinbeck"
-            width={192}
-            height={192}
-            preload
-            className="rounded-full object-cover ring-4 ring-gold/30 shadow-xl shadow-[rgba(27,42,74,0.10)]"
-          />
+          <div className="w-[256px] h-[256px] rounded-full overflow-hidden ring-4 ring-gold/30 shadow-xl shadow-[rgba(27,42,74,0.10)]">
+            <Image
+              src="/transparent-headshot-Dan Weinbeck-color.jpg"
+              alt="Dan Weinbeck"
+              width={512}
+              height={512}
+              preload
+              className="w-full h-full object-cover object-[center_20%]"
+            />
+          </div>
         </div>
 
         {/* Text content */}
