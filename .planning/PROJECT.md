@@ -30,7 +30,23 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-(None — ready for next milestone requirements)
+- [ ] Projects page redesign — larger 2-across cards with descriptions, tags, date ranges, public/private
+- [ ] Writing page — article cards with title, date, topic tags
+- [ ] Contact page redesign — mailto CTA, form UX states, spam controls, privacy note, analytics
+- [ ] OG image — branded 1200×630 image replacing 1x1 placeholder
+- [ ] DW logo gold underline — gold accent line under navbar "DW" logo
+- [ ] Favicon — DW logo as browser tab icon
+
+## Current Milestone: v1.1 Page Buildout & Polish
+
+**Goal:** Flesh out Projects and Writing pages from stubs to full content, redesign Contact with better UX, and polish branding (OG image, favicon, logo accent).
+
+**Target features:**
+- Projects page with detailed 2-across cards
+- Writing page with article cards
+- Contact page redesign with mailto, form states, spam controls, privacy
+- Branded OG image for social sharing
+- DW favicon and logo gold underline
 
 ### Out of Scope
 
@@ -81,4 +97,4 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 | Blog as stub | Content creation comes after the site is live | — Pending |
 
 ---
-*Last updated: 2026-02-04 after v1.0 milestone*
+*Last updated: 2026-02-04 after v1.1 milestone started*

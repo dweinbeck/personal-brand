@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.0 milestone complete — planning next milestone
+**Current focus:** v1.1 Page Buildout & Polish
 
 ## Current Position
 
-Phase: All v1.0 phases complete (1-6 + 2.1)
-Plan: N/A
-Status: Between milestones
-Last activity: 2026-02-04 — v1.0 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-04 — Milestone v1.1 started
 
-Progress: v1.0 [██████████████] 100% SHIPPED
+Progress: v1.1 [░░░░░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -39,16 +39,16 @@ None.
 
 ### Blockers/Concerns
 
-- OG image is a 1x1 placeholder — replace with branded 1200x630 image for social sharing
+- OG image is a 1x1 placeholder — included in v1.1 scope
 
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: v1.0 milestone archived. Ready for next milestone.
+Stopped at: Defining v1.1 requirements
 Resume file: None
 
 ## Project Status
 
-**v1.0 MVP shipped!** Site live at https://dan-weinbeck.com
+**v1.1 milestone started.** Defining requirements and roadmap.
 
-Next step: `/gsd:new-milestone` to start v1.1 planning.
+Features: Projects page, Writing page, Contact redesign, OG image, favicon, DW logo gold underline.
