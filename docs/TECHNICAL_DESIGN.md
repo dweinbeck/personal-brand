@@ -40,6 +40,8 @@ src/app/
 ├── layout.tsx              # Root layout (AuthProvider, Navbar, Footer, fonts: Playfair/Inter/JetBrains)
 ├── page.tsx                # Home (Hero, FeaturedProjects, BlogTeaser)
 ├── globals.css             # Design tokens (navy/gold palette, shadows, animations)
+├── opengraph-image.tsx     # Dynamic OG image (1200x630) via ImageResponse API (edge runtime)
+├── icon.svg                # SVG favicon — "DW" in gold rounded square
 ├── projects/
 │   └── page.tsx            # Full project grid (static curated data)
 ├── building-blocks/
@@ -264,6 +266,9 @@ Fetches sections and tasks for a given Todoist project.
 | 14 | String plugin names in createMDX | Required for Turbopack serialization compatibility |
 | 15 | `<output>` element for form status messages | Per Biome `useSemanticElements` rule |
 | 16 | Alphabetical import ordering | Enforced by Biome; use `biome check --write` to auto-fix |
+| 24 | Dynamic OG image via ImageResponse API | Edge runtime generates branded 1200x630 PNG on demand; no static file to maintain |
+| 25 | SVG favicon via App Router `icon.svg` convention | Scalable at all sizes; no ICO conversion needed; Next.js serves automatically |
+| 26 | Persistent gold underline on DW wordmark | `border-b-2 border-gold pb-0.5` — always visible, not just on hover |
 
 ## Deployment Architecture
 
@@ -286,7 +291,7 @@ GitHub Repo -> Docker Build -> GCP Cloud Run
 - **Unauthenticated GitHub API has 60 req/hour limit** — ISR caching mitigates this; add token if needed
 - **Admin guard is client-side only** — email check happens in browser; acceptable for a personal admin dashboard
 - **Todoist API token is server-side only** — never exposed to client
-- **OG image is a placeholder** — needs replacement with branded 1200x630 image before production
+- **OG image generated at edge runtime** — uses `next/og` ImageResponse API with serif fallback font (no custom font loading)
 - **Firebase env vars required for production** — contact form silently degrades without them in dev
 - **No dark mode in v1** — deferred to v2 (DESIGN-01)
 - **No custom error pages in v1** — deferred to v2 (DESIGN-02)

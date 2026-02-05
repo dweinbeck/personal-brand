@@ -10,7 +10,7 @@ export function Navbar() {
           {/* Left: Wordmark + social icons */}
           <div className="flex items-center gap-5">
             <Link href="/" className="group">
-              <span className="font-display text-xl font-extrabold tracking-tight text-primary group-hover:text-gold transition-colors">
+              <span className="font-display text-xl font-extrabold tracking-tight text-primary group-hover:text-gold transition-colors border-b-2 border-gold pb-0.5">
                 DW
               </span>
             </Link>

@@ -152,6 +152,15 @@ Dan navigates to the Control Center. He sees a grid of all GitHub repos (public 
 | INFRA-03 | Environment variables via Cloud Run / Secret Manager | Pending |
 | INFRA-04 | Secure-by-default (no credential exposure, least privilege) | Pending |
 
+## v1.1 Requirements
+
+### Branding Assets
+| ID | Requirement | Status |
+|----|-------------|--------|
+| BRAND-01 | Branded OG image (1200x630) using Next.js ImageResponse API with navy/gold design | Complete |
+| BRAND-02 | SVG favicon with "DW" text inside a gold rounded-corner square | Complete |
+| BRAND-03 | Persistent gold underline accent on the "DW" logo in the navbar | Complete |
+
 ## v2 Requirements (Planned)
 
 | ID | Requirement |

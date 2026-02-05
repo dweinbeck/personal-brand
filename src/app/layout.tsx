@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description: "AI developer, analytics professional, and data scientist",
     images: [
       {
-        url: "/opengraph-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
       },
