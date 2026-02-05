@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const taglines = [
   "AI Developer",
-  "Analytics Professional",
+  "Analytics Leader",
   "Data Visualization Specialist",
 ];
 
@@ -40,10 +40,35 @@ export function HeroSection() {
               </span>
             ))}
           </div>
-          <p className="mt-5 max-w-lg text-text-secondary leading-relaxed">
-            I build practical AI agents and data products that ship. Interests
-            in business intelligence, statistical modeling, intuitive UX, and
-            polished design.
+          <p className="mt-4 text-base font-bold text-text-primary">
+            Director, Data &amp; Analytics at{" "}
+            <a
+              href="https://transparent.partners"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold hover:text-gold/80 transition-colors"
+            >
+              Transparent Partners
+            </a>{" "}
+            | Chicago, Illinois
+          </p>
+          <p className="mt-1 text-base font-bold text-text-primary">
+            MBA, Tippie School of Management at the{" "}
+            <a
+              href="https://tippie.uiowa.edu/iowa-mba"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold hover:text-gold/80 transition-colors"
+            >
+              University of Iowa
+            </a>
+          </p>
+          <p className="mt-3 max-w-lg text-text-secondary leading-relaxed">
+            I build data products that ship and interfaces that make sense. 12+
+            years of experience transforming the analytics function at 4 Fortune
+            500 companies across Marketing, Sales, and Operations, with a
+            specialization in business intelligence, data science, and turning
+            data into actionable insights.
           </p>
 
           <div className="mt-8 flex items-center gap-4">
