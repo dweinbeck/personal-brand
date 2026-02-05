@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.1 Page Buildout & Polish
+**Current focus:** v1.1 Phase 7 - Branding Assets
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-04 — Milestone v1.1 started
+Phase: 7 of 10 (Branding Assets)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-02-04 — Roadmap created for v1.1
 
 Progress: v1.1 [░░░░░░░░░░░░░░] 0%
 
@@ -29,9 +29,9 @@ Progress: v1.1 [░░░░░░░░░░░░░░] 0%
 
 Full decision log in PROJECT.md Key Decisions table.
 
-### Roadmap Evolution
-
-- Phase 2.1 was inserted after Phase 2: Building Blocks — tutorials section (URGENT)
+- v1.1: Four phases ordered by risk — branding first (zero risk), contact last (most UX complexity)
+- v1.1: Analytics stubs only — no provider integration until event volume justifies it
+- v1.1: Homepage featured projects stay hardcoded; /projects page uses GitHub API (separate data sources by design)
 
 ### Pending Todos
 
@@ -39,16 +39,11 @@ None.
 
 ### Blockers/Concerns
 
-- OG image is a 1x1 placeholder — included in v1.1 scope
+- OG image is a 1x1 placeholder — addressed in Phase 7
+- Writing page ships with lorem ipsum — real content deferred to future milestone
 
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Defining v1.1 requirements
+Stopped at: Roadmap created for v1.1, ready to plan Phase 7
 Resume file: None
-
-## Project Status
-
-**v1.1 milestone started.** Defining requirements and roadmap.
-
-Features: Projects page, Writing page, Contact redesign, OG image, favicon, DW logo gold underline.
