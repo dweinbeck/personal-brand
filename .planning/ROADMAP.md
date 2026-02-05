@@ -20,10 +20,10 @@ See .planning/MILESTONES.md for v1.0 details.
 
 **Milestone Goal:** Flesh out Projects and Writing pages from stubs to full content, redesign Contact with better UX, and polish branding (OG image, favicon, logo accent).
 
-- [ ] **Phase 7: Branding Assets** - Favicon, OG image, and logo accent for immediate visual polish
-- [ ] **Phase 8: Projects Page** - 2-across detailed cards with tags, dates, filtering
-- [ ] **Phase 9: Writing Page** - Article cards with lorem ipsum content
-- [ ] **Phase 10: Contact Page Redesign** - Hero, CTAs, form UX states, privacy, analytics stubs
+- [x] **Phase 7: Branding Assets** - Favicon, OG image, and logo accent for immediate visual polish
+- [x] **Phase 8: Projects Page** - 2-across detailed cards with tags, dates, filtering
+- [x] **Phase 9: Writing Page** - Article cards with lorem ipsum content
+- [x] **Phase 10: Contact Page Redesign** - Hero, CTAs, form UX states, privacy, analytics stubs
 
 ## Phase Details
 
@@ -90,11 +90,11 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 7. Branding Assets | v1.1 | 0/TBD | Not started | - |
-| 8. Projects Page | v1.1 | 0/TBD | Not started | - |
-| 9. Writing Page | v1.1 | 0/TBD | Not started | - |
-| 10. Contact Page Redesign | v1.1 | 0/TBD | Not started | - |
+| 7. Branding Assets | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
+| 8. Projects Page | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
+| 9. Writing Page | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
+| 10. Contact Page Redesign | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
 
 ---
 *Roadmap created: 2026-02-04*
-*Last updated: 2026-02-04*
+*Last updated: 2026-02-04 — all phases complete*
