@@ -38,7 +38,7 @@ function extractMetadataFromSource(source: string): TutorialMeta | null {
 export async function getAllTutorials(): Promise<Tutorial[]> {
   const files = fs
     .readdirSync(CONTENT_DIR)
-    .filter((file) => file.endsWith(".mdx"));
+    .filter((file) => file.endsWith(".mdx") && !file.startsWith("_"));
 
   const tutorials: Tutorial[] = [];
 
@@ -56,7 +56,7 @@ export async function getAllTutorials(): Promise<Tutorial[]> {
       metadata = extractMetadataFromSource(source);
     }
 
-    if (metadata) {
+    if (metadata && metadata.title) {
       tutorials.push({ slug, metadata });
     }
   }
