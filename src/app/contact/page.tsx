@@ -16,8 +16,8 @@ const SOCIAL_LINKS = [
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-3xl font-bold text-gray-900">Get in Touch</h1>
-      <p className="mt-4 text-gray-600">
+      <h1 className="text-3xl font-bold text-text-primary">Get in Touch</h1>
+      <p className="mt-4 text-text-secondary">
         Have a question or want to work together? I'd love to hear from you.
       </p>
 
@@ -30,14 +30,14 @@ export default function ContactPage() {
         {/* Right column: Email + Social links */}
         <div className="space-y-8">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Email</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Email</h2>
             <div className="mt-2">
               <CopyEmailButton email="daniel.weinbeck@gmail.com" />
             </div>
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Connect</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Connect</h2>
             <ul className="mt-2 space-y-2">
               {SOCIAL_LINKS.map((link) => (
                 <li key={link.name}>
@@ -45,7 +45,7 @@ export default function ContactPage() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-primary hover:text-gold transition-colors"
                   >
                     {link.name}
                     <span className="sr-only"> (opens in a new tab)</span>

@@ -8,8 +8,8 @@ interface TutorialCardProps {
 export function TutorialCard({ tutorial }: TutorialCardProps) {
   return (
     <Card variant="clickable" href={`/building-blocks/${tutorial.slug}`}>
-      <h2 className="font-semibold text-gray-900">{tutorial.metadata.title}</h2>
-      <p className="mt-2 text-sm text-gray-600">
+      <h2 className="font-semibold text-text-primary">{tutorial.metadata.title}</h2>
+      <p className="mt-2 text-sm text-text-secondary">
         {tutorial.metadata.description}
       </p>
       {tutorial.metadata.tags.length > 0 && (
@@ -17,7 +17,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
           {tutorial.metadata.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600"
+              className="inline-block rounded-full bg-gold-light px-2.5 py-0.5 text-xs font-medium text-text-primary"
             >
               {tag}
             </span>

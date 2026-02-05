@@ -1,54 +1,41 @@
-import type { Project } from "@/types/project";
-import { Card } from "@/components/ui/Card";
+import type { PlaceholderProject } from "./FeaturedProjects";
 
 interface ProjectCardProps {
-  project: Project;
+  project: PlaceholderProject;
 }
+
+const statusColors: Record<PlaceholderProject["status"], string> = {
+  Live: "bg-gold-light text-gold-hover border-gold",
+  "In Development": "bg-primary/10 text-primary border-primary/40",
+  Planning: "bg-[#8B1E3F]/10 text-[#8B1E3F] border-[#8B1E3F]/30",
+};
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card variant="default">
-      <h3 className="font-semibold text-gray-900">{project.name}</h3>
-      <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+    <div className="relative rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group">
+      {/* Status badge */}
+      <span
+        className={`absolute top-4 right-4 px-2.5 py-0.5 text-xs font-medium rounded-full border ${statusColors[project.status]}`}
+      >
+        {project.status}
+      </span>
+
+      <h3 className="font-semibold text-text-primary pr-24 group-hover:text-gold transition-colors duration-200">
+        {project.name}
+      </h3>
+      <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3">
         {project.description}
       </p>
-      <div className="mt-4 flex items-center gap-3 text-xs text-gray-500">
-        {project.language && (
-          <>
-            <span className="h-3 w-3 rounded-full bg-blue-500" />
-            <span>{project.language}</span>
-          </>
-        )}
-        {project.topics.length > 0 &&
-          project.topics.slice(0, 3).map((topic) => (
-            <span
-              key={topic}
-              className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs"
-            >
-              {topic}
-            </span>
-          ))}
-      </div>
-      <div className="mt-4 flex items-center gap-4">
-        <a
-          href={project.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-600 hover:text-blue-800 font-medium underline"
-        >
-          GitHub <span className="sr-only">repository for {project.name}</span>
-        </a>
-        {project.homepage && (
-          <a
-            href={project.homepage}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-600 hover:text-blue-800 font-medium underline"
+      <div className="mt-5 flex flex-wrap gap-2">
+        {project.tags.map((tag) => (
+          <span
+            key={tag}
+            className="px-2.5 py-0.5 font-mono text-xs text-text-tertiary bg-[rgba(27,42,74,0.04)] rounded-full"
           >
-            Live Demo <span className="sr-only">for {project.name}</span>
-          </a>
-        )}
+            {tag}
+          </span>
+        ))}
       </div>
-    </Card>
+    </div>
   );
 }

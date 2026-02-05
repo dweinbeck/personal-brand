@@ -33,20 +33,20 @@ export function AuthButton() {
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold border border-gold hover:bg-primary-hover transition-colors"
           aria-label="Account menu"
         >
           {initial}
         </button>
         {menuOpen && (
-          <div className="absolute right-0 mt-2 w-28 rounded-md bg-white shadow-lg ring-1 ring-black/5 py-1 z-50">
+          <div className="absolute right-0 mt-2 w-28 rounded-md bg-surface shadow-lg ring-1 ring-border py-1 z-50">
             <button
               type="button"
               onClick={() => {
                 signOut(getFirebaseAuth());
                 setMenuOpen(false);
               }}
-              className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-left"
+              className="block w-full px-4 py-2 text-sm text-text-secondary hover:bg-gold-light text-left"
             >
               Sign out
             </button>
@@ -60,7 +60,7 @@ export function AuthButton() {
     <button
       type="button"
       onClick={() => signInWithPopup(getFirebaseAuth(), provider)}
-      className="ml-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+      className="ml-2 px-3 py-1.5 text-sm font-medium rounded-full border border-gold/40 text-text-secondary hover:bg-gold-light hover:text-primary transition-all"
     >
       Sign In
     </button>

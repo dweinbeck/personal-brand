@@ -8,14 +8,14 @@ import { SubmitButton } from "./SubmitButton";
 const initialState: ContactState = {};
 
 const inputBase =
-  "mt-1 block w-full rounded-lg border border-gray-200/60 px-3 py-2 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
+  "mt-1 block w-full rounded-lg border border-border px-3 py-2 shadow-sm transition-colors focus:border-gold focus:ring-1 focus:ring-gold";
 
 export function ContactForm() {
   const [state, formAction] = useActionState(submitContact, initialState);
 
   if (state.success) {
     return (
-      <output className="block rounded-md bg-green-50 p-4 text-green-800">
+      <output className="block rounded-md bg-sage/10 p-4 text-sage">
         {state.message}
       </output>
     );
@@ -39,7 +39,7 @@ export function ContactForm() {
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-text-secondary"
         >
           Name
         </label>
@@ -59,7 +59,7 @@ export function ContactForm() {
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-text-secondary"
         >
           Email
         </label>
@@ -79,7 +79,7 @@ export function ContactForm() {
       <div>
         <label
           htmlFor="message"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-text-secondary"
         >
           Message
         </label>

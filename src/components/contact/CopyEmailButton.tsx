@@ -20,10 +20,10 @@ export function CopyEmailButton({ email }: { email: string }) {
       type="button"
       onClick={handleCopy}
       aria-label={copied ? "Email copied" : `Copy ${email} to clipboard`}
-      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+      className="inline-flex items-center gap-2 text-primary hover:text-gold transition-colors"
     >
       {email}
-      <span className="text-sm text-gray-500">
+      <span className="text-sm text-text-tertiary">
         {copied ? "Copied!" : "Click to copy"}
       </span>
     </button>

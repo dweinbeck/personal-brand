@@ -30,7 +30,7 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-gray-900 py-12">
+    <footer className="mt-16 bg-primary py-12">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-4">
         <div className="flex items-center gap-4">
           {socialLinks.map((link) => (
@@ -39,14 +39,14 @@ export function Footer() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-white/50 hover:text-gold transition-colors"
             >
               <span className="sr-only">{link.name}</span>
               {link.icon}
             </a>
           ))}
         </div>
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-white/40">
           &copy; {new Date().getFullYear()} Dan Weinbeck
         </p>
       </div>

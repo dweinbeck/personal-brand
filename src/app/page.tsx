@@ -7,7 +7,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 export const metadata: Metadata = {
   title: "Home",
   description:
-    "AI developer, analytics professional, and data scientist. Explore projects, tutorials, and more.",
+    "I build practical AI agents and data products that ship. Interests in business intelligence, statistical modeling, intuitive UX, and polished design.",
 };
 
 const personJsonLd: WithContext<Person> = {
@@ -17,7 +17,7 @@ const personJsonLd: WithContext<Person> = {
   url: "https://dweinbeck.com",
   jobTitle: "AI Developer & Data Scientist",
   description:
-    "AI developer, analytics professional, and data scientist. Explore projects, tutorials, and more.",
+    "I build practical AI agents and data products that ship. Interests in business intelligence, statistical modeling, intuitive UX, and polished design.",
   email: "daniel.weinbeck@gmail.com",
   sameAs: [
     "https://www.linkedin.com/in/dw789/",

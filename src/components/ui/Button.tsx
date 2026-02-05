@@ -26,11 +26,11 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-b from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.03] active:scale-[0.98]",
+    "bg-gradient-to-b from-primary to-primary-hover text-white border border-gold/40 shadow-lg shadow-[rgba(27,42,74,0.20)] hover:shadow-xl hover:shadow-[rgba(200,165,90,0.20)] hover:scale-[1.03] active:scale-[0.98]",
   secondary:
-    "border-2 border-gray-300 bg-white text-gray-700 hover:shadow-md hover:border-gray-400",
+    "border-2 border-primary/20 bg-surface text-text-primary hover:shadow-md hover:border-primary/40",
   ghost:
-    "text-gray-600 hover:bg-gray-100",
+    "text-text-secondary hover:bg-gold-light hover:text-text-primary",
 };
 
 const sizeStyles: Record<Size, string> = {
@@ -39,7 +39,7 @@ const sizeStyles: Record<Size, string> = {
 };
 
 const base =
-  "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:pointer-events-none";
+  "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:opacity-50 disabled:pointer-events-none";
 
 export function Button(props: ButtonProps) {
   const { variant = "primary", size = "md", className, href, ...rest } = props;

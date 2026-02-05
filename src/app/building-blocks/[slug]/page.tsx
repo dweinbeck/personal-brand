@@ -58,21 +58,21 @@ export default async function TutorialPage({ params }: PageProps) {
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
       <header className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-900">{metadata.title}</h1>
-        <p className="mt-2 text-gray-600">{metadata.description}</p>
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+        <h1 className="text-3xl font-bold text-text-primary">{metadata.title}</h1>
+        <p className="mt-2 text-text-secondary">{metadata.description}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-text-tertiary">
           <time dateTime={metadata.publishedAt}>{date}</time>
           {metadata.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600"
+              className="inline-block rounded-full bg-gold-light px-2.5 py-0.5 text-xs font-medium text-text-primary"
             >
               {tag}
             </span>
           ))}
         </div>
       </header>
-      <div className="prose prose-gray max-w-none">
+      <div className="prose prose-neutral max-w-none">
         <Content />
       </div>
     </article>

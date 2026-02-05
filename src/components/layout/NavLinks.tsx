@@ -43,16 +43,13 @@ export function NavLinks() {
             key={link.href}
             href={link.href}
             className={clsx(
-              "px-2 py-2 text-sm font-medium rounded-md transition-colors relative",
+              "px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
               isActive(link.href)
-                ? "text-blue-600"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
+                ? "bg-primary text-white font-bold shadow-sm border-2 border-gold"
+                : "text-text-secondary hover:text-primary hover:bg-gold-light",
             )}
           >
             {link.name}
-            {isActive(link.href) && (
-              <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-600 rounded-full" />
-            )}
           </Link>
         ))}
       </nav>
@@ -60,7 +57,7 @@ export function NavLinks() {
       {/* Mobile hamburger button */}
       <button
         type="button"
-        className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+        className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-text-secondary hover:text-primary hover:bg-gold-light transition-colors"
         aria-label={mobileOpen ? "Close menu" : "Open menu"}
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen(!mobileOpen)}
@@ -92,7 +89,7 @@ export function NavLinks() {
       {/* Mobile menu */}
       <div
         className={clsx(
-          "absolute top-full left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200/60 shadow-sm md:hidden transition-all duration-200 overflow-hidden",
+          "absolute top-full left-0 right-0 glass-warm border-b border-border shadow-sm md:hidden transition-all duration-200 overflow-hidden",
           mobileOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0",
         )}
       >
@@ -105,8 +102,8 @@ export function NavLinks() {
               className={clsx(
                 "px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
                 isActive(link.href)
-                  ? "text-blue-600 border-l-2 border-blue-600"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
+                  ? "text-primary bg-gold-light border-l-2 border-gold"
+                  : "text-text-secondary hover:text-primary hover:bg-gold-light",
               )}
             >
               {link.name}

@@ -21,14 +21,14 @@ type CardAsLink = CardBaseProps &
 
 type CardProps = CardAsDiv | CardAsLink;
 
-const base = "rounded-xl border p-6 transition-all duration-200";
+const base = "rounded-2xl border p-6 transition-all duration-200";
 
 const variantStyles: Record<Variant, string> = {
-  default: "border-gray-200/60 bg-white shadow-md",
+  default: "border-border bg-surface shadow-[var(--shadow-card)]",
   clickable:
-    "border-gray-200/60 bg-white shadow-md hover:shadow-xl hover:border-gray-300 motion-safe:hover:-translate-y-1",
+    "border-border bg-surface shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] hover:border-gold/30 motion-safe:hover:-translate-y-1",
   featured:
-    "border-gray-200/60 bg-white border-t-2 border-t-blue-500 shadow-lg hover:shadow-xl hover:border-gray-300 motion-safe:hover:-translate-y-1",
+    "border-border bg-surface border-l-4 border-l-gold shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1",
 };
 
 export function Card(props: CardProps) {
