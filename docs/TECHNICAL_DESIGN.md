@@ -43,7 +43,7 @@ src/app/
 ├── opengraph-image.tsx     # Dynamic OG image (1200x630) via ImageResponse API (edge runtime)
 ├── icon.svg                # SVG favicon — "DW" in gold rounded square
 ├── projects/
-│   └── page.tsx            # Full project grid (static curated data)
+│   └── page.tsx            # Detailed project grid with filtering/sorting (static curated data)
 ├── building-blocks/
 │   ├── page.tsx            # Tutorial listing
 │   └── [slug]/page.tsx     # Individual tutorial (dynamic MDX import)
@@ -82,6 +82,9 @@ src/components/
 │   ├── FeaturedProjects.tsx # Static curated project data (6 projects with status)
 │   ├── ProjectCard.tsx     # Project card with status badge, tech tags, hover effects
 │   └── BlogTeaser.tsx      # Writing teaser with gold left border
+├── projects/
+│   ├── DetailedProjectCard.tsx  # Rich project card (description, dates, visibility, "View Project" button)
+│   └── ProjectsFilter.tsx       # Client component — tag chip filter + date sort dropdown
 ├── writing/
 │   └── ArticleCard.tsx     # Article card with topic badge, date, excerpt, hover effects
 ├── contact/
@@ -98,8 +101,16 @@ src/components/
 1. `FeaturedProjects` exports a static array of 6 `PlaceholderProject` objects
 2. Each project has `name`, `description`, `tags`, and `status` ("Live" | "In Development" | "Planning")
 3. `ProjectCard` renders status badges with color-coded styles (gold, navy, burgundy)
-4. `Projects` page imports the same `PlaceholderProject` type and renders the same static data
-5. GitHub API (`fetchGitHubRepos`) is still used by the admin Control Center for repo management
+4. GitHub API (`fetchGitHubRepos`) is still used by the admin Control Center for repo management
+
+### Projects Page (Detailed)
+
+1. `ProjectsPage` defines a static array of `DetailedProject` objects with extended fields
+2. Each project has `name`, `description` (full paragraph), `tags`, `status`, `dateInitiated`, `lastCommit`, `visibility` ("public" | "private"), `detailUrl`
+3. `ProjectsFilter` (client component) receives projects as props and manages filter/sort state
+4. Tag chips allow filtering by any tag; sort dropdown offers "Recently updated", "Newest first", "Oldest first"
+5. `DetailedProjectCard` renders rich cards with status badge, visibility badge, paragraph description, date range, tags, and "View Project" button
+6. Grid uses 2-column layout on large screens (`lg:grid-cols-2`)
 
 ### Writing Page
 
@@ -281,6 +292,8 @@ Fetches sections and tasks for a given Todoist project.
 | 25 | SVG favicon via App Router `icon.svg` convention | Scalable at all sizes; no ICO conversion needed; Next.js serves automatically |
 | 26 | Persistent gold underline on DW wordmark | `border-b-2 border-gold pb-0.5` — always visible, not just on hover |
 | 27 | ArticleCard mirrors ProjectCard styling | Consistent card pattern (shadow, hover lift, gold title, color-coded badges) across Projects and Writing pages |
+| 28 | Separate DetailedProject type from PlaceholderProject | Projects page needs extended fields (dates, visibility, detailUrl) that home page cards don't need; avoids coupling |
+| 29 | Client-side filtering with server-rendered data | Static curated data passed as props to client component; no API needed for filtering/sorting |
 
 ## Deployment Architecture
 

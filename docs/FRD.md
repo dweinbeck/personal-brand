@@ -47,7 +47,7 @@ A visitor navigates to the Projects page. They see the headline "Current and Pas
 A visitor navigates to the Building Blocks section. They see a list of tutorials with titles and descriptions, then click into a full step-by-step guide rendered from MDX content.
 
 ### S4: Making Contact
-A visitor fills out the contact form (name, email, message). The form validates client-side and server-side with Zod. A honeypot field and rate limiting block spam. On success, the submission is stored in Firestore. Alternatively, the visitor copies Dan's email or clicks social links.
+A visitor lands on the Contact page and sees a hero section with "Contact Dan" headline and three CTA buttons (Email Dan mailto, Copy Email, LinkedIn Message) above the fold. Microcopy notes typical reply time (1-2 business days) and an urgent-subject tip. Below, the visitor can use an enhanced contact form with inline validation (email format, message min length), a loading spinner, clear success state ("Sent -- thanks. I'll reply within 48 hours."), and failure state with direct email fallback. A noscript fallback provides email-only contact for JS-disabled browsers. Below the form, "Other Ways to Reach Me" cards link to LinkedIn and GitHub. A privacy note discloses message retention (90 days) and usage policy. Honeypot spam protection and IP rate limiting are preserved. Analytics event stubs fire for copy, mailto click, form start, submit, and error.
 
 ### S5: Mobile Browsing
 A visitor on a phone sees a hamburger menu. Tapping it reveals smooth navigation to all sections. All pages render correctly on mobile viewports. Images are optimized and load quickly.
@@ -70,7 +70,7 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 `Navigate to Projects` -> `See "Current and Past Projects" headline` -> `Filter by tag or sort by date` -> `Browse detailed project cards (name, description, tags, dates, visibility)` -> `Click "View Project" button (placeholder)`
 
 ### Contact Flow
-`Navigate to Contact` -> `Fill out form` -> `Submit` -> `See success message` (or) `Copy email / Click social link`
+`Navigate to Contact` -> `See hero with CTAs (Email Dan, Copy Email, LinkedIn)` -> `Read microcopy (reply time, urgent tip)` -> `Fill out form with inline validation` -> `Submit` -> `See success message` (or) `See failure with email fallback` (or) `Click hero CTA directly` -> `Scroll to "Other Ways to Reach Me"` -> `Read privacy note`
 
 ### Tutorial Flow
 `Navigate to Building Blocks` -> `Browse tutorial list` -> `Click tutorial` -> `Read step-by-step guide`
@@ -130,11 +130,23 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 ### Contact
 | ID | Requirement | Status |
 |----|-------------|--------|
-| CONT-01 | Contact form with name, email, and message fields | Complete |
-| CONT-02 | Server-side validation and spam protection (honeypot + rate limiting) | Complete |
-| CONT-03 | Form submissions stored in Firestore | Complete |
-| CONT-04 | Email address with click-to-copy | Complete |
-| CONT-05 | Social links (LinkedIn, Instagram, GitHub) | Complete |
+| CONT-01 | Hero section with "Contact Dan" headline and subhead | Complete |
+| CONT-02 | Primary CTA button opens mailto link (Email Dan) | Complete |
+| CONT-03 | Copy Email button copies address to clipboard with confirmation | Complete |
+| CONT-04 | LinkedIn message button links to Dan's LinkedIn profile | Complete |
+| CONT-05 | Microcopy: "Typical reply: 1-2 business days" and urgent-subject tip | Complete |
+| CONT-06 | Form inline validation for email format and message minimum length | Complete |
+| CONT-07 | Clear success state: "Sent -- thanks. I'll reply within 48 hours." | Complete |
+| CONT-08 | Failure state with direct email fallback | Complete |
+| CONT-09 | Loading state with disabled submit button and spinner | Complete |
+| CONT-10 | JS-disabled fallback (noscript email-only fallback) | Complete |
+| CONT-11 | Honeypot field for spam protection (preserved) | Complete |
+| CONT-12 | Rate limiting by IP (preserved) | Complete |
+| CONT-13 | Server-side validation with length limits (preserved) | Complete |
+| CONT-14 | "Other Ways to Reach Me" section with LinkedIn and GitHub links | Complete |
+| CONT-15 | Privacy/retention disclosure (90-day retention, no sensitive info) | Complete |
+| CONT-16 | Analytics event stubs for copy, click, form start, submit, error | Complete |
+| CONT-17 | Mobile single-column layout with large tap targets (min 44px) | Complete |
 
 ### Authentication & Admin
 | ID | Requirement | Status |
@@ -190,6 +202,27 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 | PROJ-V11-04 | Page headline "Current and Past Projects" with dot-pattern background | Complete |
 | PROJ-V11-05 | Client-side filter by tag (chip toggles) and sort by date (dropdown) | Complete |
 
+### Contact Page Redesign
+| ID | Requirement | Status |
+|----|-------------|--------|
+| CONT-V11-01 | Hero section with "Contact Dan" headline and subhead | Complete |
+| CONT-V11-02 | Primary CTA button opens mailto link (Email Dan) | Complete |
+| CONT-V11-03 | Copy Email button copies to clipboard with confirmation | Complete |
+| CONT-V11-04 | LinkedIn message button links to profile | Complete |
+| CONT-V11-05 | Microcopy with reply time and urgent-subject tip | Complete |
+| CONT-V11-06 | Form inline validation for email format and message min length | Complete |
+| CONT-V11-07 | Success state: "Sent -- thanks. I'll reply within 48 hours." | Complete |
+| CONT-V11-08 | Failure state with direct email fallback | Complete |
+| CONT-V11-09 | Loading state with disabled button and spinner | Complete |
+| CONT-V11-10 | JS-disabled noscript fallback | Complete |
+| CONT-V11-11 | Honeypot spam protection (preserved) | Complete |
+| CONT-V11-12 | Rate limiting by IP (preserved) | Complete |
+| CONT-V11-13 | Server-side validation with length limits (preserved) | Complete |
+| CONT-V11-14 | "Other Ways to Reach Me" section (LinkedIn, GitHub) | Complete |
+| CONT-V11-15 | Privacy/retention disclosure (90-day, no sensitive info) | Complete |
+| CONT-V11-16 | Analytics event stubs (copy, click, form start, submit, error) | Complete |
+| CONT-V11-17 | Mobile single-column layout with large tap targets (min 44px) | Complete |
+
 ## v2 Requirements (Planned)
 
 | ID | Requirement |
@@ -206,6 +239,6 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 
 - v1 requirements: 34 total
 - Complete: 30
-- Pending: 4 (Infrastructure — Phase 6)
-- v1.1 requirements: 8 total (3 branding + 5 projects)
-- Complete: 8
+- Pending: 4 (Infrastructure -- Phase 6)
+- v1.1 requirements: 25 total (3 branding + 5 projects + 17 contact redesign)
+- Complete: 25

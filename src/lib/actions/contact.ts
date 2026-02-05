@@ -81,13 +81,14 @@ export async function submitContact(
     await saveContactSubmission(validatedFields.data);
     return {
       success: true,
-      message: "Thank you for your message! I'll get back to you soon.",
+      message: "Sent \u2014 thanks. I'll reply within 48 hours.",
     };
   } catch (error) {
     console.error("Failed to save contact submission:", error);
     return {
       success: false,
-      message: "Something went wrong. Please try again.",
+      message:
+        "Couldn't send right now. Please email me at daniel.weinbeck@gmail.com",
     };
   }
 }

@@ -8,7 +8,7 @@ Give visitors a fast, clear understanding of who Dan is and what he's built. The
 
 ## Problem Solved
 
-Replaces the need for a static resume or scattered online presence with a single, polished hub. Project cards display curated descriptions and development status (Live, In Development, Planning).
+Replaces the need for a static resume or scattered online presence with a single, polished hub. Project cards display curated descriptions and development status (Live, In Development, Planning). The dedicated Projects page offers rich detail with paragraph descriptions, date ranges, public/private visibility, and client-side filtering by tag or date.
 
 ## Who Uses It
 
@@ -19,9 +19,10 @@ Replaces the need for a static resume or scattered online presence with a single
 ## How It Works
 
 1. Visitor lands on the home page and sees Dan's headshot, name in Playfair Display serif, tagline pills, and social links
-2. Visitor browses 6 curated project cards with status badges and tech tags
-3. Visitor reads step-by-step tutorials in the Building Blocks section
-4. Visitor reaches out via the contact form (stored in Firestore) or direct social links
+2. Visitor browses 6 curated project cards with status badges and tech tags on the home page
+3. Visitor navigates to the Projects page for detailed cards with descriptions, date ranges, visibility badges, and filtering/sorting by tag or date
+4. Visitor reads step-by-step tutorials in the Building Blocks section
+4. Visitor reaches out via hero CTAs (mailto, copy email, LinkedIn) or the enhanced contact form (stored in Firestore)
 5. Visitor browses article cards on the Writing page (placeholder content for now)
 6. Stub page for AI Assistant signals future content
 7. Admin signs in via Google Auth to access the Control Center (all GitHub repos + Todoist boards)
