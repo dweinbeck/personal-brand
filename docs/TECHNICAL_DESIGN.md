@@ -48,7 +48,7 @@ src/app/
 │   ├── page.tsx            # Tutorial listing
 │   └── [slug]/page.tsx     # Individual tutorial (dynamic MDX import)
 ├── writing/
-│   └── page.tsx            # Coming soon stub
+│   └── page.tsx            # Article listing with placeholder cards (2-col grid)
 ├── assistant/
 │   └── page.tsx            # Coming soon stub
 ├── contact/
@@ -82,6 +82,8 @@ src/components/
 │   ├── FeaturedProjects.tsx # Static curated project data (6 projects with status)
 │   ├── ProjectCard.tsx     # Project card with status badge, tech tags, hover effects
 │   └── BlogTeaser.tsx      # Writing teaser with gold left border
+├── writing/
+│   └── ArticleCard.tsx     # Article card with topic badge, date, excerpt, hover effects
 ├── contact/
 │   ├── ContactForm.tsx     # Client component — useActionState + Zod validation
 │   └── CopyEmailButton.tsx # Client component — click-to-copy email
@@ -98,6 +100,15 @@ src/components/
 3. `ProjectCard` renders status badges with color-coded styles (gold, navy, burgundy)
 4. `Projects` page imports the same `PlaceholderProject` type and renders the same static data
 5. GitHub API (`fetchGitHubRepos`) is still used by the admin Control Center for repo management
+
+### Writing Page
+
+1. `WritingPage` defines a static array of 4 `Article` objects (placeholder lorem ipsum)
+2. Each article has `title`, `publishDate`, `topic`, and `excerpt`
+3. `ArticleCard` renders topic badges with color-coded styles matching project status badges (gold for AI, navy for Development, burgundy for Analytics)
+4. Cards display in a 2-column responsive grid matching the Projects page layout
+5. Cards include hover lift effect and gold title shift, consistent with `ProjectCard`
+6. Article links are non-functional (no individual article pages yet)
 
 ### Contact Form
 
@@ -269,6 +280,7 @@ Fetches sections and tasks for a given Todoist project.
 | 24 | Dynamic OG image via ImageResponse API | Edge runtime generates branded 1200x630 PNG on demand; no static file to maintain |
 | 25 | SVG favicon via App Router `icon.svg` convention | Scalable at all sizes; no ICO conversion needed; Next.js serves automatically |
 | 26 | Persistent gold underline on DW wordmark | `border-b-2 border-gold pb-0.5` — always visible, not just on hover |
+| 27 | ArticleCard mirrors ProjectCard styling | Consistent card pattern (shadow, hover lift, gold title, color-coded badges) across Projects and Writing pages |
 
 ## Deployment Architecture
 
