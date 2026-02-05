@@ -35,10 +35,10 @@
 ## Scenarios
 
 ### S1: First Impression
-A recruiter clicks a link to dan-weinbeck.com. They see Dan's headshot, name, tagline, and a short bio above the fold. Within seconds they understand his role and expertise. CTA buttons guide them to projects or contact.
+A recruiter clicks a link to dan-weinbeck.com. They see Dan's headshot, name in Playfair Display serif with a navy underline, gold-bordered tagline pills (AI Developer, Analytics Professional, Data Science Background, Curiosity Mindset), a bio paragraph, and social links. The navy/gold palette conveys confidence and sophistication. Within seconds they understand his role and expertise.
 
 ### S2: Exploring Projects
-A visitor navigates to the Projects page. They see a responsive grid of project cards with descriptions, languages, and topic tags — all pulled live from GitHub. Each card links to the GitHub repo (and live demo if available). Data refreshes hourly via ISR.
+A visitor scrolls past the gold divider to the Featured Projects section. They see a responsive grid of 6 curated project cards with status badges (Live in gold, In Development in navy, Planning in burgundy), descriptions, and tech tags in JetBrains Mono. Cards lift on hover with the title shifting to gold.
 
 ### S3: Reading Tutorials
 A visitor navigates to the Building Blocks section. They see a list of tutorials with titles and descriptions, then click into a full step-by-step guide rendered from MDX content.
@@ -50,7 +50,7 @@ A visitor fills out the contact form (name, email, message). The form validates 
 A visitor on a phone sees a hamburger menu. Tapping it reveals smooth navigation to all sections. All pages render correctly on mobile viewports. Images are optimized and load quickly.
 
 ### S6: Admin Sign-In
-Dan clicks "Sign In" in the navbar. A Google sign-in popup appears. After authenticating with `daniel.weinbeck@gmail.com`, the button is replaced by a blue circle with his initial. A "Control Center" link appears in the navigation.
+Dan clicks "Sign In" (gold-bordered pill in the navbar). A Google sign-in popup appears. After authenticating with `daniel.weinbeck@gmail.com`, the button is replaced by a navy circle with gold border showing his initial. A "Control Center" link appears in the navigation.
 
 ### S7: Admin Control Center
 Dan navigates to the Control Center. He sees a grid of all GitHub repos (public and private) with names, last commit dates, and purposes extracted from READMEs. Below that, he sees Todoist project cards with task counts. Clicking a Todoist project shows a board view with tasks grouped by section.
@@ -58,10 +58,10 @@ Dan navigates to the Control Center. He sees a grid of all GitHub repos (public 
 ## End-to-End Workflows
 
 ### Home Page Flow
-`Land on site` -> `See hero (headshot, tagline, bio)` -> `Click CTA` -> `Navigate to Projects / Contact / GitHub / LinkedIn`
+`Land on site` -> `See hero (headshot, serif name, tagline pills, bio, social links)` -> `Scroll past gold divider` -> `Browse 6 project cards with status badges` -> `See Writing teaser`
 
 ### Projects Flow
-`Navigate to Projects` -> `Browse project cards (GitHub API data)` -> `Click card` -> `Open GitHub repo or live demo`
+`Navigate to Projects` -> `Browse curated project cards with status badges and tech tags`
 
 ### Contact Flow
 `Navigate to Contact` -> `Fill out form` -> `Submit` -> `See success message` (or) `Copy email / Click social link`
@@ -77,25 +77,25 @@ Dan navigates to the Control Center. He sees a grid of all GitHub repos (public 
 ### Navigation
 | ID | Requirement | Status |
 |----|-------------|--------|
-| NAV-01 | Responsive navbar with links to Home, Projects, Writing, Building Blocks, Assistant, Contact | Complete |
+| NAV-01 | Responsive navbar with DW wordmark and links to Home, Projects, Writing, Building Blocks, Assistant, Contact | Complete |
 | NAV-02 | Mobile hamburger menu with smooth open/close | Complete |
-| NAV-03 | Active page indicator in navigation | Complete |
+| NAV-03 | Active page indicator as navy pill with bold white text and gold border | Complete |
+| NAV-04 | Sign In button styled as gold-bordered pill; signed-in avatar with gold border | Complete |
 
 ### Home
 | ID | Requirement | Status |
 |----|-------------|--------|
-| HOME-01 | Hero section with headshot, name, tagline, and short bio | Complete |
-| HOME-02 | CTA buttons (View Projects, Contact, GitHub, LinkedIn) | Complete |
-| HOME-03 | Featured project cards section (live GitHub data) | Complete |
-| HOME-04 | Blog teaser section with link to Writing page | Complete |
+| HOME-01 | Hero section with headshot, Playfair Display name, tagline pills, bio, and social links | Complete |
+| HOME-02 | Gold horizontal divider separating hero from projects | Complete |
+| HOME-03 | Featured project cards section (6 static curated projects with status badges) | Complete |
+| HOME-04 | Blog teaser section with gold left border and link to Writing page | Complete |
 
 ### Projects
 | ID | Requirement | Status |
 |----|-------------|--------|
-| PROJ-01 | Project cards from GitHub API with description, language, and topics | Complete |
+| PROJ-01 | Curated project cards with name, description, tech tags, and status badges | Complete |
 | PROJ-02 | Responsive project grid across all screen sizes | Complete |
-| PROJ-03 | Links to GitHub repo and live demo (if homepage URL set) | Complete |
-| PROJ-04 | ISR caching of GitHub data (revalidate hourly) | Complete |
+| PROJ-03 | Status badges: Live (gold), In Development (navy), Planning (burgundy #8B1E3F) | Complete |
 
 ### Writing
 | ID | Requirement | Status |
@@ -134,7 +134,8 @@ Dan navigates to the Control Center. He sees a grid of all GitHub repos (public 
 | PERF-01 | Lighthouse >= 90 for Performance, Accessibility, Best Practices, SEO | Complete |
 | PERF-02 | Mobile responsive across all pages | Complete |
 | PERF-03 | Optimized images via Next.js Image component | Complete |
-| PERF-04 | Subtle animations (page transitions, card hover effects) | Complete |
+| PERF-04 | Subtle animations (fade-in-up, slide-up, card hover lift + gold title shift) | Complete |
+| PERF-05 | Navy/gold founder aesthetic with Playfair Display, Inter, JetBrains Mono typography | Complete |
 
 ### SEO
 | ID | Requirement | Status |
@@ -165,6 +166,6 @@ Dan navigates to the Control Center. He sees a grid of all GitHub repos (public 
 
 ## Coverage
 
-- v1 requirements: 29 total
-- Complete: 25
+- v1 requirements: 31 total
+- Complete: 27
 - Pending: 4 (Infrastructure — Phase 6)

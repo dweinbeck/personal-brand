@@ -37,10 +37,11 @@ Next.js 16 application using App Router with React Server Components. Hybrid ren
 
 ```
 src/app/
-├── layout.tsx              # Root layout (AuthProvider, Navbar, Footer, metadata)
+├── layout.tsx              # Root layout (AuthProvider, Navbar, Footer, fonts: Playfair/Inter/JetBrains)
 ├── page.tsx                # Home (Hero, FeaturedProjects, BlogTeaser)
+├── globals.css             # Design tokens (navy/gold palette, shadows, animations)
 ├── projects/
-│   └── page.tsx            # Full project grid (GitHub API via ISR)
+│   └── page.tsx            # Full project grid (static curated data)
 ├── building-blocks/
 │   ├── page.tsx            # Tutorial listing
 │   └── [slug]/page.tsx     # Individual tutorial (dynamic MDX import)
@@ -65,22 +66,20 @@ src/app/
 ```
 src/components/
 ├── layout/
-│   ├── Navbar.tsx          # Server component — site navigation
-│   ├── NavLinks.tsx        # Client component — active link state, mobile menu, admin link
-│   ├── AuthButton.tsx      # Client component — Google sign-in/sign-out with dropdown
-│   └── Footer.tsx          # Footer with social links
+│   ├── Navbar.tsx          # Server component — DW wordmark, warm glass backdrop
+│   ├── NavLinks.tsx        # Client component — pill-style active state, mobile menu, admin link
+│   ├── AuthButton.tsx      # Client component — gold-bordered sign-in pill, avatar with gold border
+│   └── Footer.tsx          # Navy background footer with social links
 ├── admin/
 │   ├── AdminGuard.tsx      # Client component — email-based admin route guard
 │   ├── RepoCard.tsx        # GitHub repo card (name, last commit, purpose)
 │   ├── TodoistProjectCard.tsx # Todoist project card (name, task count)
 │   └── TodoistBoard.tsx    # Board layout (sections as columns, tasks as cards)
 ├── home/
-│   ├── Hero.tsx            # Headshot, tagline, CTA buttons
-│   ├── FeaturedProjects.tsx # Async server component — top project cards from GitHub
-│   └── BlogTeaser.tsx      # Writing section teaser
-├── projects/
-│   ├── ProjectCard.tsx     # Individual project card (description, language, topics)
-│   └── ProjectGrid.tsx     # Responsive grid of project cards
+│   ├── HeroSection.tsx     # Headshot, Playfair Display name, tagline pills, bio, social links, gold HR
+│   ├── FeaturedProjects.tsx # Static curated project data (6 projects with status)
+│   ├── ProjectCard.tsx     # Project card with status badge, tech tags, hover effects
+│   └── BlogTeaser.tsx      # Writing teaser with gold left border
 ├── contact/
 │   ├── ContactForm.tsx     # Client component — useActionState + Zod validation
 │   └── CopyEmailButton.tsx # Client component — click-to-copy email
@@ -90,12 +89,13 @@ src/components/
 
 ## Data Flows
 
-### GitHub Projects
+### Home Page Projects
 
-1. Server component calls `fetchGitHubRepos()` from `src/lib/github.ts`
-2. Fetch uses `{ next: { revalidate: 3600 } }` for hourly ISR cache
-3. Response is typed as `GitHubRepo[]` and filtered/sorted
-4. No client-side fetching — server components render directly
+1. `FeaturedProjects` exports a static array of 6 `PlaceholderProject` objects
+2. Each project has `name`, `description`, `tags`, and `status` ("Live" | "In Development" | "Planning")
+3. `ProjectCard` renders status badges with color-coded styles (gold, navy, burgundy)
+4. `Projects` page imports the same `PlaceholderProject` type and renders the same static data
+5. GitHub API (`fetchGitHubRepos`) is still used by the admin Control Center for repo management
 
 ### Contact Form
 
@@ -253,6 +253,10 @@ Fetches sections and tasks for a given Todoist project.
 | 10 | MDX with exported metadata objects | Type-safe extraction without YAML frontmatter parsing |
 | 11 | `preload` over `priority` for Next.js 16 Image | Follows Next.js 16 Image component API |
 | 12 | NavLinks as only `use client` component in layout | Minimal client JS; server/client split pattern |
+| 20 | Static curated projects over GitHub API for public pages | Allows custom descriptions, status badges, and projects not yet on GitHub |
+| 21 | Navy/gold palette (#063970/#C8A55A) with burgundy accent (#8B1E3F) | Founder aesthetic — sophisticated, editorial, avoids generic blue/gray |
+| 22 | Playfair Display for hero name, Inter for body, JetBrains Mono for tech tags | Distinctive serif display with clean sans-serif body and monospace accents |
+| 23 | Pill-style active nav with gold border over underline indicator | More visually distinctive; complements the overall design language |
 | 17 | Firebase client SDK lazy initialization | Getter function avoids SSR errors during Next.js prerender |
 | 18 | Client-side admin email check | Simple guard for personal site; no server-side token verification needed |
 | 19 | Todoist ISR with 5-minute revalidation | Shorter than GitHub (1h) since task data changes more frequently |

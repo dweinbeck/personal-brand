@@ -4,11 +4,11 @@ A personal website for Dan Weinbeck — self-taught AI developer, analytics prof
 
 ## Purpose
 
-Give visitors a fast, clear understanding of who Dan is and what he's built. The site showcases real projects pulled from GitHub, provides contact options, and serves as the foundation for a future AI assistant. Includes an authenticated admin control center for managing GitHub repos and Todoist tasks.
+Give visitors a fast, clear understanding of who Dan is and what he's built. The site showcases curated project cards with status badges, provides contact options, and serves as the foundation for a future AI assistant. Includes an authenticated admin control center for managing GitHub repos and Todoist tasks. Designed with a refined "Founder" aesthetic — deep navy (#063970) + gold (#C8A55A) palette with Playfair Display, Inter, and JetBrains Mono typography.
 
 ## Problem Solved
 
-Replaces the need for a static resume or scattered online presence with a single, always-current hub. Project data updates automatically via the GitHub API, so the portfolio never goes stale.
+Replaces the need for a static resume or scattered online presence with a single, polished hub. Project cards display curated descriptions and development status (Live, In Development, Planning).
 
 ## Who Uses It
 
@@ -18,8 +18,8 @@ Replaces the need for a static resume or scattered online presence with a single
 
 ## How It Works
 
-1. Visitor lands on the home page and sees Dan's headshot, tagline, and featured projects
-2. Visitor browses the full project listing (live data from GitHub, cached via ISR)
+1. Visitor lands on the home page and sees Dan's headshot, name in Playfair Display serif, tagline pills, and social links
+2. Visitor browses 6 curated project cards with status badges and tech tags
 3. Visitor reads step-by-step tutorials in the Building Blocks section
 4. Visitor reaches out via the contact form (stored in Firestore) or direct social links
 5. Stub pages for Writing and AI Assistant signal future content
