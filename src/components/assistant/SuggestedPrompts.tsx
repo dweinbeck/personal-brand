@@ -1,11 +1,10 @@
 "use client";
 
 const SUGGESTED_PROMPTS = [
-  "Show me your best AI projects",
-  "What's your background and experience?",
-  "How can I hire or work with you?",
-  "What are you building right now?",
-  "Tell me about your consulting services",
+  "Best AI projects",
+  "Background & experience",
+  "Hiring & collaboration",
+  "Current projects",
 ];
 
 type SuggestedPromptsProps = {
@@ -14,9 +13,9 @@ type SuggestedPromptsProps = {
 
 export function SuggestedPrompts({ onSelect }: SuggestedPromptsProps) {
   return (
-    <div className="flex flex-col items-center gap-4 py-8 px-4">
-      <p className="text-sm text-text-tertiary">Try asking about:</p>
-      <div className="flex flex-wrap justify-center gap-2 max-w-lg">
+    <div className="flex flex-col items-center gap-3 py-4 px-4">
+      <p className="text-xs text-text-tertiary">Try asking about:</p>
+      <div className="flex flex-wrap justify-center gap-2">
         {SUGGESTED_PROMPTS.map((prompt) => (
           <button
             key={prompt}

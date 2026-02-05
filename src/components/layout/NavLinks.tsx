@@ -45,7 +45,7 @@ export function NavLinks() {
             className={clsx(
               "px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
               isActive(link.href)
-                ? "bg-primary text-white font-bold shadow-sm border-2 border-gold"
+                ? "bg-primary text-white font-bold shadow-sm border border-gold"
                 : "text-text-secondary hover:text-primary hover:bg-gold-light",
             )}
           >

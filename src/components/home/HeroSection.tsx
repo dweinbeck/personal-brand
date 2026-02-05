@@ -9,7 +9,7 @@ const taglines = [
 export function HeroSection() {
   return (
     <section className="relative pt-16 md:pt-24 pb-8 motion-safe:animate-fade-in-up">
-      <div className="absolute inset-0 bg-gradient-to-b from-[rgba(200,165,90,0.04)] to-transparent rounded-3xl -z-10" />
+      <div className="absolute top-0 bottom-0 -left-10 -right-10 md:-left-20 md:-right-20 bg-gradient-to-b from-[rgba(200,165,90,0.04)] to-transparent rounded-b-3xl -z-10" />
       <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
         {/* Headshot */}
         <div className="flex-shrink-0">

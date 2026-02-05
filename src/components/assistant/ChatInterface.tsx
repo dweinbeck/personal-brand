@@ -100,6 +100,14 @@ export function ChatInterface() {
               </p>
             </div>
             <SuggestedPrompts onSelect={handleSuggestedPrompt} />
+            <div className="w-full max-w-2xl mx-auto">
+              <ChatInput
+                value={input}
+                onChange={setInput}
+                onSubmit={handleSend}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
         ) : (
           <div className="py-4">
@@ -137,21 +145,25 @@ export function ChatInterface() {
         )}
       </div>
 
-      {/* Footer area */}
-      <div className="border-t border-border">
-        <div className="flex items-center justify-between px-4 py-2 sm:px-6">
-          <ExitRamps />
-          {messages.length >= 2 && (
-            <HumanHandoff messages={plainMessages} />
-          )}
+      {/* Input and footer — only shown during conversation */}
+      {messages.length > 0 && (
+        <div className="border-t border-border">
+          <div className="max-w-2xl mx-auto">
+            <ChatInput
+              value={input}
+              onChange={setInput}
+              onSubmit={handleSend}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
+      )}
+      <div className="flex items-center justify-between px-4 py-2 sm:px-6">
+        <ExitRamps />
+        {messages.length >= 2 && (
+          <HumanHandoff messages={plainMessages} />
+        )}
       </div>
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSubmit={handleSend}
-        isLoading={isLoading}
-      />
       <PrivacyDisclosure />
     </div>
   );

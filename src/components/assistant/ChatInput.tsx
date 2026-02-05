@@ -17,7 +17,7 @@ export function ChatInput({ value, onChange, onSubmit, isLoading }: ChatInputPro
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = "auto";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
   }, [value]);
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -30,8 +30,8 @@ export function ChatInput({ value, onChange, onSubmit, isLoading }: ChatInputPro
   }
 
   return (
-    <div className="border-t border-border bg-surface px-4 py-3 sm:px-6 safe-area-bottom">
-      <div className="flex items-end gap-2">
+    <div className="w-full px-4 py-3 sm:px-6">
+      <div className="relative">
         <label htmlFor="chat-input" className="sr-only">
           Type your message
         </label>
@@ -42,17 +42,17 @@ export function ChatInput({ value, onChange, onSubmit, isLoading }: ChatInputPro
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask about Dan's work, projects, or skills..."
-          rows={1}
+          rows={4}
           maxLength={1000}
           disabled={isLoading}
-          className="flex-1 resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:border-gold/40 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-50 transition-colors"
+          className="w-full resize-none rounded-xl border border-border bg-white px-4 py-3 pr-14 text-sm text-text-primary placeholder:text-text-tertiary focus:border-gold/40 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-50 transition-colors"
           aria-label="Chat message input"
         />
         <button
           type="button"
           onClick={onSubmit}
           disabled={!value.trim() || isLoading}
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-all duration-200 hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold active:scale-95"
+          className="absolute right-3 bottom-3 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-white transition-all duration-200 hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold active:scale-95"
           aria-label="Send message"
         >
           <svg
@@ -71,7 +71,7 @@ export function ChatInput({ value, onChange, onSubmit, isLoading }: ChatInputPro
         </button>
       </div>
       <p className="mt-1.5 text-[11px] text-text-tertiary">
-        Press Enter to send, Shift+Enter for new line. Max 1000 characters.
+        Press Enter to send, Shift+Enter for new line
       </p>
     </div>
   );
