@@ -4,6 +4,8 @@ import { fetchTodoistProjects } from "@/lib/todoist";
 import { fetchProjectTasks } from "@/lib/todoist";
 import { TodoistProjectCard } from "@/components/admin/TodoistProjectCard";
 
+export const dynamic = "force-dynamic";
+
 export default async function ControlCenterPage() {
   const [repos, todoistProjects] = await Promise.all([
     fetchAllGitHubRepos(),

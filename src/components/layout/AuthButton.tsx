@@ -56,10 +56,19 @@ export function AuthButton() {
     );
   }
 
+  const handleSignIn = async () => {
+    try {
+      await signInWithPopup(getFirebaseAuth(), provider);
+    } catch (error) {
+      console.error("Sign-in error:", error);
+      alert(`Sign-in failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={() => signInWithPopup(getFirebaseAuth(), provider)}
+      onClick={handleSignIn}
       className="ml-2 px-3 py-1.5 text-sm font-medium rounded-full border border-gold/40 text-text-secondary hover:bg-gold-light hover:text-primary transition-all"
     >
       Sign In

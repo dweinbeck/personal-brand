@@ -2,6 +2,8 @@ import { fetchProjectSections, fetchProjectTasks, fetchTodoistProjects } from "@
 import { TodoistBoard } from "@/components/admin/TodoistBoard";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ projectId: string }>;
 }
