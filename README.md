@@ -22,10 +22,10 @@ Replaces the need for a static resume or scattered online presence with a single
 2. Visitor browses 6 curated project cards with status badges and tech tags on the home page
 3. Visitor navigates to the Projects page for detailed cards with descriptions, date ranges, visibility badges, and filtering/sorting by tag or date
 4. Visitor reads step-by-step tutorials in the Building Blocks section
-4. Visitor reaches out via hero CTAs (mailto, copy email, LinkedIn) or the enhanced contact form (stored in Firestore)
-5. Visitor browses article cards on the Writing page (placeholder content for now)
-6. Stub page for AI Assistant signals future content
-7. Admin signs in via Google Auth to access the Control Center (all GitHub repos + Todoist boards)
+5. Visitor reaches out via hero CTAs (mailto, copy email, LinkedIn) or the enhanced contact form (stored in Firestore)
+6. Visitor browses article cards on the Writing page (placeholder content for now)
+7. Stub page for AI Assistant signals future content
+8. Admin signs in via Google Auth to access the Control Center (all GitHub repos + Todoist boards)
 
 ## Success Metrics
 

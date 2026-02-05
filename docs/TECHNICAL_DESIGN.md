@@ -52,7 +52,7 @@ src/app/
 ├── assistant/
 │   └── page.tsx            # Coming soon stub
 ├── contact/
-│   └── page.tsx            # Contact form + social links
+│   └── page.tsx            # Contact page — hero CTAs, form, "Other Ways", privacy note
 ├── control-center/
 │   ├── layout.tsx          # AdminGuard wrapper
 │   ├── page.tsx            # Admin dashboard (GitHub repos + Todoist projects)
@@ -88,8 +88,10 @@ src/components/
 ├── writing/
 │   └── ArticleCard.tsx     # Article card with topic badge, date, excerpt, hover effects
 ├── contact/
-│   ├── ContactForm.tsx     # Client component — useActionState + Zod validation
-│   └── CopyEmailButton.tsx # Client component — click-to-copy email
+│   ├── ContactForm.tsx     # Client component — useActionState + inline validation + analytics
+│   ├── CopyEmailButton.tsx # Client component — click-to-copy with CTA variant + analytics
+│   ├── EmailDanButton.tsx  # Client component — mailto CTA with analytics tracking
+│   └── SubmitButton.tsx    # Client component — useFormStatus with loading spinner
 └── ui/
     └── ...                 # Shared UI primitives
 ```
@@ -123,13 +125,21 @@ src/components/
 
 ### Contact Form
 
-1. User fills out `ContactForm` (client component with `useActionState`)
-2. Form submits via React Server Action (`submitContactForm`)
-3. Server action validates with Zod `safeParse` + `flatten` for field-level errors
-4. Honeypot field check rejects bot submissions silently
-5. In-memory rate limiter enforces 3 submissions per 15 minutes per IP
-6. On success, submission is written to Firestore via Firebase Admin SDK
-7. Success/error status returned to client via `<output>` element
+1. Contact page renders hero section with three CTA buttons (Email Dan mailto, Copy Email, LinkedIn Message)
+2. Microcopy displays typical reply time and urgent-subject tip
+3. User fills out `ContactForm` (client component with `useActionState`)
+4. Inline client-side validation triggers on blur and subsequent changes (email format, message min 10 chars)
+5. Analytics stubs (`trackEvent`) fire for form_start (first focus), form_submit, form_error, copy_email, mailto_click
+6. Form submits via React Server Action (`submitContact`)
+7. Server action validates with Zod `safeParse` + `flatten` for field-level errors
+8. Honeypot field check rejects bot submissions silently
+9. In-memory rate limiter enforces 3 submissions per 15 minutes per IP
+10. On success, submission is written to Firestore via Firebase Admin SDK
+11. Success state: `<output>` element with check icon and "Sent -- thanks. I'll reply within 48 hours."
+12. Failure state: amber alert box with "Couldn't send right now. Please email me at ..."
+13. Loading state: submit button disabled with spinner animation
+14. `<noscript>` fallback provides email-only contact for JS-disabled browsers
+15. Privacy note below form discloses 90-day retention policy
 
 ### Firebase Auth (Google Sign-In)
 
@@ -294,6 +304,9 @@ Fetches sections and tasks for a given Todoist project.
 | 27 | ArticleCard mirrors ProjectCard styling | Consistent card pattern (shadow, hover lift, gold title, color-coded badges) across Projects and Writing pages |
 | 28 | Separate DetailedProject type from PlaceholderProject | Projects page needs extended fields (dates, visibility, detailUrl) that home page cards don't need; avoids coupling |
 | 29 | Client-side filtering with server-rendered data | Static curated data passed as props to client component; no API needed for filtering/sorting |
+| 30 | Analytics stubs via console.log `trackEvent` | No analytics provider until event volume justifies it; stubs capture intent and integration points |
+| 31 | Client-side inline validation alongside server Zod validation | Immediate UX feedback on blur; server validation is authoritative; no duplication of schema |
+| 32 | Noscript fallback for contact form | Email-only fallback ensures contact is always possible without JS |
 
 ## Deployment Architecture
 
