@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.1 Page Buildout & Polish — Milestone complete
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: All v1.1 phases complete (7-10.1)
+Phase: N/A (between milestones)
 Plan: N/A
-Status: Milestone complete — ready for audit
-Last activity: 2026-02-05 — Phase 10.1 executed and verified
+Status: Ready for next milestone
+Last activity: 2026-02-05 — v1.1 milestone archived
 
-Progress: v1.1 [██████████████] 100% (5/5 phases)
+Progress: v1.1 ✓ SHIPPED
 
 ## Performance Metrics
 
@@ -61,11 +61,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: v1.1 milestone complete
+Stopped at: v1.1 milestone archived
 Resume file: None
 
 ## Project Status
 
-**v1.1 complete!** All 38 requirements delivered across 5 phases.
+**v1.1 shipped!** Archived to `.planning/milestones/`.
 
-Next step: Audit milestone with `/gsd:audit-milestone`
+Next step: Start next milestone with `/gsd:new-milestone`

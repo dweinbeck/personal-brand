@@ -1,5 +1,34 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.1 Page Buildout & Polish (Shipped: 2026-02-05)
+
+**Delivered:** Enhanced page content across Projects, Writing, Contact, and a new About page with accomplishment cards and detail pages. Polished branding with custom favicon, OG image, and logo accent.
+
+**Phases completed:** 7-10.1 (6 plans total)
+
+**Key accomplishments:**
+
+- Branded favicon (DW in gold), dynamic OG image, navbar logo accent
+- Projects page with detailed 2-across cards, tags, dates, filtering
+- Writing page with article cards and lorem ipsum placeholders
+- Contact page redesign with mailto CTA, form UX states, privacy disclosure
+- About page with 7 accomplishment cards from resume (5 professional + 2 education)
+- Accomplishment detail pages with Setup, Work Completed, Results, Skills Unlocked sections
+- AI Assistant chatbot with knowledge base and safety guardrails
+
+**Stats:**
+
+- 100 files changed
+- ~6,400 lines added
+- 5 phases, 6 plans
+- 2 days (Feb 4-5, 2026)
+
+**Git range:** `4d8f0e7` → `05bf49f`
+
+**What's next:** Real content population, GitHub API integration for live project data
+
+---
+
 ## v1.0 MVP (Shipped: 2026-02-03)
 
 **Delivered:** A complete personal brand website with GitHub-integrated project cards, contact form with Firestore storage, tutorials section, full SEO optimization, and production deployment on GCP Cloud Run at dan-weinbeck.com.

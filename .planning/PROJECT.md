@@ -27,26 +27,28 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Contact form with spam protection (honeypot + rate limiting) — v1.0
 - ✓ Secure-by-default (least privilege, secret management, basic abuse protection) — v1.0
 - ✓ Tutorials section with MDX content (Building Blocks) — v1.0
+- ✓ Projects page redesign — 2-across cards with descriptions, tags, dates, filtering — v1.1
+- ✓ Writing page — article cards with title, date, topic tags — v1.1
+- ✓ Contact page redesign — mailto CTA, form UX states, privacy note, analytics stubs — v1.1
+- ✓ Branded OG image (1200×630) for social sharing — v1.1
+- ✓ DW logo gold underline accent — v1.1
+- ✓ DW favicon in browser tab — v1.1
+- ✓ About page — accomplishment cards from resume with detail pages — v1.1
+- ✓ AI Assistant chatbot with knowledge base and safety guardrails — v1.1
 
 ### Active
 
-- [ ] Projects page redesign — larger 2-across cards with descriptions, tags, date ranges, public/private
-- [ ] Writing page — article cards with title, date, topic tags
-- [ ] Contact page redesign — mailto CTA, form UX states, spam controls, privacy note, analytics
-- [ ] OG image — branded 1200×630 image replacing 1x1 placeholder
-- [ ] DW logo gold underline — gold accent line under navbar "DW" logo
-- [ ] Favicon — DW logo as browser tab icon
+- [ ] Live GitHub API integration replacing placeholder project data
+- [ ] Individual project detail pages
+- [ ] Real article content with MDX authoring pipeline
+- [ ] Company/university logos for About page accomplishments
 
-## Current Milestone: v1.1 Page Buildout & Polish
+## Current State
 
-**Goal:** Flesh out Projects and Writing pages from stubs to full content, redesign Contact with better UX, and polish branding (OG image, favicon, logo accent).
+**Shipped:** v1.1 on 2026-02-05
+**Live at:** https://personal-brand-130830385601.us-central1.run.app
 
-**Target features:**
-- Projects page with detailed 2-across cards
-- Writing page with article cards
-- Contact page redesign with mailto, form states, spam controls, privacy
-- Branded OG image for social sharing
-- DW favicon and logo gold underline
+Ready for next milestone planning.
 
 ### Out of Scope
 
@@ -97,4 +99,4 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 | Blog as stub | Content creation comes after the site is live | — Pending |
 
 ---
-*Last updated: 2026-02-04 after v1.1 milestone started*
+*Last updated: 2026-02-05 after v1.1 milestone complete*
