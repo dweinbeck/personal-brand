@@ -3,13 +3,14 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const ADMIN_EMAIL = "daniel.weinbeck@gmail.com";
 
 const baseLinks = [
   { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
   { name: "Projects", href: "/projects" },
   { name: "Building Blocks", href: "/building-blocks" },
   { name: "Writing", href: "/writing" },
@@ -24,7 +25,10 @@ export function NavLinks() {
 
   const links = useMemo(() => {
     if (user?.email === ADMIN_EMAIL) {
-      return [...baseLinks, { name: "Control Center", href: "/control-center" }];
+      return [
+        ...baseLinks,
+        { name: "Control Center", href: "/control-center" },
+      ];
     }
     return baseLinks;
   }, [user]);
