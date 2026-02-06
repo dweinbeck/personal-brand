@@ -24,7 +24,7 @@ See .planning/MILESTONES.md for v1.0 details.
 - [x] **Phase 8: Projects Page** - 2-across detailed cards with tags, dates, filtering
 - [x] **Phase 9: Writing Page** - Article cards with lorem ipsum content
 - [x] **Phase 10: Contact Page Redesign** - Hero, CTAs, form UX states, privacy, analytics stubs
-- [ ] **Phase 10.1: About Page** - Accomplishments cards with detail pages, populated from resume (INSERTED)
+- [x] **Phase 10.1: About Page** - Accomplishments cards with detail pages, populated from resume (INSERTED)
 
 ## Phase Details
 
@@ -111,8 +111,8 @@ Plans:
 | 8. Projects Page | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
 | 9. Writing Page | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
 | 10. Contact Page Redesign | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
-| 10.1 About Page | v1.1 | 0/2 | Planned | — |
+| 10.1 About Page | v1.1 | 2/2 | ✓ Complete | 2026-02-05 |
 
 ---
 *Roadmap created: 2026-02-04*
-*Last updated: 2026-02-05 — Phase 10.1 planned with 2 plans in 2 waves*
+*Last updated: 2026-02-05 — Phase 10.1 complete, v1.1 milestone complete*
