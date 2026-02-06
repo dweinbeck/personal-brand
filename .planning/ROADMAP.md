@@ -40,10 +40,12 @@ See .planning/milestones/v1.1-ROADMAP.md for full details.
   3. Project detail page shows full README content rendered as markdown
   4. Project detail page displays tech stack, creation date, last update date, and links (GitHub, live site)
   5. Homepage featured projects pull from the same GitHub data source as projects page
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 11-01: TBD
+- [ ] 11-01-PLAN.md — Data layer: project config, types, GitHub API functions
+- [ ] 11-02-PLAN.md — Projects page with live data + detail pages with README rendering
+- [ ] 11-03-PLAN.md — Homepage featured projects unification + sitemap update
 
 #### Phase 12: About Page Logos
 **Goal**: Accomplishment cards display company and university logos for visual recognition
@@ -64,9 +66,9 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-6 + 2.1 | v1.0 | 14/14 | Complete | 2026-02-03 |
 | 7-10.1 | v1.1 | 6/6 | Complete | 2026-02-05 |
-| 11. GitHub API Integration | v1.2 | 0/TBD | Not started | - |
+| 11. GitHub API Integration | v1.2 | 0/3 | Planned | - |
 | 12. About Page Logos | v1.2 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-04*
-*Last updated: 2026-02-06 — v1.2 milestone roadmapped*
+*Last updated: 2026-02-06 — Phase 11 planned (3 plans in 2 waves)*
