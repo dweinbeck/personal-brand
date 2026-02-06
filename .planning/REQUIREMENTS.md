@@ -9,10 +9,10 @@ Requirements for Content & Data Integration milestone.
 
 ### Projects
 
-- [ ] **PROJ-01**: Projects page displays live data from GitHub API (replaces placeholder data)
-- [ ] **PROJ-02**: Each project card links to an individual detail page
-- [ ] **PROJ-03**: Project detail page shows full README content, tech stack, dates, and links
-- [ ] **PROJ-04**: Homepage featured projects use same data source as projects page (unified)
+- [x] **PROJ-01**: Projects page displays live data from GitHub API (replaces placeholder data)
+- [x] **PROJ-02**: Each project card links to an individual detail page
+- [x] **PROJ-03**: Project detail page shows full README content, tech stack, dates, and links
+- [x] **PROJ-04**: Homepage featured projects use same data source as projects page (unified)
 
 ### About
 
@@ -45,10 +45,10 @@ Deferred to later milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROJ-01 | Phase 11 | Pending |
-| PROJ-02 | Phase 11 | Pending |
-| PROJ-03 | Phase 11 | Pending |
-| PROJ-04 | Phase 11 | Pending |
+| PROJ-01 | Phase 11 | Complete |
+| PROJ-02 | Phase 11 | Complete |
+| PROJ-03 | Phase 11 | Complete |
+| PROJ-04 | Phase 11 | Complete |
 | ABOU-01 | Phase 12 | Pending |
 
 **Coverage:**
@@ -58,4 +58,4 @@ Deferred to later milestone.
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 — roadmap traceability added*
+*Last updated: 2026-02-06 — Phase 11 requirements complete*
