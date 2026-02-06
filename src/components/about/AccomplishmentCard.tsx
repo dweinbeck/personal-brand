@@ -13,30 +13,10 @@ export function AccomplishmentCard({
   return (
     <Link
       href={`/about/${accomplishment.slug}`}
-      className="rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block"
+      className="rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block flex flex-col"
     >
-      {/* Company row with logo placeholder */}
-      <div className="flex items-center gap-3">
-        {accomplishment.companyLogo ? (
-          <Image
-            src={accomplishment.companyLogo}
-            alt={accomplishment.company}
-            width={32}
-            height={32}
-            className="h-8 w-8 object-contain"
-          />
-        ) : (
-          <div className="h-8 w-8 rounded bg-gold-light flex items-center justify-center text-gold font-bold text-sm">
-            {accomplishment.company.charAt(0).toUpperCase()}
-          </div>
-        )}
-        <span className="text-sm font-medium text-text-secondary">
-          {accomplishment.company}
-        </span>
-      </div>
-
       {/* Title */}
-      <h2 className="mt-4 text-lg font-semibold text-text-primary group-hover:text-gold transition-colors duration-200">
+      <h2 className="text-lg font-semibold text-text-primary group-hover:text-gold transition-colors duration-200">
         {accomplishment.title}
       </h2>
 
@@ -45,13 +25,18 @@ export function AccomplishmentCard({
         {accomplishment.role} &bull; {accomplishment.years}
       </p>
 
+      {/* Company/Organization name */}
+      <p className="mt-3 text-sm font-medium text-text-secondary">
+        {accomplishment.company}
+      </p>
+
       {/* Description */}
       <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3">
         {accomplishment.description}
       </p>
 
       {/* Skills tags (max 4 visible) */}
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {visibleSkills.map((skill) => (
           <span
             key={skill}
@@ -67,10 +52,25 @@ export function AccomplishmentCard({
         )}
       </div>
 
-      {/* View Details link text */}
-      <span className="mt-5 inline-block text-sm font-medium text-gold group-hover:text-gold-hover transition-colors duration-200">
-        View Details &rarr;
-      </span>
+      {/* Bottom row: Logo (left) + View Details (right) */}
+      <div className="mt-auto pt-5 flex items-center justify-between">
+        {accomplishment.companyLogo ? (
+          <Image
+            src={accomplishment.companyLogo}
+            alt={accomplishment.company}
+            width={32}
+            height={32}
+            className="h-8 w-8 object-contain"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded bg-gold-light flex items-center justify-center text-gold font-bold text-sm">
+            {accomplishment.company.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <span className="text-sm font-medium text-gold group-hover:text-gold-hover transition-colors duration-200">
+          View Details &rarr;
+        </span>
+      </div>
     </Link>
   );
 }
