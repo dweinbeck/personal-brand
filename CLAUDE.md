@@ -1,40 +1,85 @@
 # Project Instructions
 
-## Git Workflow
+> Inherits from `~/.claude/CLAUDE.md` — only project-specific overrides below.
 
-After each phase is complete, commit all changes and push to master.
+---
 
-## Documentation Maintenance
+## Quick Reference
 
-On every commit, review the diff of staged changes and update the following documentation files as needed. These updates must NOT affect any visible site content — only markdown documentation files should be modified.
+```bash
+npm test && npm run lint && npm run build   # Quality gates
+npm run dev                                  # Local dev server (port 3000)
+```
 
-### 1. `README.md`
+---
 
-Update if changes affect any of:
-- Purpose or problem statement
-- Who uses the site
-- High-level workflow or architecture overview
-- Success metrics
-- Links to other documentation
+## Project-Specific Zones
 
-### 2. `docs/FRD.md`
+### Safe Zones
+- `src/components/` — React components (organized by feature)
+- `src/app/` — Next.js App Router pages and API routes
+- `src/lib/` — Utilities, actions, Firebase config
+- `src/data/` — AI assistant knowledge base (JSON/MD files)
+- `docs/` — FRD, Technical Design, Deployment docs
 
-Update if changes affect any of:
-- Goals or non-goals
-- User persona or audience
-- Scenarios and end-to-end user workflows
-- Functional requirements (add new, update status, refine descriptions)
+### Caution Zones
+- `src/lib/firebase.ts` — Firebase Admin SDK singleton (credential handling)
+- `src/lib/assistant/safety.ts` — AI safety pipeline (security-critical)
+- `src/app/api/` — Server routes (auth checks required)
 
-### 3. `docs/TECHNICAL_DESIGN.md`
+---
 
-Update if changes affect any of:
-- System architecture or component hierarchy
-- API contracts or server action signatures
-- Data flows (GitHub API, Firestore, MDX)
-- AI call structure (when added)
-- Error handling patterns
-- Integration points (Firebase, GitHub, external services)
-- Architecture Decision Records (ADRs)
-- Diagrams
-- Data models
-- Limitations or tradeoffs
+## Git Workflow Override
+
+This project uses **trunk-based development**:
+- Commit directly to `master` for most changes
+- Push to `master` after each completed phase
+- Feature branches only for experimental/risky changes
+
+---
+
+## Documentation Triggers (Project-Specific)
+
+| Document | Location | Trigger |
+|----------|----------|---------|
+| README | `README.md` | Tech stack change, new major feature |
+| FRD | `docs/FRD.md` | New scenario, requirement status change |
+| Technical Design | `docs/TECHNICAL_DESIGN.md` | API change, new integration, ADR |
+| Deployment | `docs/DEPLOYMENT.md` | Build/deploy process change, new env var |
+
+---
+
+## Tech Stack Summary
+
+| Category | Technology |
+|----------|------------|
+| Cloud | GCP Cloud Run |
+| Frontend | Next.js 16, React 19, Tailwind CSS 4 |
+| Backend | Next.js API Routes (RSC) |
+| Database | Firebase Firestore |
+| AI/LLM | Gemini 2.0 Flash (Vercel AI SDK) |
+| Auth | Firebase Auth (Google Sign-In) |
+| Linting | Biome v2.3 |
+
+---
+
+## Key Patterns (Reference)
+
+- **Components:** Server components by default; `"use client"` only for forms, chat, auth
+- **Shared UI:** `Button` and `Card` in `src/components/ui/`
+- **Rate limiting:** In-memory Map pattern (see `src/lib/actions/contact.ts`)
+- **Admin guard:** Client-side email check via `AdminGuard` component
+- **AI safety:** Multi-layer pipeline runs BEFORE LLM call (sanitize → detect → refuse)
+
+---
+
+## AI SDK Gotchas (Vercel AI SDK v5+)
+
+Avoid these common mistakes:
+
+| Wrong | Right |
+|-------|-------|
+| `useChat` returns `input`, `handleSubmit` | Returns `messages`, `sendMessage`, `status` |
+| `message.content` | `message.parts.filter(p => p.type === "text")` |
+| `streamText({ maxTokens })` | `streamText({ maxOutputTokens })` |
+| `result.toDataStreamResponse()` | `result.toUIMessageStreamResponse()` |
