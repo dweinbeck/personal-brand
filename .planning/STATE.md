@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 10.1 About Page (INSERTED)
-Plan: 01 of 3 complete
+Plan: 02 of 3 complete
 Status: In progress
-Last activity: 2026-02-06 — Completed 10.1-01-PLAN.md (data foundation)
+Last activity: 2026-02-06 — Completed 10.1-02-PLAN.md (UI components and pages)
 
-Progress: v1.1 [████████████░░] 83% (4.33/5.25 phases)
+Progress: v1.1 [█████████████░] 90% (4.67/5.25 phases)
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.1 [████████████░░] 83% (4.33/5.25 phase
 - Total execution time: ~42 min
 
 **v1.1 Velocity:**
-- Phases completed: 4 (7-10) + 0.33 (10.1 plan 1/3)
-- Requirements delivered: 32/32 + 3 (10.1 plan 01)
+- Phases completed: 4 (7-10) + 0.67 (10.1 plans 1-2/3)
+- Requirements delivered: 32/32 + 6 (10.1 plans 01-02)
 - Executed in parallel
 
 ## Accumulated Context
@@ -42,6 +42,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - v1.1: OG image generated dynamically via Next.js ImageResponse (edge runtime)
 - 10.1-01: Accomplishments in reverse chronological order (newest first)
 - 10.1-01: About link positioned after Home for prominent placement
+- 10.1-02: Max 4 skill tags on cards with +N more indicator
+- 10.1-02: Detail page sections conditionally render if data exists
 
 ### Roadmap Evolution
 
@@ -59,11 +61,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 10.1-01-PLAN.md (data foundation)
+Stopped at: Completed 10.1-02-PLAN.md (UI components and pages)
 Resume file: None
 
 ## Project Status
 
-**v1.1 in progress** — Phase 10.1 Plan 01 complete. Data foundation ready for card and page development.
+**v1.1 in progress** — Phase 10.1 Plan 02 complete. About page with accomplishment cards and detail pages functional.
 
-Next step: Execute Plan 02 (AccomplishmentCard component and About page)
+Next step: Execute Plan 03 (verification and testing)
