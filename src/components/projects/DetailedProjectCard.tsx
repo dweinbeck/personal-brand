@@ -1,28 +1,35 @@
 import { Button } from "@/components/ui/Button";
+import type { EnrichedProject } from "@/types/project";
 
-export interface DetailedProject {
-  name: string;
-  description: string;
-  tags: string[];
-  status: "Live" | "In Development" | "Planning";
-  dateInitiated: string;
-  lastCommit: string;
-  visibility: "public" | "private";
-  detailUrl: string;
-}
-
-const statusColors: Record<DetailedProject["status"], string> = {
+const statusColors: Record<EnrichedProject["status"], string> = {
   Live: "bg-gold-light text-gold-hover border-gold",
   "In Development": "bg-primary/10 text-primary border-primary/40",
   Planning: "bg-[#8B1E3F]/10 text-[#8B1E3F] border-[#8B1E3F]/30",
 };
 
-const visibilityStyles: Record<DetailedProject["visibility"], string> = {
+const visibilityStyles: Record<EnrichedProject["visibility"], string> = {
   public: "bg-sage/10 text-sage border-sage/30",
   private: "bg-amber/10 text-amber border-amber/30",
 };
 
-export function DetailedProjectCard({ project }: { project: DetailedProject }) {
+/**
+ * Format ISO date string to "Mon YYYY" format
+ */
+function formatDate(isoDate: string | null): string {
+  if (!isoDate) return "Unknown";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  }).format(new Date(isoDate));
+}
+
+export function DetailedProjectCard({
+  project,
+}: {
+  project: EnrichedProject;
+}) {
+  const detailUrl = `/projects/${project.slug}`;
+
   return (
     <div className="relative rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group flex flex-col">
       {/* Top row: status + visibility badges */}
@@ -61,20 +68,15 @@ export function DetailedProjectCard({ project }: { project: DetailedProject }) {
         ))}
       </div>
 
-      {/* Date range */}
+      {/* Date range - using GitHub API dates */}
       <p className="mt-5 text-xs text-text-tertiary">
-        Started: {project.dateInitiated} &bull; Last updated:{" "}
-        {project.lastCommit}
+        Started: {formatDate(project.createdAt)} &bull; Last updated:{" "}
+        {formatDate(project.pushedAt)}
       </p>
 
       {/* View Project button */}
       <div className="mt-6 pt-4 border-t border-border">
-        <Button
-          variant="primary"
-          size="md"
-          href={project.detailUrl}
-          className="w-full"
-        >
+        <Button variant="primary" size="md" href={detailUrl} className="w-full">
           View Project &rarr;
         </Button>
       </div>

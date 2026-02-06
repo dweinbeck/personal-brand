@@ -1,17 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { DetailedProject } from "./DetailedProjectCard";
+import type { EnrichedProject } from "@/types/project";
 import { DetailedProjectCard } from "./DetailedProjectCard";
 
 type SortOption = "newest" | "oldest" | "updated";
 
 interface ProjectsFilterProps {
-  projects: DetailedProject[];
+  projects: EnrichedProject[];
 }
 
-/** Parse "Mon YYYY" strings into comparable Date objects. */
-function parseProjectDate(dateStr: string): Date {
+/** Parse ISO date string or "Mon YYYY" strings into comparable Date objects. */
+function parseProjectDate(dateStr: string | null): Date {
+  if (!dateStr) return new Date(0); // Epoch for unknown dates
   const parsed = new Date(dateStr);
   if (!Number.isNaN(parsed.getTime())) return parsed;
   // Fallback: treat as beginning of month
@@ -46,20 +47,20 @@ export function ProjectsFilter({ projects }: ProjectsFilterProps) {
       case "newest":
         return list.sort(
           (a, b) =>
-            parseProjectDate(b.dateInitiated).getTime() -
-            parseProjectDate(a.dateInitiated).getTime(),
+            parseProjectDate(b.createdAt).getTime() -
+            parseProjectDate(a.createdAt).getTime(),
         );
       case "oldest":
         return list.sort(
           (a, b) =>
-            parseProjectDate(a.dateInitiated).getTime() -
-            parseProjectDate(b.dateInitiated).getTime(),
+            parseProjectDate(a.createdAt).getTime() -
+            parseProjectDate(b.createdAt).getTime(),
         );
       case "updated":
         return list.sort(
           (a, b) =>
-            parseProjectDate(b.lastCommit).getTime() -
-            parseProjectDate(a.lastCommit).getTime(),
+            parseProjectDate(b.pushedAt).getTime() -
+            parseProjectDate(a.pushedAt).getTime(),
         );
       default:
         return list;
@@ -126,7 +127,7 @@ export function ProjectsFilter({ projects }: ProjectsFilterProps) {
       {/* Project grid */}
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {sorted.map((project) => (
-          <DetailedProjectCard key={project.name} project={project} />
+          <DetailedProjectCard key={project.slug} project={project} />
         ))}
       </div>
 
