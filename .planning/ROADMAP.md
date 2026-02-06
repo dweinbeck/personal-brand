@@ -3,7 +3,7 @@
 ## Milestones
 
 - v1.0 MVP - Phases 1-6 + 2.1 (shipped 2026-02-03)
-- v1.1 Page Buildout & Polish - Phases 7-10 (in progress)
+- v1.1 Page Buildout & Polish - Phases 7-10.1 (in progress)
 
 ## Phases
 
@@ -24,6 +24,7 @@ See .planning/MILESTONES.md for v1.0 details.
 - [x] **Phase 8: Projects Page** - 2-across detailed cards with tags, dates, filtering
 - [x] **Phase 9: Writing Page** - Article cards with lorem ipsum content
 - [x] **Phase 10: Contact Page Redesign** - Hero, CTAs, form UX states, privacy, analytics stubs
+- [ ] **Phase 10.1: About Page** - Accomplishments cards with detail pages, populated from resume (INSERTED)
 
 ## Phase Details
 
@@ -84,9 +85,25 @@ Plans:
 - [ ] 10-01: TBD
 - [ ] 10-02: TBD
 
+### Phase 10.1: About Page (INSERTED)
+**Goal**: Visitors can explore Dan's career accomplishments in an interactive card format
+**Depends on**: Phase 10 (card layout patterns established, site deployed)
+**Requirements**: ABOUT-01, ABOUT-02, ABOUT-03, ABOUT-04, ABOUT-05, ABOUT-06
+**Success Criteria** (what must be TRUE):
+  1. About page displays accomplishment cards in 2-across grid matching Projects/Building Blocks style
+  2. Each card shows: Company/Organization (with logo placeholder), Title, Role/Year(s) subtitle, description, and skill tags (e.g., Change Management, Strategy, Scrum)
+  3. Each card links to a detail page with Setup, Work Completed, Results, and Skills Unlocked sections
+  4. Cards populated from resume data (including Grad School, leadership/strategy work, and technical skills: R, PowerBI, Tableau, Azure)
+  5. Logo placeholders ready for company/university logos (to be uploaded later)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 10.1-01-PLAN.md — Data foundation + navigation (accomplishments.json, types, NavLinks update)
+- [ ] 10.1-02-PLAN.md — AccomplishmentCard component, About page, detail pages
+
 ## Progress
 
-**Execution Order:** Phase 7 > Phase 8 > Phase 9 > Phase 10
+**Execution Order:** Phase 7 > Phase 8 > Phase 9 > Phase 10 > Phase 10.1
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -94,7 +111,8 @@ Plans:
 | 8. Projects Page | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
 | 9. Writing Page | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
 | 10. Contact Page Redesign | v1.1 | 1/1 | ✓ Complete | 2026-02-04 |
+| 10.1 About Page | v1.1 | 0/2 | Planned | — |
 
 ---
 *Roadmap created: 2026-02-04*
-*Last updated: 2026-02-04 — all phases complete*
+*Last updated: 2026-02-05 — Phase 10.1 planned with 2 plans in 2 waves*
