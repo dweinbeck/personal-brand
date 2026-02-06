@@ -45,17 +45,17 @@ Deferred to later milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROJ-01 | — | Pending |
-| PROJ-02 | — | Pending |
-| PROJ-03 | — | Pending |
-| PROJ-04 | — | Pending |
-| ABOU-01 | — | Pending |
+| PROJ-01 | Phase 11 | Pending |
+| PROJ-02 | Phase 11 | Pending |
+| PROJ-03 | Phase 11 | Pending |
+| PROJ-04 | Phase 11 | Pending |
+| ABOU-01 | Phase 12 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 5 total
-- Mapped to phases: 0
-- Unmapped: 5 (roadmap pending)
+- Mapped to phases: 5
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after initial definition*
+*Last updated: 2026-02-06 — roadmap traceability added*

@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-04)
+See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Planning next milestone
+**Current focus:** Phase 11 - GitHub API Integration
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-06 — Milestone v1.2 started
+Phase: 11 of 12 (GitHub API Integration)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-02-06 — v1.2 roadmap created
 
-Progress: v1.1 ✓ SHIPPED | v1.2 ◆ PLANNING
+Progress: v1.0 + v1.1 SHIPPED | v1.2 [..........] 0%
 
 ## Performance Metrics
 
@@ -34,20 +34,17 @@ Progress: v1.1 ✓ SHIPPED | v1.2 ◆ PLANNING
 
 Full decision log in PROJECT.md Key Decisions table.
 
-- v1.1: Four phases ordered by risk — branding first (zero risk), contact last (most UX complexity)
-- v1.1: Analytics stubs only — no provider integration until event volume justifies it
 - v1.1: Projects page uses placeholder data (same as home page); GitHub API integration deferred
-- v1.1: Writing page ships with lorem ipsum; real articles deferred
-- v1.1: Favicon is "DW" in gold rounded square SVG
-- v1.1: OG image generated dynamically via Next.js ImageResponse (edge runtime)
-- 10.1-01: Accomplishments in reverse chronological order (newest first)
-- 10.1-01: About link positioned after Home for prominent placement
-- 10.1-02: Max 4 skill tags on cards with +N more indicator
-- 10.1-02: Detail page sections conditionally render if data exists
+- v1.1: GitHubRepo interface needs expansion for created_at, pushed_at, visibility
+- v1.1: Homepage FeaturedProjects currently uses separate hardcoded data
 
-### Roadmap Evolution
+### v1.2 Key Context
 
-- Phase 10.1 inserted after Phase 10: About Page (URGENT) — accomplishments cards with detail pages, populated from resume
+From research/SUMMARY.md:
+- GitHub API integration already exists in lib/github.ts with ISR (1-hour revalidation)
+- GitHubRepo interface needs expanded fields: created_at, pushed_at, visibility
+- Homepage/projects data unification: research suggested keeping separate (curated vs live feed) but v1.2 requirements specify unification (PROJ-04)
+- Building-blocks MDX pattern can inform project detail page structure
 
 ### Pending Todos
 
@@ -55,17 +52,15 @@ None.
 
 ### Blockers/Concerns
 
-- OG image cache busting — social platforms may cache old placeholder; use LinkedIn/Twitter debug tools post-deploy
-- metadataBase set to dweinbeck.com — verify this matches the canonical domain (dan-weinbeck.com?)
+- GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
+- README fetching: Requires additional API call per project for detail pages
 
 ## Session Continuity
 
-Last session: 2026-02-05
-Stopped at: v1.1 milestone archived
+Last session: 2026-02-06
+Stopped at: v1.2 roadmap created
 Resume file: None
 
-## Project Status
+## Next Step
 
-**v1.1 shipped!** Archived to `.planning/milestones/`.
-
-Next step: Start next milestone with `/gsd:new-milestone`
+Run `/gsd:plan-phase 11` to plan GitHub API Integration phase.
