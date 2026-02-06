@@ -1,0 +1,198 @@
+[
+  {
+    "slug": "3m-marketing-analytics-leader",
+    "title": "Built Marketing Analytics Team from Scratch",
+    "role": "Global Marketing Analytics Leader",
+    "years": "2021 - 2023",
+    "company": "3M Corporation",
+    "companyLogo": null,
+    "description": "Stood up analytics team within newly formed Marketing Center, growing from 5 to 11 employees. Designed and managed buildout of marketing performance reporting products through Microsoft Power Platform for a $13B/year business unit.",
+    "skills": [
+      "Team Leadership",
+      "Power Platform",
+      "PowerBI",
+      "Scrum",
+      "Strategic Planning"
+    ],
+    "setup": "3M's Safety & Industrial Business Group needed centralized marketing analytics capabilities after organizational restructuring. The Marketing Center was newly formed with no established analytics function, requiring a ground-up approach to team building, process development, and technology implementation.",
+    "workCompleted": "Created comprehensive team roles and responsibilities charter with skills assessments for each position. Implemented scrum workflow to manage analytics requests and project delivery. Designed and deployed marketing performance reporting using Microsoft Power Platform including PowerBI dashboards and PowerAutomate workflows. Created 3-year strategic plan for team expansion and technology investments. Assisted marketing tech stack optimization including Salesforce.com, Adobe Analytics, and Tealium integration.",
+    "results": "Grew team from 5 to 11 employees through strategic hiring and role definition. Delivered innovative segment reports reaching enterprise-wide demand generation reporting. Established repeatable processes for analytics request intake and delivery. Successfully integrated marketing technology stack for unified reporting across platforms.",
+    "skillsUnlocked": [
+      "Team Leadership",
+      "Power Platform",
+      "PowerBI",
+      "Scrum",
+      "Strategic Planning",
+      "Salesforce.com",
+      "Adobe Analytics",
+      "Tealium",
+      "Enterprise Reporting"
+    ]
+  },
+  {
+    "slug": "3m-product-owner-analytics",
+    "title": "Rebuilt Analytics Post-SAP Transition",
+    "role": "Product Owner, Analytics",
+    "years": "2019 - 2020",
+    "company": "3M Corporation",
+    "companyLogo": null,
+    "description": "Led rebuilding of 65+ analytics products following major SAP ERP Go-Live. Managed stakeholder relationships across 1200+ users while implementing Agile/Scrum methodologies and establishing data governance frameworks.",
+    "skills": [
+      "Agile/Scrum",
+      "Product Ownership",
+      "SAP",
+      "Data Governance",
+      "Report Development"
+    ],
+    "setup": "3M's US business unit underwent a major SAP ERP implementation, rendering existing analytics and reporting infrastructure obsolete. Over 65 reports serving 1200+ stakeholders needed to be rebuilt from scratch with new data sources, logic, and delivery mechanisms.",
+    "workCompleted": "Adopted Agile/Scrum methodology to prioritize and manage report development backlog. Partnered with IT and business stakeholders to translate requirements into technical specifications. Established data governance frameworks to ensure consistency and accuracy across rebuilt reports. Managed cross-functional teams to deliver reports on compressed timelines while maintaining quality standards.",
+    "results": "Successfully rebuilt all 65+ critical analytics products within aggressive post-Go-Live timelines. Maintained stakeholder satisfaction across 1200+ users during transition period. Established data governance practices that improved report accuracy and reduced maintenance burden. Created reusable templates and patterns that accelerated future report development.",
+    "skillsUnlocked": [
+      "Agile/Scrum",
+      "Product Ownership",
+      "SAP",
+      "Data Governance",
+      "Report Development",
+      "Stakeholder Management",
+      "Change Management"
+    ]
+  },
+  {
+    "slug": "3m-data-science-manager",
+    "title": "Deployed Enterprise Sales Software",
+    "role": "Data Science Team Manager",
+    "years": "2016 - 2018",
+    "company": "3M Corporation",
+    "companyLogo": null,
+    "description": "Managed team of 9 direct reports delivering advanced analytics and data science solutions. Deployed sales software across 400+ employees and built customer segmentation models analyzing 400K+ customer records.",
+    "skills": [
+      "Team Management",
+      "R",
+      "Customer Segmentation",
+      "Sales Software",
+      "Statistical Modeling"
+    ],
+    "setup": "The Consumer Business Group needed to modernize its sales approach with data-driven tools and insights. Sales teams lacked systematic methods for prioritizing customer outreach, and marketing needed better segmentation for targeted campaigns.",
+    "workCompleted": "Managed team of 9 data scientists and analysts delivering analytics solutions. Designed and deployed R Shiny-based sales software providing actionable insights to 400+ field sales employees. Built customer segmentation models using statistical techniques on 400K+ customer records. Created product recommendation algorithms to guide cross-sell and upsell opportunities.",
+    "results": "Deployed sales software adopted by 400+ employees across the sales organization. Delivered customer segmentation powering targeted marketing campaigns with improved conversion rates. Established data science practices and code standards that improved team efficiency and output quality.",
+    "skillsUnlocked": [
+      "Team Management",
+      "R",
+      "R Shiny",
+      "Customer Segmentation",
+      "Sales Software",
+      "Statistical Modeling",
+      "Product Recommendations",
+      "People Leadership"
+    ]
+  },
+  {
+    "slug": "darden-finance-intern",
+    "title": "Analyzed 130M Transaction Rows",
+    "role": "Finance Intern - Advanced Analytics",
+    "years": "Summer 2015",
+    "company": "Darden Restaurants",
+    "companyLogo": null,
+    "description": "Built customer segmentation models analyzing 130 million transaction rows to power targeted marketing campaigns. Developed SQL queries and R models to identify high-value customer segments for Olive Garden and LongHorn Steakhouse brands.",
+    "skills": [
+      "SQL",
+      "R",
+      "Tableau",
+      "Customer Segmentation",
+      "Marketing Analytics"
+    ],
+    "setup": "Darden Restaurants, parent company of Olive Garden and LongHorn Steakhouse, wanted to leverage its massive transaction data to better understand customer behavior and improve marketing effectiveness. The analytics team needed to process and analyze 130 million rows of transaction data.",
+    "workCompleted": "Developed complex SQL queries to extract and transform transaction data for analysis. Built customer segmentation models in R identifying distinct behavioral clusters. Created Tableau dashboards visualizing customer segments and their characteristics. Collaborated with marketing teams to translate analytical insights into campaign strategies.",
+    "results": "Delivered customer segmentation models that powered targeted marketing campaigns. Identified high-value customer segments with actionable characteristics for marketing targeting. Created reusable analytical frameworks that continued to generate insights after internship concluded.",
+    "skillsUnlocked": [
+      "SQL",
+      "R",
+      "Tableau",
+      "Customer Segmentation",
+      "Marketing Analytics",
+      "Big Data Analysis",
+      "Restaurant Industry"
+    ]
+  },
+  {
+    "slug": "disney-forecasting-intern",
+    "title": "Modernized WDW Reporting Infrastructure",
+    "role": "Forecasting Intern - Revenue Management",
+    "years": "2014",
+    "company": "Walt Disney World",
+    "companyLogo": null,
+    "description": "Converted legacy Excel-based reporting to interactive Tableau dashboards for the Revenue Management team. Developed market report dashboards and supported Walt Disney World attendance forecasting initiatives.",
+    "skills": [
+      "SAS",
+      "Tableau",
+      "Excel",
+      "Forecasting",
+      "Dashboard Development"
+    ],
+    "setup": "Walt Disney World's Revenue Management team relied on manual Excel-based processes for critical reporting and forecasting. These processes were time-consuming, error-prone, and limited the team's ability to explore data and identify insights.",
+    "workCompleted": "Converted manual Excel reporting processes to automated Tableau dashboards. Developed market report dashboards providing real-time visibility into key performance metrics. Supported attendance forecasting initiatives using SAS statistical modeling. Created documentation and training materials to enable team adoption of new tools.",
+    "results": "Delivered Tableau dashboards that reduced reporting time from hours to minutes. Improved data accuracy by eliminating manual data entry and transformation steps. Enabled self-service analytics allowing team members to explore data independently. Contributed forecasting support that improved attendance prediction accuracy.",
+    "skillsUnlocked": [
+      "SAS",
+      "Tableau",
+      "Excel",
+      "Forecasting",
+      "Dashboard Development",
+      "Process Automation",
+      "Theme Park Industry"
+    ]
+  },
+  {
+    "slug": "iowa-mba-analytics",
+    "title": "MBA with Analytics Specialization",
+    "role": "Graduate Student",
+    "years": "2013 - 2015",
+    "company": "University of Iowa Tippie School of Business",
+    "companyLogo": null,
+    "description": "Earned MBA with specialization in Analytics, graduating with 3.81 GPA. Achieved GMAT score of 760 (99th percentile). Served as Graduate Assistant while completing rigorous coursework in statistics, marketing analytics, and data science.",
+    "skills": [
+      "Analytics",
+      "Marketing Analytics",
+      "Statistics",
+      "Academic Research"
+    ],
+    "setup": "After several years in industry, pursued an MBA to formalize business knowledge and develop deeper analytical capabilities. The University of Iowa's Tippie School offered a specialized analytics track that combined business fundamentals with advanced quantitative methods.",
+    "workCompleted": "Completed comprehensive MBA curriculum with specialization in Analytics. Coursework included advanced statistics, marketing analytics, financial modeling, and strategic management. Served as Graduate Assistant supporting faculty research and teaching. Collaborated on team projects applying analytical methods to real business problems.",
+    "results": "Graduated with 3.81 GPA demonstrating academic excellence. GMAT score of 760 (99th percentile) reflected strong quantitative and verbal abilities. Gained deep foundation in analytical methods that informed subsequent career progression. Built network of professionals in analytics and business leadership.",
+    "skillsUnlocked": [
+      "Analytics",
+      "Marketing Analytics",
+      "Statistics",
+      "Academic Research",
+      "Financial Modeling",
+      "Strategic Management",
+      "Business Communication"
+    ]
+  },
+  {
+    "slug": "tufts-ba-spanish",
+    "title": "Bachelor of Arts in Spanish",
+    "role": "Undergraduate Student",
+    "years": "2002 - 2006",
+    "company": "Tufts University",
+    "companyLogo": null,
+    "description": "Earned BA in Spanish from Tufts University, achieving bilingual fluency in English and Spanish. Liberal arts education provided strong foundation in critical thinking, communication, and cross-cultural understanding.",
+    "skills": [
+      "Spanish Language",
+      "Communication",
+      "Critical Thinking",
+      "Cross-Cultural Understanding"
+    ],
+    "setup": "Pursued undergraduate education at Tufts University with a focus on Spanish language and literature. The rigorous liberal arts curriculum emphasized analytical thinking, clear communication, and exposure to diverse perspectives.",
+    "workCompleted": "Completed Spanish major curriculum including advanced language, literature, and culture courses. Developed bilingual fluency through immersive coursework and study. Engaged with diverse liberal arts curriculum spanning humanities, social sciences, and natural sciences. Participated in campus activities and organizations.",
+    "results": "Achieved bilingual fluency in English and Spanish, a skill that has enhanced professional communication throughout career. Developed strong written and verbal communication abilities through rigorous humanities coursework. Built foundation in critical thinking that supports analytical problem-solving in professional contexts.",
+    "skillsUnlocked": [
+      "Spanish Language",
+      "Communication",
+      "Critical Thinking",
+      "Cross-Cultural Understanding",
+      "Liberal Arts Foundation",
+      "Written Communication"
+    ]
+  }
+]
