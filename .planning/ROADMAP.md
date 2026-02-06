@@ -55,10 +55,10 @@ Plans:
   1. Each accomplishment card displays the relevant company or university logo
   2. Logos are appropriately sized and positioned on cards
   3. Logos work on both light backgrounds and maintain brand recognition
-**Plans**: TBD
+**Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 12-01: TBD
+- [ ] 12-01-PLAN.md — Add logo files and update accomplishment data with logo paths
 
 ## Progress
 
@@ -67,8 +67,8 @@ Plans:
 | 1-6 + 2.1 | v1.0 | 14/14 | Complete | 2026-02-03 |
 | 7-10.1 | v1.1 | 6/6 | Complete | 2026-02-05 |
 | 11. GitHub API Integration | v1.2 | 3/3 | Complete | 2026-02-06 |
-| 12. About Page Logos | v1.2 | 0/TBD | Not started | - |
+| 12. About Page Logos | v1.2 | 0/1 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-04*
-*Last updated: 2026-02-06 — Phase 11 complete (3/3 plans)*
+*Last updated: 2026-02-06 — Phase 12 planned (1 plan)*
