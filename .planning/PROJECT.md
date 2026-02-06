@@ -43,12 +43,22 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - [ ] Real article content with MDX authoring pipeline
 - [ ] Company/university logos for About page accomplishments
 
+## Current Milestone: v1.2 Content & Data Integration
+
+**Goal:** Replace placeholder data with live sources and real content across the site.
+
+**Target features:**
+- Live GitHub API integration replacing placeholder project data
+- Individual project detail pages
+- Real article content with MDX authoring pipeline
+- Company/university logos for About page accomplishments
+
 ## Current State
 
 **Shipped:** v1.1 on 2026-02-05
 **Live at:** https://personal-brand-130830385601.us-central1.run.app
 
-Ready for next milestone planning.
+Building v1.2.
 
 ### Out of Scope
 
@@ -99,4 +109,4 @@ Ready for next milestone planning.
 | Blog as stub | Content creation comes after the site is live | — Pending |
 
 ---
-*Last updated: 2026-02-05 after v1.1 milestone complete*
+*Last updated: 2026-02-06 after v1.2 milestone started*

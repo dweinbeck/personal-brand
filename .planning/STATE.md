@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: N/A (between milestones)
-Plan: N/A
-Status: Ready for next milestone
-Last activity: 2026-02-05 — v1.1 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-06 — Milestone v1.2 started
 
-Progress: v1.1 ✓ SHIPPED
+Progress: v1.1 ✓ SHIPPED | v1.2 ◆ PLANNING
 
 ## Performance Metrics
 
