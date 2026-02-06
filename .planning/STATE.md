@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 11 of 12 (GitHub API Integration)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-06 — v1.2 roadmap created
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-06 - Completed 11-01-PLAN.md
 
-Progress: v1.0 + v1.1 SHIPPED | v1.2 [..........] 0%
+Progress: v1.0 + v1.1 SHIPPED | v1.2 [##........] 10%
 
 ## Performance Metrics
 
@@ -28,6 +28,9 @@ Progress: v1.0 + v1.1 SHIPPED | v1.2 [..........] 0%
 - Requirements delivered: 38/38
 - Phase 10.1: 2 plans in 2 waves
 
+**v1.2 Velocity:**
+- Phase 11: Plan 1 completed (4 min)
+
 ## Accumulated Context
 
 ### Decisions
@@ -37,6 +40,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - v1.1: Projects page uses placeholder data (same as home page); GitHub API integration deferred
 - v1.1: GitHubRepo interface needs expansion for created_at, pushed_at, visibility
 - v1.1: Homepage FeaturedProjects currently uses separate hardcoded data
+- v1.2 (11-01): Featured projects: personal-brand, bus-multiplier, envelope app, 60-second lesson
+- v1.2 (11-01): Private repos get visibility: private with curated-only data
+- v1.2 (11-01): Keep fetchGitHubProjects for backwards compatibility
 
 ### v1.2 Key Context
 
@@ -45,6 +51,11 @@ From research/SUMMARY.md:
 - GitHubRepo interface needs expanded fields: created_at, pushed_at, visibility
 - Homepage/projects data unification: research suggested keeping separate (curated vs live feed) but v1.2 requirements specify unification (PROJ-04)
 - Building-blocks MDX pattern can inform project detail page structure
+
+From 11-01-SUMMARY.md:
+- ProjectConfig and EnrichedProject types created
+- fetchAllProjects, fetchProjectBySlug, fetchReadme implemented with ISR
+- Curated config pattern: projects.json holds metadata, API enriches with live data
 
 ### Pending Todos
 
@@ -58,9 +69,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: v1.2 roadmap created
+Stopped at: Completed 11-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Run `/gsd:plan-phase 11` to plan GitHub API Integration phase.
+Run `/gsd:execute-phase 11` to execute 11-02-PLAN.md (Projects page integration).
