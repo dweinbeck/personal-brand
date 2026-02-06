@@ -1,4 +1,5 @@
 import { upsertFact, deleteFact } from "@/lib/assistant/facts-store";
+import { verifyAdmin, unauthorizedResponse } from "@/lib/auth/admin";
 import { z } from "zod";
 
 const upsertSchema = z.object({
@@ -15,6 +16,10 @@ const upsertSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const auth = await verifyAdmin(request);
+  if (!auth.authorized) {
+    return unauthorizedResponse(auth);
+  }
   let body: unknown;
   try {
     body = await request.json();
@@ -48,6 +53,11 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const auth = await verifyAdmin(request);
+  if (!auth.authorized) {
+    return unauthorizedResponse(auth);
+  }
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
 

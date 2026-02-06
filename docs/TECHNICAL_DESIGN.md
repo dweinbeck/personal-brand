@@ -208,12 +208,14 @@ src/components/
 
 ### Admin Control Center
 
-1. `AdminGuard` checks `user.email === "daniel.weinbeck@gmail.com"` via `AuthContext`
+1. `AdminGuard` checks `user.email === "daniel.weinbeck@gmail.com"` via `AuthContext` (client-side UI protection)
 2. Non-admin users are redirected to home
 3. `NavLinks` conditionally renders "Control Center" link for admin
 4. Server component fetches all GitHub repos via authenticated `/user/repos` endpoint
 5. README purpose extracted by decoding base64 content and finding first meaningful paragraph
 6. Todoist projects fetched server-side; task counts resolved in parallel
+7. Admin API routes (`/api/assistant/facts`, `/api/assistant/reindex`, `/api/assistant/prompt-versions`) require server-side auth via `verifyAdmin()` — validates Firebase ID token and checks email
+8. Client components use `useIdToken` hook to include `Authorization: Bearer <idToken>` header in admin API requests
 
 ### Todoist Integration
 

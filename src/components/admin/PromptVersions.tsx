@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PromptVersion } from "@/lib/assistant/prompt-versions";
+import { useIdToken, authHeaders } from "@/hooks/useIdToken";
 
 type Props = {
   versions: PromptVersion[];
@@ -10,12 +11,14 @@ type Props = {
 export function PromptVersions({ versions: initialVersions }: Props) {
   const [versions, setVersions] = useState(initialVersions);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const getIdToken = useIdToken();
 
   async function handleRollback(versionId: string) {
     try {
+      const headers = await authHeaders(getIdToken);
       await fetch("/api/assistant/prompt-versions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify({ action: "rollback", versionId }),
       });
       setVersions(

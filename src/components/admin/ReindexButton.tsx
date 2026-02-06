@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useIdToken, authHeaders } from "@/hooks/useIdToken";
 
 export function ReindexButton() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const getIdToken = useIdToken();
 
   async function handleReindex() {
     setLoading(true);
     try {
-      await fetch("/api/assistant/reindex", { method: "POST" });
+      const headers = await authHeaders(getIdToken);
+      await fetch("/api/assistant/reindex", { method: "POST", headers });
       setDone(true);
       setTimeout(() => setDone(false), 3000);
     } catch {

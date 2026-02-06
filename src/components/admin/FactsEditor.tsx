@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Fact, FactCategory } from "@/lib/assistant/facts-store";
+import { useIdToken, authHeaders } from "@/hooks/useIdToken";
 
 const CATEGORIES: FactCategory[] = [
   "canon",
@@ -22,6 +23,7 @@ export function FactsEditor({ initialFacts }: Props) {
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
   const [saving, setSaving] = useState(false);
+  const getIdToken = useIdToken();
 
   const filtered = facts.filter((f) => f.category === activeTab);
 
@@ -29,9 +31,10 @@ export function FactsEditor({ initialFacts }: Props) {
     if (!newKey.trim() || !newValue.trim()) return;
     setSaving(true);
     try {
+      const headers = await authHeaders(getIdToken);
       const res = await fetch("/api/assistant/facts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify({
           category: activeTab,
           key: newKey,
@@ -57,7 +60,8 @@ export function FactsEditor({ initialFacts }: Props) {
 
   async function handleDelete(factId: string) {
     try {
-      await fetch(`/api/assistant/facts?id=${factId}`, { method: "DELETE" });
+      const headers = await authHeaders(getIdToken);
+      await fetch(`/api/assistant/facts?id=${factId}`, { method: "DELETE", headers });
       setFacts(facts.filter((f) => f.id !== factId));
     } catch {
       // handle error
