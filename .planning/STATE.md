@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 11 of 12 (GitHub API Integration)
-Plan: 3 of 3 in current phase (11-02 pending)
-Status: In progress
-Last activity: 2026-02-06 - Completed 11-03-PLAN.md
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-02-06 - Completed 11-02-PLAN.md
 
-Progress: v1.0 + v1.1 SHIPPED | v1.2 [###.......] 20%
+Progress: v1.0 + v1.1 SHIPPED | v1.2 [###.......] 30%
 
 ## Performance Metrics
 
@@ -29,8 +29,8 @@ Progress: v1.0 + v1.1 SHIPPED | v1.2 [###.......] 20%
 - Phase 10.1: 2 plans in 2 waves
 
 **v1.2 Velocity:**
-- Phase 11: Plans 1, 3 completed (4 min, 2 min)
-- Plan 2 uncommitted changes in working directory
+- Phase 11: 3 plans completed (4 min, 4 min, 2 min)
+- Total phase time: ~10 min
 
 ## Accumulated Context
 
@@ -44,6 +44,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - v1.2 (11-01): Featured projects: personal-brand, bus-multiplier, envelope app, 60-second lesson
 - v1.2 (11-01): Private repos get visibility: private with curated-only data
 - v1.2 (11-01): Keep fetchGitHubProjects for backwards compatibility
+- v1.2 (11-02): Use ISO date formatting with Intl.DateTimeFormat
+- v1.2 (11-02): Private repos show curated data only with explanatory message
 - v1.2 (11-03): Max 6 featured projects on homepage
 - v1.2 (11-03): Sitemap uses pushedAt from GitHub API for lastModified
 
@@ -60,6 +62,11 @@ From 11-01-SUMMARY.md:
 - fetchAllProjects, fetchProjectBySlug, fetchReadme implemented with ISR
 - Curated config pattern: projects.json holds metadata, API enriches with live data
 
+From 11-02-SUMMARY.md:
+- Projects page fetches from fetchAllProjects() (PROJ-01 complete)
+- /projects/[slug] detail pages with README rendering (PROJ-02, PROJ-03 complete)
+- DetailedProjectCard uses EnrichedProject with ISO date formatting
+
 From 11-03-SUMMARY.md:
 - Homepage FeaturedProjects now uses fetchAllProjects() (PROJ-04 complete)
 - ProjectCard links to /projects/[slug] detail pages
@@ -67,20 +74,19 @@ From 11-03-SUMMARY.md:
 
 ### Pending Todos
 
-- Complete 11-02-PLAN.md (uncommitted changes in working directory)
+None.
 
 ### Blockers/Concerns
 
 - GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
 - README fetching: Requires additional API call per project for detail pages
-- 11-02 changes uncommitted: Projects page and detail page work exists but not committed
 
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 11-03-PLAN.md
+Stopped at: Completed Phase 11 (all 3 plans)
 Resume file: None
 
 ## Next Step
 
-Run `/gsd:execute-phase 11` to execute 11-02-PLAN.md (Projects page integration) - note: uncommitted changes exist.
+Phase 11 complete. Run `/gsd:execute-phase 12` for Phase 12 (Homepage Unification) or `/gsd:ship-milestone v1.2` if all phases complete.
