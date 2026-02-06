@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.1 Page Buildout & Polish — all phases complete
+**Current focus:** v1.1 Page Buildout & Polish — Phase 10.1 About Page
 
 ## Current Position
 
-Phase: All v1.1 phases complete (7-10)
-Plan: N/A
-Status: Milestone complete — ready for verification/deploy
-Last activity: 2026-02-04 — All 4 phases executed in parallel
+Phase: 10.1 About Page (INSERTED)
+Plan: 01 of 3 complete
+Status: In progress
+Last activity: 2026-02-06 — Completed 10.1-01-PLAN.md (data foundation)
 
-Progress: v1.1 [██████████████] 100%
+Progress: v1.1 [████████████░░] 83% (4.33/5.25 phases)
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.1 [██████████████] 100%
 - Total execution time: ~42 min
 
 **v1.1 Velocity:**
-- Phases completed: 4 (7-10)
-- Requirements delivered: 32/32
+- Phases completed: 4 (7-10) + 0.33 (10.1 plan 1/3)
+- Requirements delivered: 32/32 + 3 (10.1 plan 01)
 - Executed in parallel
 
 ## Accumulated Context
@@ -40,6 +40,12 @@ Full decision log in PROJECT.md Key Decisions table.
 - v1.1: Writing page ships with lorem ipsum; real articles deferred
 - v1.1: Favicon is "DW" in gold rounded square SVG
 - v1.1: OG image generated dynamically via Next.js ImageResponse (edge runtime)
+- 10.1-01: Accomplishments in reverse chronological order (newest first)
+- 10.1-01: About link positioned after Home for prominent placement
+
+### Roadmap Evolution
+
+- Phase 10.1 inserted after Phase 10: About Page (URGENT) — accomplishments cards with detail pages, populated from resume
 
 ### Pending Todos
 
@@ -52,12 +58,12 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-04
-Stopped at: v1.1 milestone complete. All phases shipped.
+Last session: 2026-02-06
+Stopped at: Completed 10.1-01-PLAN.md (data foundation)
 Resume file: None
 
 ## Project Status
 
-**v1.1 complete!** All 32 requirements delivered across 4 phases.
+**v1.1 in progress** — Phase 10.1 Plan 01 complete. Data foundation ready for card and page development.
 
-Next step: Deploy to Cloud Run and verify live site.
+Next step: Execute Plan 02 (AccomplishmentCard component and About page)
