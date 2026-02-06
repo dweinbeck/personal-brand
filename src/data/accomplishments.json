@@ -5,6 +5,7 @@
     "role": "Global Marketing Analytics Leader",
     "years": "2021 - 2023",
     "company": "3M Corporation",
+    "location": "St. Paul, MN",
     "companyLogo": "/images/logos/3m.svg",
     "description": "Stood up analytics team within newly formed Marketing Center, growing from 5 to 11 employees. Designed and managed buildout of marketing performance reporting products through Microsoft Power Platform for a $13B/year business unit.",
     "skills": [
@@ -35,6 +36,7 @@
     "role": "Product Owner, Analytics",
     "years": "2019 - 2020",
     "company": "3M Corporation",
+    "location": "St. Paul, MN",
     "companyLogo": "/images/logos/3m.svg",
     "description": "Led rebuilding of 65+ analytics products following major SAP ERP Go-Live. Managed stakeholder relationships across 1200+ users while implementing Agile/Scrum methodologies and establishing data governance frameworks.",
     "skills": [
@@ -63,6 +65,7 @@
     "role": "Data Science Team Manager",
     "years": "2016 - 2018",
     "company": "3M Corporation",
+    "location": "St. Paul, MN",
     "companyLogo": "/images/logos/3m.svg",
     "description": "Managed team of 9 direct reports delivering advanced analytics and data science solutions. Deployed sales software across 400+ employees and built customer segmentation models analyzing 400K+ customer records.",
     "skills": [
@@ -92,6 +95,7 @@
     "role": "Finance Intern - Advanced Analytics",
     "years": "Summer 2015",
     "company": "Darden Restaurants",
+    "location": "Orlando, FL",
     "companyLogo": "/images/logos/darden.svg",
     "description": "Built customer segmentation models analyzing 130 million transaction rows to power targeted marketing campaigns. Developed SQL queries and R models to identify high-value customer segments for Olive Garden and LongHorn Steakhouse brands.",
     "skills": [
@@ -120,6 +124,7 @@
     "role": "Forecasting Intern - Revenue Management",
     "years": "2014",
     "company": "Walt Disney World",
+    "location": "Orlando, FL",
     "companyLogo": "/images/logos/disney.svg",
     "description": "Converted legacy Excel-based reporting to interactive Tableau dashboards for the Revenue Management team. Developed market report dashboards and supported Walt Disney World attendance forecasting initiatives.",
     "skills": [
@@ -148,6 +153,7 @@
     "role": "Graduate Student",
     "years": "2013 - 2015",
     "company": "University of Iowa Tippie School of Business",
+    "location": "Iowa City, IA",
     "companyLogo": "/images/logos/iowa.svg",
     "description": "Earned MBA with specialization in Analytics, graduating with 3.81 GPA. Achieved GMAT score of 760 (99th percentile). Served as Graduate Assistant while completing rigorous coursework in statistics, marketing analytics, and data science.",
     "skills": [
@@ -175,6 +181,7 @@
     "role": "Undergraduate Student",
     "years": "2002 - 2006",
     "company": "Tufts University",
+    "location": "Medford, MA",
     "companyLogo": "/images/logos/tufts.svg",
     "description": "Earned BA in Spanish from Tufts University, achieving bilingual fluency in English and Spanish. Liberal arts education provided strong foundation in critical thinking, communication, and cross-cultural understanding.",
     "skills": [

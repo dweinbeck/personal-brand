@@ -25,9 +25,15 @@ export function AccomplishmentCard({
         {accomplishment.role} &bull; {accomplishment.years}
       </p>
 
-      {/* Company/Organization name */}
+      {/* Company/Organization name and location */}
       <p className="mt-3 text-sm font-medium text-text-secondary">
         {accomplishment.company}
+        {accomplishment.location && (
+          <span className="text-text-tertiary font-normal">
+            {" "}
+            &bull; {accomplishment.location}
+          </span>
+        )}
       </p>
 
       {/* Description */}

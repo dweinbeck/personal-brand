@@ -6,6 +6,7 @@ export interface Accomplishment {
   role: string;
   years: string;
   company: string;
+  location?: string;
   companyLogo?: string | null;
   description: string;
   skills: string[];
