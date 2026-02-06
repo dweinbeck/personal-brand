@@ -1,51 +1,65 @@
 [
   {
+    "slug": "personal-brand",
+    "repo": "dweinbeck/personal-brand",
+    "featured": true,
+    "status": "Live",
+    "name": "Personal Brand Website",
+    "description": "This very site \u2014 built with Next.js 16, Tailwind CSS 4, Firebase, and deployed on Google Cloud Run. Features an AI assistant, contact form, project showcase, and admin control center.",
+    "tags": ["Next.js", "TypeScript", "Firebase", "GCP"]
+  },
+  {
+    "slug": "chicago-bus-text-multiplier",
+    "repo": "dweinbeck/chicago-bus-text-multiplier",
+    "featured": true,
+    "status": "Live",
+    "name": "Chicago Bus Text-Multiplier",
+    "description": "Stop relying on inaccurate bus arrival times. Integrates with the CTA API and Twilio to provide real-time multi-stop comparisons via SMS, using the only source that's consistently accurate \u2014 texting the bus stop number.",
+    "tags": ["Twilio", "Python", "CTA API"]
+  },
+  {
+    "slug": "envelope-budget-app",
+    "repo": null,
+    "featured": true,
+    "status": "In Development",
     "name": "Dave Ramsey Digital Envelope App",
     "description": "A full-featured budget management app implementing the popular envelope method for personal finance. Users can allocate funds across custom categories, track real-time spending, and manage month-to-month rollovers.",
-    "tags": ["React Native", "Firebase", "Fintech"],
+    "tags": ["React Native", "Firebase", "Fintech"]
+  },
+  {
+    "slug": "60-second-lesson",
+    "repo": null,
+    "featured": true,
     "status": "In Development",
-    "url": "/projects"
-  },
-  {
-    "name": "Chicago Bus Text-Multiplier",
-    "description": "Stop relying on inaccurate bus arrival times. Integrates with the CTA API and Twilio to provide real-time multi-stop comparisons via SMS, using the only source that's consistently accurate — texting the bus stop number.",
-    "tags": ["Twilio", "Python", "CTA API"],
-    "status": "Live",
-    "url": "/projects"
-  },
-  {
     "name": "60-Second Lesson",
     "description": "A micro-learning platform that delivers bite-sized lessons in under a minute. Each lesson is AI-generated based on trending topics and user interests, with spaced repetition to reinforce retention.",
-    "tags": ["Next.js", "AI", "Education"],
+    "tags": ["Next.js", "AI", "Education"]
+  },
+  {
+    "slug": "research-assistant",
+    "repo": null,
+    "featured": false,
     "status": "In Development",
-    "url": "/projects"
-  },
-  {
-    "name": "Month-Grid Habit Tracker",
-    "description": "A minimalist habit tracker designed for iPhone lock screen widgets. See your entire month at a glance with a simple grid that fills in as you complete habits. Built natively with Swift and WidgetKit.",
-    "tags": ["Swift", "WidgetKit", "iOS"],
-    "status": "Planning",
-    "url": "/projects"
-  },
-  {
     "name": "Research Assistant",
     "description": "Get opinions from multiple LLMs at one time for things that matter. Submit a single prompt and receive structured, side-by-side responses from GPT-4, Claude, and Gemini with source attribution.",
-    "tags": ["Multi-LLM", "Python", "AI"],
-    "status": "In Development",
-    "url": "/projects"
+    "tags": ["Multi-LLM", "Python", "AI"]
   },
   {
+    "slug": "promptos",
+    "repo": null,
+    "featured": false,
+    "status": "Planning",
     "name": "PromptOS",
     "description": "An intelligence layer between a user and an LLM to optimize outcomes. Automatically rewrites prompts for clarity, manages context windows, and applies domain-specific templates.",
-    "tags": ["TypeScript", "AI", "DevTools"],
-    "status": "Planning",
-    "url": "/projects"
+    "tags": ["TypeScript", "AI", "DevTools"]
   },
   {
-    "name": "Personal Brand Website",
-    "description": "This very site — built with Next.js 16, Tailwind CSS 4, Firebase, and deployed on Google Cloud Run. Features an AI assistant, contact form, project showcase, and admin control center.",
-    "tags": ["Next.js", "TypeScript", "Firebase", "GCP"],
-    "status": "Live",
-    "url": "/"
+    "slug": "month-grid-habit-tracker",
+    "repo": null,
+    "featured": false,
+    "status": "Planning",
+    "name": "Month-Grid Habit Tracker",
+    "description": "A minimalist habit tracker designed for iPhone lock screen widgets. See your entire month at a glance with a simple grid that fills in as you complete habits. Built natively with Swift and WidgetKit.",
+    "tags": ["Swift", "WidgetKit", "iOS"]
   }
 ]
