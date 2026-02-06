@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next";
 
 import { getAllTutorials } from "@/lib/tutorials";
+import { fetchAllProjects } from "@/lib/github";
 
 const BASE_URL = "https://dweinbeck.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tutorials = await getAllTutorials();
+  const projects = await fetchAllProjects();
 
   const tutorialUrls: MetadataRoute.Sitemap = tutorials
     .filter((t) => !Number.isNaN(new Date(t.metadata.publishedAt).getTime()))
@@ -56,5 +58,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     },
     ...tutorialUrls,
+    // Project detail pages from GitHub API
+    ...projects.map((p) => ({
+      url: `${BASE_URL}/projects/${p.slug}`,
+      lastModified: p.pushedAt ? new Date(p.pushedAt) : now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
   ];
 }
