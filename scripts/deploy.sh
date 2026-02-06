@@ -6,6 +6,20 @@ set -euo pipefail
 # Usage: ./scripts/deploy.sh <GCP_PROJECT_ID> [REGION]
 # ============================================================
 
+# Auto-source .env.local for NEXT_PUBLIC_* vars needed at build time
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="${SCRIPT_DIR}/../.env.local"
+
+if [[ -f "$ENV_FILE" ]]; then
+  echo "==> Sourcing environment from .env.local"
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
+  echo "⚠️  Warning: .env.local not found. NEXT_PUBLIC_* vars may be missing."
+  echo "   Create .env.local from .env.local.example before deploying."
+fi
+
 PROJECT_ID="${1:?Usage: ./scripts/deploy.sh <GCP_PROJECT_ID> [REGION]}"
 REGION="${2:-us-central1}"
 SERVICE_NAME="personal-brand"
