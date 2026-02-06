@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="transparent"/>
+  <!-- Darden Restaurants logo - stylized D with leaf motif -->
+  <path d="M8 6 L8 26 L16 26 C22 26 26 22 26 16 C26 10 22 6 16 6 L8 6 Z" fill="none" stroke="#1B365D" stroke-width="2.5"/>
+  <path d="M12 10 L12 22 L16 22 C20 22 22 19 22 16 C22 13 20 10 16 10 L12 10 Z" fill="#1B365D"/>
+  <!-- Leaf accent -->
+  <path d="M18 8 Q22 4 26 6 Q24 10 20 10" fill="#4A8C2A" stroke="none"/>
+</svg>

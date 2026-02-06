@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="transparent"/>
+  <!-- University of Iowa Tigerhawk logo -->
+  <g transform="translate(2, 4)">
+    <!-- Hawk head silhouette in Iowa gold/black -->
+    <path d="M14 0
+             C8 0 4 4 4 10
+             L4 14
+             C4 18 6 22 10 24
+             L2 24
+             L2 22
+             L0 22
+             L0 24
+             L10 24
+             C14 24 18 22 20 18
+             L24 24
+             L28 24
+             L28 22
+             L26 22
+             L26 24
+             L20 18
+             C22 14 24 10 24 8
+             C24 4 20 0 14 0 Z"
+          fill="#FFCD00"/>
+    <!-- Eye -->
+    <circle cx="12" cy="10" r="2" fill="#000000"/>
+    <!-- Beak detail -->
+    <path d="M4 14 L0 16 L4 18" fill="#000000"/>
+  </g>
+</svg>

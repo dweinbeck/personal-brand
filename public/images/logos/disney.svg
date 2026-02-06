@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="transparent"/>
+  <!-- Disney castle silhouette -->
+  <g fill="#1A1A6C">
+    <!-- Main castle body -->
+    <rect x="8" y="18" width="16" height="10" rx="1"/>
+    <!-- Central tower -->
+    <rect x="13" y="8" width="6" height="12"/>
+    <polygon points="16,3 13,8 19,8"/>
+    <!-- Left tower -->
+    <rect x="6" y="14" width="4" height="6"/>
+    <polygon points="8,10 6,14 10,14"/>
+    <!-- Right tower -->
+    <rect x="22" y="14" width="4" height="6"/>
+    <polygon points="24,10 22,14 26,14"/>
+    <!-- Small spires -->
+    <polygon points="10,15 9,18 11,18"/>
+    <polygon points="22,15 21,18 23,18"/>
+    <!-- Flag poles -->
+    <line x1="8" y1="10" x2="8" y2="7" stroke="#1A1A6C" stroke-width="0.8"/>
+    <line x1="16" y1="3" x2="16" y2="0" stroke="#1A1A6C" stroke-width="0.8"/>
+    <line x1="24" y1="10" x2="24" y2="7" stroke="#1A1A6C" stroke-width="0.8"/>
+  </g>
+  <!-- Entrance arch -->
+  <path d="M13 28 L13 24 Q16 21 19 24 L19 28" fill="#FFFFFF"/>
+</svg>
