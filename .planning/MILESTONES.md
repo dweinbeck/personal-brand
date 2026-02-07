@@ -1,5 +1,32 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.2 Content & Data Integration (Shipped: 2026-02-07)
+
+**Delivered:** Live GitHub API integration replacing placeholder project data, individual project detail pages with README rendering, and company/university logos on About page accomplishment cards.
+
+**Phases completed:** 11-12 (4 plans total)
+
+**Key accomplishments:**
+
+- Live GitHub API integration with ISR caching — projects page fetches real repository data
+- Individual project detail pages at `/projects/[slug]` with full README rendering via react-markdown
+- Homepage featured projects unified with projects page data source (eliminated duplicate hardcoded data)
+- SEO sitemap expansion with dynamic project detail page URLs and GitHub API dates
+- Company/university SVG logos (3M, Darden, Disney, Iowa, Tufts) on About page accomplishment cards
+
+**Stats:**
+
+- 29 files changed
+- +1,256 / -425 lines (net +831)
+- 2 phases, 4 plans, 8 tasks
+- 2 days (Feb 6-7, 2026)
+
+**Git range:** `e85fefc` → `599f9b9`
+
+**What's next:** Real writing content, article authoring pipeline, further site polish
+
+---
+
 ## v1.1 Page Buildout & Polish (Shipped: 2026-02-05)
 
 **Delivered:** Enhanced page content across Projects, Writing, Contact, and a new About page with accomplishment cards and detail pages. Polished branding with custom favicon, OG image, and logo accent.

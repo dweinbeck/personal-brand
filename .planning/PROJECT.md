@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with featured project cards pulled live from GitHub, a tutorials section, a working contact form backed by Firestore, and production deployment on GCP Cloud Run. It also serves as the foundation for a future personal control center and AI assistant.
+A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with project cards pulling live data from GitHub's API, individual project detail pages with README rendering, a tutorials section, an About page with career accomplishments and company logos, a working contact form backed by Firestore, and production deployment on GCP Cloud Run.
 
 ## Core Value
 
@@ -35,30 +35,16 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ DW favicon in browser tab — v1.1
 - ✓ About page — accomplishment cards from resume with detail pages — v1.1
 - ✓ AI Assistant chatbot with knowledge base and safety guardrails — v1.1
+- ✓ Live GitHub API integration replacing placeholder project data — v1.2
+- ✓ Individual project detail pages with README rendering — v1.2
+- ✓ Homepage featured projects unified with projects page data source — v1.2
+- ✓ Company/university logos for About page accomplishments — v1.2
 
 ### Active
 
-- [ ] Live GitHub API integration replacing placeholder project data
-- [ ] Individual project detail pages
 - [ ] Real article content with MDX authoring pipeline
-- [ ] Company/university logos for About page accomplishments
-
-## Current Milestone: v1.2 Content & Data Integration
-
-**Goal:** Replace placeholder data with live sources and real content across the site.
-
-**Target features:**
-- Live GitHub API integration replacing placeholder project data
-- Individual project detail pages
-- Real article content with MDX authoring pipeline
-- Company/university logos for About page accomplishments
-
-## Current State
-
-**Shipped:** v1.1 on 2026-02-05
-**Live at:** https://personal-brand-130830385601.us-central1.run.app
-
-Building v1.2.
+- [ ] Writing page displays real articles (replaces lorem ipsum)
+- [ ] Optimized logo assets (SVG preferred, PNG fallback)
 
 ### Out of Scope
 
@@ -69,13 +55,22 @@ Building v1.2.
 - Video content — unnecessary complexity
 - Mobile app — web only
 - Google Analytics — can add later if needed
+- Tag filtering on projects page — not enough projects yet
+- GitHub activity sparklines — adds API complexity for minimal value
+- RSS feed — defer until writing content exists
+- Dynamic per-page OG images — single branded image sufficient
+
+## Current State
+
+**Shipped:** v1.2 on 2026-02-07
+**Live at:** https://dan-weinbeck.com
+
+Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant, and production deployment.
 
 ## Context
 
-- **Live site:** https://dan-weinbeck.com
-- **Shipped:** v1.0 MVP on 2026-02-03
-- **Codebase:** ~1,638 LOC TypeScript/TSX/CSS/MDX across 105 files
-- **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK
+- **Codebase:** ~6,649 LOC TypeScript/TSX/CSS/MDX
+- **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK, react-markdown
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
 - **LinkedIn:** https://www.linkedin.com/in/dw789/
@@ -99,14 +94,17 @@ Building v1.2.
 | GCP Cloud Run hosting | Dan's stated preference, familiar infrastructure | ✓ Good |
 | GitHub API for project data | Automatic, always current, no manual curation needed | ✓ Good |
 | Tailwind v4 + Biome v2.3 | Modern tooling, Biome replaces ESLint + Prettier | ✓ Good |
-| Firebase Admin SDK only | No client SDK needed for v1; server-side Firestore writes only | ✓ Good |
+| Firebase Admin SDK only | No client SDK needed; server-side Firestore writes only | ✓ Good |
 | SSG + ISR rendering strategy | SSG for most pages, ISR (hourly) for GitHub data, SSR for contact action | ✓ Good |
 | MDX for tutorial content | Type-safe metadata with exported const objects, filesystem-based discovery | ✓ Good |
 | Three-stage Dockerfile | Deps → builder → runner on node:20-alpine with non-root user | ✓ Good |
 | Cloud Build for deploys | Serverless Docker builds, no local Docker needed | ✓ Good |
+| Curated config + API enrichment | projects.json holds metadata, GitHub API enriches with live data | ✓ Good |
+| react-markdown for README rendering | Lightweight, supports GFM via remark-gfm plugin | ✓ Good |
+| SVG logos for accomplishment cards | Scalable, small file size, renders cleanly at 32x32px | ✓ Good |
+| Max 6 featured projects on homepage | Keeps homepage focused and performant | ✓ Good |
 | Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | — Pending |
 | Control center deferred to future milestone | v1 is public-facing site; personal tools come later | — Pending |
-| Blog as stub | Content creation comes after the site is live | — Pending |
 
 ---
-*Last updated: 2026-02-06 after v1.2 milestone started*
+*Last updated: 2026-02-07 after v1.2 milestone completion*
