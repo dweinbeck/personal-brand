@@ -16,9 +16,8 @@ A repository is just a folder that stores your stuff.  In this case, it will be 
 Pick a name and create your project folder on your own computer, wherever you normally store project folders. So for me, my new folder would be ~/Documents/Projects/new-project-name.  Keep names lowercase with hyphens -- it makes URLs and paths easier to work with.
 
 Now we'll set up a github repo.  Github is just a cloud-based platform where people store their code.  I'll explain more about what that means in just a moment.
-1. Go to github.com and sign in.  
+1. Go to https://github.com and sign in.  
 2. Once you're in your account home, hit the + button on the top right and select New Repository.
- At this point you need to utilize your terminal.  I realize this is scary to people who haven't used it before, but it's a lot easier than you think to do the basics, and that's all you need in order to use git.  If it's your first time, I'd recommend a quick trip to ChatGPT or Gemini and ask "How do I navigate between folders in my terminal?"
 3. Give it a name (again, lowercase with only dashes) and decide whether you want it to be visible to anyone or private only to you and whoever you explicitly share it with.  Optionally, provide a description for anyone examining the repo among a listing of them.
 4. Hit Create Repository.
 
@@ -33,7 +32,7 @@ git remote add origin https://github.com/dweinbeck/new-project-name.git
 What did we just do? 
 
 1. We told git that the folder we're in (~/Documents/Projects/new-project-name) is a code repository.  Once it knows that, git starts to track every time it changes, whether that's you deleting a period or adding a GB of video files to it.  
-2. Then we told git to add a remote repository - your folder's twin brother from another mother, if you will.  In this case, our twin is on github.com where we created the new project to start all this.  So by running this command pointing it to the url of our new github project and adding the .git at the end, we essentially link the folder on our computer with the folder stored on github's computers.  Now it's known as origin and to move our local files there we "push to origin"
+2. Then we told git to add a remote repository - your folder's brother from another mother, if you will.  In this case, it's on github.com where we created the new project to start all this.  So by running this command pointing it to the url of our new github project and adding the .git at the end, we essentially link the folder on our computer with the folder stored on github's computers.  Now it's known as origin and to move our local files there we "push to origin"
 
 You now have an empty repo with no commits.
 
@@ -50,10 +49,10 @@ git push origin main
 ```
 
 Ok, so what'd we do on this one?
-1. we created an empty README.md file.  Now we have something to send to our remote repo
-2. We added all files (in this case, just the README.md) to the staging area.  This is where files go when we want to send them to their twin brother's house, but we have to pack them all in a car first.
-3. We told the driver to take the quickest way there - the main route.  We're actually just renaming the default branch (version) from master to main, because for some reason every programmer decided that's what it should be called but no one has ever updated git itself to default to main.
-4. This is where you buckle their seatbelts and hand them a message to take to their stepmom.  The message can't be mean this time though, because anyone who looks at your repo will see it.  We commit the files to the repo and prepare them for their exodus.
-5. We close the car door and send the kids off to their stepmom's house.  And then smile a glorious freedom smile and go make mac n' cheese to eat straight from the pot.
+1. touch README.md = we created an empty README.md file.  Now we have something to send to our remote repo
+2. git add . = We added all files (in this case, just the README.md) to the staging area.  This is where files go when we want to send them to their brother's house, but we have to pack them all in a car first.
+3. git branch -M main = We told the driver to take the quickest way there - the main route.  We're actually just renaming the default branch (version) from master to main, because for some reason every programmer decided that's what it should be called but no one has ever updated git itself to default to main.
+4. git commit -m "Initial commit" = This is where you buckle their seatbelts and hand them a message to take to their stepmom.  The message can't be mean this time though, because anyone who looks at your repo will see it.  We commit the files to the repo and prepare them for their journey.
+5. git push origin main = We close the car door and send the kids off to their stepmom's house.  And then smile a glorious freedom smile and go make mac n' cheese to eat straight from the pot.
 
 And that's it! You just created a repo and initialized your local codebase to link it with github.  Time for a nap, my friend.
