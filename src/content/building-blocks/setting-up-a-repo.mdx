@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Setting up a repo for a new project",
-  description: "Initialize a Git repository with proper structure, .gitignore, README, and license.",
+  title: "Setting up a Repo for a New Project",
+  description: "Initialize a Git repository with proper structure and a README file",
   publishedAt: "2026-02-02",
   tags: ["git", "tooling", "beginner"],
 };
@@ -9,97 +9,53 @@ export const metadata = {
 
 Every project starts the same way: a clean repository with the right foundation. This tutorial walks through setting up a Git repo from scratch with all the essentials.
 
-## Create the project directory
+## What the heck is a repo?
 
-Pick a name and create your project folder. Keep names lowercase with hyphens -- it makes URLs and paths easier to work with.
+A repository is just a folder that stores your stuff.  In this case, it will be mostly code, in whatever language you choose to work.  Commonly, it will include images as well, especially when the repo is for a website or an app with a user interface.  So it's natural that the first step in a new prjoect is to create the folder which will eventually house the files we need for the final product.
 
-```bash
-mkdir my-project
-cd my-project
+## Setting up the repo
+
+Pick a name and create your project folder on your own computer, wherever you normally store project folders. So for me, my new folder would be ~/Documents/Projects/new-project-name.  Keep names lowercase with hyphens -- it makes URLs and paths easier to work with.
+
+Now we'll set up a github repo.  Github is just a cloud-based platform where people store their code.  I'll explain more about what that means in just a moment.
+1. Go to github.com and sign in.  
+2. Once you're in your account home, hit the + button on the top right and select New Repository.
+ At this point you need to utilize your terminal.  I realize this is scary to people who haven't used it before, but it's a lot easier than you think to do the basics, and that's all you need in order to use git.  If it's your first time, I'd recommend a quick trip to ChatGPT or Gemini and ask "How do I navigate between folders in my terminal?"
+3. Give it a name (again, lowercase with only dashes) and decide whether you want it to be visible to anyone or private only to you and whoever you explicitly share it with.  Optionally, provide a description for anyone examining the repo among a listing of them.
+4. Hit Create Repository.
+
+Now we have to mess with the command line interface.  I realize this can be intimidating for those who have never worked with it.  But I promise you, the basics are super easy to learn, and that's all you need.  I suggest you google "How to navigate folders in the command line interface", and come back when you have the hang of it.
+For those who are already familiar, open PowerShell (PC) or Terminal (Mac) and navigate to your repo, or create it with mkdir and then cd (the command to have your terminal prompt change directory) into it.  Then run:
+
 ```
-
-## Initialize Git
-
-Turn the directory into a Git repository. This creates a hidden `.git` folder that tracks all your changes.
-
-```bash
 git init
+git remote add origin https://github.com/dweinbeck/new-project-name.git
 ```
+
+What did we just do? 
+
+1. We told git that the folder we're in (~/Documents/Projects/new-project-name) is a code repository.  Once it knows that, git starts to track every time it changes, whether that's you deleting a period or adding a GB of video files to it.  
+2. Then we told git to add a remote repository - your folder's twin brother from another mother, if you will.  In this case, our twin is on github.com where we created the new project to start all this.  So by running this command pointing it to the url of our new github project and adding the .git at the end, we essentially link the folder on our computer with the folder stored on github's computers.  Now it's known as origin and to move our local files there we "push to origin"
 
 You now have an empty repo with no commits.
 
-## Create a .gitignore
+## Create a README.md
 
-A `.gitignore` file tells Git which files to skip. Without one, build artifacts, dependencies, and secrets end up in your history.
+A README markdown file is usually where you store basic information about the contents or purpose of the code in the repository.  In this case, we just want it so that we have something we can commit and push to origin, so we'll just create an empty README.md file.
 
-Create the file with common Node.js patterns:
-
-```bash title=".gitignore"
-node_modules/
-.env
-.env.local
-dist/
-.next/
-*.log
-.DS_Store
 ```
-
-Every ecosystem has its own set of patterns. GitHub maintains a useful collection at [github.com/github/gitignore](https://github.com/github/gitignore).
-
-## Create a README
-
-The README is the first thing people see when they visit your repo. Keep it simple: what the project is, how to run it, and how to contribute.
-
-```markdown title="README.md"
-# my-project
-
-A short description of what this project does.
-
-## Getting started
-
-1. Clone the repo
-2. Install dependencies: `npm install`
-3. Start the dev server: `npm run dev`
-
-## License
-
-MIT
-```
-
-You can always expand it later. A short README is better than no README.
-
-## Choose a license
-
-A license tells others what they can do with your code. Without one, the default is "all rights reserved" -- nobody can legally use or modify it.
-
-For most open-source projects, the **MIT License** is a solid default. It lets anyone use, modify, and distribute your code with minimal restrictions.
-
-Visit [choosealicense.com](https://choosealicense.com) to compare options, then copy the license text into a `LICENSE` file at the root of your project.
-
-## Make the first commit
-
-Stage everything and create your initial commit:
-
-```bash
+touch README.md
 git add .
-git commit -m "initial commit"
+git branch -M main
+git commit -m "Initial commit"
+git push origin main
 ```
 
-Keep the first commit small. It should contain only the scaffolding -- no real code yet.
+Ok, so what'd we do on this one?
+1. we created an empty README.md file.  Now we have something to send to our remote repo
+2. We added all files (in this case, just the README.md) to the staging area.  This is where files go when we want to send them to their twin brother's house, but we have to pack them all in a car first.
+3. We told the driver to take the quickest way there - the main route.  We're actually just renaming the default branch (version) from master to main, because for some reason every programmer decided that's what it should be called but no one has ever updated git itself to default to main.
+4. This is where you buckle their seatbelts and hand them a message to take to their stepmom.  The message can't be mean this time though, because anyone who looks at your repo will see it.  We commit the files to the repo and prepare them for their exodus.
+5. We close the car door and send the kids off to their stepmom's house.  And then smile a glorious freedom smile and go make mac n' cheese to eat straight from the pot.
 
-## Push to GitHub
-
-If you have the [GitHub CLI](https://cli.github.com) installed, creating and pushing is one command:
-
-```bash
-gh repo create my-project --public --source=. --push
-```
-
-Without the CLI, create the repo on GitHub first, then add the remote manually:
-
-```bash
-git remote add origin git@github.com:your-username/my-project.git
-git push -u origin main
-```
-
-Your project now has a clean foundation: version control, a sensible ignore list, documentation, and a license. Everything else builds on top of this.
+And that's it! You just created a repo and initialized your local codebase to link it with github.  Time for a nap, my friend.
