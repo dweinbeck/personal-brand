@@ -1,8 +1,18 @@
 Every project starts the same way: a clean repository with the right foundation. This tutorial walks through setting up a Git repo from scratch with all the essentials.
 
+# Prerequisites
+
+Before you start, make sure you have:
+- A **GitHub account** (you can sign in and create repos)
+- **Git** installed (`git --version`)
+- A way to **authenticate to GitHub** from your computer
+    - **HTTPS:** you’ll sign in when pushing (often with a **Personal Access Token** instead of a password)
+    - **SSH:** you’ve added an **SSH key** to your GitHub account (recommended if you do this a lot)
+- A project folder on your machine, and you can **navigate to it** in Terminal/PowerShell
+
 ## What the heck is a repo?
 
-A repository is just a folder that stores your stuff.  In this case, it will be mostly code, in whatever language you choose to work.  Commonly, it will include images as well, especially when the repo is for a website or an app with a user interface.  So it's natural that the first step in a new prjoect is to create the folder which will eventually house the files we need for the final product.
+A repository is just a folder that stores your stuff, that Git tracks. Usually it contains code files, in whatever language you choose to work.  Often, it will also include images as well, especially when the repo is for a website or an app with a user interface.  So it's natural that the first step in a new prjoect is to create the folder which will eventually house the files we need for the final product.
 
 ## Setting up the repo
 
@@ -38,8 +48,10 @@ touch README.md
 git add .
 git branch -M main
 git commit -m "Initial commit"
-git push origin main
+git push -u origin main
 ```
+
+Windows note: if touch doesn’t work, use New-Item README.md -ItemType File in PowerShell.
 
 Ok, so what'd we do on this one?
 1. touch README.md = we created an empty README.md file.  Now we have something to send to our remote repo
