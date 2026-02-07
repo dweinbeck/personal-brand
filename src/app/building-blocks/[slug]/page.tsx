@@ -1,10 +1,28 @@
 import type { Metadata } from "next";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { notFound } from "next/navigation";
 import type { TutorialMeta } from "@/lib/tutorials";
 import { getAllTutorials } from "@/lib/tutorials";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+// Calculate reading time based on word count (~200 words per minute)
+function calculateReadingTime(slug: string): number {
+  try {
+    const filePath = join(
+      process.cwd(),
+      "src/content/building-blocks",
+      `${slug}.mdx`
+    );
+    const content = readFileSync(filePath, "utf-8");
+    const words = content.trim().split(/\s+/).length;
+    return Math.max(1, Math.ceil(words / 200));
+  } catch {
+    return 5; // Default estimate
+  }
 }
 
 export async function generateStaticParams() {
@@ -35,6 +53,25 @@ export async function generateMetadata({
   }
 }
 
+// Check if article has a "fast way" section
+function hasQuickVersion(slug: string): boolean {
+  try {
+    const filePath = join(
+      process.cwd(),
+      "src/content/building-blocks",
+      `${slug}.mdx`
+    );
+    const content = readFileSync(filePath, "utf-8");
+    return (
+      content.includes("## The fast way") ||
+      content.includes("## Quick version") ||
+      content.includes("## TL;DR")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default async function TutorialPage({ params }: PageProps) {
   const { slug } = await params;
 
@@ -47,6 +84,8 @@ export default async function TutorialPage({ params }: PageProps) {
 
   const metadata = mod.metadata as TutorialMeta;
   const Content = mod.default;
+  const readingTime = calculateReadingTime(slug);
+  const showQuickLink = hasQuickVersion(slug);
 
   const date = new Date(metadata.publishedAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -56,23 +95,46 @@ export default async function TutorialPage({ params }: PageProps) {
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-text-primary">
+      <header className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-text-primary leading-tight">
           {metadata.title}
         </h1>
-        <p className="mt-2 text-text-secondary">{metadata.description}</p>
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-text-tertiary">
+        <p className="mt-3 text-lg text-text-secondary">
+          {metadata.description}
+        </p>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-text-tertiary">
           <time dateTime={metadata.publishedAt}>{date}</time>
-          {metadata.tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-block rounded-full bg-gold-light px-2.5 py-0.5 text-xs font-medium text-text-primary"
-            >
-              {tag}
-            </span>
-          ))}
+          <span className="text-border">·</span>
+          <span>{readingTime} min read</span>
+          <span className="text-border">·</span>
+          <div className="flex flex-wrap gap-2">
+            {metadata.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-block rounded-full bg-gold-light px-2.5 py-0.5 text-xs font-medium text-text-primary"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
+
+        {showQuickLink && (
+          <div className="mt-5">
+            <a
+              href="#the-fast-way-a-claude-code-command"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gold hover:text-gold-dark transition-colors"
+            >
+              <span>⚡</span>
+              <span>Jump to fast version</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        )}
       </header>
+
+      <hr className="border-border mb-10" />
 
       <div className="prose prose-neutral max-w-none">
         <Content />
