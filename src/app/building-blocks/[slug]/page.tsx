@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { TutorialMeta } from "@/lib/tutorials";
 import { getAllTutorials } from "@/lib/tutorials";
+import { LearningPathTabs } from "@/components/building-blocks/LearningPathTabs";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -35,19 +36,31 @@ export async function generateMetadata({
   }
 }
 
+async function tryImportMdx(path: string) {
+  try {
+    return await import(`@/content/building-blocks/${path}.mdx`);
+  } catch {
+    return null;
+  }
+}
+
 export default async function TutorialPage({ params }: PageProps) {
   const { slug } = await params;
 
-  let Content: React.ComponentType;
-  let metadata: TutorialMeta;
-
-  try {
-    const mod = await import(`@/content/building-blocks/${slug}.mdx`);
-    Content = mod.default;
-    metadata = mod.metadata as TutorialMeta;
-  } catch {
+  // Try to load the main tutorial file
+  const mainMod = await tryImportMdx(slug);
+  if (!mainMod) {
     notFound();
   }
+
+  const metadata = mainMod.metadata as TutorialMeta;
+  const MainContent = mainMod.default;
+
+  // Check for learning path variants
+  const manualMod = await tryImportMdx(`${slug}--manual`);
+  const fastMod = await tryImportMdx(`${slug}--fast`);
+
+  const hasLearningPaths = manualMod && fastMod;
 
   const date = new Date(metadata.publishedAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -57,7 +70,7 @@ export default async function TutorialPage({ params }: PageProps) {
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
-      <header className="mb-10">
+      <header className="mb-6">
         <h1 className="text-3xl font-bold text-text-primary">{metadata.title}</h1>
         <p className="mt-2 text-text-secondary">{metadata.description}</p>
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-text-tertiary">
@@ -72,9 +85,36 @@ export default async function TutorialPage({ params }: PageProps) {
           ))}
         </div>
       </header>
-      <div className="prose prose-neutral max-w-none">
-        <Content />
-      </div>
+
+      {hasLearningPaths ? (
+        <LearningPathTabs
+          defaultTab="manual"
+          tabs={[
+            {
+              id: "manual",
+              label: "Fundamentals with Manual Configuration",
+              content: (
+                <div className="prose prose-neutral max-w-none">
+                  {manualMod && <manualMod.default />}
+                </div>
+              ),
+            },
+            {
+              id: "fast",
+              label: "Just Do it for Me",
+              content: (
+                <div className="prose prose-neutral max-w-none">
+                  {fastMod && <fastMod.default />}
+                </div>
+              ),
+            },
+          ]}
+        />
+      ) : (
+        <div className="prose prose-neutral max-w-none">
+          <MainContent />
+        </div>
+      )}
     </article>
   );
 }
