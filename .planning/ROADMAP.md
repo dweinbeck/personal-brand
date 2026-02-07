@@ -26,7 +26,7 @@ See .planning/milestones/v1.1-ROADMAP.md for full details.
 
 </details>
 
-### v1.2 Content & Data Integration (In Progress)
+### v1.2 Content & Data Integration (Complete)
 
 **Milestone Goal:** Replace placeholder project data with live GitHub API across the site, add project detail pages, and polish the About page with company/university logos.
 
@@ -71,4 +71,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-02-04*
-*Last updated: 2026-02-06 — Phase 12 planned (1 plan)*
+*Last updated: 2026-02-07 — v1.2 milestone complete*

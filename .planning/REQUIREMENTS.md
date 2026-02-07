@@ -16,7 +16,7 @@ Requirements for Content & Data Integration milestone.
 
 ### About
 
-- [ ] **ABOU-01**: Accomplishment cards display company/university logos
+- [x] **ABOU-01**: Accomplishment cards display company/university logos
 
 ## Future Requirements
 
@@ -49,7 +49,7 @@ Deferred to later milestone.
 | PROJ-02 | Phase 11 | Complete |
 | PROJ-03 | Phase 11 | Complete |
 | PROJ-04 | Phase 11 | Complete |
-| ABOU-01 | Phase 12 | Pending |
+| ABOU-01 | Phase 12 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 5 total
@@ -58,4 +58,4 @@ Deferred to later milestone.
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 — Phase 11 requirements complete*
+*Last updated: 2026-02-07 — v1.2 requirements complete (ABOU-01)*
