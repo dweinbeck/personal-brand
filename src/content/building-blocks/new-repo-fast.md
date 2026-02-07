@@ -1,3 +1,18 @@
+# An (almost) Automated Solution
+
+Want a quicker way? Here's a markdown script you can save in ~/.claude/commands/new-project.md that will allow you to initialize a new repo from within your new project folder all in one command:
+
+Just type the command, give the repo a name, and tell it whether you want your repo to be visible to the public or only to you:
+
+/new-project <repo-name> <public|private>
+
+Example
+```
+/new-project hello-world public
+```
+
+Here's the script:
+```
 ---
 description: Create + initialize a GitHub repo from the current folder. Usage: /new-project <project-name> <public|private>
 argument-hint: <project-name> <public|private>

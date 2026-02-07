@@ -1,0 +1,123 @@
+export const metadata = {
+  title: "Setting up a Custom GPT",
+  description: "Create a custom GPT in ChatGPT to help you generate a Project Requirements Document (PRD)",
+  publishedAt: "2026-02-07",
+  tags: [ChatGPT], [LLM], [Prompt Engineering], [Context]
+};
+
+A **Custom GPT** that **interviews you** about an MVP, then outputs a single, clean **`FRD.md`** you can paste into your repo.
+
+## What you’ll get
+- A reusable GPT you can run for *any* new idea
+- A consistent FRD structure (no blank page)
+- Faster “idea → build” speed with fewer scope misunderstandings
+
+---
+
+## 10-second FRD summary
+An **FRD (Functional Requirements Document)** describes *what you’re building* and *what “done” means*—scope, users, requirements, constraints, and acceptance criteria—so you can ship an MVP without thrashing.
+---
+
+## Why this building block matters
+This is a workflow efficiency move: instead of rewriting prompts or reinventing FRD structure every time, you have a single “requirements engine” that:
+
+- **Standardizes quality**: same sections, same completeness, every time
+- **Prevents premature building**: it won’t draft until key info exists
+- **Eliminates thrash**: forces clarity on goals, scope, and acceptance criteria
+- **Scales across projects**: repeatable, shareable, and easy to iterate
+
+If you’re building fast, you don’t need more motivation—you need **systems**.
+
+---
+
+## What you’re building (spec)
+**Name:** FRD-in-a-Box  
+**Job:** Interview → Draft `FRD.md`  
+**Inputs:** Your answers to a short guided questionnaire  
+**Output:** Exactly one Markdown document containing the full FRD
+
+### Output rules (non-negotiable)
+When the GPT generates, it must:
+- Output **ONLY** the FRD (no commentary)
+- Output the FRD in **one fenced `markdown` code block**
+- Use **numbered requirements**:
+  - `FR-1, FR-2, ...`
+  - `NFR-1, NFR-2, ...`
+- Mark unknowns as **TBD** and list them in **Open Questions**
+
+---
+
+## Prereqs
+- ChatGPT Plus (you already have it)
+- A place to store the FRD in your repo (recommended: `/docs/FRD.md` or root `FRD.md`)
+
+---
+
+## Step-by-step: create the Custom GPT (web interface)
+You’ll create this in the **ChatGPT web app**.
+
+### 1) Open the GPT Builder
+1. Go to **Explore GPTs**
+2. Click **+ Create**
+3. Switch to the **Configure** tab
+
+> Tip: You can keep this GPT private or “Anyone with link” so you can share it later.
+
+---
+
+### 2) Configure the basics
+Set:
+- **Name:** `FRD-in-a-Box`
+- **Description:** `Interviews you about an MVP and outputs a clean FRD.md in Markdown.`
+- **Icon:** optional
+
+---
+
+### 3) Capabilities (keep it lean)
+For an FRD generator, you typically want **no tools**:
+- Leave browsing OFF (unless you *specifically* want competitor research baked in)
+- Leave image generation OFF
+
+The goal is consistent structure and fast output.
+
+---
+
+### 4) Paste the core Instructions
+In **Instructions**, paste the following exactly.
+
+```text
+You are “FRD-in-a-Box,” an expert product + engineering requirements writer optimized for SPEED and CLARITY.
+
+Primary outcome:
+- Ask the user targeted questions to collect inputs for an MVP FRD.
+- Do NOT generate the FRD until all required fields are collected (or the user explicitly says “generate with assumptions”).
+- When generating: output ONE single Markdown document (no preamble) in a fenced ```markdown block.
+
+Interaction mode:
+1) Start by showing a short checklist of required inputs (with empty slots).
+2) Ask ONE question at a time.
+3) Use smart branching: only ask follow-ups when relevant.
+4) After every 3–5 questions, briefly summarize captured decisions and list remaining gaps.
+5) If the user is unsure, offer 2–4 common options, then ask them to pick.
+
+Required inputs (must capture before drafting):
+- Project name + one-line MVP statement
+- Target users + primary user problem
+- MVP goal + explicit non-goals
+- Core user journey (happy path)
+- Functional requirements (at least 5)
+- Non-functional requirements (at least 5, e.g., performance, security, reliability)
+- Data/integrations (even “none”)
+- Success metrics + analytics events	link
+- Acceptance criteria for MVP release
+- Risks + open questions
+
+Output rules (when drafting):
+- Output ONLY the FRD markdown in one fenced ```markdown block.
+- Use clear headings and bullet points.
+- Requirements must be numbered (FR-1, FR-2…; NFR-1…).
+- Every major section should be concise, but complete.
+- If info is missing, mark it clearly as TBD and list it again in “Open Questions.”
+
+Tone:
+- Efficient, direct, slightly founder-y, no fluff.
