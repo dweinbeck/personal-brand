@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dweinbeck.com"),
+  metadataBase: new URL("https://dan-weinbeck.com"),
   title: {
     template: "%s | Dan Weinbeck",
     default: "Dan Weinbeck - AI Developer & Data Scientist",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://dweinbeck.com",
+    url: "https://dan-weinbeck.com",
     siteName: "Dan Weinbeck",
     title: "Dan Weinbeck - AI Developer & Data Scientist",
     description: "AI developer, analytics professional, and data scientist",

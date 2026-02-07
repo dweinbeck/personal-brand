@@ -14,7 +14,7 @@ const personJsonLd: WithContext<Person> = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Dan Weinbeck",
-  url: "https://dweinbeck.com",
+  url: "https://dan-weinbeck.com",
   jobTitle: "AI Developer & Data Scientist",
   description:
     "I build practical AI agents and data products that ship. Interests in business intelligence, statistical modeling, intuitive UX, and polished design.",

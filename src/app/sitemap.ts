@@ -2,13 +2,18 @@ import type { MetadataRoute } from "next";
 
 import { getAllTutorials } from "@/lib/tutorials";
 import { fetchAllProjects } from "@/lib/github";
+import { getAccomplishments } from "@/lib/accomplishments";
 
-const BASE_URL = "https://dweinbeck.com";
+const BASE_URL = "https://dan-weinbeck.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tutorials = await getAllTutorials();
   const projects = await fetchAllProjects();
+  const accomplishments = getAccomplishments();
 
+  const now = new Date();
+
+  // Tutorial detail pages
   const tutorialUrls: MetadataRoute.Sitemap = tutorials
     .filter((t) => !Number.isNaN(new Date(t.metadata.publishedAt).getTime()))
     .map((t) => ({
@@ -18,14 +23,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  const now = new Date();
+  // Accomplishment detail pages
+  const accomplishmentUrls: MetadataRoute.Sitemap = accomplishments.map((a) => ({
+    url: `${BASE_URL}/about/${a.slug}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.6,
+  }));
+
+  // Project detail pages from GitHub API
+  const projectUrls: MetadataRoute.Sitemap = projects.map((p) => ({
+    url: `${BASE_URL}/projects/${p.slug}`,
+    lastModified: p.pushedAt ? new Date(p.pushedAt) : now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
 
   return [
+    // Static pages
     {
       url: BASE_URL,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 1,
+    },
+    {
+      url: `${BASE_URL}/about`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/projects`,
@@ -40,12 +66,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/contact`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.5,
-    },
-    {
       url: `${BASE_URL}/writing`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -57,13 +77,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.3,
     },
+    {
+      url: `${BASE_URL}/contact`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    // Dynamic pages
+    ...accomplishmentUrls,
     ...tutorialUrls,
-    // Project detail pages from GitHub API
-    ...projects.map((p) => ({
-      url: `${BASE_URL}/projects/${p.slug}`,
-      lastModified: p.pushedAt ? new Date(p.pushedAt) : now,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
+    ...projectUrls,
   ];
 }

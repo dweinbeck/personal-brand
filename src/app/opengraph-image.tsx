@@ -131,7 +131,7 @@ export default async function Image() {
               letterSpacing: "0.02em",
             }}
           >
-            dweinbeck.com
+            dan-weinbeck.com
           </span>
         </div>
       </div>

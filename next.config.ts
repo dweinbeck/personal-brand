@@ -8,6 +8,27 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [25, 50, 75, 100],
   },
+  async redirects() {
+    return [
+      // Legacy route redirects
+      {
+        source: "/tutorials",
+        destination: "/building-blocks",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/:slug",
+        destination: "/building-blocks/:slug",
+        permanent: true,
+      },
+      // Add future redirects here
+      // {
+      //   source: "/old-path",
+      //   destination: "/new-path",
+      //   permanent: true,
+      // },
+    ];
+  },
 };
 
 const withMDX = createMDX({
