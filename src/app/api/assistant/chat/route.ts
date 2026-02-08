@@ -1,49 +1,11 @@
 export const dynamic = "force-dynamic";
 
-import {
-  createUIMessageStream,
-  createUIMessageStreamResponse,
-  streamText,
-} from "ai";
-import { headers } from "next/headers";
-import { assistantModel, MODEL_CONFIG } from "@/lib/assistant/gemini";
-import { buildSystemPrompt } from "@/lib/assistant/prompts";
-import { checkAssistantRateLimit } from "@/lib/assistant/rate-limit";
-import { logConversation } from "@/lib/assistant/logging";
-import { runSafetyPipeline } from "@/lib/assistant/safety";
+import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
+import { askFastApi, FastApiError } from "@/lib/assistant/fastapi-client";
 import { chatRequestSchema } from "@/lib/schemas/assistant";
 
-async function getClientIp(): Promise<string> {
-  const headersList = await headers();
-  return (
-    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    headersList.get("x-real-ip") ??
-    "unknown"
-  );
-}
-
 export async function POST(request: Request) {
-  // 1. Rate limit check
-  const ip = await getClientIp();
-  const rateLimit = checkAssistantRateLimit(ip);
-
-  if (!rateLimit.allowed) {
-    return new Response(
-      JSON.stringify({
-        error:
-          "Too many messages. Please wait a few minutes before trying again.",
-      }),
-      {
-        status: 429,
-        headers: {
-          "Content-Type": "application/json",
-          "Retry-After": String(Math.ceil(rateLimit.resetMs / 1000)),
-        },
-      },
-    );
-  }
-
-  // 2. Parse and validate request body
+  // 1. Parse and validate request body (same schema as before)
   let body: unknown;
   try {
     body = await request.json();
@@ -65,59 +27,71 @@ export async function POST(request: Request) {
     );
   }
 
-  // 3. Convert UI messages to model messages
-  const modelMessages = parsed.data.messages.map((msg) => ({
-    role: msg.role as "user" | "assistant",
-    content: (msg.parts ?? [])
-      .filter((p) => p.type === "text" && p.text)
+  // 2. Extract the last user message text from UIMessage parts
+  const lastUserMsg = parsed.data.messages.findLast((m) => m.role === "user");
+  const question =
+    lastUserMsg?.parts
+      ?.filter((p) => p.type === "text" && p.text)
       .map((p) => p.text)
-      .join(""),
-  }));
+      .join("") ?? "";
 
-  // 4. Safety pipeline — check the latest user message
-  const lastUserMessage = modelMessages.findLast((m) => m.role === "user");
-  if (lastUserMessage) {
-    const safetyResult = runSafetyPipeline(lastUserMessage.content);
-    if (!safetyResult.safe && safetyResult.refusalMessage) {
-      // Fire-and-forget: log blocked conversation
-      const conversationId = (parsed.data as Record<string, unknown>).id as string | undefined;
-      if (conversationId) {
-        logConversation(ip, conversationId, modelMessages, true);
-      }
-      // Return pre-approved refusal without calling Gemini
-      const stream = createUIMessageStream({
-        execute: ({ writer }) => {
-          writer.write({
-            type: "text-delta",
-            delta: safetyResult.refusalMessage!,
-            id: "safety-refusal",
-          });
-        },
-      });
-      return createUIMessageStreamResponse({ stream });
-    }
-    // Use sanitized input
-    lastUserMessage.content = safetyResult.sanitizedInput;
+  if (!question) {
+    return new Response(JSON.stringify({ error: "No question provided." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  // 5. Build system prompt with knowledge base
-  const systemPrompt = buildSystemPrompt();
+  // 3. Call FastAPI via the typed client
+  try {
+    const data = await askFastApi(question);
 
-  // 6. Stream response from Gemini
-  const conversationId = (parsed.data as Record<string, unknown>).id as string | undefined;
-  const result = streamText({
-    model: assistantModel,
-    system: systemPrompt,
-    messages: modelMessages,
-    maxOutputTokens: MODEL_CONFIG.maxOutputTokens,
-    temperature: MODEL_CONFIG.temperature,
-    onFinish: () => {
-      // Fire-and-forget: log conversation after response completes
-      if (conversationId) {
-        logConversation(ip, conversationId, modelMessages, false);
+    // 4. Build response text with citations appended as markdown
+    let text = data.answer;
+    if (data.citations.length > 0) {
+      text += "\n\n---\n**Sources:**\n";
+      for (const cite of data.citations) {
+        text += `- ${cite.source}\n`;
       }
-    },
-  });
+    }
 
-  return result.toUIMessageStreamResponse();
+    // 5. Return as UIMessageStream (same protocol useChat expects)
+    const stream = createUIMessageStream({
+      execute: ({ writer }) => {
+        writer.write({
+          type: "text-delta",
+          delta: text,
+          id: "fastapi-response",
+        });
+      },
+    });
+    return createUIMessageStreamResponse({ stream });
+  } catch (err) {
+    // 6. Map FastApiError to user-friendly responses
+    if (err instanceof FastApiError) {
+      let userMessage: string;
+      if (err.isTimeout) {
+        userMessage =
+          "The assistant is taking too long to respond. Please try again.";
+      } else if (err.status === 429) {
+        userMessage = "Too many messages. Please wait a moment.";
+      } else if (err.status === 503) {
+        userMessage =
+          "The assistant is currently unavailable. Please try again later.";
+      } else {
+        userMessage = "Something went wrong. Please try again.";
+      }
+
+      return new Response(JSON.stringify({ error: userMessage }), {
+        status: err.status >= 500 ? 502 : err.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Unexpected error
+    return new Response(
+      JSON.stringify({ error: "An unexpected error occurred." }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
+  }
 }
