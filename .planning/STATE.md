@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-07)
+See: .planning/PROJECT.md (updated 2026-02-08)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.2 complete — ready for next milestone
+**Current focus:** v1.3 Assistant Backend Integration
 
 ## Current Position
 
-Phase: All phases complete through v1.2
-Plan: N/A
-Status: Ready for next milestone
-Last activity: 2026-02-07 — v1.2 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-08 — Milestone v1.3 started
 
 Progress: v1.0 + v1.1 + v1.2 SHIPPED
 
@@ -47,13 +47,14 @@ None.
 ### Blockers/Concerns
 
 - GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
+- CORS configuration needed between personal-brand (Cloud Run) and chatbot-assistant (Cloud Run)
 
 ## Session Continuity
 
-Last session: 2026-02-07
-Stopped at: Completed v1.2 milestone archival
+Last session: 2026-02-08
+Stopped at: Defining v1.3 requirements
 Resume file: None
 
 ## Next Step
 
-Run `/gsd:new-milestone` to define v1.3 requirements and create a new roadmap.
+Complete requirements definition and roadmap creation for v1.3.

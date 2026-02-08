@@ -42,13 +42,20 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-- [ ] Real article content with MDX authoring pipeline
-- [ ] Writing page displays real articles (replaces lorem ipsum)
-- [ ] Optimized logo assets (SVG preferred, PNG fallback)
+- [ ] Assistant backend swap to external FastAPI RAG service (chatbot-assistant on Cloud Run)
+- [ ] Direct frontend-to-backend connection (CORS, no proxy)
+- [ ] Remove old assistant server code (API route, safety pipeline, knowledge base, rate limiting, logging)
+- [ ] Render citations from RAG responses in chat UI
+- [ ] Clean up dead code and unused dependencies from old assistant
+
+### Deferred
+
+- Real article content with MDX authoring pipeline
+- Writing page displays real articles (replaces lorem ipsum)
+- Optimized logo assets (SVG preferred, PNG fallback)
 
 ### Out of Scope
 
-- AI chatbot / assistant functionality — deferred to future milestone
 - Todoist integration / control center — future milestone
 - OAuth / magic link login — no auth needed for public site
 - Real-time chat — not relevant for personal site
@@ -60,12 +67,23 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - RSS feed — defer until writing content exists
 - Dynamic per-page OG images — single branded image sufficient
 
+## Current Milestone: v1.3 Assistant Backend Integration
+
+**Goal:** Replace the curated-knowledge AI assistant with the full RAG backend from chatbot-assistant, connecting the frontend directly to the deployed FastAPI service on Cloud Run.
+
+**Target features:**
+- Swap chat API from internal Next.js route to external FastAPI Cloud Run service
+- Direct CORS connection (no proxy layer)
+- Remove all old assistant server code (API route, safety pipeline, knowledge base, rate limiting)
+- Render RAG citations in chat responses
+- Clean up unused code and dependencies
+
 ## Current State
 
 **Shipped:** v1.2 on 2026-02-07
 **Live at:** https://dan-weinbeck.com
 
-Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant, and production deployment.
+Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant (curated knowledge base), and production deployment.
 
 ## Context
 
@@ -76,7 +94,9 @@ Complete personal brand site with live GitHub data, project detail pages, career
 - **LinkedIn:** https://www.linkedin.com/in/dw789/
 - **Design inspiration:** connorbutch.com — clean minimal layout, featured tutorial/project cards
 - Headshot asset available in repo root (`headshot.jpeg`)
-- The chatbot and control center vision are important to Dan but intentionally deferred
+- The chatbot backend (chatbot-assistant) is a separate Python/FastAPI service already deployed on Cloud Run
+- chatbot-assistant provides: GitHub webhook ingestion, Postgres FTS + trigram search, Cloud Tasks async indexing, Gemini 2.5 Flash-Lite, mechanical citation verification
+- The control center vision is important to Dan but intentionally deferred
 
 ## Constraints
 
@@ -103,8 +123,10 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | react-markdown for README rendering | Lightweight, supports GFM via remark-gfm plugin | ✓ Good |
 | SVG logos for accomplishment cards | Scalable, small file size, renders cleanly at 32x32px | ✓ Good |
 | Max 6 featured projects on homepage | Keeps homepage focused and performant | ✓ Good |
-| Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | — Pending |
+| Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | ✓ Good — now integrating in v1.3 |
+| Direct CORS to FastAPI (no proxy) | Cleaner architecture, no middleware to maintain, backend handles its own auth/rate-limiting | — Pending |
+| Remove all old assistant server code | Clean break, FastAPI backend replaces everything | — Pending |
 | Control center deferred to future milestone | v1 is public-facing site; personal tools come later | — Pending |
 
 ---
-*Last updated: 2026-02-07 after v1.2 milestone completion*
+*Last updated: 2026-02-08 after v1.3 milestone start*
