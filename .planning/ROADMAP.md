@@ -87,10 +87,10 @@ Plans:
   2. `CHATBOT_API_URL` is documented in `.env.local.example` and configured in `cloudbuild.yaml`
   3. `GOOGLE_GENERATIVE_AI_API_KEY` is removed from Cloud Run environment config and `.env.local`
   4. Docker image builds and deploys to Cloud Run with the updated environment
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: TBD
+- [ ] 16-01-PLAN.md -- Uninstall @ai-sdk/google, update CI/CD config, update documentation
 
 ---
 
@@ -101,4 +101,4 @@ Plans:
 | 13. Proxy Integration | 2/2 | Complete | 2026-02-08 |
 | 14. Citation and Confidence UI | 2/2 | Complete | 2026-02-08 |
 | 15. Dead Code Removal | 2/2 | Complete | 2026-02-08 |
-| 16. Dependency and Environment Cleanup | 0/TBD | Not started | - |
+| 16. Dependency and Environment Cleanup | 0/1 | Not started | - |
