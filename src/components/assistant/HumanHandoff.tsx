@@ -1,6 +1,6 @@
 "use client";
 
-import { buildMailtoLink } from "@/lib/assistant/handoff";
+import { buildMailtoLink } from "@/lib/utils/handoff";
 
 type HumanHandoffProps = {
   messages: { role: string; content: string }[];
