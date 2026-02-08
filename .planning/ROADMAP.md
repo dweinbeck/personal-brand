@@ -10,7 +10,7 @@ Replace the internal Gemini-powered assistant backend with an external FastAPI R
 
 ## Phases
 
-- [ ] **Phase 13: Proxy Integration** - Rewrite API route to proxy FastAPI, end-to-end chat working
+- [x] **Phase 13: Proxy Integration** - Rewrite API route to proxy FastAPI, end-to-end chat working
 - [ ] **Phase 14: Citation and Confidence UI** - Render RAG citations and confidence in chat messages
 - [ ] **Phase 15: Dead Code Removal** - Delete old assistant backend, admin panel, and data files
 - [ ] **Phase 16: Dependency and Environment Cleanup** - Remove orphaned packages and env vars
@@ -30,8 +30,8 @@ Replace the internal Gemini-powered assistant backend with an external FastAPI R
 **Plans**: 2 plans
 
 Plans:
-- [ ] 13-01-PLAN.md -- Create Zod schemas and FastAPI client wrapper
-- [ ] 13-02-PLAN.md -- Rewrite route handler as FastAPI proxy + verify end-to-end
+- [x] 13-01-PLAN.md -- Create Zod schemas and FastAPI client wrapper
+- [x] 13-02-PLAN.md -- Rewrite route handler as FastAPI proxy + verify end-to-end
 
 **Research flags:** RESOLVED. FastAPI schema verified against actual `chatbot-assistant/app/schemas/chat.py`. UIMessageChunk field names verified against `node_modules/ai/dist/index.d.ts`. See `13-RESEARCH.md` for full resolution.
 
@@ -96,7 +96,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 13. Proxy Integration | 0/2 | Planned | - |
+| 13. Proxy Integration | 2/2 | Complete | 2026-02-08 |
 | 14. Citation and Confidence UI | 0/TBD | Not started | - |
 | 15. Dead Code Removal | 0/TBD | Not started | - |
 | 16. Dependency and Environment Cleanup | 0/TBD | Not started | - |
