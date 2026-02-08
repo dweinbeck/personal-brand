@@ -11,7 +11,7 @@ Replace the internal Gemini-powered assistant backend with an external FastAPI R
 ## Phases
 
 - [x] **Phase 13: Proxy Integration** - Rewrite API route to proxy FastAPI, end-to-end chat working
-- [ ] **Phase 14: Citation and Confidence UI** - Render RAG citations and confidence in chat messages
+- [x] **Phase 14: Citation and Confidence UI** - Render RAG citations and confidence in chat messages
 - [ ] **Phase 15: Dead Code Removal** - Delete old assistant backend, admin panel, and data files
 - [ ] **Phase 16: Dependency and Environment Cleanup** - Remove orphaned packages and env vars
 
@@ -51,8 +51,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 14-01-PLAN.md -- Backend stream changes: source-url chunks + messageMetadata + citation utility
-- [ ] 14-02-PLAN.md -- Frontend UI: CitationList, ConfidenceBadge, ChatMessage/ChatInterface wiring, SuggestedPrompts + PrivacyDisclosure text
+- [x] 14-01-PLAN.md -- Backend stream changes: source-url chunks + messageMetadata + citation utility
+- [x] 14-02-PLAN.md -- Frontend UI: CitationList, ConfidenceBadge, ChatMessage/ChatInterface wiring, SuggestedPrompts + PrivacyDisclosure text
 
 ---
 
@@ -98,6 +98,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 13. Proxy Integration | 2/2 | Complete | 2026-02-08 |
-| 14. Citation and Confidence UI | 0/TBD | Not started | - |
+| 14. Citation and Confidence UI | 2/2 | Complete | 2026-02-08 |
 | 15. Dead Code Removal | 0/TBD | Not started | - |
 | 16. Dependency and Environment Cleanup | 0/TBD | Not started | - |
