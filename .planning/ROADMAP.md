@@ -48,10 +48,11 @@ Plans:
   3. Each assistant response displays a confidence badge (high/medium/low) with appropriate color coding
   4. Suggested prompts reflect RAG capabilities (e.g., "How does the chatbot backend work?" instead of generic prompts)
   5. Privacy disclosure wording is updated to reflect that conversations go to an external service
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 14-01: TBD
+- [ ] 14-01-PLAN.md -- Backend stream changes: source-url chunks + messageMetadata + citation utility
+- [ ] 14-02-PLAN.md -- Frontend UI: CitationList, ConfidenceBadge, ChatMessage/ChatInterface wiring, SuggestedPrompts + PrivacyDisclosure text
 
 ---
 
