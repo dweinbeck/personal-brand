@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/Button";
  *
  * Note: This component must be a Client Component.
  */
-export default function Error({
-  error,
+export default function ErrorPage({
+  error: errorInfo,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -20,12 +20,12 @@ export default function Error({
     // Log error to console (placeholder for error reporting service)
     // TODO: Replace with error reporting service (Sentry, LogRocket, etc.)
     console.error("[Error Boundary]", {
-      message: error.message,
-      digest: error.digest,
-      stack: error.stack,
+      message: errorInfo.message,
+      digest: errorInfo.digest,
+      stack: errorInfo.stack,
       timestamp: new Date().toISOString(),
     });
-  }, [error]);
+  }, [errorInfo]);
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 py-16">
@@ -66,9 +66,9 @@ export default function Error({
         </p>
 
         {/* Error digest for debugging (only in development) */}
-        {process.env.NODE_ENV === "development" && error.digest && (
+        {process.env.NODE_ENV === "development" && errorInfo.digest && (
           <p className="mt-6 text-xs text-text-tertiary font-mono">
-            Error ID: {error.digest}
+            Error ID: {errorInfo.digest}
           </p>
         )}
       </div>

@@ -83,6 +83,7 @@ export function HeroSection() {
               className="text-primary hover:text-gold transition-colors"
               aria-label="GitHub"
             >
+              <span className="sr-only">GitHub</span>
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -99,6 +100,7 @@ export function HeroSection() {
               className="text-primary hover:text-gold transition-colors"
               aria-label="LinkedIn"
             >
+              <span className="sr-only">LinkedIn</span>
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -113,6 +115,7 @@ export function HeroSection() {
               className="text-primary hover:text-gold transition-colors"
               aria-label="Email"
             >
+              <span className="sr-only">Email</span>
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"

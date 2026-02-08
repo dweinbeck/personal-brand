@@ -89,9 +89,9 @@ function parseInline(text: string): ReactNode[] {
   // Match bold, links, and inline code
   const regex = /(\*\*(.+?)\*\*)|(\[([^\]]+)\]\(([^)]+)\))|(`([^`]+)`)/g;
   let lastIndex = 0;
-  let match: RegExpExecArray | null;
+  let match = regex.exec(text);
 
-  while ((match = regex.exec(text)) !== null) {
+  while (match !== null) {
     // Text before match
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
@@ -121,6 +121,7 @@ function parseInline(text: string): ReactNode[] {
     }
 
     lastIndex = match.index + match[0].length;
+    match = regex.exec(text);
   }
 
   // Remaining text
