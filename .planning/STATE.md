@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 
 ## Current Position
 
-Phase: 14 of 16 (Citation and Confidence UI)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-08 — Completed 14-02-PLAN.md
+Phase: 15 of 16 (Dead Code Removal)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-08 — Completed 15-01-PLAN.md
 
-Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [████████████____] 67%
+Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [██████████████__] 80%
 
 ## Performance Metrics
 
@@ -37,6 +37,7 @@ Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [███████████�
 **v1.3 Velocity:**
 - Phase 13: 2 plans completed (2 min, 8 min) across 2 waves
 - Phase 14: 2 plans completed (2 min, 12 min) across 2 waves
+- Phase 15: 1 plan completed (3 min)
 - Requirements delivered: 3/5 (ASST-01, ASST-02, ASST-04)
 
 ## Accumulated Context
@@ -55,6 +56,7 @@ Recent decisions affecting current work:
 - v1.3: Route handler now writes structured source-url chunks + messageMetadata confidence (Phase 14 Plan 01)
 - v1.3: useChat<UIMessage<ChatMetadata>> generic needed for type-safe metadata (messageMetadataSchema alone does not infer types)
 - v1.3: ChatMessage now accepts parts[] + metadata instead of content string (Phase 14 Plan 02)
+- v1.3: handoff.ts moved to src/lib/utils/ before assistant/ directory cleanup (Phase 15 Plan 01)
 
 ### Pending Todos
 
@@ -68,9 +70,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 14-02-PLAN.md (Phase 14 complete)
+Stopped at: Completed 15-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Execute Phase 15 (Dead Code Removal) -- research and plan needed.
+Execute Phase 15 Plan 02 (Dead Code Removal - library files in src/lib/assistant/).
