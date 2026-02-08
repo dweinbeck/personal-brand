@@ -3,19 +3,20 @@
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 type ChatMetadata = { confidence?: "low" | "medium" | "high" };
 type ChatMessage_UI = UIMessage<ChatMetadata>;
+
 import { ChatHeader } from "./ChatHeader";
-import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
-import { SuggestedPrompts } from "./SuggestedPrompts";
-import { TypingIndicator } from "./TypingIndicator";
+import { ChatMessage } from "./ChatMessage";
 import { ExitRamps } from "./ExitRamps";
 import { HumanHandoff } from "./HumanHandoff";
 import { PrivacyDisclosure } from "./PrivacyDisclosure";
+import { SuggestedPrompts } from "./SuggestedPrompts";
+import { TypingIndicator } from "./TypingIndicator";
 
 const transport = new DefaultChatTransport({
   api: "/api/assistant/chat",
@@ -43,7 +44,7 @@ export function ChatInterface() {
     if (el) {
       el.scrollTop = el.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, []);
 
   // Build plain messages for handoff
   const plainMessages = useMemo(
@@ -166,9 +167,7 @@ export function ChatInterface() {
       )}
       <div className="flex items-center justify-between px-4 py-2 sm:px-6">
         <ExitRamps />
-        {messages.length >= 2 && (
-          <HumanHandoff messages={plainMessages} />
-        )}
+        {messages.length >= 2 && <HumanHandoff messages={plainMessages} />}
       </div>
       <PrivacyDisclosure />
     </div>

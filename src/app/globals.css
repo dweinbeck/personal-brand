@@ -2,23 +2,25 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #FAFAF8;
-  --foreground: #1B2A4A;
+  --background: #fafaf8;
+  --foreground: #1b2a4a;
   --color-primary: #063970;
   --color-primary-hover: #052d5a;
-  --color-gold: #C8A55A;
-  --color-gold-hover: #B8933E;
+  --color-gold: #c8a55a;
+  --color-gold-hover: #b8933e;
   --color-gold-light: rgba(200, 165, 90, 0.12);
-  --color-surface: #FFFFFF;
-  --color-border: rgba(27, 42, 74, 0.10);
-  --color-text-primary: #1B2A4A;
-  --color-text-secondary: #4A5568;
-  --color-text-tertiary: #8A94A6;
-  --color-sage: #6B8E6F;
-  --color-amber: #D4956C;
-  --color-muted: #8A94A6;
-  --shadow-card: 0 1px 3px rgba(27, 42, 74, 0.08), 0 1px 2px rgba(27, 42, 74, 0.04);
-  --shadow-card-hover: 0 14px 30px rgba(27, 42, 74, 0.10), 0 6px 12px rgba(27, 42, 74, 0.05);
+  --color-surface: #ffffff;
+  --color-border: rgba(27, 42, 74, 0.1);
+  --color-text-primary: #1b2a4a;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #8a94a6;
+  --color-sage: #6b8e6f;
+  --color-amber: #d4956c;
+  --color-muted: #8a94a6;
+  --shadow-card:
+    0 1px 3px rgba(27, 42, 74, 0.08), 0 1px 2px rgba(27, 42, 74, 0.04);
+  --shadow-card-hover:
+    0 14px 30px rgba(27, 42, 74, 0.1), 0 6px 12px rgba(27, 42, 74, 0.05);
   --shadow-button: 0 1px 2px rgba(27, 42, 74, 0.05);
   --radius-card: 16px;
   --radius-button: 8px;
@@ -99,7 +101,9 @@ body {
 
 /* Typing indicator animation */
 @keyframes typing-bounce {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
     opacity: 0.4;
   }

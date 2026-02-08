@@ -1,9 +1,9 @@
 "use client";
 
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { getFirebaseAuth } from "@/lib/firebase-client";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useRef, useEffect } from "react";
+import { getFirebaseAuth } from "@/lib/firebase-client";
 
 const provider = new GoogleAuthProvider();
 
@@ -20,14 +20,19 @@ export function AuthButton() {
     }
     if (menuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [menuOpen]);
 
   if (loading) return null;
 
   if (user) {
-    const initial = (user.displayName?.[0] ?? user.email?.[0] ?? "U").toUpperCase();
+    const initial = (
+      user.displayName?.[0] ??
+      user.email?.[0] ??
+      "U"
+    ).toUpperCase();
     return (
       <div className="relative ml-2" ref={menuRef}>
         <button
@@ -61,7 +66,9 @@ export function AuthButton() {
       await signInWithPopup(getFirebaseAuth(), provider);
     } catch (error) {
       console.error("Sign-in error:", error);
-      alert(`Sign-in failed: ${error instanceof Error ? error.message : String(error)}`);
+      alert(
+        `Sign-in failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   };
 

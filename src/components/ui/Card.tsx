@@ -57,5 +57,7 @@ export function Card(props: CardProps) {
     );
   }
 
-  return <div className={classes} {...(rest as HTMLAttributes<HTMLDivElement>)} />;
+  return (
+    <div className={classes} {...(rest as HTMLAttributes<HTMLDivElement>)} />
+  );
 }

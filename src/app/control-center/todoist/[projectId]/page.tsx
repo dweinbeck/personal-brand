@@ -1,6 +1,10 @@
-import { fetchProjectSections, fetchProjectTasks, fetchTodoistProjects } from "@/lib/todoist";
-import { TodoistBoard } from "@/components/admin/TodoistBoard";
 import Link from "next/link";
+import { TodoistBoard } from "@/components/admin/TodoistBoard";
+import {
+  fetchProjectSections,
+  fetchProjectTasks,
+  fetchTodoistProjects,
+} from "@/lib/todoist";
 
 export const dynamic = "force-dynamic";
 

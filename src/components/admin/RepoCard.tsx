@@ -6,7 +6,13 @@ interface RepoCardProps {
   purpose: string;
 }
 
-export function RepoCard({ name, url, isPrivate, lastCommit, purpose }: RepoCardProps) {
+export function RepoCard({
+  name,
+  url,
+  isPrivate,
+  lastCommit,
+  purpose,
+}: RepoCardProps) {
   const date = new Date(lastCommit);
   const formatted = date.toLocaleDateString("en-US", {
     month: "short",

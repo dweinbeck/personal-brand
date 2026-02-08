@@ -29,8 +29,7 @@ const variantStyles: Record<Variant, string> = {
     "bg-gradient-to-b from-primary to-primary-hover text-white border border-gold/40 shadow-lg shadow-[rgba(27,42,74,0.20)] hover:shadow-xl hover:shadow-[rgba(200,165,90,0.20)] hover:scale-[1.03] active:scale-[0.98]",
   secondary:
     "border-2 border-primary/20 bg-surface text-text-primary hover:shadow-md hover:border-primary/40",
-  ghost:
-    "text-text-secondary hover:bg-gold-light hover:text-text-primary",
+  ghost: "text-text-secondary hover:bg-gold-light hover:text-text-primary",
 };
 
 const sizeStyles: Record<Size, string> = {
@@ -43,7 +42,12 @@ const base =
 
 export function Button(props: ButtonProps) {
   const { variant = "primary", size = "md", className, href, ...rest } = props;
-  const classes = clsx(base, variantStyles[variant], sizeStyles[size], className);
+  const classes = clsx(
+    base,
+    variantStyles[variant],
+    sizeStyles[size],
+    className,
+  );
 
   if (href) {
     const isExternal = href.startsWith("http");

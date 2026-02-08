@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { fetchAllProjects } from "@/lib/github";
 import { ProjectsFilter } from "@/components/projects/ProjectsFilter";
+import { fetchAllProjects } from "@/lib/github";
 
 export const metadata: Metadata = {
   title: "Projects",

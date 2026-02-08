@@ -6,7 +6,11 @@ interface TodoistProjectCardProps {
   taskCount: number;
 }
 
-export function TodoistProjectCard({ id, name, taskCount }: TodoistProjectCardProps) {
+export function TodoistProjectCard({
+  id,
+  name,
+  taskCount,
+}: TodoistProjectCardProps) {
   return (
     <Link
       href={`/control-center/todoist/${id}`}

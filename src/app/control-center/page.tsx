@@ -1,8 +1,7 @@
-import { fetchAllGitHubRepos } from "@/lib/github-admin";
 import { RepoCard } from "@/components/admin/RepoCard";
-import { fetchTodoistProjects } from "@/lib/todoist";
-import { fetchProjectTasks } from "@/lib/todoist";
 import { TodoistProjectCard } from "@/components/admin/TodoistProjectCard";
+import { fetchAllGitHubRepos } from "@/lib/github-admin";
+import { fetchProjectTasks, fetchTodoistProjects } from "@/lib/todoist";
 
 export const dynamic = "force-dynamic";
 

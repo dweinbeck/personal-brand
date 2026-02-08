@@ -1,13 +1,13 @@
 "use client";
 
+import { onAuthStateChanged, type User } from "firebase/auth";
 import {
   createContext,
+  type ReactNode,
   useContext,
   useEffect,
   useState,
-  type ReactNode,
 } from "react";
-import { onAuthStateChanged, type User } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase-client";
 
 interface AuthContextValue {
@@ -32,11 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  return (
-    <AuthContext value={{ user, loading }}>
-      {children}
-    </AuthContext>
-  );
+  return <AuthContext value={{ user, loading }}>{children}</AuthContext>;
 }
 
 export function useAuth() {

@@ -32,18 +32,30 @@ function parseMarkdown(text: string): ReactNode[] {
 
     // End of list
     if (inList) {
-      elements.push(<ul key={`ul-${i}`} className="my-2 list-disc pl-4">{listItems}</ul>);
+      elements.push(
+        <ul key={`ul-${i}`} className="my-2 list-disc pl-4">
+          {listItems}
+        </ul>,
+      );
       listItems = [];
       inList = false;
     }
 
     // Heading
     if (/^###\s+/.test(line)) {
-      elements.push(<h3 key={`h3-${i}`} className="mt-3 mb-1 text-sm font-semibold">{parseInline(line.replace(/^###\s+/, ""))}</h3>);
+      elements.push(
+        <h3 key={`h3-${i}`} className="mt-3 mb-1 text-sm font-semibold">
+          {parseInline(line.replace(/^###\s+/, ""))}
+        </h3>,
+      );
       continue;
     }
     if (/^##\s+/.test(line)) {
-      elements.push(<h2 key={`h2-${i}`} className="mt-3 mb-1 text-base font-semibold">{parseInline(line.replace(/^##\s+/, ""))}</h2>);
+      elements.push(
+        <h2 key={`h2-${i}`} className="mt-3 mb-1 text-base font-semibold">
+          {parseInline(line.replace(/^##\s+/, ""))}
+        </h2>,
+      );
       continue;
     }
 
@@ -53,12 +65,20 @@ function parseMarkdown(text: string): ReactNode[] {
     }
 
     // Regular paragraph
-    elements.push(<p key={`p-${i}`} className="mb-2 last:mb-0">{parseInline(line)}</p>);
+    elements.push(
+      <p key={`p-${i}`} className="mb-2 last:mb-0">
+        {parseInline(line)}
+      </p>,
+    );
   }
 
   // Flush remaining list
   if (inList && listItems.length > 0) {
-    elements.push(<ul key="ul-final" className="my-2 list-disc pl-4">{listItems}</ul>);
+    elements.push(
+      <ul key="ul-final" className="my-2 list-disc pl-4">
+        {listItems}
+      </ul>,
+    );
   }
 
   return elements;
@@ -88,7 +108,9 @@ function parseInline(text: string): ReactNode[] {
         <a
           key={`a-${match.index}`}
           href={href}
-          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          {...(isExternal
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
         >
           {match[4]}
         </a>,

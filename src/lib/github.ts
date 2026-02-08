@@ -1,9 +1,5 @@
 import projectConfig from "@/data/projects.json";
-import type {
-  ProjectConfig,
-  EnrichedProject,
-  Project,
-} from "@/types/project";
+import type { EnrichedProject, Project, ProjectConfig } from "@/types/project";
 
 // GitHub API response interface
 interface GitHubRepoResponse {
@@ -40,7 +36,7 @@ const GITHUB_API_URL =
  */
 async function fetchGitHubRepo(
   owner: string,
-  repo: string
+  repo: string,
 ): Promise<GitHubRepoResponse | null> {
   const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
     headers: { Accept: "application/vnd.github+json" },
@@ -59,14 +55,14 @@ async function fetchGitHubRepo(
  */
 export async function fetchReadme(
   owner: string,
-  repo: string
+  repo: string,
 ): Promise<string | null> {
   const res = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/readme`,
     {
       headers: { Accept: "application/vnd.github.raw+json" },
       next: { revalidate: 3600 }, // 1 hour ISR
-    }
+    },
   );
   if (!res.ok) return null;
   return res.text();
@@ -75,9 +71,7 @@ export async function fetchReadme(
 /**
  * Enrich a single project config with GitHub API data
  */
-async function enrichProject(
-  config: ProjectConfig
-): Promise<EnrichedProject> {
+async function enrichProject(config: ProjectConfig): Promise<EnrichedProject> {
   // If no repo, return curated-only data with private visibility
   if (!config.repo) {
     return {
@@ -141,7 +135,7 @@ export async function fetchAllProjects(): Promise<EnrichedProject[]> {
  * Returns EnrichedProject or null if not found
  */
 export async function fetchProjectBySlug(
-  slug: string
+  slug: string,
 ): Promise<EnrichedProject | null> {
   const configs = projectConfig as ProjectConfig[];
   const config = configs.find((p) => p.slug === slug);

@@ -29,7 +29,9 @@ export function FeedbackButtons({
   if (submitted) {
     return (
       <span className="text-xs text-text-tertiary ml-2">
-        {submitted === "up" ? "Thanks for the feedback!" : "Thanks — I'll try to improve."}
+        {submitted === "up"
+          ? "Thanks for the feedback!"
+          : "Thanks — I'll try to improve."}
       </span>
     );
   }
@@ -43,7 +45,12 @@ export function FeedbackButtons({
         aria-label="Helpful response"
         title="Helpful"
       >
-        <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5" aria-hidden="true">
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="h-3.5 w-3.5"
+          aria-hidden="true"
+        >
           <path d="M1 8.998a1 1 0 0 1 1-1h3v9H2a1 1 0 0 1-1-1v-7Zm5.5 8.5h7.167a2.5 2.5 0 0 0 2.45-2.012l1.083-5.416A1.5 1.5 0 0 0 15.73 8.5H11V3.5a2 2 0 0 0-2-2h-.25a.75.75 0 0 0-.68.436L5.5 7.998v9.5Z" />
         </svg>
       </button>
@@ -54,7 +61,12 @@ export function FeedbackButtons({
         aria-label="Not helpful response"
         title="Not helpful"
       >
-        <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5" aria-hidden="true">
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="h-3.5 w-3.5"
+          aria-hidden="true"
+        >
           <path d="M19 11.002a1 1 0 0 1-1 1h-3v-9h3a1 1 0 0 1 1 1v7Zm-5.5-8.5H6.333a2.5 2.5 0 0 0-2.45 2.012L2.8 9.93a1.5 1.5 0 0 0 1.47 1.822H9v5a2 2 0 0 0 2 2h.25a.75.75 0 0 0 .68-.436l2.57-5.562v-9.5Z" />
         </svg>
       </button>

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReadmeRenderer } from "@/components/projects/ReadmeRenderer";
+import { Button } from "@/components/ui/Button";
 import {
   fetchAllProjects,
   fetchProjectBySlug,
   fetchReadme,
 } from "@/lib/github";
-import { ReadmeRenderer } from "@/components/projects/ReadmeRenderer";
-import { Button } from "@/components/ui/Button";
 
 export const revalidate = 3600; // 1 hour ISR
 

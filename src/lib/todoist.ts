@@ -1,4 +1,8 @@
-import type { TodoistProject, TodoistSection, TodoistTask } from "@/types/todoist";
+import type {
+  TodoistProject,
+  TodoistSection,
+  TodoistTask,
+} from "@/types/todoist";
 
 const TODOIST_API_TOKEN = process.env.TODOIST_API_TOKEN;
 const BASE_URL = "https://api.todoist.com/rest/v2";
@@ -23,10 +27,14 @@ export async function fetchTodoistProjects(): Promise<TodoistProject[]> {
   return todoistFetch<TodoistProject[]>("/projects");
 }
 
-export async function fetchProjectSections(projectId: string): Promise<TodoistSection[]> {
+export async function fetchProjectSections(
+  projectId: string,
+): Promise<TodoistSection[]> {
   return todoistFetch<TodoistSection[]>(`/sections?project_id=${projectId}`);
 }
 
-export async function fetchProjectTasks(projectId: string): Promise<TodoistTask[]> {
+export async function fetchProjectTasks(
+  projectId: string,
+): Promise<TodoistTask[]> {
   return todoistFetch<TodoistTask[]>(`/tasks?project_id=${projectId}`);
 }

@@ -1,5 +1,5 @@
-import type { Tutorial } from "@/lib/tutorials";
 import Link from "next/link";
+import type { Tutorial } from "@/lib/tutorials";
 
 interface TutorialCardProps {
   tutorial: Tutorial;

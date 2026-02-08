@@ -56,7 +56,7 @@ export async function getAllTutorials(): Promise<Tutorial[]> {
       metadata = extractMetadataFromSource(source);
     }
 
-    if (metadata && metadata.title) {
+    if (metadata?.title) {
       tutorials.push({ slug, metadata });
     }
   }

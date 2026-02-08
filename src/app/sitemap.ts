@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
-
-import { getAllTutorials } from "@/lib/tutorials";
-import { fetchAllProjects } from "@/lib/github";
 import { getAccomplishments } from "@/lib/accomplishments";
+import { fetchAllProjects } from "@/lib/github";
+import { getAllTutorials } from "@/lib/tutorials";
 
 const BASE_URL = "https://dan-weinbeck.com";
 
@@ -24,12 +23,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
   // Accomplishment detail pages
-  const accomplishmentUrls: MetadataRoute.Sitemap = accomplishments.map((a) => ({
-    url: `${BASE_URL}/about/${a.slug}`,
-    lastModified: now,
-    changeFrequency: "yearly" as const,
-    priority: 0.6,
-  }));
+  const accomplishmentUrls: MetadataRoute.Sitemap = accomplishments.map(
+    (a) => ({
+      url: `${BASE_URL}/about/${a.slug}`,
+      lastModified: now,
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
+    }),
+  );
 
   // Project detail pages from GitHub API
   const projectUrls: MetadataRoute.Sitemap = projects.map((p) => ({

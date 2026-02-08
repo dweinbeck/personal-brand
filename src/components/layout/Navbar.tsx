@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { NavLinks } from "./NavLinks";
 import { AuthButton } from "./AuthButton";
+import { NavLinks } from "./NavLinks";
 
 export function Navbar() {
   return (

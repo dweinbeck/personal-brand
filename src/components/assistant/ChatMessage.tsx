@@ -1,7 +1,7 @@
-import { MarkdownRenderer } from "./MarkdownRenderer";
-import { FeedbackButtons } from "./FeedbackButtons";
 import { CitationList } from "./CitationList";
 import { ConfidenceBadge } from "./ConfidenceBadge";
+import { FeedbackButtons } from "./FeedbackButtons";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 type ChatMessageProps = {
   role: "user" | "assistant";

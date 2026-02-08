@@ -22,7 +22,10 @@ export function ConfidenceBadge({ level }: ConfidenceBadgeProps) {
       className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${styleMap[level]}`}
       title={labelMap[level]}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+      <span
+        className="h-1.5 w-1.5 rounded-full bg-current"
+        aria-hidden="true"
+      />
       {labelMap[level]}
     </span>
   );

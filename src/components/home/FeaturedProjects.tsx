@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/Button";
-import { ProjectCard } from "./ProjectCard";
 import { fetchAllProjects } from "@/lib/github";
+import { ProjectCard } from "./ProjectCard";
 
 export async function FeaturedProjects() {
   const allProjects = await fetchAllProjects();
-  const featuredProjects = allProjects
-    .filter((p) => p.featured)
-    .slice(0, 6); // Max 6 on homepage
+  const featuredProjects = allProjects.filter((p) => p.featured).slice(0, 6); // Max 6 on homepage
 
   return (
     <section className="py-8 motion-safe:animate-fade-in-up">

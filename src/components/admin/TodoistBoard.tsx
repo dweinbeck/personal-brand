@@ -29,7 +29,9 @@ export function TodoistBoard({ sections, tasks }: TodoistBoardProps) {
         >
           <h3 className="text-sm font-semibold text-gray-700 mb-3">
             {col.name}{" "}
-            <span className="text-gray-400 font-normal">({col.tasks.length})</span>
+            <span className="text-gray-400 font-normal">
+              ({col.tasks.length})
+            </span>
           </h3>
           <div className="flex flex-col gap-2">
             {col.tasks.map((task) => (
@@ -39,7 +41,9 @@ export function TodoistBoard({ sections, tasks }: TodoistBoardProps) {
               >
                 <p className="text-sm text-gray-900">{task.content}</p>
                 {task.due && (
-                  <p className="text-xs text-gray-400 mt-1">{task.due.string}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {task.due.string}
+                  </p>
                 )}
                 {task.labels.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">

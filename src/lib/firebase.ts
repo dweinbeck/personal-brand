@@ -21,7 +21,10 @@ function getCredential(): Credential | undefined {
     try {
       return cert({ projectId, clientEmail, privateKey });
     } catch (error) {
-      console.warn("Failed to create Firebase credential from env vars:", error);
+      console.warn(
+        "Failed to create Firebase credential from env vars:",
+        error,
+      );
       return undefined;
     }
   }

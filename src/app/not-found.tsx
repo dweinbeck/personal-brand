@@ -46,7 +46,9 @@ export default function NotFound() {
 
         {/* Navigation links */}
         <div className="border-t border-border pt-6">
-          <p className="text-text-tertiary text-sm mb-4">Or try one of these:</p>
+          <p className="text-text-tertiary text-sm mb-4">
+            Or try one of these:
+          </p>
           <nav className="flex flex-wrap justify-center gap-4">
             {navigationLinks.map((link) => (
               <Link

@@ -3,14 +3,14 @@
 import clsx from "clsx";
 import {
   useActionState,
-  useState,
-  useRef,
   useCallback,
   useEffect,
+  useRef,
+  useState,
 } from "react";
 import { type ContactState, submitContact } from "@/lib/actions/contact";
-import { SubmitButton } from "./SubmitButton";
 import { trackEvent } from "@/lib/analytics";
+import { SubmitButton } from "./SubmitButton";
 
 const initialState: ContactState = {};
 
@@ -57,19 +57,16 @@ export function ContactForm() {
     }
   }, []);
 
-  const handleBlur = useCallback(
-    (field: string, value: string) => {
-      setTouched((prev) => ({ ...prev, [field]: true }));
+  const handleBlur = useCallback((field: string, value: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
 
-      let error: string | null = null;
-      if (field === "email") error = validateEmail(value);
-      else if (field === "message") error = validateMessage(value);
-      else if (field === "name") error = validateName(value);
+    let error: string | null = null;
+    if (field === "email") error = validateEmail(value);
+    else if (field === "message") error = validateMessage(value);
+    else if (field === "name") error = validateName(value);
 
-      setClientErrors((prev) => ({ ...prev, [field]: error }));
-    },
-    [],
-  );
+    setClientErrors((prev) => ({ ...prev, [field]: error }));
+  }, []);
 
   const handleChange = useCallback(
     (field: string, value: string) => {
@@ -109,10 +106,7 @@ export function ContactForm() {
 
   if (state.success) {
     return (
-      <output
-        className="block rounded-lg bg-sage/10 border border-sage/20 p-6 text-sage"
-        role="status"
-      >
+      <output className="block rounded-lg bg-sage/10 border border-sage/20 p-6 text-sage">
         <div className="flex items-start gap-3">
           {/* Check icon */}
           <svg
@@ -139,7 +133,7 @@ export function ContactForm() {
   /** Get display error for a field (client-side takes priority, then server) */
   function fieldError(field: "name" | "email" | "message"): string | null {
     if (touched[field] && clientErrors[field]) return clientErrors[field];
-    if (state.errors?.[field]?.[0]) return state.errors[field]![0];
+    if (state.errors?.[field]?.[0]) return state.errors[field]?.[0];
     return null;
   }
 
@@ -179,11 +173,7 @@ export function ContactForm() {
           aria-describedby={fieldError("name") ? "name-error" : undefined}
         />
         {fieldError("name") && (
-          <p
-            id="name-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
             {fieldError("name")}
           </p>
         )}
@@ -243,9 +233,7 @@ export function ContactForm() {
             fieldError("message") && "border-red-500",
           )}
           aria-invalid={!!fieldError("message")}
-          aria-describedby={
-            fieldError("message") ? "message-error" : undefined
-          }
+          aria-describedby={fieldError("message") ? "message-error" : undefined}
         />
         {fieldError("message") && (
           <p

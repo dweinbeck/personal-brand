@@ -23,11 +23,7 @@ function formatDate(isoDate: string | null): string {
   }).format(new Date(isoDate));
 }
 
-export function DetailedProjectCard({
-  project,
-}: {
-  project: EnrichedProject;
-}) {
+export function DetailedProjectCard({ project }: { project: EnrichedProject }) {
   const detailUrl = `/projects/${project.slug}`;
 
   return (
