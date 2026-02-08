@@ -67,10 +67,11 @@ Plans:
   3. Admin pages under `/control-center/assistant/` are removed (no broken admin routes)
   4. `projects.json` and `accomplishments.json` remain intact (Projects and Accomplishments pages render correctly)
   5. `HumanHandoff` component still works (handoff.ts moved to `src/lib/utils/`)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 15-01: TBD
+- [ ] 15-01-PLAN.md -- Move handoff.ts to utils, delete admin pages/routes/components
+- [ ] 15-02-PLAN.md -- Delete old assistant library files, data files, and useIdToken hook
 
 **Pitfall warnings:** Delete admin pages/components in the same commit as their backend dependencies (Pitfall 3). Do NOT delete `projects.json` or `accomplishments.json` (Pitfall 6). Move `handoff.ts` before bulk deletion (Pitfall 11).
 
@@ -99,5 +100,5 @@ Plans:
 |-------|---------------|--------|-----------|
 | 13. Proxy Integration | 2/2 | Complete | 2026-02-08 |
 | 14. Citation and Confidence UI | 2/2 | Complete | 2026-02-08 |
-| 15. Dead Code Removal | 0/TBD | Not started | - |
+| 15. Dead Code Removal | 0/2 | Not started | - |
 | 16. Dependency and Environment Cleanup | 0/TBD | Not started | - |
