@@ -46,7 +46,9 @@ export function buildGitHubPermalink(source: string): string {
   const [startLine, endLine] = lineRange.split("-");
 
   const lineFragment =
-    endLine && endLine !== startLine ? `#L${startLine}-L${endLine}` : `#L${startLine}`;
+    endLine && endLine !== startLine
+      ? `#L${startLine}-L${endLine}`
+      : `#L${startLine}`;
 
   return `https://github.com/${owner}/${repo}/blob/${sha}/${filePath}${lineFragment}`;
 }

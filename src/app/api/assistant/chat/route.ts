@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
 import { askFastApi, FastApiError } from "@/lib/assistant/fastapi-client";
+import { buildGitHubPermalink, extractFilePath } from "@/lib/citation-utils";
 import { chatRequestSchema } from "@/lib/schemas/assistant";
 
 export async function POST(request: Request) {
@@ -46,22 +47,33 @@ export async function POST(request: Request) {
   try {
     const data = await askFastApi(question);
 
-    // 4. Build response text with citations appended as markdown
-    let text = data.answer;
-    if (data.citations.length > 0) {
-      text += "\n\n---\n**Sources:**\n";
-      for (const cite of data.citations) {
-        text += `- ${cite.source}\n`;
-      }
-    }
-
-    // 5. Return as UIMessageStream (same protocol useChat expects)
+    // 4. Return as UIMessageStream with structured chunks
     const partId = "fastapi-response";
     const stream = createUIMessageStream({
       execute: ({ writer }) => {
+        // Start chunk with confidence metadata
+        writer.write({
+          type: "start",
+          messageMetadata: { confidence: data.confidence },
+        });
+
+        // Text chunks (answer only, no citation text)
         writer.write({ type: "text-start", id: partId });
-        writer.write({ type: "text-delta", delta: text, id: partId });
+        writer.write({ type: "text-delta", delta: data.answer, id: partId });
         writer.write({ type: "text-end", id: partId });
+
+        // Source URL chunks for each citation
+        for (const cite of data.citations) {
+          writer.write({
+            type: "source-url",
+            sourceId: cite.source,
+            url: buildGitHubPermalink(cite.source),
+            title: extractFilePath(cite.source),
+          });
+        }
+
+        // Finish chunk
+        writer.write({ type: "finish", finishReason: "stop" });
       },
     });
     return createUIMessageStreamResponse({ stream });
