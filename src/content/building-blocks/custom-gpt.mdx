@@ -1,40 +1,45 @@
 export const metadata = {
   title: "Setting up a Custom GPT",
-  description: "Create a custom GPT in ChatGPT to help you generate a Project Requirements Document (PRD)",
+  description: "Create a custom GPT in ChatGPT to help you generate a Product Requirements Document (PRD)",
   publishedAt: "2026-02-07",
   tags: ["ChatGPT", "LLM", "Prompt Engineering", "Context"]
 };
 
-This building block will teach you about A Custom GPT that interviews you about an MVP, then outputs a single, clean `FRD.md` you can paste into your repo.
+This building block will teach you about custom GPTs by showing you how I set one up to help me produce a PRD.
 
 ### What you'll get
+- An understanding of how to create custom GPT's, how they work, and what they're good for
 - A reusable GPT you can run for any new idea
-- A consistent FRD structure (no blank-page syndrome)
-- Faster "idea → build" speed with fewer scope misunderstandings
+- A consistent FRD structure
+- Faster "idea-to-build" speed with fewer scope misunderstandings
 
 ---
 
-### 10-second FRD summary
-An FRD (Functional Requirements Document) describes what you're building and what "done" means—scope, users, requirements, constraints, and acceptance criteria—so you can ship an MVP without thrashing.
-
+### 10-second custom GPT summary
+A custom GPT is a tailored version of ChatGPT configured with specific instructions, tools, and knowledge to reliably handle a particular workflow—so users get faster, more consistent results with less prompting and fewer errors.
 
 ## Why this building block matters
-This is a workflow efficiency move: instead of rewriting prompts or reinventing FRD structure every time, you have a single "requirements engine" that:
+This is a workflow efficiency and output quality move: instead of rewriting prompts or feeding in files every time you need to do a certain task, you start with the custom GPT that's already configured with the context and instructions it needs to perform a task well with high quality outputs.
 
-- Standardizes quality: same sections, same completeness, every time
-- Prevents premature building: it won't draft until key info exists
-- Eliminates thrash: forces clarity on goals, scope, and acceptance criteria
-- Scales across projects: repeatable, shareable, and easy to iterate
+- Consistency at scale: Bakes your preferred tone, steps, and rules into the GPT so results don’t depend on how much detail you feel like providing
+- Faster time-to-value: Reduces back-and-forth prompting by starting from a workflow-specific “default brain.”
+- Better outcomes, fewer errors: Constrains behavior to what matters (and what’s allowed), improving quality and safety.
+- Tool + data leverage: Connects to internal tools/knowledge so it can act and retrieve accurately, not just “chat.”
 
-If you're building fast, you don't need more motivation—you need systems.
+If you're building fast, you don't need more motivation — you need pre-built tools for each task.
 
 ---
+
+## Prerequisites
+
+Before you start, make sure you have:
+- A **ChatGPT Plus or Pro account**
 
 ## What you're building (spec)
 
 | Field | Value |
 |-------|-------|
-| Name | FRD-in-a-Box |
+| Name | FRD Interviewer |
 | Job | Interview → Draft `FRD.md` |
 | Inputs | Your answers to a short guided questionnaire |
 | Output | Exactly one Markdown document containing the full FRD |
@@ -46,21 +51,13 @@ When the GPT generates, it must:
 - Use numbered requirements: `FR-1, FR-2, ...` and `NFR-1, NFR-2, ...`
 - Mark unknowns as TBD and list them in Open Questions
 
----
-
-## Prereqs
-- ChatGPT Plus (you already have it)
-- A place to store the FRD in your repo (recommended: `/docs/FRD.md` or root `FRD.md`)
-
----
-
 ## Step-by-step: create the Custom GPT
 
 You'll create this in the ChatGPT web app.
 
 ### 1) Open the GPT Builder
-1. Go to Explore GPTs
-2. Click + Create
+1. After loading http://chatGPT.com, go to Explore GPTs
+2. Click Create
 3. Switch to the Configure tab
 
 > Tip: You can keep this GPT private or "Anyone with link" so you can share it later.
@@ -71,8 +68,8 @@ You'll create this in the ChatGPT web app.
 
 | Field | Value |
 |-------|-------|
-| Name | `FRD-in-a-Box` |
-| Description | `Interviews you about an MVP and outputs a clean FRD.md in Markdown.` |
+| Name | `FRD Interviewer` |
+| Description | `Interviews you about a product MVP and outputs a clean FRD.md in Markdown.` |
 | Icon | optional |
 
 ---
@@ -90,7 +87,7 @@ The goal is consistent structure and fast output.
 In the Instructions field, paste the following exactly.
 
 ```text
-You are "FRD-in-a-Box," an expert product + engineering requirements writer optimized for SPEED and CLARITY.
+You are "FRD Interviewer," an expert product + engineering requirements writer optimized for SPEED and CLARITY.
 
 Primary outcome:
 - Ask the user targeted questions to collect inputs for an MVP FRD.
