@@ -1,251 +1,430 @@
 # Feature Landscape
 
-**Domain:** Personal brand / developer portfolio site (v1.1 page buildout)
-**Researched:** 2026-02-04
-**Overall confidence:** HIGH (well-established domain patterns; verified against current codebase)
+**Domain:** RAG chatbot frontend integration (v1.3 assistant backend swap)
+**Researched:** 2026-02-08
+**Overall confidence:** HIGH (well-documented UI patterns from Perplexity, ChatGPT, Vercel AI SDK; direct inspection of both codebases)
 
 ---
 
 ## Current State Summary
 
-The site already has a solid v1.0 foundation: home page with hero + featured projects grid, basic projects page (3-col, hardcoded data), writing stub (placeholder), contact form with Firestore/honeypot/rate-limiting, tutorials section, full SEO (meta, JSON-LD, sitemap), OG image (static PNG), and favicon (default .ico). The v1.1 goal is to upgrade these pages from "scaffolded" to "polished and complete."
+The personal-brand site has a fully functional AI assistant built on curated knowledge (JSON/MD files in `src/data/`) with Gemini 2.0 Flash via Vercel AI SDK streaming. The existing chat UI includes: `ChatInterface`, `ChatMessage`, `ChatInput`, `ChatHeader`, `TypingIndicator`, `SuggestedPrompts`, `FeedbackButtons`, `ExitRamps`, `HumanHandoff`, `PrivacyDisclosure`, and a custom `MarkdownRenderer`.
+
+The **new backend** (chatbot-assistant, FastAPI on Cloud Run) returns a structured JSON response:
+
+```json
+{
+  "answer": "string (the LLM-generated answer text)",
+  "citations": [
+    {
+      "source": "owner/repo/path@sha:start_line-end_line",
+      "relevance": "How this chunk relates to the answer"
+    }
+  ],
+  "confidence": "low | medium | high"
+}
+```
+
+The v1.3 milestone replaces the internal Gemini streaming with direct CORS calls to this FastAPI backend. This is a **non-streaming** JSON API (not SSE/WebSocket), which fundamentally changes how the frontend handles responses.
 
 ---
 
-## 1. Projects Page (Detailed Portfolio Cards)
+## Existing Component Inventory & Disposition
 
-### Table Stakes
+Before listing new features, here is what happens to each existing component:
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|-------------|------------|--------------|
-| 2-column card grid on desktop, 1-col mobile | Standard portfolio layout; 3-col is too cramped for detail cards | Low | Existing grid, just change breakpoints |
-| Project name + multi-sentence description | Visitors need context on what each project does and why | Low | Existing `PlaceholderProject` type needs expansion |
-| Technology/topic tags per card | Recruiters and collaborators scan for specific tech | Low | Already implemented in current cards |
-| Status badge (Live / In Development / Planning) | Sets expectations; already present in current cards | Low | Already implemented |
-| Public vs. Private designation | Shows breadth of work without exposing private repos | Low | New field on project data |
-| Date range (initiated - last commit) | Demonstrates recency and sustained effort | Low | New fields on project data |
-| Consistent card height with content truncation | Uneven cards look broken; `line-clamp` on description | Low | Already using `line-clamp-3` |
-| Hover interaction (subtle lift + gold accent) | Signals interactivity; already in current cards | Low | Already implemented |
+| Component | Current Role | v1.3 Disposition | Notes |
+|-----------|-------------|-------------------|-------|
+| `ChatInterface` | Orchestrates chat, uses `useChat` + AI SDK streaming | **MODIFY heavily** | Replace `useChat`/streaming with `fetch` + JSON response. New state management for request/response cycle |
+| `ChatMessage` | Renders user/assistant bubbles with markdown | **MODIFY** | Add citation rendering and confidence indicator below assistant messages |
+| `ChatInput` | Textarea with send button, Enter/Shift+Enter | **KEEP as-is** | No changes needed; input contract stays the same |
+| `ChatHeader` | Static header with avatar and description | **KEEP as-is** | No changes needed |
+| `TypingIndicator` | Animated dots during streaming | **KEEP, rename conceptually** | Still needed during fetch wait; shows while request is in-flight |
+| `SuggestedPrompts` | Quick-start buttons | **KEEP as-is** | Works regardless of backend |
+| `FeedbackButtons` | Thumbs up/down per message | **KEEP as-is** | Already posts to separate `/api/assistant/feedback` endpoint (Firestore) |
+| `ExitRamps` | Quick links (Email, LinkedIn, GitHub, Contact) | **KEEP as-is** | No backend dependency |
+| `HumanHandoff` | "Talk to Dan directly" mailto with conversation | **KEEP as-is** | No backend dependency |
+| `PrivacyDisclosure` | Privacy notice footer | **MODIFY slightly** | Update wording since conversations now go to external service |
+| `MarkdownRenderer` | Custom markdown parser (bold, links, code, lists, headings) | **MODIFY** | May need to handle citation markers in text or render alongside citations |
+| `LeadCaptureFlow` | Lead capture (imported but not visibly used in ChatInterface) | **EVALUATE** | Check if used; if not, remove dead code |
 
-### Differentiators
+### Code to Remove
 
-| Feature | Value Proposition | Complexity | Dependencies |
-|---------|-------------------|------------|--------------|
-| "View Project" CTA button per card | Clear next action; link to future project detail page | Low | Route placeholder needed |
-| Animated card entrance (staggered fade-in) | Polished feel; uses existing `fade-in-up` animation | Low | Existing CSS animation |
-| Filter/sort by status or tag | Lets visitors find relevant work fast; rare on personal sites | Medium | Client-side state, URL params optional |
-| GitHub star count or commit activity sparkline | Social proof + recency signal without leaving page | Medium | GitHub API integration (already have `github.ts`) |
+| Code | Reason |
+|------|--------|
+| `src/app/api/assistant/chat/route.ts` | Replaced by direct FastAPI calls |
+| `src/lib/assistant/gemini.ts` | No longer calling Gemini from Next.js |
+| `src/lib/assistant/prompts.ts` | System prompt now lives in FastAPI backend |
+| `src/lib/assistant/safety.ts` | Safety/guardrails now handled by FastAPI backend |
+| `src/lib/assistant/rate-limit.ts` | Rate limiting now handled by FastAPI backend |
+| `src/lib/assistant/logging.ts` | Logging now handled by FastAPI backend |
+| `src/lib/schemas/assistant.ts` | Chat schema replaced by new request/response types |
+| `src/data/` knowledge base files | Knowledge base now lives in Postgres via GitHub webhook ingestion |
+| Vercel AI SDK (`ai`, `@ai-sdk/react`, `@ai-sdk/google`) | No longer streaming from Next.js; may be removable if no other features use them |
 
-### Anti-Features
+### Admin Components to Evaluate
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Live GitHub API fetch for all project data | Hardcoded projects include private + non-GitHub work; GitHub API only covers public repos | Keep curated project data; optionally enrich with GitHub stats for public repos |
-| Masonry / Pinterest layout | Unpredictable visual hierarchy; harder to scan | Use consistent 2-col grid with equal card heights |
-| Modal/lightbox project detail | Breaks back button, bad for SEO, feels claustrophobic | Link to dedicated project page (future milestone) |
-| Pagination for 6 projects | Unnecessary friction; all cards fit on one screen | Show all projects; add pagination only if count exceeds ~12 |
-
----
-
-## 2. Writing Page (Blog/Article Listing)
-
-### Table Stakes
-
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|-------------|------------|--------------|
-| Article cards with title, publish date, topic tag | Minimum viable blog listing; matches requirements | Low | New component, similar to ProjectCard |
-| 2-column card grid matching Projects page | Visual consistency across site | Low | Reuse grid layout |
-| Clickable cards linking to article pages | Blog listing without links is useless | Low | Route to individual articles needed |
-| Empty state for zero articles | Current "Coming Soon" is fine for MVP but needs path to real content | Low | Already implemented |
-| Chronological ordering (newest first) | Standard blog convention | Low | Sort at data layer |
-| Consistent card styling with Projects page | Same site, same design language | Low | Shared Card component or consistent patterns |
-
-### Differentiators
-
-| Feature | Value Proposition | Complexity | Dependencies |
-|---------|-------------------|------------|--------------|
-| Reading time estimate | Sets expectations; signals professionalism | Low | Calculate from word count at build time |
-| Article excerpt / first paragraph preview | Helps visitors decide which article to read | Low | Pull from MDX frontmatter or content |
-| Category/tag filtering | Useful once there are 5+ articles | Medium | Client-side filter state |
-| Featured/pinned article at top | Highlight best work; editorial control | Low | Boolean in frontmatter |
-
-### Anti-Features
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Full articles rendered on listing page | Slow, overwhelming, bad UX | Show card with excerpt; link to full article |
-| Infinite scroll | Overkill for personal blog; breaks "sense of place" | Simple card grid; paginate only if needed |
-| Comments system | Maintenance burden, spam magnet, low value for personal brand | Use Twitter/LinkedIn share links for discussion |
-| RSS feed (v1.1) | Nice-to-have but not needed until content exists | Defer to v1.2+ when there are actual articles |
+| Component | Current Role | v1.3 Impact |
+|-----------|-------------|-------------|
+| `AssistantAnalytics` | Firestore analytics dashboard | **KEEP for now** -- still reads from Firestore |
+| `TopQuestions` | Most asked questions | **KEEP for now** |
+| `UnansweredQuestions` | Questions without good answers | **KEEP for now** |
+| `FactsEditor` | Edit knowledge base facts | **REMOVE** -- knowledge base is now in Postgres, managed via GitHub webhooks |
+| `PromptVersions` | Prompt versioning UI | **REMOVE** -- system prompt now in FastAPI codebase |
+| `ReindexButton` | Trigger knowledge reindex | **REMOVE** -- reindexing happens via GitHub webhooks |
 
 ---
 
-## 3. Contact Page Redesign
+## Table Stakes
 
-### Table Stakes
+Features users expect from any RAG-backed chat interface. Missing any of these makes the product feel broken.
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|-------------|------------|--------------|
-| Hero section with headline + subhead | Sets tone; "Contact Dan" + guidance copy | Low | Replace current layout |
-| Primary mailto CTA button | 84% of users don't use native mail clients, but mailto is still expected as an option | Low | Simple `<a href="mailto:">` |
-| Copy email button with confirmation feedback | Already exists; needs prominence upgrade to primary CTA | Low | Existing `CopyEmailButton` component |
-| LinkedIn link as CTA | Professional networking channel; already in social links | Low | Already implemented |
-| Inline form validation (email format, message min length) | 31% of sites lack this; it reduces form abandonment significantly | Medium | Enhance existing `ContactForm` with client-side validation |
-| Success state with clear confirmation | Already implemented ("Sent" output) but needs design polish | Low | Existing success state |
-| Failure state with email fallback | Critical: if form breaks, visitor must still be able to reach you | Low | New error message with email link |
-| Loading state with disabled submit | Prevents double-submission; standard UX | Low | Already have `SubmitButton` with pending state |
-| Response time expectation copy | "Typical reply: 1-2 business days" reduces spam, increases trust | Low | Static copy |
-| Privacy/retention disclosure | Brief note on data handling; builds trust | Low | Static copy block |
-| Mobile-friendly layout (single-col, large tap targets) | Non-negotiable for any contact page | Low | Responsive grid already in place |
+### TS-1: Citation Rendering
 
-### Differentiators
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Display source citations below the answer text |
+| **Why Expected** | The entire point of RAG is grounding answers in real sources. Showing citations builds trust and demonstrates the system works. Every major RAG product (Perplexity, ChatGPT with browsing, Copilot) renders citations |
+| **Complexity** | Medium |
+| **Dependencies** | `ChatMessage` modification, new `CitationList` component |
 
-| Feature | Value Proposition | Complexity | Dependencies |
-|---------|-------------------|------------|--------------|
-| Analytics events (copy, mailto click, form start, submit, error) | Measurable contact funnel; required by success metrics | Medium | Event tracking layer (custom events or analytics library) |
-| Positive validation feedback (green check on valid fields) | Goes beyond error-only validation; feels polished | Low | CSS + validation state |
-| Urgency guidance ("Put URGENT in subject") | Practical; shows you're responsive | Low | Static copy |
-| Graceful JS-disabled fallback | Email-only view when JS fails; accessibility win | Low | `<noscript>` block or server-rendered fallback |
-| Character count on message field | Helps users gauge appropriate message length | Low | Client-side counter |
+**Recommended pattern: Collapsible source section below each answer.**
 
-### Anti-Features
+The backend returns 0-N citations, each with a `source` string (`owner/repo/path@sha:start-end`) and a `relevance` description. The recommended rendering:
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| CAPTCHA (reCAPTCHA, hCaptcha) | Terrible UX; honeypot + rate limiting is sufficient for personal site | Keep existing honeypot + server-side rate limiting |
-| Required phone number field | Privacy-invasive; unnecessary for email-based contact | Name, email, message only |
-| Multi-step form wizard | Overkill for 3 fields; adds friction | Single-page form |
-| Auto-reply email system | Complexity and deliverability headaches for marginal value | Clear on-page confirmation is sufficient |
-| Social media feed embeds | Slow, visually inconsistent, privacy concerns | Simple icon links to profiles |
+1. Below the answer text, show a collapsible "Sources (N)" trigger in a muted style
+2. When expanded, show each citation as a compact card with:
+   - **File path** parsed from the source string (e.g., `app/routers/chat.py`)
+   - **Repo name** parsed from source (e.g., `chatbot-assistant`)
+   - **Line range** (e.g., `L31-L50`)
+   - **Relevance text** from the citation object
+   - **GitHub permalink** constructed from the source parts: `https://github.com/{owner}/{repo}/blob/{sha}/{path}#L{start}-L{end}`
+3. Collapsed by default to keep the chat clean -- users who want to verify can expand
+
+**Why collapsible (not inline numbered references):**
+- The citation sources are code file references, not web URLs with readable titles
+- Inline `[1]` markers work well for web search (Perplexity-style) but would clutter code-focused answers
+- A personal site assistant should feel conversational, not academic
+- Most visitors will not verify source code -- the presence of citations signals trustworthiness even if not clicked
+
+**Confidence level:** HIGH -- this pattern is well-established in Perplexity (expandable "Sources" section), ChatGPT (collapsed source cards), and documented in [ShapeofAI citation patterns](https://www.shapeof.ai/patterns/citations).
+
+### TS-2: Confidence Indicator
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Visual indicator of answer confidence level (low/medium/high) |
+| **Why Expected** | The backend computes confidence from retrieval signals (chunk count + ts_rank_cd scores). Surfacing this helps visitors calibrate trust in the answer |
+| **Complexity** | Low |
+| **Dependencies** | `ChatMessage` modification |
+
+**Recommended pattern: Small color-coded pill/badge below the answer, near the citation trigger.**
+
+| Confidence | Color | Label | Tooltip |
+|------------|-------|-------|---------|
+| `high` | Green (sage/emerald) | "High confidence" | "Based on multiple relevant code sources" |
+| `medium` | Amber/gold | "Moderate confidence" | "Based on some relevant sources" |
+| `low` | Muted gray/red | "Low confidence" | "Limited source material found" |
+
+**Implementation notes:**
+- Use the site's existing color system: sage for high, gold/amber for medium, muted for low
+- Text + color (not color alone) for accessibility
+- Small, unobtrusive -- should not dominate the message
+- Position near the collapsible sources trigger, creating a metadata row: `[confidence pill] [Sources (N) trigger] [FeedbackButtons]`
+
+**Confidence level:** HIGH -- color-coded confidence badges are a well-documented pattern per [Agentic Design confidence visualization patterns](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns) and the 64% user preference finding for overall confidence ratings.
+
+### TS-3: Loading State for Non-Streaming Responses
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Visual feedback while waiting for the FastAPI response |
+| **Why Expected** | The old UI used Vercel AI SDK streaming (tokens appeared incrementally). The new backend returns a complete JSON response, so there will be a perceptible wait (1-5s). Without feedback, users will think it is broken |
+| **Complexity** | Low |
+| **Dependencies** | `ChatInterface` state management, existing `TypingIndicator` |
+
+**Recommended pattern:** Keep the existing `TypingIndicator` (animated dots). It already renders during the "submitted" state. The new fetch-based flow should show it between sending the request and receiving the response. No visual change needed -- just wire it to new state.
+
+**Confidence level:** HIGH -- the existing component already handles this well.
+
+### TS-4: Error Handling for External Service
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Graceful error states for network failures, timeouts, 4xx/5xx from FastAPI |
+| **Why Expected** | The old architecture was same-origin (Next.js API route). External CORS calls introduce new failure modes: DNS resolution, CORS misconfig, Cloud Run cold starts (can take 5-10s), 429 rate limits, 500 errors |
+| **Complexity** | Low-Medium |
+| **Dependencies** | `ChatInterface` modification |
+
+**Error states to handle:**
+
+| Error Type | User-Facing Message | Technical Detail |
+|------------|---------------------|------------------|
+| Network failure / CORS | "Unable to reach the assistant. Please try again in a moment." | `fetch` throws, no response |
+| Timeout (>15s) | "The assistant is taking too long. Please try again." | AbortController timeout |
+| 429 rate limit | "Too many messages. Please wait a moment." | Backend enforces its own rate limits |
+| 500 server error | "Something went wrong. Please try again." | Backend error |
+| Invalid response shape | "Something went wrong. Please try again." | Response doesn't match expected schema |
+
+**Confidence level:** HIGH -- standard error handling patterns.
+
+### TS-5: Request/Response Type Safety
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | TypeScript types for the FastAPI request/response contract |
+| **Why Expected** | Type safety prevents runtime errors and documents the API contract |
+| **Complexity** | Low |
+| **Dependencies** | New types file |
+
+**The contract from the FastAPI schemas:**
+
+```typescript
+// Request
+type ChatRequest = {
+  question: string; // 1-1000 chars
+};
+
+// Response
+type ChatResponse = {
+  answer: string;
+  citations: Citation[];
+  confidence: "low" | "medium" | "high";
+};
+
+type Citation = {
+  source: string;  // "owner/repo/path@sha:start-end"
+  relevance: string;
+};
+```
+
+**Confidence level:** HIGH -- directly from `chatbot-assistant/app/schemas/chat.py`.
+
+### TS-6: CORS Configuration on Backend
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | FastAPI CORS middleware allowing requests from `dan-weinbeck.com` |
+| **Why Expected** | Without CORS headers, browser blocks cross-origin requests entirely. Currently no CORSMiddleware in `app/main.py` |
+| **Complexity** | Low |
+| **Dependencies** | Backend code change (chatbot-assistant repo) |
+
+**Required CORS config:**
+- Allow origin: `https://dan-weinbeck.com` (production), `http://localhost:3000` (development)
+- Allow methods: `POST` (for `/chat`)
+- Allow headers: `Content-Type`
+- No credentials needed (no auth)
+
+**Confidence level:** HIGH -- inspected `app/main.py`, confirmed no CORS middleware exists.
 
 ---
 
-## 4. OG Image (Branded Social Sharing)
+## Differentiators
 
-### Table Stakes
+Features that set this apart from a generic chatbot. Not expected, but signal quality and attention to detail.
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|-------------|------------|--------------|
-| Branded static OG image at 1200x630px | Standard dimensions for Twitter/LinkedIn/Slack previews | Low | Already have `/app/opengraph-image.png`; needs redesign |
-| Navy background + gold accent + "DW" or name | Matches site branding; recognizable in feeds | Low | Design asset |
-| Title + subtitle text (name + role) | Context for what the link is about | Low | Baked into image |
-| Applied to all pages via root-level file | Next.js convention: `app/opengraph-image.png` applies globally | Low | Already in place |
+### D-1: Clickable GitHub Permalinks in Citations
 
-### Differentiators
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Parse citation source strings into clickable GitHub permalink URLs |
+| **Why Expected** | Not expected by casual visitors, but for technical visitors (recruiters, collaborators), being able to click through to the exact lines of code is a powerful credibility signal |
+| **Complexity** | Low |
+| **Value** | HIGH -- converts citations from opaque strings to actionable proof |
 
-| Feature | Value Proposition | Complexity | Dependencies |
-|---------|-------------------|------------|--------------|
-| Dynamic OG via `opengraph-image.tsx` using `next/og` ImageResponse | Per-page OG images (blog posts, project pages) with dynamic titles | Medium | Only valuable when blog/project detail pages exist |
-| Twitter-specific image (`twitter-image.png`) | Optimized for Twitter card rendering | Low | Same design, different file convention |
+**URL construction:**
+The backend citation format `owner/repo/path@sha:start-end` maps directly to GitHub's permalink format:
+```
+https://github.com/{owner}/{repo}/blob/{sha}/{path}#L{start}-L{end}
+```
 
-### Anti-Features
+**Example:**
+- Citation source: `dweinbeck/chatbot-assistant/app/routers/chat.py@abc123:31-50`
+- GitHub link: `https://github.com/dweinbeck/chatbot-assistant/blob/abc123/app/routers/chat.py#L31-L50`
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Dynamic OG generation for v1.1 | No per-page content yet to differentiate; premature optimization | Single branded static image; add dynamic when blog posts ship |
-| Third-party OG image services | Unnecessary dependency for a static image | Use Next.js built-in or static PNG |
+Parse with a simple regex or string split. Open in new tab.
+
+**Confidence level:** HIGH -- GitHub permalink format is [well-documented](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet).
+
+### D-2: Smart Empty State with RAG Context
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Update the welcome message and suggested prompts to reflect RAG capabilities |
+| **Why Expected** | Not required, but the current prompts ("Best AI projects", "Background & experience") are generic. With RAG backing, prompts should invite questions about specific repos and code |
+| **Complexity** | Low |
+| **Value** | Medium -- better first impression, shows this is not a generic chatbot |
+
+**Suggested new prompts:**
+- "How does the chatbot backend work?"
+- "What tech stack does Dan use?"
+- "Show me the RAG pipeline code"
+- "How is the personal site deployed?"
+
+**Confidence level:** HIGH -- straightforward content change.
+
+### D-3: Low-Confidence Messaging with Clarification
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | When confidence is "low", append a subtle note encouraging the user to rephrase or ask a more specific question |
+| **Why Expected** | Not expected, but the backend already has `needs_clarification` and `clarifying_question` fields in its LLM response schema. Surfacing this creates a better conversational flow |
+| **Complexity** | Low |
+| **Value** | Medium -- reduces dead-end conversations |
+
+**Implementation:** When `confidence === "low"` and the answer contains "I don't know" or similar, show a muted helper text below the answer:
+> "Try asking about a specific project or file for better results."
+
+**Note:** The current FastAPI endpoint does NOT return `needs_clarification` or `clarifying_question` in the `ChatResponse` schema -- those are internal to the `LLMResponse` model. If this feature is desired, the API contract would need updating. For v1.3, a simple frontend heuristic on confidence level is sufficient.
+
+**Confidence level:** MEDIUM -- the backend schema would need extension to fully implement; frontend heuristic is simpler.
+
+### D-4: Citation Count in Message Metadata
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Show a small "Cited N sources" label even when citations are collapsed |
+| **Why Expected** | Not expected, but seeing "Cited 4 sources" without expanding gives an instant credibility signal. Perplexity does this effectively |
+| **Complexity** | Low |
+| **Value** | Medium -- subtle trust signal |
+
+**Confidence level:** HIGH -- this is the collapsed state of the citation section anyway (TS-1).
 
 ---
 
-## 5. Favicon (Custom Tab Icon)
+## Anti-Features
 
-### Table Stakes
+Features to deliberately NOT build. These are tempting but wrong for a personal site assistant.
 
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|-------------|------------|--------------|
-| Custom favicon replacing Next.js default | Default favicon signals "unfinished site" | Low | Replace `src/app/favicon.ico` |
-| "DW" or monogram design in navy/gold | Brand consistency across tab, bookmarks | Low | Design asset |
-| ICO format for universal browser support | Safari and older browsers need .ico | Low | Standard |
-
-### Differentiators
-
-| Feature | Value Proposition | Complexity | Dependencies |
-|---------|-------------------|------------|--------------|
-| SVG favicon with dark mode support | Adapts to OS theme; looks crisp at any size; ~300-800 bytes | Low | SVG file + `<link>` tag with `type="image/svg+xml"` in layout |
-| Apple touch icon (180x180 PNG) | Clean icon on iOS home screen / bookmarks | Low | Static PNG in `app/` directory |
-| Multiple sizes (16, 32, 180, 512) | Covers all contexts: tabs, bookmarks, PWA, shortcuts | Low | Asset generation from single source |
-
-### Anti-Features
+### AF-1: Streaming / Token-by-Token Display
 
 | Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Animated favicon | Distracting, poor browser support, unprofessional | Static branded icon |
-| Complex detailed image as favicon | Illegible at 16x16; must be simple and bold | Simple "DW" monogram or abstract mark |
+|--------------|-----------|---------------------|
+| Stream tokens from FastAPI to simulate typing | The FastAPI backend returns complete JSON responses, not SSE streams. Adding streaming would require: (1) rewriting the FastAPI endpoint to use SSE, (2) splitting the structured response (answer + citations + confidence) across stream chunks, (3) handling partial citation rendering. This is significant backend complexity for marginal UX improvement on a personal site | Show the typing indicator during the fetch, then render the complete response at once. The 1-5s wait is acceptable for a personal site. If response time becomes an issue, optimize the backend query, not the transport |
 
----
-
-## 6. Logo Accent (Gold Underline on Navbar "DW")
-
-### Table Stakes
-
-| Feature | Why Expected | Complexity | Dependencies |
-|---------|-------------|------------|--------------|
-| Gold underline or accent on "DW" wordmark | Adds brand polish; currently plain text with hover-only gold | Low | CSS pseudo-element or border on existing Navbar `<span>` |
-| Consistent with site gold (#C8A55A) | Must match design system | Low | Existing CSS variable `--color-gold` |
-| Doesn't shift layout on hover/interaction | Layout shifts are jarring | Low | Use `border-bottom` or `::after` with fixed height |
-
-### Differentiators
-
-| Feature | Value Proposition | Complexity | Dependencies |
-|---------|-------------------|------------|--------------|
-| Subtle animation on accent (fade-in on load, or hover width transition) | Micro-interaction polish | Low | CSS transition on `::after` width |
-| Accent doubles as active-page indicator | Navigation clarity without extra UI | Low | Conditional class based on route |
-
-### Anti-Features
+### AF-2: Inline Numbered Citations (Perplexity-Style)
 
 | Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Full logo image/SVG replacing text | Slower to load, harder to maintain, text "DW" is the brand | Keep text-based wordmark with CSS accent |
-| Animated logo on every page load | Distracting after first visit | Animate once on initial load or not at all |
+|--------------|-----------|---------------------|
+| Parse the answer text for `[1]`, `[2]` markers and render inline citation pills | The backend's LLM might include citation references in the answer text, but the citation format is code file references (not web URLs with human-readable titles). Inline `[1]` pills that expand to show `app/routers/chat.py@abc123:31-50` would look noisy and confusing. This also requires the LLM to consistently use numbered markers, adding prompt complexity | Use the collapsible sources section below the answer (TS-1). The answer text stays clean and readable; citations are available for those who want them |
+
+### AF-3: Code Preview / Syntax-Highlighted Snippet Expansion
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Fetch and render the actual code content from GitHub when a citation is expanded | Requires additional GitHub API calls (rate-limited), syntax highlighting library (Prism/Shiki), code viewer component. Massive complexity for a feature most visitors will never use | Link to the GitHub permalink (D-1). GitHub already renders code with syntax highlighting. Don't recreate it |
+
+### AF-4: Citation Verification / "Check Source" Button
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Add a "Verify" button that re-fetches the source and confirms the citation is still valid | The backend already does mechanical citation verification (comparing LLM citations against actually-retrieved chunks). Adding client-side verification is redundant and adds latency | Trust the backend's verification. The GitHub permalink already lets users manually verify if they want |
+
+### AF-5: Conversation Persistence / History
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Save conversations to localStorage or Firestore so users can resume | Adds state management complexity, privacy concerns (storing visitor conversations client-side), and UI for listing/resuming conversations. Overkill for a personal site where conversations are typically 2-5 messages | Keep conversations ephemeral. Each page load is a fresh start. The existing `HumanHandoff` component already captures the conversation in a mailto link if the visitor wants to continue via email |
+
+### AF-6: Feedback on Individual Citations
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Add thumbs up/down on each citation to rate source relevance | Over-granular for a personal site. Citation quality is a backend concern (retrieval ranking, chunk quality). Visitor feedback at the citation level is noise | Keep the existing per-message `FeedbackButtons`. If an answer is bad, that feedback covers the citations too |
+
+### AF-7: Multi-Turn Context / Conversation History Sent to Backend
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Send full conversation history with each request so the backend can do multi-turn RAG | The FastAPI `/chat` endpoint accepts a single `question` string, not a conversation array. Adding multi-turn support requires backend schema changes, context window management, and significantly more complex retrieval. The old Vercel AI SDK `useChat` sent conversation history automatically; the new backend does not expect it | Send each question independently. For a code knowledge assistant, most questions are self-contained ("How does X work?"). If users need follow-up context, they can rephrase to include it. This is a v2 feature at best |
+
+### AF-8: Admin Analytics for RAG-Specific Metrics
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Build dashboards showing retrieval scores, citation hit rates, confidence distributions | The control center is explicitly deferred to a future milestone. RAG analytics belong in the backend observability layer (structured logging, Cloud Logging), not in a frontend admin panel | Keep existing Firestore analytics for now. Backend observability via structlog is already in place. Defer admin tooling |
 
 ---
 
 ## Feature Dependencies
 
 ```
-Logo Accent ──────────────────────── (independent, CSS only)
-Favicon ──────────────────────────── (independent, asset swap)
-OG Image ─────────────────────────── (independent, asset swap)
-Contact Redesign ─────────────────── (depends on existing ContactForm, CopyEmailButton)
-   └── Analytics events ──────────── (depends on event tracking setup)
-Projects Page ────────────────────── (depends on expanded project data model)
-   └── GitHub enrichment (optional)── (depends on existing github.ts)
-Writing Page ─────────────────────── (depends on content source: MDX or data)
-   └── Individual article pages ──── (future milestone, but route stubs needed)
+CORS config (TS-6, backend)
+  |
+  v
+Type definitions (TS-5)
+  |
+  v
+ChatInterface rewrite (TS-3, TS-4)  -- fetch-based, replaces useChat/streaming
+  |
+  +----> ChatMessage modification (TS-1, TS-2)
+  |        |
+  |        +----> CitationList component (NEW)
+  |        |        |
+  |        |        +----> GitHub permalink construction (D-1)
+  |        |
+  |        +----> ConfidenceBadge component (NEW)
+  |
+  +----> PrivacyDisclosure update
+  |
+  +----> Error handling states (TS-4)
+  |
+  +----> SuggestedPrompts update (D-2)
+
+PARALLEL (no dependency on above):
+  Remove old assistant server code
+  Remove old admin components (FactsEditor, PromptVersions, ReindexButton)
+  Clean up unused dependencies
 ```
 
-**No circular dependencies.** All six features can be built in parallel, though Contact and Projects have the most internal complexity.
+**Critical path:** CORS (TS-6) must be done first -- nothing else works without it. Then types (TS-5) and ChatInterface rewrite (TS-3/TS-4) are the foundation. Citation rendering (TS-1) and confidence (TS-2) layer on top.
 
 ---
 
 ## MVP Recommendation
 
-**Priority 1 (brand foundation -- do first, they are fast):**
-1. Favicon -- eliminates "unfinished" signal; 30 minutes of work
-2. Logo accent -- one CSS rule; immediate brand polish
-3. OG image -- static redesign; ensures every share looks professional
+For the v1.3 MVP, prioritize in this order:
 
-**Priority 2 (page upgrades -- core of v1.1):**
-4. Projects page -- expand data model, 2-col layout, new fields (dates, public/private, CTA)
-5. Contact redesign -- hero + CTAs + inline validation + privacy note + analytics events
-6. Writing page -- card listing matching Projects style; depends on having content or good empty state
+**Must ship (table stakes):**
+1. CORS configuration on FastAPI backend (TS-6)
+2. TypeScript types for API contract (TS-5)
+3. ChatInterface rewrite: fetch-based request/response (TS-3)
+4. Error handling for external service (TS-4)
+5. Citation rendering with collapsible sources section (TS-1)
+6. Confidence indicator badge (TS-2)
 
-**Defer to v1.2+:**
-- Dynamic per-page OG images (no per-page content yet)
-- Tag filtering on Projects/Writing (not enough items yet)
-- RSS feed (no blog content yet)
-- GitHub star counts / activity sparklines (nice-to-have, API complexity)
+**Should ship (differentiators that are low-effort):**
+7. GitHub permalink URLs in citations (D-1) -- parse and link, trivial
+8. Updated suggested prompts for RAG context (D-2)
+9. Citation count in collapsed state (D-4) -- inherent in TS-1 design
+
+**Defer to post-v1.3:**
+- Low-confidence clarification messaging (D-3) -- needs API contract discussion
+- Streaming responses (AF-1) -- backend rewrite for marginal UX gain
+- Multi-turn conversation (AF-7) -- backend does not support it
+- RAG analytics admin panel (AF-8) -- deferred per milestone plan
+
+---
+
+## New Components to Build
+
+| Component | Purpose | Estimated Size |
+|-----------|---------|---------------|
+| `CitationList` | Collapsible list of source citations with GitHub links | ~80-100 lines |
+| `ConfidenceBadge` | Color-coded pill showing confidence level | ~30-40 lines |
+| `types/chat.ts` | TypeScript types for FastAPI request/response | ~20 lines |
+
+**Note:** These are new leaf components. The primary complexity is in modifying `ChatInterface` (replacing streaming with fetch) and `ChatMessage` (integrating the new components).
 
 ---
 
 ## Sources
 
-- [Webflow: 23 Portfolio Website Examples](https://webflow.com/blog/design-portfolio-examples) -- card design patterns
-- [Baymard Institute: Inline Form Validation](https://baymard.com/blog/inline-form-validation) -- 31% of sites lack inline validation
-- [Juan Garcia: Click to Copy Email Pattern](https://www.juangarcia.design/blog/ditching-the-mailto-link:-click-to-copy-email-pattern/) -- 84% of users don't use native mail clients
-- [Next.js Docs: opengraph-image](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image) -- OG image file conventions
-- [web.dev: Building an Adaptive Favicon](https://web.dev/articles/building/an-adaptive-favicon) -- SVG favicon with dark mode
-- [favicon.im: SVG Favicon Guide](https://favicon.im/blog/svg-favicon-complete-guide) -- SVG vs ICO tradeoffs
-- [Design Studio: Form UX Best Practices 2026](https://www.designstudiouiux.com/blog/form-ux-design-best-practices/) -- form validation patterns
-- [PatternFly: Clipboard Copy](https://www.patternfly.org/components/clipboard-copy/design-guidelines/) -- copy-to-clipboard UX standards
-- Existing codebase analysis (globals.css, ProjectCard, ContactForm, Navbar, layout.tsx)
+- Backend API contract: directly inspected `/Users/dweinbeck/Documents/chatbot-assistant/app/schemas/chat.py` and `/Users/dweinbeck/Documents/chatbot-assistant/app/routers/chat.py` (HIGH confidence)
+- Frontend components: directly inspected all files in `src/components/assistant/` (HIGH confidence)
+- Citation UI patterns: [ShapeofAI Citations](https://www.shapeof.ai/patterns/citations) (HIGH confidence)
+- Confidence visualization: [Agentic Design CVP](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns) (HIGH confidence)
+- Vercel AI SDK InlineCitation: [AI SDK Elements](https://elements.ai-sdk.dev/components/inline-citation) (HIGH confidence -- evaluated and rejected for this use case)
+- shadcn/ui AI Sources component: [shadcn.io/ai/sources](https://www.shadcn.io/ai/sources) (MEDIUM confidence -- pattern reference only)
+- GitHub permalink format: [GitHub Docs](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet) (HIGH confidence)
+- AI citation patterns across platforms: [Medium analysis](https://medium.com/@shuimuzhisou/how-ai-engines-cite-sources-patterns-across-chatgpt-claude-perplexity-and-sge-8c317777c71d) (MEDIUM confidence)

@@ -1,206 +1,439 @@
-# Technology Stack: v1.1 Features
+# Technology Stack: FastAPI RAG Backend Integration
 
-**Project:** dan-weinbeck.com v1.1
-**Researched:** 2026-02-04
+**Project:** dan-weinbeck.com -- Assistant Backend Migration
+**Researched:** 2026-02-08
+**Overall confidence:** HIGH
 
-## Key Finding: Zero New Dependencies
+## Executive Summary
 
-Every v1.1 feature builds on the existing stack. No `npm install` commands needed.
+The core architectural decision is **how the browser connects to the FastAPI backend**: either directly via CORS or through a Next.js API route proxy. After researching both approaches, the recommendation is a **thin Next.js API route proxy** that translates between FastAPI's JSON response format and the Vercel AI SDK's UIMessageStream protocol. This avoids CORS configuration entirely, keeps the FastAPI backend private (no public internet exposure), and preserves the existing `useChat` hook with zero frontend transport changes.
 
-## Current Stack (Unchanged)
+**Zero new npm dependencies are needed.** The existing `ai@6.0.71` SDK has all the primitives required to build the translation layer.
 
-| Technology | Version | Relevant To |
-|------------|---------|-------------|
-| Next.js | 16.1.6 | All features (App Router, ISR, Server Actions, `next/og`) |
-| React | 19.2.3 | All UI (useActionState for contact form) |
-| Tailwind CSS | v4 | All styling including logo accent |
-| @tailwindcss/typography | ^0.5.19 | Writing page prose rendering |
-| @next/mdx + @mdx-js/loader | ^16.1.6 / ^3.1.1 | Writing page MDX content |
-| rehype-pretty-code + shiki | ^0.14.1 / ^3.22.0 | Code blocks in articles |
-| remark-gfm | ^4.0.1 | GFM tables/lists in articles |
-| sharp | ^0.34.3 | Image optimization (already installed) |
-| Zod | ^4.3.6 | Contact form validation |
-| clsx | ^2.1.1 | Conditional CSS classes |
-| Firebase Admin SDK | ^13.6.0 | Contact form Firestore writes |
-| Biome | 2.2.0 | Linting and formatting |
+---
 
-## Feature-by-Feature Stack Analysis
+## Architecture Decision: Proxy vs. Direct CORS
 
-### 1. Projects Page -- Enhanced Cards with GitHub API
+### Option A: Direct CORS (Browser to FastAPI)
 
-**What exists:** `src/lib/github.ts` fetches from `/users/dweinbeck/repos` with ISR (1-hour revalidation). Returns name, description, language, stars, topics, url.
+The browser calls the FastAPI Cloud Run service directly. Requires:
+- FastAPI `CORSMiddleware` configured with the frontend's origin
+- FastAPI Cloud Run service set to `--allow-unauthenticated` (public internet)
+- Custom `ChatTransport` implementation in the frontend to handle FastAPI's JSON response format
+- `NEXT_PUBLIC_CHATBOT_URL` environment variable exposed to the browser
 
-**What's needed:** Extend the `GitHubRepo` interface to include `created_at`, `pushed_at`, and `visibility` fields. The GitHub REST API already returns these fields in every response -- they are just not typed or used yet.
+**Pros:**
+- One fewer network hop (lower latency per request)
+- No proxy code to maintain
 
-**Stack impact:** None. Interface change + card UI work only.
+**Cons:**
+- FastAPI must be publicly accessible -- cannot use Cloud Run IAM
+- CORS preflight (OPTIONS) adds latency on first request per session
+- Requires a custom `ChatTransport` class that returns `ReadableStream<UIMessageChunk>` from a non-streaming JSON response
+- Backend URL leaked to browser (minor, but unnecessary exposure)
+- Cloud Run IAM authentication is incompatible with CORS preflight requests (Google issue tracker #361387319 -- unresolved as of 2026-02-08). The OPTIONS request is rejected with 403 before reaching the app.
 
-**Public vs. Private repos:** The unauthenticated `/users/dweinbeck/repos` endpoint returns only public repos. The authenticated `/user/repos` endpoint (used in `github-admin.ts` for the Control Center) returns both. **Recommendation:** Keep the public endpoint for the Projects page. All displayed repos are public by definition. For private projects that should appear on the page, continue the static curated entry pattern (ADR #20) with a "Private" badge. This avoids exposing private repo names and keeps the page working without a `GITHUB_TOKEN`.
+### Option B: Next.js API Route Proxy (Recommended)
 
-**Confidence:** HIGH -- verified against GitHub REST API docs and existing codebase.
+The browser calls `/api/assistant/chat` (same origin, no CORS). The Next.js route handler calls the FastAPI service, translates the response, and returns a UIMessageStream.
 
-### 2. Writing Page -- Article Listing with MDX
+**Pros:**
+- Zero CORS issues (same-origin request from browser)
+- FastAPI can stay private or use Cloud Run IAM service-to-service auth
+- No custom ChatTransport needed -- `DefaultChatTransport` continues to work unchanged
+- Frontend code changes are minimal (only remove old Gemini-specific logic from route handler)
+- Backend URL stays server-side only (not exposed to browser)
+- Can add server-side rate limiting, logging, safety checks in the proxy
 
-**What exists:** A "Coming Soon" stub at `src/app/writing/page.tsx`. A proven MDX content pattern in `src/lib/tutorials.ts` + `src/content/building-blocks/` with exported metadata objects.
+**Cons:**
+- Extra network hop (Next.js Cloud Run to FastAPI Cloud Run)
+- Both services are in `us-central1` on Cloud Run, so inter-service latency is ~1-5ms (negligible vs. LLM response time of 1-3 seconds)
 
-**What's needed:** Mirror the tutorials pattern:
-- Create `src/content/writing/` directory for MDX article files
-- Create `src/lib/articles.ts` (clone of `tutorials.ts` with path changed)
-- Each `.mdx` file exports `metadata = { title, description, publishedAt, tags }`
-- Article listing page reads metadata, sorts by date, renders cards
-- Individual article pages use dynamic `import()` for static analysis compatibility
+### Recommendation: Option B (Proxy)
 
-**Stack impact:** None. The MDX pipeline (`@next/mdx`, `remark-gfm`, `rehype-pretty-code`, `@tailwindcss/typography`) is fully configured and proven.
+**Use the Next.js API route proxy because:**
 
-**Key decision:** Do NOT add a content layer (Contentlayer, Velite) or switch to `next-mdx-remote`. The existing `@next/mdx` with exported metadata pattern (ADR #10) is simpler, type-safe, and already working.
+1. **No CORS at all.** CORS between authenticated Cloud Run services is a known pain point with no native GCP solution. Avoiding it entirely is the simplest path.
+2. **FastAPI stays internal.** The chatbot service can require IAM authentication, reducing attack surface. Only the Next.js service account needs `roles/run.invoker`.
+3. **Existing frontend works unchanged.** The `DefaultChatTransport({ api: "/api/assistant/chat" })` and `useChat` hook need zero modifications. Only the route handler implementation changes.
+4. **Inter-service latency is negligible.** Both services run in `us-central1`. The ~1-5ms overhead is invisible compared to LLM inference time.
+5. **Preserves server-side concerns.** Rate limiting, logging, and future safety checks remain in the Next.js layer without duplicating them in FastAPI.
 
-**Confidence:** HIGH -- exact pattern proven in existing codebase.
+**Confidence:** HIGH -- based on verified Cloud Run networking behavior, GCP IAM/CORS limitation (issue tracker #361387319), and confirmed Vercel AI SDK architecture.
 
-### 3. Contact Page Redesign
+---
 
-**What exists:** `ContactForm.tsx` with `useActionState`, Zod server-side validation, honeypot, rate limiting, `CopyEmailButton.tsx`.
+## Recommended Stack Changes
 
-**What's needed:**
-- **Hero section:** New layout with headline, subhead, primary CTAs (mailto, copy, LinkedIn) -- pure JSX + Tailwind
-- **Inline validation:** Add `onBlur` handlers that validate individual fields against the existing Zod schema. No form library needed.
-- **Loading state:** `useActionState` already provides pending state via `useFormStatus` (used in `SubmitButton.tsx`)
-- **Failure fallback:** Add email fallback text when submission fails (JSX change)
-- **JS-disabled fallback:** Add `<noscript>` block with mailto link -- native HTML
-- **Analytics events:** See analytics section below
+### What Changes
 
-**Stack impact:** None. All capabilities exist in React 19 + Zod + native HTML.
+| Area | Before | After | Why |
+|------|--------|-------|-----|
+| API route handler | `src/app/api/assistant/chat/route.ts` calls Gemini via `streamText()` | Same file calls FastAPI via `fetch()`, translates JSON to UIMessageStream | FastAPI is the new backend |
+| Response format | Streaming UIMessageStream from `streamText().toUIMessageStreamResponse()` | Non-streaming: fetch JSON from FastAPI, write to `createUIMessageStream` | FastAPI returns JSON, not streaming |
+| Gemini config | `@ai-sdk/google` provider + `gemini.ts` config | Removed (Gemini now runs inside FastAPI) | LLM moved to backend |
+| Safety pipeline | `src/lib/assistant/safety.ts` runs before Gemini call | Removed or simplified (FastAPI handles its own safety) | Backend owns safety logic |
+| Knowledge base | `src/data/` JSON/MD files loaded into system prompt | Removed (FastAPI uses Postgres FTS retrieval) | RAG replaces curated knowledge |
+| Environment vars | `GOOGLE_GENERATIVE_AI_API_KEY` | `CHATBOT_API_URL` (server-side only) | New backend endpoint |
 
-**What NOT to add:** `react-hook-form` -- overkill for a 3-field form. The existing `useActionState` + Zod pattern is simpler and already proven.
+### What Stays the Same
 
-**Confidence:** HIGH -- all capabilities verified in existing codebase.
+| Component | Why Unchanged |
+|-----------|---------------|
+| `ChatInterface.tsx` | Uses `useChat` with `DefaultChatTransport({ api: "/api/assistant/chat" })` -- same API path |
+| `ChatMessage.tsx` | Renders `content` string -- format unchanged |
+| `ChatInput.tsx` | Sends `{ text: string }` via `sendMessage` -- unchanged |
+| `TypingIndicator.tsx` | Triggered by `status === "streaming" \|\| status === "submitted"` -- unchanged |
+| `FeedbackButtons.tsx` | Calls `/api/assistant/feedback` -- independent of chat backend |
+| `SuggestedPrompts.tsx` | Static UI -- no backend dependency |
+| `ExitRamps.tsx` | Static UI -- no backend dependency |
+| `HumanHandoff.tsx` | Uses `plainMessages` computed from current messages -- unchanged |
+| `MarkdownRenderer.tsx` | Parses markdown string -- format unchanged |
+| `useChat` hook | Returns `{ messages, sendMessage, status, error, id }` -- unchanged |
 
-### 4. OG Image -- Branded 1200x630
+### What Gets Removed
 
-**What's needed:** Create `src/app/opengraph-image.tsx` using the Next.js built-in `ImageResponse` API.
+| Component | Why Removed |
+|-----------|-------------|
+| `src/lib/assistant/gemini.ts` | Gemini model config -- LLM now in FastAPI |
+| `src/lib/assistant/knowledge.ts` | Curated knowledge loader -- replaced by RAG |
+| `src/lib/assistant/prompts.ts` | System prompt builder -- FastAPI manages prompts |
+| `src/lib/assistant/safety.ts` | Safety pipeline -- FastAPI handles safety |
+| `src/lib/assistant/refusals.ts` | Static refusal messages -- FastAPI handles |
+| `src/lib/assistant/filters.ts` | Input filters -- FastAPI handles |
+| `src/data/` directory | Knowledge base JSON/MD files -- replaced by Postgres |
+| `@ai-sdk/google` package | Google Gemini provider -- no longer used directly |
 
-**Stack impact:** None. `ImageResponse` ships with Next.js -- import from `next/og`.
+### What Gets Added (New)
 
-**Implementation:**
+| Component | Purpose |
+|-----------|---------|
+| `src/lib/assistant/fastapi-client.ts` | Typed fetch wrapper for FastAPI `/chat` endpoint |
+| `src/lib/schemas/fastapi.ts` | Zod schemas for FastAPI request/response validation |
+| Citation rendering in `ChatMessage.tsx` | Display source citations from FastAPI response |
+
+---
+
+## Core Integration: Route Handler Translation Layer
+
+The new `/api/assistant/chat/route.ts` does three things:
+
+1. **Receive** the Vercel AI SDK UIMessage format (parts-based messages)
+2. **Translate** to FastAPI format (`{ messages: [{role, content}], conversation_id? }`)
+3. **Call** FastAPI and translate the JSON response back to a UIMessageStream
+
+### Schema Mapping
+
+**Vercel AI SDK sends (UIMessage format):**
 ```typescript
-import { ImageResponse } from 'next/og'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
-
-export const alt = 'Dan Weinbeck - AI Developer & Data Scientist'
-export const size = { width: 1200, height: 630 }
-export const contentType = 'image/png'
-
-export default async function Image() {
-  const playfairBold = await readFile(
-    join(process.cwd(), 'assets/fonts/PlayfairDisplay-Bold.ttf')
-  )
-  return new ImageResponse(/* navy bg, gold accent, DW branding */, {
-    ...size,
-    fonts: [{ name: 'Playfair Display', data: playfairBold, weight: 700 }],
-  })
+{
+  messages: [
+    {
+      id: "msg_123",
+      role: "user",
+      parts: [{ type: "text", text: "Tell me about Dan's experience" }]
+    }
+  ],
+  id: "chat_456"  // conversation ID
 }
 ```
 
-**Key details:**
-- `ImageResponse` uses Satori under the hood -- only flexbox layout, no CSS grid
-- Custom fonts require raw TTF/OTF/WOFF files loaded via `readFile` (cannot use Google Fonts CSS)
-- Statically optimized at build time by default (no dynamic data)
-- The existing `openGraph.images` config in `layout.tsx` can be removed -- the file convention auto-generates meta tags
-- 500KB bundle limit for the image route (fonts + JSX + images combined)
+**FastAPI expects:**
+```typescript
+{
+  messages: [
+    { role: "user", content: "Tell me about Dan's experience" }
+  ],
+  conversation_id: "chat_456"  // optional
+}
+```
 
-**New asset needed:** Download Playfair Display Bold and Inter SemiBold TTF files from Google Fonts. Place in `assets/fonts/` at project root. This is the only new asset across all v1.1 features (~200KB total).
+**FastAPI returns:**
+```typescript
+{
+  response: "Dan has extensive experience in...",
+  citations: [
+    { source: "resume.md", content: "relevant excerpt", line_range: [10, 15] }
+  ],
+  confidence: 0.92,
+  conversation_id: "chat_456"
+}
+```
 
-**Why NOT `@vercel/og`:** That package is for Pages Router. App Router uses `next/og` directly (built-in, no install).
+**Next.js proxy translates to UIMessageStream:**
+```typescript
+createUIMessageStream({
+  execute: ({ writer }) => {
+    // Write the response text
+    writer.write({ type: "text-start", id: "resp-1" });
+    writer.write({ type: "text-delta", id: "resp-1", delta: response });
+    writer.write({ type: "text-end", id: "resp-1" });
+    // Optionally: write citations as custom data or append to text
+  },
+});
+```
 
-**Confidence:** HIGH -- verified against Next.js official docs for ImageResponse and opengraph-image file convention.
+### Key Technical Detail: Non-Streaming to Streaming Translation
 
-### 5. Favicon -- DW Logo
+The FastAPI `/chat` endpoint returns a single JSON response (not streaming). The Vercel AI SDK `useChat` hook expects a `ReadableStream<UIMessageChunk>`. The translation happens in `createUIMessageStream`:
 
-**What's needed:** Place favicon files in `src/app/` using Next.js file conventions:
-- `src/app/favicon.ico` (32x32) -- browser tab icon
-- `src/app/icon.png` (512x512, optional) -- modern browsers / PWA
-- `src/app/apple-icon.png` (180x180, optional) -- iOS home screen
+- The proxy `await`s the full FastAPI JSON response
+- Then writes it as a single text-delta chunk to the UIMessageStream
+- The frontend receives it as if it were a very fast stream (one chunk)
 
-**Stack impact:** None. Static asset placement. Next.js auto-discovers and generates `<link>` tags.
+This works because `createUIMessageStream` does not require the source to be streaming -- it creates a stream from whatever the `execute` callback writes. The `useChat` hook processes it identically to a multi-chunk stream.
 
-**Alternative:** Could create `src/app/icon.tsx` using `ImageResponse` to generate the favicon programmatically. But for a static brand mark, a designed asset file is simpler and more predictable.
+**Confidence:** HIGH -- verified from `createUIMessageStream` API documentation at ai-sdk.dev, which accepts an `execute` callback with a `writer` that supports `write({ type: "text-delta", delta, id })`.
 
-**Note:** The existing `public/` directory has only Next.js starter placeholder SVGs (file.svg, vercel.svg, etc.) that should be cleaned up.
+---
 
-**Confidence:** HIGH -- standard Next.js file convention.
+## Environment Variables
 
-### 6. DW Logo Gold Underline -- CSS Accent
+### New Variables
 
-**What's needed:** Add a gold underline to the "DW" text in `src/components/layout/Navbar.tsx`.
+| Variable | Scope | Value | Purpose |
+|----------|-------|-------|---------|
+| `CHATBOT_API_URL` | Server-side only (NOT `NEXT_PUBLIC_`) | `https://chatbot-assistant-HASH-uc.a.run.app` | FastAPI service URL |
 
-**Stack impact:** None. Pure Tailwind CSS change.
+### Removed Variables
 
-**Approach options:**
-- `border-b-2 border-gold` -- simple bottom border
-- `decoration-gold underline decoration-2 underline-offset-4` -- text decoration (more control over offset)
-- Pseudo-element via arbitrary Tailwind for a partial underline effect
+| Variable | Why Removed |
+|----------|-------------|
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini API key -- LLM now runs in FastAPI with its own credentials |
 
-The existing Navbar already has `text-primary group-hover:text-gold transition-colors` on the DW link. The gold underline should be persistent (not just on hover) to serve as a brand accent.
+### Unchanged Variables
 
-**Confidence:** HIGH -- trivial CSS.
+All Firebase, Next.js, and GitHub variables remain unchanged.
 
-## Analytics Events
+### Cloud Build Update
 
-The contact page requirements specify tracking: email copy, email click, form start, form submit, form error.
+The `cloudbuild.yaml` deployment step needs:
+- Add `CHATBOT_API_URL` to `--set-env-vars`
+- Remove `GOOGLE_GENERATIVE_AI_API_KEY` from `--update-secrets` (or keep if used elsewhere)
 
-### Recommendation: Stub Now, Instrument Later
+---
 
-**Do NOT add an analytics library in v1.1.** Rationale:
-- The site has no analytics yet and no established need for dashboards
-- Adding Google Analytics requires cookie consent (GDPR) -- antithetical to a clean personal site
-- Privacy-first alternatives (Plausible ~$9/mo, Fathom ~$14/mo) are good but premature
+## Dependencies: What to Install / Remove
 
-**Implementation approach:**
-1. Create a `src/lib/analytics.ts` module with a `trackEvent(name: string, data?: Record<string, string>)` function
-2. Initial implementation: no-op (or `console.debug` in development)
-3. Wire up event calls in contact page components at the instrumentation points
-4. When analytics are actually needed, swap the implementation to Plausible (1KB script, no cookies, no consent banner) or Firestore event logging
+### Install: Nothing
 
-This creates the instrumentation points without adding a dependency. The contact form already writes to Firestore, so submission counts can be queried directly.
+No new npm packages are needed. The existing stack provides everything:
 
-**If analytics are explicitly required in v1.1:** Use [Plausible Analytics](https://plausible.io/) -- lightweight (~1KB), cookie-free, GDPR-compliant, custom events supported. Self-hosted option available for GCP. But defer this decision to the roadmap phase.
+| Capability Needed | Already Have | Package |
+|-------------------|-------------|---------|
+| HTTP fetch to FastAPI | Native `fetch()` in Node.js 20 | Built-in |
+| UIMessageStream creation | `createUIMessageStream` | `ai@6.0.71` |
+| UIMessageStream response | `createUIMessageStreamResponse` | `ai@6.0.71` |
+| Request validation | Zod schemas | `zod@^4.3.6` |
+| Response validation | Zod schemas | `zod@^4.3.6` |
+| Markdown rendering | Existing `MarkdownRenderer` | Custom component |
+| Citation rendering | Extend `ChatMessage` | Custom component |
 
-**Confidence:** MEDIUM -- architectural recommendation, not a verified integration.
+### Remove (After Migration)
+
+| Package | Why Remove | When |
+|---------|-----------|------|
+| `@ai-sdk/google` | `^3.0.21` -- Google Gemini provider no longer called from frontend | After migration is validated and stable |
+
+**Important:** Do not remove `@ai-sdk/google` until the migration is fully tested. Keep it during development so you can A/B test or fall back to the old implementation.
+
+### Keep
+
+| Package | Why Keep |
+|---------|---------|
+| `ai` (`6.0.71`) | `useChat`, `createUIMessageStream`, `createUIMessageStreamResponse`, `DefaultChatTransport` |
+| `@ai-sdk/react` (`3.0.73`) | `useChat` hook for React |
+
+---
+
+## CORS Configuration (If Direct Connection Were Chosen)
+
+**This section documents the CORS approach for reference, even though the proxy approach is recommended.**
+
+If the frontend were to call FastAPI directly, the FastAPI backend would need:
+
+```python
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://dan-weinbeck.com", "http://localhost:3000"],
+    allow_credentials=False,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
+```
+
+And the Cloud Run FastAPI service would need `--allow-unauthenticated` because:
+- Browser CORS preflight sends an OPTIONS request without credentials
+- Cloud Run IAM rejects unauthenticated OPTIONS requests with 403
+- This is a known GCP limitation (issue tracker #361387319, unresolved)
+
+**By using the proxy approach, none of this is needed.** The FastAPI service can stay authenticated (IAM-protected), and the Next.js service account gets `roles/run.invoker`.
+
+---
+
+## Service-to-Service Authentication (Proxy Approach)
+
+When the Next.js API route calls FastAPI on Cloud Run:
+
+### Option A: Public FastAPI Service (Simpler)
+
+Set FastAPI Cloud Run to `--allow-unauthenticated`. The Next.js route handler calls it with a plain `fetch()`. Since the URL is server-side only (not exposed to browser), the security risk is limited to URL discovery.
+
+### Option B: IAM-Authenticated FastAPI Service (Recommended)
+
+1. FastAPI Cloud Run requires authentication (default, no `--allow-unauthenticated`)
+2. Grant the Next.js service account `roles/run.invoker` on the FastAPI service:
+   ```bash
+   gcloud run services add-iam-policy-binding chatbot-assistant \
+     --member="serviceAccount:cloudrun-site@PROJECT.iam.gserviceaccount.com" \
+     --role="roles/run.invoker" \
+     --region=us-central1
+   ```
+3. Fetch an ID token in the route handler:
+   ```typescript
+   // In route handler (server-side only)
+   const metadataUrl = `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${CHATBOT_API_URL}`;
+   const tokenRes = await fetch(metadataUrl, {
+     headers: { "Metadata-Flavor": "Google" },
+   });
+   const idToken = await tokenRes.text();
+
+   const response = await fetch(`${CHATBOT_API_URL}/chat`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       "Authorization": `Bearer ${idToken}`,
+     },
+     body: JSON.stringify(fastApiPayload),
+   });
+   ```
+
+**Recommendation:** Start with Option A (public) for development speed. Move to Option B (IAM) before production or as a fast-follow. The code change is small (add 5 lines for token fetch).
+
+**Confidence:** HIGH -- service-to-service auth via metadata server is the standard GCP pattern, documented at cloud.google.com/run/docs/authenticating/service-to-service.
+
+---
+
+## Citation Rendering Strategy
+
+The FastAPI response includes `citations: [{ source, content, line_range }]`. These need to be displayed in the chat UI.
+
+### Approach: Append Citations to Message Text
+
+The simplest approach is to format citations as markdown and append them to the response text before writing to the UIMessageStream:
+
+```typescript
+let messageText = fastapiResponse.response;
+
+if (fastapiResponse.citations?.length > 0) {
+  messageText += "\n\n---\n**Sources:**\n";
+  for (const cite of fastapiResponse.citations) {
+    messageText += `- ${cite.source}\n`;
+  }
+}
+
+writer.write({ type: "text-delta", id: "resp-1", delta: messageText });
+```
+
+This works because:
+- `ChatMessage.tsx` already renders markdown via `MarkdownRenderer`
+- No new component or data channel needed
+- Citations appear inline with the response
+
+### Alternative: Structured Citation Data
+
+If richer citation rendering is needed later (collapsible quotes, hover previews), the UIMessageStream protocol supports custom data types (`data-*` prefix) that could carry structured citation objects. But this requires frontend changes to parse and render them. Defer this to a future enhancement.
+
+**Recommendation:** Start with markdown-appended citations. Upgrade to structured data later if needed.
+
+**Confidence:** MEDIUM -- the markdown approach is straightforward and tested via existing `MarkdownRenderer`. The custom data approach is verified to exist in the protocol but untested in this codebase.
+
+---
+
+## Zod Schemas for FastAPI Contract
+
+Define TypeScript types and runtime validation for the FastAPI API contract using Zod v4 (already in the project at `^4.3.6`):
+
+```typescript
+// src/lib/schemas/fastapi.ts
+import { z } from "zod";
+
+export const fastApiCitationSchema = z.object({
+  source: z.string(),
+  content: z.string(),
+  line_range: z.tuple([z.number(), z.number()]).optional(),
+});
+
+export const fastApiRequestSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(["user", "assistant"]),
+      content: z.string(),
+    })
+  ),
+  conversation_id: z.string().optional(),
+});
+
+export const fastApiResponseSchema = z.object({
+  response: z.string(),
+  citations: z.array(fastApiCitationSchema).optional().default([]),
+  confidence: z.number().min(0).max(1).optional(),
+  conversation_id: z.string().optional(),
+});
+
+export type FastApiRequest = z.infer<typeof fastApiRequestSchema>;
+export type FastApiResponse = z.infer<typeof fastApiResponseSchema>;
+export type FastApiCitation = z.infer<typeof fastApiCitationSchema>;
+```
+
+**Why validate the FastAPI response with Zod:**
+- Catches schema drift between frontend and backend at runtime
+- Provides TypeScript types inferred from the schema (single source of truth)
+- Fails fast with clear errors if FastAPI changes its response format
+- Already the project's pattern for API validation (see `src/lib/schemas/assistant.ts`)
+
+**Confidence:** HIGH -- Zod v4 is installed and the schema pattern matches existing codebase.
+
+---
 
 ## What NOT to Add
 
-| Library | Why Tempting | Why Not |
-|---------|-------------|---------|
-| `@vercel/og` | OG image generation | Built into Next.js App Router as `next/og` -- no install needed |
-| `react-hook-form` | Form validation UX | Overkill for a 3-field form; `useActionState` + Zod is simpler |
-| `contentlayer` / `velite` | MDX content management | Existing `@next/mdx` + exported metadata pattern works; adding a layer adds complexity |
-| `next-mdx-remote` | Remote/flexible MDX | Only needed if MDX comes from a CMS; local files work with `@next/mdx` |
-| Google Analytics | Analytics events | Heavy (~45KB), requires cookie consent, privacy-hostile |
-| `react-icons` / `lucide-react` | Social link icons | Inline SVGs or Unicode suffice for v1.1 scope |
-| `nodemailer` / SendGrid | Email forwarding | Contact form stores to Firestore; email notification is a separate feature |
-| `plaiceholder` | Blur image placeholders | `sharp` + Next.js Image handle this natively |
+| Library / Approach | Why Tempting | Why Not |
+|--------------------|-------------|---------|
+| `axios` | HTTP client for FastAPI calls | Native `fetch()` is sufficient for a single POST call. Axios adds 30KB for no benefit. |
+| `py-ai-datastream` | Python Vercel AI SDK protocol implementation | Only needed if FastAPI streams responses. FastAPI returns JSON; the proxy handles translation. |
+| `fastapi-ai-sdk` | FastAPI helper for Vercel AI SDK | Same as above -- unnecessary if using proxy approach with JSON responses. |
+| Custom `ChatTransport` | Direct browser-to-FastAPI connection | Proxy approach avoids this entirely. `DefaultChatTransport` works unchanged. |
+| `@ai-sdk/openai` or other provider | Replace `@ai-sdk/google` | No AI SDK provider is needed. The LLM runs inside FastAPI, not in Next.js. |
+| WebSocket transport | Real-time streaming from FastAPI | Overengineered. The FastAPI response is fast enough as JSON. Add streaming later if latency becomes an issue. |
+| `next-cors` | CORS middleware for Next.js | Not needed -- browser calls same origin. No CORS involved with proxy approach. |
+| Identity-Aware Proxy (IAP) | CORS + auth for Cloud Run | Heavyweight GCP solution. Only needed for direct browser-to-backend calls. Proxy avoids the problem entirely. |
+| API Gateway (GCP) | Routing and auth | Adds operational complexity for a two-service setup. Direct service-to-service is simpler. |
 
-## New Assets Required (Not Code Dependencies)
+---
 
-| Asset | Purpose | Source | Size |
-|-------|---------|--------|------|
-| PlayfairDisplay-Bold.ttf | OG image font | Google Fonts download | ~100KB |
-| Inter-SemiBold.ttf | OG image font | Google Fonts download | ~100KB |
-| favicon.ico | Browser tab icon | Design tool (Figma/SVG) | ~4KB |
-| icon.png (optional) | Modern browser icon | Design tool | ~10KB |
-| apple-icon.png (optional) | iOS home screen | Design tool | ~10KB |
+## Migration Path Summary
 
-**Location:** Font files in `assets/fonts/`, favicon files in `src/app/`.
+| Phase | What Changes | Risk |
+|-------|-------------|------|
+| 1. Add FastAPI client + schemas | New files only, no existing code touched | None |
+| 2. Replace route handler internals | `route.ts` calls FastAPI instead of Gemini | Medium -- must test response format |
+| 3. Add citation rendering | Extend `ChatMessage` or `MarkdownRenderer` | Low |
+| 4. Remove old assistant code | Delete `src/lib/assistant/` files, `src/data/`, `@ai-sdk/google` | Low -- only after validating new path |
+| 5. Update env vars + Cloud Build | Config changes | Low |
 
-## Installation
-
-```bash
-# No new packages needed for v1.1.
-# Only action: download font TTF files for OG image generation.
-```
+---
 
 ## Sources
 
-- [Next.js ImageResponse API](https://nextjs.org/docs/app/api-reference/functions/image-response) -- HIGH confidence
-- [Next.js opengraph-image file convention](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image) -- HIGH confidence
-- [GitHub REST API: List user repos](https://docs.github.com/en/rest/repos/repos#list-repositories-for-a-user) -- HIGH confidence
-- [Plausible Analytics](https://plausible.io/) -- MEDIUM confidence (deferred recommendation)
+- [Vercel AI SDK Transport Documentation](https://ai-sdk.dev/docs/ai-sdk-ui/transport) -- HIGH confidence (official docs)
+- [Vercel AI SDK createUIMessageStream API](https://ai-sdk.dev/docs/reference/ai-sdk-ui/create-ui-message-stream) -- HIGH confidence (official docs)
+- [Vercel AI SDK Stream Protocol](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) -- HIGH confidence (official docs)
+- [GCP Cloud Run Service-to-Service Auth](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) -- HIGH confidence (official docs)
+- [GCP Cloud Run CORS + IAM Limitation](https://issuetracker.google.com/issues/361387319) -- HIGH confidence (official issue tracker, unresolved)
+- [FastAPI CORS Middleware](https://fastapi.tiangolo.com/tutorial/cors/) -- HIGH confidence (official docs)
+- [Vercel AI SDK GitHub Discussion: FastAPI Integration](https://github.com/vercel/ai/discussions/2840) -- MEDIUM confidence (community)
+- [py-ai-datastream (Python Vercel AI SDK Protocol)](https://github.com/elementary-data/py-ai-datastream) -- MEDIUM confidence (evaluated, not recommended)
+- [fastapi-ai-sdk](https://github.com/doganarif/fastapi-ai-sdk) -- MEDIUM confidence (evaluated, not recommended)

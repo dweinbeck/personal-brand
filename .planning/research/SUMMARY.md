@@ -1,207 +1,223 @@
 # Project Research Summary
 
-**Project:** personal-brand v1.1 page buildout and branding polish
-**Domain:** Developer portfolio / personal brand site enhancement
-**Researched:** 2026-02-04
-**Confidence:** HIGH
+**Project:** dan-weinbeck.com v1.3 -- Assistant Backend Integration (FastAPI RAG)
+**Domain:** Frontend integration with external RAG chatbot backend
+**Researched:** 2026-02-08
+**Confidence:** HIGH (with one MEDIUM area)
 
 ## Executive Summary
 
-This project enhances an existing Next.js personal site from scaffolded placeholders to polished, complete pages. The research confirms that all v1.1 features can be built with zero new dependencies — the existing stack (Next.js 16, React 19, Tailwind v4, MDX, Firebase Admin, GitHub API integration) already provides every capability needed. The work is primarily UI/UX enhancement and content structure definition, not architectural expansion.
+The v1.3 milestone replaces the site's internal AI assistant backend (Gemini 2.0 Flash via Vercel AI SDK, curated JSON knowledge base, safety pipeline) with an external FastAPI RAG service deployed on GCP Cloud Run. The FastAPI backend handles retrieval, LLM orchestration, safety, and returns structured JSON responses with answer text, source citations, and confidence scores. From the Next.js frontend's perspective, this is overwhelmingly a **deletion milestone**: ~27-30 files removed, 2 files modified, and only 2-3 new files created.
 
-The recommended approach is to build in four phases ordered by risk and dependency. Start with static assets (favicon, OG image, logo accent) for immediate visual polish with zero risk. Follow with projects page enhancement (extends proven GitHub ISR pattern), writing page buildout (replicates established MDX pattern from building-blocks), and finally contact redesign (most UX complexity, benefits from patterns established in earlier phases). This ordering minimizes rework risk and allows each phase to validate deployment and integration patterns.
+**The central architectural decision is proxy vs. direct CORS.** The STACK researcher recommends a **Next.js API route proxy** (browser calls same-origin `/api/assistant/chat`, which calls FastAPI server-to-server and translates JSON to UIMessageStream). The ARCHITECTURE researcher designed for **direct CORS with a custom `ChatTransport`** (browser calls FastAPI directly). **This summary recommends the proxy approach.** The rationale: (1) Cloud Run IAM authentication is incompatible with browser CORS preflight -- a documented, unresolved GCP limitation (issue #361387319), meaning direct CORS requires making FastAPI fully public; (2) the proxy requires zero frontend transport changes -- `DefaultChatTransport` and `useChat` work unchanged; (3) inter-service latency between two `us-central1` Cloud Run services is 1-5ms, negligible against 1-3s LLM inference time; (4) zero new npm dependencies are needed. The proxy approach eliminates the entire CORS problem class and the need to build/debug a custom `ChatTransport`, which the ARCHITECTURE researcher flagged as having LOW confidence on exact `UIMessageChunk` field names.
 
-Key risks center on data model unification (homepage and projects page currently have separate hardcoded data sources that will drift) and feature completeness without content (building a blog infrastructure with zero articles is wasted effort). Mitigations: establish a single source of truth for project data before UI work, and define the writing content schema (frontmatter structure, metadata requirements) before building article cards. Analytics instrumentation is required for contact success metrics but no provider is chosen yet — stub the event tracking layer early and defer the provider decision to avoid premature dependencies.
+Key risks are: (1) removing backend code will break the admin panel at build time unless admin pages/components are deleted in the same commit; (2) two shared data files (`projects.json`, `accomplishments.json`) must NOT be deleted during `src/data/` cleanup; (3) `FeedbackButtons` and `LeadCaptureFlow` make fire-and-forget fetch calls that silently fail if routes are removed -- these need explicit decisions; (4) the exact FastAPI response schema has discrepancies across research files that must be resolved against the actual backend code before implementation.
 
 ## Key Findings
 
 ### Recommended Stack
 
-**Zero new dependencies needed.** Every v1.1 feature builds on existing infrastructure. The current stack provides: GitHub API integration with ISR caching (`lib/github.ts`), MDX content pipeline fully configured (`@next/mdx`, `remark-gfm`, `rehype-pretty-code`), contact form with Zod validation, Firebase Admin for Firestore writes, Server Actions with `useActionState`, Tailwind v4 with design tokens, and Next.js built-in OG image generation (`next/og`).
+See full details: [STACK.md](.planning/research/STACK.md)
+
+**Zero new npm dependencies.** The existing `ai@6.0.71` SDK provides `createUIMessageStream` and `createUIMessageStreamResponse` for building the proxy translation layer. Native `fetch()` in Node.js 20 handles the server-to-server call to FastAPI. `zod@^4.3.6` (already installed) provides runtime validation of the FastAPI response.
 
 **Core technologies:**
-- **Next.js 16.1.6** — App Router with Server Components, ISR, Server Actions, and `ImageResponse` API for OG images
-- **Existing GitHub API integration** — `fetchGitHubProjects()` with ISR (1-hour revalidation) already works; just needs expanded type mapping for new fields
-- **Existing MDX pipeline** — `building-blocks` tutorials prove the `export const metadata` pattern works; clone for `writing` content
-- **Tailwind v4 with custom theme** — All design tokens defined in `globals.css`; new components must use these tokens, not hardcoded colors
-- **Firebase Admin SDK** — Contact form already persists to Firestore; no changes needed
-- **Zod + Server Actions** — Contact form validation and submission pattern is solid; wrap with new layout, do not rebuild
+- **`createUIMessageStream` / `createUIMessageStreamResponse`** (from `ai@6.0.71`) -- translates FastAPI JSON into UIMessageStream protocol so `useChat` works unchanged
+- **Native `fetch()`** -- calls FastAPI from the Next.js route handler; no HTTP client library needed
+- **Zod v4** -- runtime validation of FastAPI response schema; catches drift between services
+- **`CHATBOT_API_URL`** (server-side only, NOT `NEXT_PUBLIC_`) -- FastAPI endpoint; stays private because proxy handles the call
 
-**Only new assets (not code dependencies):**
-- Font files for OG image: PlayfairDisplay-Bold.ttf and Inter-SemiBold.ttf (~200KB total)
-- Favicon set: favicon.ico, icon.png (optional), apple-icon.png (optional)
-- OG image: branded 1200x630 PNG replacement
+**Remove after migration validated:**
+- `@ai-sdk/google` -- Gemini provider no longer called from Next.js
+- `GOOGLE_GENERATIVE_AI_API_KEY` -- orphaned secret; revoke or remove from Cloud Run config
 
 ### Expected Features
 
-**Must have (table stakes):**
-- **Projects page: 2-column detailed cards** — Name, multi-sentence description, tags, status badge, public/private designation, date range (initiated - last commit)
-- **Writing page: article listing** — Cards with title, publish date, topic tag, chronological ordering; must match Projects page styling
-- **Contact redesign: hero + primary CTAs** — Mailto button, copy email button (already exists), LinkedIn link; inline validation; loading/error/success states; JS-disabled fallback; privacy note
-- **OG image: branded 1200x630** — Navy background, gold accent, DW branding; exactly 1200x630px for social platforms
-- **Favicon: custom DW design** — Navy/gold monogram replacing Next.js default
-- **Logo accent: gold underline** — Persistent (not just hover) on navbar "DW" text
+See full details: [FEATURES.md](.planning/research/FEATURES.md)
 
-**Should have (competitive):**
-- **Analytics events** — Track email copy, mailto click, form start, submit, error (required by success metrics but no provider chosen)
-- **Reading time estimate** — For writing cards (calculate from word count at build)
-- **GitHub enrichment** — Star count, activity indicators for projects (optional; API already available)
-- **Staggered card animations** — Fade-in entrance on projects/writing pages (existing `fade-in-up` animation)
+**Must have (table stakes):**
+- **Citation rendering** -- collapsible "Sources (N)" section below each answer with parsed file paths, relevance text, and GitHub permalink URLs
+- **Confidence indicator** -- color-coded pill (high/medium/low) near the citation trigger
+- **Loading state** -- existing `TypingIndicator` wired to new fetch lifecycle (shows during proxy round-trip)
+- **Error handling** -- graceful states for network failure, timeout (15s AbortController), 4xx/5xx from FastAPI, invalid response shape
+- **Type safety** -- Zod schemas for FastAPI request/response contract (`src/lib/schemas/fastapi.ts`)
+
+**Should have (low-effort differentiators):**
+- **Clickable GitHub permalinks** -- parse citation `source` string into `https://github.com/{owner}/{repo}/blob/{sha}/{path}#L{start}-L{end}` links
+- **Updated suggested prompts** -- reflect RAG capabilities ("How does the chatbot backend work?" instead of generic prompts)
+- **Citation count in collapsed state** -- "Cited N sources" visible even when collapsed (inherent in citation component design)
 
 **Defer (v2+):**
-- **Dynamic per-page OG images** — No per-page content yet to differentiate; single static branded image sufficient
-- **Tag filtering** — Not enough projects/articles yet to justify client-side filtering
-- **RSS feed** — Defer until writing content exists
-- **GitHub activity sparklines** — Nice-to-have visual polish, adds API complexity
+- Streaming responses from FastAPI (backend rewrite for marginal UX gain)
+- Multi-turn conversation context (backend `/chat` accepts single `question`, not conversation array)
+- Low-confidence clarification messaging (needs backend API contract extension)
+- RAG-specific admin analytics (admin tooling deferred; backend has its own observability via structlog)
 
 ### Architecture Approach
 
-All six features integrate cleanly into the existing Server Component architecture. Projects and writing pages become async RSCs that call data-fetching functions at build/request time (ISR for GitHub API, pure SSG for filesystem MDX). Contact redesign wraps the existing `ContactForm` client component with new hero/CTA sections as Server Components. Static assets (favicon, OG image) use Next.js file-based metadata conventions — drop files in `src/app/`, no code needed. Logo accent is a single CSS class change on an existing element.
+See full details: [ARCHITECTURE-fastapi-integration.md](.planning/research/ARCHITECTURE-fastapi-integration.md)
+
+The new architecture uses the Next.js API route (`/api/assistant/chat`) as a thin translation proxy. The browser POSTs to the same-origin route (no CORS). The route handler: (1) extracts text from UIMessage `parts`; (2) calls FastAPI with `{messages: [{role, content}], conversation_id?}`; (3) receives JSON `{response, citations, confidence, conversation_id}`; (4) writes the response as a UIMessageStream via `createUIMessageStream`; (5) appends formatted citations as markdown to the response text (simplest approach; structured citation data can be added later).
 
 **Major components:**
-1. **Projects data layer** — Expand `GitHubRepo` interface in `lib/github.ts` to include `created_at`, `pushed_at`, `visibility` (already returned by API); unify with `Project` type; replace hardcoded arrays with `fetchGitHubProjects()` call
-2. **Writing content system** — Clone `lib/tutorials.ts` as `lib/writing.ts` pointing to `src/content/writing/`; create `[slug]` route with `generateStaticParams`; card listing page identical pattern to tutorials
-3. **Contact page structure** — New layout: `ContactHero` (Server Component with CTAs) → `ContactForm` (existing client component, enhanced error state) → Fast links section → `PrivacyNote`; add `lib/analytics.ts` stub for event tracking
-4. **Branding assets** — File replacements (`opengraph-image.png`, `favicon.ico`) + one CSS utility (`border-b-2 border-gold`) on navbar logo span
+1. **Proxy route handler** (`src/app/api/assistant/chat/route.ts`) -- rewritten internals; same path, new implementation; translates between Vercel AI SDK UIMessage format and FastAPI JSON
+2. **FastAPI client** (`src/lib/assistant/fastapi-client.ts`) -- typed `fetch` wrapper with Zod validation of FastAPI response
+3. **Zod schemas** (`src/lib/schemas/fastapi.ts`) -- request/response contract validation; single source of truth for TypeScript types
+4. **CitationList component** (new, ~80-100 lines) -- collapsible source display with GitHub permalink construction
+5. **ConfidenceBadge component** (new, ~30-40 lines) -- color-coded confidence pill
 
-**Critical pattern to preserve:** Server Components by default, `"use client"` only for interactivity (ContactForm, CopyEmailButton, MailtoButton for analytics). Do NOT create generic/abstract Card components — `ProjectCard` and `ArticleCard` have different data shapes and should stay focused. Do NOT unify homepage featured projects with GitHub API data — homepage is curated, projects page is live feed.
+**What stays unchanged:** `ChatInterface.tsx`, `ChatInput.tsx`, `ChatMessage.tsx` (minor modification for citations), `TypingIndicator.tsx`, `FeedbackButtons.tsx`, `SuggestedPrompts.tsx`, `ExitRamps.tsx`, `HumanHandoff.tsx`, `MarkdownRenderer.tsx`, `useChat` hook with `DefaultChatTransport`.
+
+**What gets removed:** ~27-30 files including all assistant backend logic (`gemini.ts`, `safety.ts`, `filters.ts`, `refusals.ts`, `knowledge.ts`, `prompts.ts`, `rate-limit.ts`), 7 of 9 data files, admin routes (`facts`, `prompt-versions`, `reindex`), admin components (`FactsEditor`, `PromptVersions`, `ReindexButton`), and admin pages.
 
 ### Critical Pitfalls
 
-1. **Dual project data sources drifting** — Homepage `FeaturedProjects` and `/projects` currently use separate hardcoded arrays. Enhancing `/projects` with GitHub API while leaving homepage hardcoded creates inconsistency. **Mitigation:** Decide single source of truth upfront (GitHub API with curated filtering/ordering, or unified config file); unify types before UI work.
+See full details: [PITFALLS.md](.planning/research/PITFALLS.md)
 
-2. **GitHub API missing required fields** — Enhanced cards need `created_at`, `pushed_at`, `visibility` but current `GitHubRepo` interface doesn't include them. **Mitigation:** Audit GitHub `/users/:user/repos` response schema and add all fields before building UI; these fields are already returned, just not extracted.
+1. **`useChat` cannot consume plain JSON responses** -- if the route handler does not translate to UIMessageStream, the chat silently freezes with no error. Prevention: use `createUIMessageStream` in the proxy to emit proper `text-delta` chunks. This is the core integration point; get it right first.
 
-3. **Contact form server action broken during redesign** — Restructuring page layout can accidentally break `useActionState` binding, lose honeypot field, or duplicate form. **Mitigation:** Treat `ContactForm.tsx` and `submitContact` server action as core — wrap them, don't rebuild; test submission after every layout change; verify honeypot field in rendered HTML.
+2. **Removing backend code breaks admin panel at build time** -- admin pages import from `@/lib/assistant/analytics`, `@/lib/assistant/facts-store`, and `@/lib/assistant/prompt-versions`. Deleting these files without simultaneously deleting the admin pages causes `Module not found` build failures that block the entire site deploy. Prevention: delete admin pages/components in the same commit as their backend dependencies.
 
-4. **OG image cache not invalidated** — Social platforms cache OG images aggressively; replacing the file locally doesn't update LinkedIn/Twitter for days. **Mitigation:** Keep exact filename/location (`src/app/opengraph-image.png`); ensure exact 1200x630px dimensions; test with platform debugging tools (Twitter Card Validator, Facebook Debugger, LinkedIn Post Inspector) immediately after deploy to force cache refresh.
+3. **Two shared data files must survive `src/data/` cleanup** -- `projects.json` (used by project pages) and `accomplishments.json` (used by accomplishments page) are NOT assistant-only. Deleting them breaks core site features silently (pages render empty, no build error). Prevention: explicit safe-delete list; only delete 7 of 9 files.
 
-5. **Writing page built without content strategy** — Building full MDX infrastructure for zero articles is wasted effort. **Mitigation:** Define frontmatter schema first (title, publishDate, tags, excerpt) before building UI; ship with at least one real article or accept styled empty state with concrete content timeline.
+4. **Client-side fetch calls to deleted routes fail silently** -- `FeedbackButtons` and `LeadCaptureFlow` use try/catch with empty catch blocks. After route deletion, user feedback data is permanently lost with zero visible error. Prevention: keep `/api/assistant/feedback` route (it uses Firestore directly, no assistant backend dependency). Decision needed on `LeadCaptureFlow`.
+
+5. **`handoff.ts` is a pure utility with zero backend dependencies** -- bulk-deleting `src/lib/assistant/` will break `HumanHandoff` unnecessarily. Prevention: move `handoff.ts` to `src/lib/utils/` before cleanup.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on combined research, the milestone should be structured in 5 phases. The ordering follows the principle: validate the core integration first, layer UI features on top, then clean up dead code last (so a working fallback exists throughout development).
 
-### Phase 1: Branding Assets (Static Polish)
-**Rationale:** Fastest visual improvement, zero code risk, validates deployment pipeline, independent of all other work. These changes touch only assets and one CSS class — no data dependencies, no server logic, no API integration. Start here to establish confidence and get immediate brand consistency.
+### Phase 1: Proxy Route Handler + FastAPI Client
 
-**Delivers:**
-- Custom favicon set (favicon.ico, icon.png, apple-icon.png) replacing Next.js default
-- Branded OG image (1200x630 navy/gold PNG) for social sharing
-- Gold underline accent on navbar "DW" logo
-- Font files for future OG image generation (PlayfairDisplay-Bold.ttf, Inter-SemiBold.ttf)
-
-**Addresses:** Favicon (table stakes), OG image (table stakes), logo accent (table stakes)
-
-**Avoids:** Pitfall #10 (CSS cascade) by scoping logo change to single element; Pitfall #4 (OG cache) by testing with platform debuggers post-deploy; Pitfall #5 (missing icon formats) by generating full icon set
-
-**Research flag:** Standard pattern, skip `/gsd:research-phase` during planning
-
-### Phase 2: Projects Page (GitHub API Enhancement)
-**Rationale:** Extends proven GitHub ISR pattern that already works in `lib/github.ts`. The API integration, caching, and type system are established — this phase just expands the data model and builds a richer UI. Must come before writing page because it establishes the card component patterns and 2-column grid layout that writing page will mirror.
+**Rationale:** This is the highest-risk, highest-value work. If the proxy translation does not work, nothing else matters. Do it first so failures surface immediately. This phase has zero frontend changes -- only server-side code.
 
 **Delivers:**
-- Expanded `GitHubRepo` interface with `created_at`, `pushed_at`, `visibility`
-- Unified `Project` type replacing `PlaceholderProject`
-- New `ProjectCard` component with full description, date range, public/private badge, "View Project" CTA
-- Projects page rewritten to call `fetchGitHubProjects()` (ISR with 1-hour revalidation)
-- 2-column responsive grid (basis for writing page layout)
+- Rewritten `src/app/api/assistant/chat/route.ts` that calls FastAPI and returns UIMessageStream
+- `src/lib/assistant/fastapi-client.ts` with typed fetch wrapper
+- `src/lib/schemas/fastapi.ts` with Zod request/response schemas
+- `CHATBOT_API_URL` environment variable configured
+- End-to-end chat working with FastAPI backend (basic text responses, no citation UI yet)
 
-**Addresses:** Projects page detailed cards (table stakes), GitHub enrichment (differentiator)
+**Addresses:** TS-3 (loading state), TS-4 (error handling), TS-5 (type safety)
+**Avoids:** Pitfall 1 (stream format mismatch), Pitfall 2 (CORS -- eliminated entirely by proxy)
 
-**Avoids:** Pitfall #1 (dual data sources) by unifying type system and establishing single source of truth; Pitfall #2 (API data gaps) by auditing GitHub response schema before UI work; Pitfall #8 (ISR cache conflicts) by monitoring GitHub API usage, not preemptively over-engineering
+### Phase 2: Citation and Confidence UI
 
-**Research flag:** Standard pattern (GitHub REST API `/users/:user/repos` is well-documented), skip `/gsd:research-phase`
-
-### Phase 3: Writing Page (MDX Content System)
-**Rationale:** Replicates the exact pattern proven in `building-blocks` tutorials. The MDX pipeline (`@next/mdx`, `remark-gfm`, `rehype-pretty-code`) is fully configured and operational. This phase is a clone-and-adapt operation, not new architecture. Comes after projects page because it reuses the 2-column grid and card styling patterns. Content schema must be defined before implementation.
+**Rationale:** With the core integration proven, layer on the RAG-specific UI. Citations and confidence are the whole value proposition of switching to a RAG backend -- shipping without them wastes the integration effort. Low risk because it builds on a working chat flow.
 
 **Delivers:**
-- `src/content/writing/` directory for MDX articles
-- `lib/writing.ts` (clone of `tutorials.ts`) with `getAllArticles()` filesystem discovery
-- `ArticleCard` component matching Projects styling
-- Writing page listing with chronological sort
-- `writing/[slug]` route for individual articles with `generateStaticParams`
-- At least one seed article to validate the pipeline
+- `CitationList` component with collapsible sources, GitHub permalink URLs, relevance text
+- `ConfidenceBadge` component with color-coded pills (high/medium/low)
+- `ChatMessage.tsx` modified to render citations and confidence below assistant messages
+- Metadata row layout: `[ConfidenceBadge] [Sources (N)] [FeedbackButtons]`
 
-**Addresses:** Writing page (table stakes), article listing with metadata (table stakes)
+**Addresses:** TS-1 (citation rendering), TS-2 (confidence indicator), D-1 (GitHub permalinks), D-4 (citation count)
+**Avoids:** Pitfall 5 (not rendering new schema fields)
 
-**Avoids:** Pitfall #6 (no content strategy) by defining frontmatter schema (title, publishedAt, description, tags) before building cards; ships with one real article, not just empty state
+### Phase 3: UX Polish and Suggested Prompts
 
-**Research flag:** Standard pattern (filesystem MDX already proven), skip `/gsd:research-phase`
-
-### Phase 4: Contact Page Redesign (UX Enhancement)
-**Rationale:** Most UX complexity (hero layout, primary CTAs, inline validation, multiple states, analytics instrumentation, JS fallback). Benefits from card/layout patterns established in Phases 2-3. Kept last because it has the most moving parts and requires an analytics decision (stub vs. provider integration). The existing contact form works — this phase wraps and polishes it, does not rebuild it.
+**Rationale:** Quick wins that improve the user experience without touching core integration code. Can be done in parallel with Phase 4 cleanup if time is tight.
 
 **Delivers:**
-- `ContactHero` component with headline, subhead, primary CTA buttons
-- `MailtoButton` client component with analytics event
-- Enhanced `ContactForm` with inline validation, improved error state (email fallback), positive validation feedback
-- `CopyEmailButton` updated with analytics event
-- `PrivacyNote` component with data handling disclosure
-- `lib/analytics.ts` stub (starts as console.log, swappable to Plausible/Umami/Firestore later)
-- `<noscript>` fallback with email + mailto link
-- Analytics events instrumented: copy, mailto click, form start, submit, error
+- Updated `SuggestedPrompts` to reflect RAG capabilities
+- Updated `PrivacyDisclosure` wording (conversations now go to external service)
+- Any edge case handling discovered during Phase 1-2 testing
 
-**Addresses:** Contact redesign (table stakes), analytics events (differentiator), inline validation (differentiator), JS fallback (differentiator)
+**Addresses:** D-2 (smart empty state with RAG context)
 
-**Avoids:** Pitfall #3 (breaking server action) by wrapping existing form, not rebuilding; Pitfall #7 (analytics gap) by stubbing event layer early; Pitfall #13 (no JS fallback) by adding noscript block with mailto
+### Phase 4: Dead Code Removal and Admin Cleanup
 
-**Research flag:** Analytics provider decision needed during planning — if choosing Plausible/Umami, run `/gsd:research-phase "analytics provider integration"`. If stubbing for v1.1, standard pattern, skip research.
+**Rationale:** Delete old server code only after the new integration is proven and validated. Git history preserves everything for rollback. This phase is high file count but low risk -- it is all deletion, verified by `npm run build` passing.
+
+**Delivers:**
+- Remove assistant backend: `gemini.ts`, `safety.ts`, `filters.ts`, `refusals.ts`, `knowledge.ts`, `prompts.ts`, `rate-limit.ts`, `facts-store.ts`, `prompt-versions.ts`
+- Remove 7 data files (keep `projects.json` and `accomplishments.json`)
+- Remove admin routes: `facts`, `prompt-versions`, `reindex`
+- Remove admin pages and components: `FactsEditor`, `PromptVersions`, `ReindexButton`, `AssistantAnalytics`, `TopQuestions`, `UnansweredQuestions`, facts page, analytics page
+- Move `handoff.ts` to `src/lib/utils/` and update import in `HumanHandoff.tsx`
+- Remove `src/lib/schemas/assistant.ts`
+
+**Avoids:** Pitfall 3 (admin build break -- delete together), Pitfall 6 (shared data files -- skip 2), Pitfall 11 (handoff.ts -- move first)
+
+### Phase 5: Dependency and Environment Cleanup
+
+**Rationale:** Final cleanup after all code changes. Reduces Docker image size and removes orphaned secrets.
+
+**Delivers:**
+- Uninstall `@ai-sdk/google` from `package.json`
+- Remove `GOOGLE_GENERATIVE_AI_API_KEY` from Cloud Run config and `.env.local`
+- Add `CHATBOT_API_URL` to `.env.local.example` with documentation
+- Update `cloudbuild.yaml` env vars (add `CHATBOT_API_URL`, remove Gemini key)
+- Optional: configure Cloud Run IAM service-to-service auth (FastAPI stays private, Next.js SA gets `roles/run.invoker`)
+
+**Avoids:** Pitfall 7 (orphaned dependencies), Pitfall 8 (orphaned API key)
 
 ### Phase Ordering Rationale
 
-- **Phase 1 first:** Zero risk, immediate impact, no dependencies. Validates deploy pipeline and establishes brand consistency before code changes.
-- **Phase 2 before 3:** Projects page establishes the card layout and grid patterns that writing page will reuse. Both are independent (GitHub API vs. filesystem MDX) but writing cards should match projects styling.
-- **Phase 3 before 4:** Writing page is lower UX complexity (no client state, no form submissions, no analytics). Build it second-to-last to solidify the "listing page with cards" pattern.
-- **Phase 4 last:** Contact redesign has the most client-side interactivity, most UX states to handle, and requires an analytics decision. Benefits from patterns established in earlier phases. Also the only phase touching an existing user-facing feature (contact form), so more regression risk — build it when deployment confidence is highest.
-- **No circular dependencies:** All four phases can be built sequentially without backtracking. Phases 1-3 could be parallelized if needed, but sequential minimizes integration risk.
+- **Phase 1 first:** Core integration. If the proxy translation layer does not work, nothing else can proceed. Surfaces the hardest technical risk immediately.
+- **Phase 2 before 3:** Citations/confidence are table stakes for a RAG assistant. They should be shipped immediately after the core integration, not deferred to polish.
+- **Phase 3 can parallel Phase 4:** Suggested prompts and privacy disclosure are independent of code deletion.
+- **Phase 4 before 5:** Code must be deleted before dependencies can be safely removed (removing `@ai-sdk/google` before deleting the code that imports it would break the build).
+- **Phase 5 last:** Environment/dependency cleanup is safest after all code changes are complete and validated.
 
 ### Research Flags
 
-**Phases with standard patterns (skip `/gsd:research-phase` during planning):**
-- **Phase 1 (Branding Assets):** Next.js file-based metadata conventions, basic CSS. Well-documented, no unknowns.
-- **Phase 2 (Projects Page):** GitHub REST API `/users/:user/repos` is stable and well-documented; ISR pattern already proven in codebase.
-- **Phase 3 (Writing Page):** Exact clone of `building-blocks` pattern; MDX already configured and working.
+**Phases needing deeper research during planning:**
+- **Phase 1:** The exact `UIMessageChunk` field names need verification against `node_modules/ai/dist/` type declarations. The ARCHITECTURE researcher flagged this as LOW confidence. During Phase 1 planning, inspect the actual TypeScript types or write a minimal test. Additionally, the FastAPI response schema has discrepancies between research files (see Gaps section) -- resolve against actual backend code.
 
-**Phases likely needing deeper research during planning:**
-- **Phase 4 (Contact Redesign):** Only if choosing an analytics provider (Plausible, Umami, Google Analytics). If stubbing `lib/analytics.ts` for v1.1, no research needed. If integrating a provider, run `/gsd:research-phase "analytics provider integration"` to compare event APIs, privacy compliance (GDPR), script weight, and custom event support.
+**Phases with standard patterns (skip `/gsd:research-phase`):**
+- **Phase 2:** Citation UI is well-documented (Perplexity, ChatGPT patterns). Component design is straightforward.
+- **Phase 3:** Content updates only. No research needed.
+- **Phase 4:** File deletion guided by the complete dependency map in PITFALLS.md. Follow the safe-delete checklist.
+- **Phase 5:** Standard GCP Cloud Run configuration and `npm uninstall`.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All capabilities verified in existing codebase. Zero new packages needed. GitHub API fields confirmed in REST API docs. |
-| Features | HIGH | Requirements decomposed against existing patterns. Card layouts, MDX content, form enhancements all have precedent in current code. |
-| Architecture | HIGH | Direct codebase analysis of all components. Every integration point mapped. Server Component patterns proven. ISR and MDX pipelines operational. |
-| Pitfalls | HIGH | All pitfalls identified through codebase audit (dual data sources, missing API fields, form wrapping risk) and known Next.js/Cloud Run behavior (OG cache, ISR on ephemeral containers). |
+| Stack | HIGH | Zero new dependencies; all capabilities verified in existing `ai@6.0.71` package. Proxy approach eliminates CORS unknowns entirely. |
+| Features | HIGH | Feature list derived from direct inspection of both codebases. Citation/confidence UI patterns well-documented across Perplexity, ChatGPT, and AI UX pattern libraries. |
+| Architecture | HIGH (proxy), MEDIUM (UIMessageChunk) | Proxy pattern is straightforward (fetch + createUIMessageStream). But exact UIMessageChunk field names are not fully documented publicly -- must verify at implementation time. |
+| Pitfalls | HIGH | All pitfalls identified through direct codebase analysis. Every import chain, fetch call, and data file dependency was traced. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-**Analytics provider decision:** The contact redesign requires event tracking (copy, mailto click, form start, submit, error) but no analytics platform is integrated. Research recommends stubbing `lib/analytics.ts` with a thin `trackEvent()` wrapper that starts as console.log. When a provider is chosen later (Plausible recommended for privacy-first, lightweight 1KB script), only one module changes. **Decision point:** Stub for v1.1 and defer provider choice, or integrate Plausible now? Recommend stubbing — contact form already writes to Firestore, so submission counts can be queried directly. Event volume doesn't justify a paid service yet.
+1. **FastAPI response schema discrepancy.** The FEATURES researcher (who inspected `chatbot-assistant/app/schemas/chat.py` directly) reports: `{answer, citations: [{source, relevance}], confidence: "low"|"medium"|"high"}` with `question` as the request field. The STACK/ARCHITECTURE researchers report: `{response, citations: [{source, content, line_range}], confidence: 0.92}` with `messages` array as the request format. These are fundamentally different field names and types. **Resolution:** During Phase 1 planning, inspect the actual FastAPI schemas in the `chatbot-assistant` repo to determine the true contract. The Zod schemas must match the real API, not the research assumptions.
 
-**Content pipeline for writing page:** Research assumes the `building-blocks` MDX pattern will work for articles, but the actual frontmatter schema (title, publishedAt, description, tags, excerpt) must be defined before building the UI. **Validation needed during Phase 3 planning:** Does one seed article exist? If not, writing page ships with styled empty state and content timeline.
+2. **`UIMessageChunk` exact type shape.** The ARCHITECTURE researcher flagged this as LOW confidence. The discriminated union field names (`type: "text-delta"`, `textDelta` vs `delta`) must be verified from `node_modules/ai/dist/` or by examining `DefaultChatTransport.processResponseStream()`. **Resolution:** First task in Phase 1 implementation should be a type inspection/test.
 
-**Homepage/projects data unification:** Critical decision during Phase 2 planning: Does homepage `FeaturedProjects` switch to `fetchGitHubProjects()` with curated filtering, or does it stay hardcoded with richer metadata (custom names, descriptions, status labels) that GitHub API can't provide? Research recommends keeping them separate — homepage is a curated portfolio (6 best projects with editorial polish), `/projects` is a live activity feed (all public repos from GitHub). **Validation needed:** Confirm this approach with product owner.
+3. **Feedback route disposition.** The `/api/assistant/feedback` route and `FeedbackButtons` component should survive the migration (they write to Firestore independently of the chat backend). But the `logConversation()` call in the current chat route (which populates the analytics Firestore collections) will be lost. **Decision needed:** Is conversation logging important enough to replicate in the proxy, or is backend-side observability (structlog) sufficient?
+
+4. **`LeadCaptureFlow` component.** This component imports `detectHiringIntent` from `lead-capture.ts` and posts to `/api/assistant/feedback`. If `lead-capture.ts` is deleted and the feedback route behavior changes, lead capture data may be lost. **Decision needed:** Is lead capture still a feature? If yes, preserve `lead-capture.ts` and ensure the feedback route handles lead data. If no, remove the component.
+
+5. **Service-to-service authentication.** The STACK researcher recommends starting with public FastAPI (simpler) and adding IAM auth later. If IAM auth is desired from day one, the proxy route handler needs ~5 lines of code to fetch an ID token from the GCP metadata server. **Decision point:** Phase 1 planning should decide public vs. IAM-authenticated FastAPI.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Direct codebase analysis: All files in `src/app/`, `src/components/`, `src/lib/`, `src/types/`, `next.config.ts`, `globals.css`
-- [Next.js ImageResponse API](https://nextjs.org/docs/app/api-reference/functions/image-response) — OG image generation built into Next.js
-- [Next.js opengraph-image file convention](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image) — metadata asset auto-discovery
-- [Next.js favicon conventions](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/app-icons) — icon.png, apple-icon.png
-- [GitHub REST API: List user repos](https://docs.github.com/en/rest/repos/repos#list-repositories-for-a-user) — response schema includes `created_at`, `pushed_at`, `visibility`
+- [Vercel AI SDK createUIMessageStream API](https://ai-sdk.dev/docs/reference/ai-sdk-ui/create-ui-message-stream) -- proxy translation layer
+- [Vercel AI SDK Transport Documentation](https://ai-sdk.dev/docs/ai-sdk-ui/transport) -- transport architecture
+- [Vercel AI SDK Stream Protocol](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) -- UIMessage Stream Protocol format
+- [Vercel AI SDK useChat Reference](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) -- hook API and status values
+- [AI SDK ChatTransport Interface Source](https://github.com/vercel/ai/blob/main/packages/ai/src/ui/chat-transport.ts) -- interface definition
+- [GCP Cloud Run Service-to-Service Auth](https://docs.google.com/run/docs/authenticating/service-to-service) -- IAM auth pattern
+- [GCP Cloud Run CORS + IAM Limitation](https://issuetracker.google.com/issues/361387319) -- unresolved, confirms proxy is the right call
+- [FastAPI CORS Middleware](https://fastapi.tiangolo.com/tutorial/cors/) -- CORS configuration reference
+- [GitHub Permalink Format](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet) -- citation URL construction
+- Direct codebase analysis of 30+ files across `src/lib/assistant/`, `src/app/api/assistant/`, `src/components/assistant/`, `src/data/`, `src/app/control-center/assistant/`
+- Direct inspection of `chatbot-assistant` repo schemas (`app/schemas/chat.py`, `app/routers/chat.py`)
 
 ### Secondary (MEDIUM confidence)
-- [Plausible Analytics](https://plausible.io/) — Recommended analytics provider (lightweight, cookie-free, GDPR-compliant, custom events)
-- [Webflow: 23 Portfolio Website Examples](https://webflow.com/blog/design-portfolio-examples) — Card design patterns
-- [Baymard Institute: Inline Form Validation](https://baymard.com/blog/inline-form-validation) — 31% of sites lack inline validation
-- [Juan Garcia: Click to Copy Email Pattern](https://www.juangarcia.design/blog/ditching-the-mailto-link:-click-to-copy-email-pattern/) — 84% of users don't use native mail clients
-- [Design Studio: Form UX Best Practices 2026](https://www.designstudiouiux.com/blog/form-ux-design-best-practices/) — Form validation patterns
+- [Vercel AI SDK GitHub Discussion: FastAPI Integration](https://github.com/vercel/ai/discussions/2840) -- community patterns
+- [FastAPI + AI SDK v5 Integration Issues](https://github.com/vercel/ai/issues/7496) -- known challenges
+- [ShapeofAI Citation Patterns](https://www.shapeof.ai/patterns/citations) -- UI patterns
+- [Agentic Design Confidence Visualization](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns) -- badge patterns
+- [py-ai-datastream](https://github.com/elementary-data/py-ai-datastream) -- evaluated, not recommended
+- [fastapi-ai-sdk](https://github.com/doganarif/fastapi-ai-sdk) -- evaluated, not recommended
 
 ---
-*Research completed: 2026-02-04*
+*Research completed: 2026-02-08*
 *Ready for roadmap: yes*

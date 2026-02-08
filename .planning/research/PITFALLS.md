@@ -1,256 +1,275 @@
-# Domain Pitfalls: v1.1 Feature Additions
+# Domain Pitfalls: Replacing Internal API Backend with External FastAPI Service
 
-**Domain:** Adding enhanced pages and branding assets to an existing Next.js personal site
-**Researched:** 2026-02-04
-**Confidence:** HIGH (based on direct codebase analysis + known Next.js patterns)
+**Domain:** Next.js internal API route swap to cross-origin FastAPI Cloud Run service
+**Researched:** 2026-02-08
+**Overall confidence:** HIGH (based on codebase analysis + verified AI SDK documentation)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause broken pages, regressions, or require rework.
+Mistakes that cause the assistant to break entirely or require architectural rework.
 
-### Pitfall 1: Dual Project Data Sources Drifting Apart
+### Pitfall 1: Vercel AI SDK `useChat` Cannot Consume Plain JSON Responses
 
-**What goes wrong:** The projects page currently uses hardcoded `PlaceholderProject[]` data (in both `FeaturedProjects.tsx` and `projects/page.tsx`), while `fetchGitHubProjects()` in `src/lib/github.ts` returns a completely different `Project` type. Enhancing the projects page to use GitHub API data means two data models must be reconciled -- `PlaceholderProject` (name, description, tags, status) vs `Project` (name, description, language, stars, url, homepage, topics). If both sources continue to exist, the homepage featured projects and the projects page will show inconsistent information.
+**What goes wrong:** The FastAPI backend returns `{response, citations, confidence, conversation_id}` as a plain JSON object. The current `ChatInterface.tsx` uses `useChat` from `@ai-sdk/react` with `DefaultChatTransport`, which expects the **UI Message Stream Protocol** -- a Server-Sent Events stream with specific event types (`start`, `text-start`, `text-delta`, `text-end`, `finish`) and the header `x-vercel-ai-ui-message-stream: v1`. Sending plain JSON back will cause `useChat` to silently fail: no messages will appear in the UI, no error will be thrown, and the chat will appear frozen.
 
-**Why it happens:** The v1.0 hardcoded data was a shortcut. The GitHub API fetch exists but is unused by the current projects page. It is easy to enhance the projects page with API data while forgetting to update the homepage `FeaturedProjects` component, or vice versa.
+**Why it happens:** Developers assume `useChat` is a generic HTTP client that can parse any response format. It is not. It is tightly coupled to the AI SDK stream protocol. The `DefaultChatTransport` specifically processes SSE data frames and reconstructs `parts`-based messages from them.
 
-**Consequences:** Homepage shows stale hardcoded data while /projects shows live GitHub data. Users see different project names, descriptions, and counts on different pages.
+**Consequences:**
+- Chat appears to submit (spinner shows) but no response ever renders
+- No error is thrown -- `useChat` silently drops non-conforming responses
+- The `status` may stay stuck on `"submitted"` indefinitely
 
-**Warning signs:**
-- Two different project type interfaces coexisting (`PlaceholderProject` vs `Project`)
-- Homepage and /projects showing different project counts or names
-- Hardcoded project data that is never updated
+**Prevention -- three options, ordered by recommendation:**
 
-**Prevention:**
-- Decide upfront: single source of truth. Either GitHub API feeds both pages (with curated filtering/ordering), or a single config file maps project metadata that augments API data.
-- Unify the type: create one `ProjectDisplay` type that both the homepage teaser and the full projects page consume.
-- The homepage `FeaturedProjects` should select from the same data source as /projects, not maintain its own array.
+1. **RECOMMENDED: Write a custom `ChatTransport`** that replaces `DefaultChatTransport`. This transport fetches from the FastAPI URL, receives the JSON response, and converts it into a synthetic `ReadableStream` that conforms to the UI Message Stream Protocol before returning it to `useChat`. This preserves the entire `useChat` state machine (status, messages, error handling). The `ChatTransport` interface requires implementing a `sendMessages` method that returns a UI message stream.
 
-**Phase:** Projects page phase. Must be resolved before shipping.
+2. **Alternative: Add an SSE proxy route** in Next.js (`/api/assistant/chat`) that forwards to FastAPI, receives JSON, then re-emits as a proper `createUIMessageStream`. This adds latency (double-hop) but requires zero frontend changes.
 
----
+3. **Alternative: Drop `useChat` entirely** and manage chat state manually with `useState` + `fetch`. This throws away `useChat`'s built-in message management, status tracking, and error handling, but gives full control over the response format.
 
-### Pitfall 2: GitHub API Data Gaps for Enhanced Cards
+**Detection:** If after wiring up the FastAPI URL the chat submits but never renders a response, this is the cause. Check the Network tab -- if the response is `200 OK` with JSON body but nothing renders, the transport layer is rejecting the format.
 
-**What goes wrong:** The requirements call for enhanced project cards with: one-paragraph description, topic/platform tags, date initiated, last commit date, and public/private designation. The current `fetchGitHubProjects()` only fetches `name`, `description`, `language`, `stargazers_count`, `html_url`, `homepage`, `fork`, and `topics`. Missing fields include: `created_at`, `pushed_at` (or `updated_at`), and `visibility`. Attempting to display "Date initiated - Last commit" without fetching these fields produces empty UI.
+**Phase:** Must be resolved in the FIRST phase, before any other work. This is the core integration decision.
 
-**Why it happens:** The original API call was designed for v1.0's minimal cards. Developers forget to update the fetch function and type definition when the card requirements expand.
-
-**Consequences:** Empty date fields, missing visibility badges, or runtime errors from accessing undefined properties.
-
-**Warning signs:**
-- Card mockups showing data that is not in the `GitHubRepo` interface
-- TypeScript not catching the issue because fields are optional/nullable
-
-**Prevention:**
-- Before building the UI, audit the GitHub repos API response fields against every piece of data the enhanced card needs.
-- Add `created_at`, `pushed_at`, and `visibility` to the `GitHubRepo` interface and map them to the `Project` type.
-- The GitHub `/users/:user/repos` endpoint already returns these fields -- they just need to be extracted.
-- Note: `description` from GitHub is often one line, not a paragraph. For projects needing richer descriptions, plan a local metadata override mechanism.
-
-**Phase:** Projects page phase. Resolve during data layer work before UI.
+**Confidence:** HIGH -- verified via [AI SDK Stream Protocol docs](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) and [FastAPI integration issues](https://github.com/vercel/ai/issues/7496).
 
 ---
 
-### Pitfall 3: Contact Redesign Breaking Existing Server Action
+### Pitfall 2: CORS Preflight Fails on Cloud Run with IAM Authentication
 
-**What goes wrong:** The contact page redesign adds new UI sections (hero, CTAs, form states, privacy disclosure) around the existing `ContactForm` component. The `ContactForm` uses `useActionState` tied to the `submitContact` server action. Restructuring the page layout can accidentally:
-1. Move the form into a different component boundary that breaks the server action binding.
-2. Duplicate the form across mobile/desktop layouts, creating double-submission risk.
-3. Lose the honeypot field if the form is rebuilt from scratch rather than enhanced.
+**What goes wrong:** If the FastAPI Cloud Run service has "Require authentication" enabled in Cloud Run settings (IAM-level), **all browser CORS preflight OPTIONS requests will return 403 Forbidden**. This is not a bug in your CORS code -- Cloud Run's IAM layer rejects the OPTIONS request before it ever reaches your FastAPI app, because browsers cannot attach `Authorization` headers to preflight requests (per the CORS spec).
 
-**Why it happens:** Redesigns often involve rewriting JSX from scratch to match a new layout. The existing anti-spam protections (honeypot, rate limiting) are easy to drop when rebuilding.
+**Why it happens:** Cloud Run's IAM authentication runs at the infrastructure level, before the request reaches the application container. Preflight OPTIONS requests are sent by the browser without credentials. There is no way to add credentials to a preflight request -- the CORS spec prohibits it.
 
-**Consequences:** Form submissions silently fail, spam protection disappears, or rate limiting breaks.
-
-**Warning signs:**
-- Contact form rebuilt from scratch instead of wrapped/enhanced
-- Honeypot field missing from new form markup
-- Server action not imported or not connected to new form
+**Consequences:**
+- Every cross-origin request from the Next.js frontend will fail
+- Browser console shows `Access to fetch has been blocked by CORS policy`
+- The FastAPI CORS middleware never executes because the request never reaches it
 
 **Prevention:**
-- Treat `ContactForm.tsx` and `submitContact` server action as the core -- wrap them in new layout, do not rewrite them.
-- Add the new features (mailto button, copy email, LinkedIn link, privacy note, JS fallback) as sibling components around the existing form.
-- Test the full form submission flow after every layout change.
-- Verify honeypot field is present in the rendered HTML.
+- **Set the FastAPI Cloud Run service to "Allow unauthenticated invocations"** and handle authentication at the application level (API key in header, JWT validation in FastAPI middleware, etc.)
+- OR use a **Next.js proxy route** that calls FastAPI server-to-server (no browser CORS involved), but this adds latency and defeats the purpose of direct integration
+- Do NOT use Cloud Run IAM authentication if the service receives direct browser requests
 
-**Phase:** Contact redesign phase. Test submission immediately after layout changes.
+**Detection:** If all chat requests fail with CORS errors and the FastAPI service has `--no-allow-unauthenticated` in its deploy config, this is the cause. Check with: `gcloud run services describe [SERVICE] --format='value(spec.template.metadata.annotations)'`
+
+**Phase:** Must be resolved during FastAPI service configuration, before any frontend integration work begins.
+
+**Confidence:** HIGH -- this is a [documented Cloud Run limitation](https://issuetracker.google.com/issues/361387319) that Google has acknowledged as an open issue.
 
 ---
 
-### Pitfall 4: OG Image Not Propagating After Replacement
+### Pitfall 3: Removing Backend Code Breaks the Admin Panel at Build Time
 
-**What goes wrong:** The current OG image is at `src/app/opengraph-image.png` (Next.js file-based metadata convention). Replacing this file with a new image seems simple, but:
-1. Social platforms aggressively cache OG images. LinkedIn, Twitter/X, and Facebook will show the old image for days/weeks after replacement.
-2. If the new image has different dimensions than 1200x630, social cards will crop badly.
-3. The `layout.tsx` metadata explicitly references `/opengraph-image.png` with hardcoded width/height (1200x630). If the new file is placed elsewhere or named differently, the metadata and the file-based convention will conflict.
+**What goes wrong:** The admin panel pages (`/control-center/assistant/` and `/control-center/assistant/facts/`) are **server components** that import directly from `@/lib/assistant/analytics`, `@/lib/assistant/facts-store`, and `@/lib/assistant/prompt-versions` at build time. These modules import `db` from `@/lib/firebase`. If you delete the `src/lib/assistant/` directory (or even individual files like `analytics.ts`, `facts-store.ts`, `prompt-versions.ts`), the build will fail with unresolved import errors.
 
-**Why it happens:** Developers verify OG images by viewing their own site, not by testing with social platform debuggers. Cache invalidation is invisible.
+**Specific import chain that breaks:**
 
-**Consequences:** Sharing the site on LinkedIn/Twitter shows the old placeholder image for weeks. New image looks cropped or distorted on some platforms.
+```
+src/app/control-center/assistant/page.tsx
+  -> imports getAnalytics from @/lib/assistant/analytics
+  -> imports AssistantAnalytics from @/components/admin/AssistantAnalytics
+     -> imports type AnalyticsData from @/lib/assistant/analytics
 
-**Warning signs:**
-- OG image replaced but not tested with platform debugging tools
-- New image not exactly 1200x630 pixels
-- File renamed or moved from the `src/app/` convention path
+src/app/control-center/assistant/facts/page.tsx
+  -> imports getFacts from @/lib/assistant/facts-store
+  -> imports getPromptVersions from @/lib/assistant/prompt-versions
+  -> imports FactsEditor (which imports type Fact, FactCategory from @/lib/assistant/facts-store)
+  -> imports PromptVersions (which imports type PromptVersion from @/lib/assistant/prompt-versions)
+  -> imports ReindexButton (which calls /api/assistant/reindex)
+```
+
+**Why it happens:** Developers focus on removing the chat route and assistant logic but forget that the admin panel pages are tightly coupled to the same backend modules. The admin pages are server components that call Firestore directly at render time -- they are not just API consumers.
+
+**Consequences:**
+- `npm run build` fails with `Module not found` errors
+- The entire site fails to deploy, not just the assistant
+- CI/CD pipeline (Cloud Build) breaks
 
 **Prevention:**
-- Keep the file at `src/app/opengraph-image.png` (same name, same location) so both the file convention and the explicit metadata in `layout.tsx` resolve correctly.
-- New image MUST be exactly 1200x630px.
-- After deploying, immediately test with:
-  - https://cards-dev.twitter.com/validator (or the X equivalent)
-  - https://developers.facebook.com/tools/debug/
-  - https://www.linkedin.com/post-inspector/
-- These tools also force a cache refresh on the respective platforms.
-- Consider adding a cache-busting query parameter to the OG URL during the transition period (remove it once caches are refreshed).
+- **Map ALL imports BEFORE deleting any files.** The complete dependency graph is documented above.
+- Delete admin pages AND their supporting admin components at the same time as the backend code, OR replace them with new admin pages that talk to the FastAPI backend
+- Run `npm run build` after every deletion batch
+- The full list of admin components to delete together: `AssistantAnalytics.tsx`, `TopQuestions.tsx`, `UnansweredQuestions.tsx`, `FactsEditor.tsx`, `PromptVersions.tsx`, `ReindexButton.tsx`
 
-**Phase:** Branding assets phase. Must validate with external tools post-deploy, not just visually.
+**Detection:** `npm run build` failure with `Module not found: Can't resolve '@/lib/assistant/...'`
+
+**Phase:** Must be addressed in the same phase as backend code removal. Cannot delete selectively.
+
+**Confidence:** HIGH -- verified by direct codebase analysis. Every import path is documented above.
+
+---
+
+### Pitfall 4: Client Components Still Fetch Deleted API Routes (Silent Runtime Failures)
+
+**What goes wrong:** Six client components make `fetch()` calls to `/api/assistant/*` routes that will no longer exist after backend removal. Unlike build-time import errors, these fail silently at runtime -- no build error, no TypeScript error, just broken functionality for users.
+
+**Components and their dead routes:**
+
+| Component | Route | What Breaks |
+|-----------|-------|-------------|
+| `ChatInterface.tsx` | `/api/assistant/chat` | Chat completely broken (but addressed by transport rewrite) |
+| `FeedbackButtons.tsx` | `/api/assistant/feedback` | Thumbs up/down silently fail (fire-and-forget catch) |
+| `LeadCaptureFlow.tsx` | `/api/assistant/feedback` | Lead capture form submits but data is lost |
+| `FactsEditor.tsx` | `/api/assistant/facts` | Admin can't add/delete facts |
+| `ReindexButton.tsx` | `/api/assistant/reindex` | Cache clear button does nothing |
+| `PromptVersions.tsx` | `/api/assistant/prompt-versions` | Prompt rollback silently fails |
+
+**Why it happens:** TypeScript and the build process cannot detect dead `fetch()` URLs -- these are runtime string literals, not static imports. The `FeedbackButtons` and `LeadCaptureFlow` components are especially dangerous because they use `try/catch` with empty catch blocks, meaning failures produce zero visible errors.
+
+**Consequences:**
+- User feedback data is permanently lost (no error shown to user, data goes nowhere)
+- Lead capture data (name, email, timeline, problem) is permanently lost
+- Admin panel appears functional but all mutations silently fail
+- No monitoring alerts because errors are swallowed client-side
+
+**Prevention:**
+- **Create a checklist of ALL client-side fetch calls** before removing routes (the table above IS that checklist)
+- For each deleted route, either: (a) redirect the fetch to a FastAPI equivalent, (b) create a thin Next.js proxy route, or (c) remove the component
+- **Decision required:** Does the FastAPI backend provide feedback/analytics endpoints? If not, these features are simply gone and the components should be removed or stubbed
+
+**Detection:** Test every interactive feature after migration. Click every button. Submit every form. Check Network tab for 404s.
+
+**Phase:** Must be addressed in the same phase as route deletion. Create a test plan that exercises every client-side fetch.
+
+**Confidence:** HIGH -- verified by direct codebase grep results.
 
 ---
 
 ## Moderate Pitfalls
 
-Mistakes that cause delays, visual bugs, or technical debt.
+Mistakes that cause delays, broken features, or technical debt.
 
-### Pitfall 5: Favicon Missing Multiple Required Formats
+### Pitfall 5: New Response Schema Fields (Citations, Confidence) Not Rendered
 
-**What goes wrong:** Dropping a single `favicon.ico` into `src/app/` works for browser tabs, but modern devices need multiple icon formats: Apple Touch Icon (180x180 PNG), Android Chrome icons (192x192, 512x512), and a `manifest.json`/`site.webmanifest` referencing them. A single `.ico` file results in blurry or missing icons on mobile home screens, PWA installs, and some browsers.
+**What goes wrong:** The FastAPI backend returns `{response, citations, confidence, conversation_id}` but the current `ChatMessage` component only renders a single `content` string via `MarkdownRenderer`. If you wire up the `response` field to `content` and ignore `citations` and `confidence`, you ship a functionally correct but feature-incomplete integration -- the RAG backend's value proposition (source attribution, confidence scoring) is invisible to users.
 
-**Why it happens:** The existing site has `src/app/favicon.ico` and nothing else. Developers replace it and think they are done.
+**Why it happens:** The natural first instinct is "make it work" by mapping `response` to `content`. This technically works but wastes the FastAPI backend's most valuable outputs.
 
-**Consequences:** Blurry favicon on high-DPI screens, missing icon when someone adds the site to their phone home screen, generic icon in bookmark managers.
-
-**Warning signs:**
-- Only a single `.ico` file in the app directory
-- No `apple-icon.png` or `icon.png` in `src/app/`
-- No web manifest file
+**Consequences:**
+- Users cannot verify claims (no citation links)
+- No confidence indicator means users cannot gauge response reliability
+- You build the hardest part (integration) but skip the easiest part (rendering new fields)
 
 **Prevention:**
-- Generate a full icon set from the source design: `favicon.ico` (multi-size), `icon.png` (32x32), `apple-icon.png` (180x180).
-- Next.js file-based metadata convention: place `icon.png` and `apple-icon.png` in `src/app/` and they are automatically picked up.
-- Optionally add `manifest.ts` or `manifest.json` for PWA-grade icon support.
-- Test with Chrome DevTools > Application > Manifest panel.
+- Plan the `ChatMessage` component redesign ALONGSIDE the transport rewrite, not as a separate phase
+- Design the citation and confidence UI before starting implementation
+- Decide: do citations render inline (markdown links) or as a separate section below the response?
+- The custom `ChatTransport` should expose these fields through the message metadata or as custom parts
 
-**Phase:** Branding assets phase.
+**Detection:** After integration works, manually check if citations and confidence are visible. If not, this was missed.
+
+**Phase:** Should be addressed in the same phase as the transport rewrite, or immediately after.
+
+**Confidence:** HIGH -- this follows from the FastAPI response schema vs. current component props.
 
 ---
 
-### Pitfall 6: Writing Page Without Content Strategy
+### Pitfall 6: `src/data/` Files Shared Between Assistant and Non-Assistant Code
 
-**What goes wrong:** Building the writing page with article cards but having no articles ready. The page ships as a styled "Coming Soon" (same as current) or with placeholder content that looks unprofessional. Worse: building a full MDX blog infrastructure for zero articles is wasted effort.
+**What goes wrong:** The `src/data/` directory contains 9 files. Developers may assume these are all "assistant knowledge base files" and delete them during cleanup. But TWO files are imported by non-assistant code:
 
-**Why it happens:** The writing page is in the requirements, so it gets built. But the actual blog content pipeline (where articles live, how they are authored, frontmatter schema) is not planned.
+| File | Non-Assistant Consumer | What Breaks |
+|------|----------------------|-------------|
+| `src/data/projects.json` | `src/lib/github.ts` (project pages) | Projects page renders empty, project detail pages 404 |
+| `src/data/accomplishments.json` | `src/lib/accomplishments.ts` (accomplishments page) | Accomplishments page renders empty |
 
-**Consequences:** Shipping a beautiful empty page that adds no value. Or: building MDX infrastructure that gets reworked when actual content needs differ from assumptions.
+The remaining 7 files (`canon.json`, `faq.json`, `contact.json`, `writing.json`, `services.md`, `safety-rules.json`, `approved-responses.json`) are consumed only by assistant code and CAN be safely deleted.
 
-**Warning signs:**
-- Writing page in the sprint but no articles drafted or planned
-- Blog card component built without knowing what metadata articles will have
-- MDX already configured (it is -- `@next/mdx` is in the stack) but no content directory structure
+**Why it happens:** All 9 files live in the same directory with no naming convention distinguishing "assistant-only" from "shared" data. A developer doing cleanup sees `src/data/` listed as "assistant knowledge base" and deletes the whole directory.
+
+**Consequences:**
+- Projects page breaks (core site feature)
+- Accomplishments page breaks (core site feature)
+- Build may succeed (JSON imports are valid) but pages render empty
 
 **Prevention:**
-- The site already has MDX configured and a `building-blocks` content section with tutorials. Use that same pattern for writing/articles.
-- Define the frontmatter schema first (title, publishDate, tags, excerpt) before building cards.
-- Ship the writing page with at least one real article, even if short. A styled empty state is acceptable only if there is a concrete timeline for first content.
-- Card component should match the defined frontmatter schema, not be designed speculatively.
+- **Do NOT delete `src/data/projects.json` or `src/data/accomplishments.json`**
+- Safe to delete: `canon.json`, `faq.json`, `contact.json`, `writing.json`, `services.md`, `safety-rules.json`, `approved-responses.json`
+- Consider moving shared data files to `src/data/site/` to prevent future confusion
 
-**Phase:** Writing page phase. Define content schema before building UI.
+**Detection:** After cleanup, navigate to the Projects page and Accomplishments page. If they render empty with no errors, data files were incorrectly deleted.
+
+**Phase:** Must be addressed during file cleanup/deletion phase. Use the safe-delete list above.
+
+**Confidence:** HIGH -- verified by codebase grep.
 
 ---
 
-### Pitfall 7: Copy Email Button Without Fallback and Analytics Gap
+### Pitfall 7: Orphaned Dependencies Bloat the Bundle
 
-**What goes wrong:** The existing `CopyEmailButton` uses `navigator.clipboard.writeText()`, which:
-1. Requires HTTPS (works on Cloud Run, but not localhost without flags in some browsers).
-2. Can fail silently -- the current catch block swallows errors with no user feedback.
-3. The requirements call for analytics events on copy/click, but the current component has none.
+**What goes wrong:** After removing all assistant backend code, three npm packages become potentially unused:
+- `@ai-sdk/google` -- only used by `src/lib/assistant/gemini.ts` (WILL be orphaned)
+- `ai` -- used by the chat route (server-side `streamText`, `createUIMessageStream`) and `ChatInterface.tsx` (`DefaultChatTransport`)
+- `@ai-sdk/react` -- only used by `ChatInterface.tsx` (`useChat`)
 
-Adding a `mailto:` button alongside is straightforward, but forgetting the analytics instrumentation means the success metrics (email clicks + copy events) cannot be measured.
+**Important distinction:** If you write a custom `ChatTransport` (Pitfall 1, option 1), you still need `@ai-sdk/react` (for `useChat`) and `ai` (for the `ChatTransport` type). Only `@ai-sdk/google` becomes fully orphaned.
 
-**Why it happens:** The existing component "works" so developers add the mailto button and move on, forgetting the analytics requirements.
+If you drop `useChat` entirely (Pitfall 1, option 3), ALL THREE packages become orphaned.
 
-**Consequences:** Cannot measure whether the contact redesign is effective. Copy failures on older browsers go unnoticed.
+**Why it happens:** Developers focus on deleting source files but forget to clean up `package.json`. The packages don't cause build failures -- they just add dead weight.
 
-**Warning signs:**
-- Contact redesign shipped without analytics event calls
-- CopyEmailButton error handling unchanged from v1.0
-- No analytics library or event tracking in the codebase
+**Consequences:**
+- Larger Docker image (matters for Cloud Run cold start)
+- Potential client bundle bloat
+- Misleading `package.json` suggests AI SDK provider is still in use
 
 **Prevention:**
-- Decide on an analytics approach before building the contact redesign (lightweight options: Plausible, Umami, or simple custom event logging to Firestore).
-- Add event tracking to: mailto click, email copy, form start, form submit, form error.
-- Improve copy fallback: on failure, show a toast with the email address as selectable text.
-- The `mailto:` link works with JS disabled, satisfying the JS-fallback requirement.
+- After all code changes, manually review which `ai`/`@ai-sdk` packages are still imported
+- Remove `@ai-sdk/google` from dependencies regardless of transport approach
+- Run `npm run build` after removing packages to verify nothing breaks
 
-**Phase:** Contact redesign phase. Analytics decision must happen before implementation.
+**Detection:** `grep -r "@ai-sdk/google" src/` returns no results after cleanup.
+
+**Phase:** Final cleanup phase, after all code changes are complete.
+
+**Confidence:** HIGH -- verified by grep of all AI SDK imports.
 
 ---
 
-### Pitfall 8: ISR Revalidation Conflicts with Standalone Docker Build
+### Pitfall 8: `GOOGLE_GENERATIVE_AI_API_KEY` Becomes an Orphaned Secret
 
-**What goes wrong:** The GitHub fetch uses `next: { revalidate: 3600 }` for ISR. On Cloud Run with `output: 'standalone'`, ISR works but has a subtle issue: the standalone server writes revalidation cache to the filesystem. On Cloud Run, container instances can be replaced at any time, losing the cache. This means:
-1. After a new container starts, the first request always triggers a fresh GitHub API call.
-2. With multiple container instances (if min instances > 1 or during scaling), each instance maintains its own cache -- no shared state.
+**What goes wrong:** The environment variable `GOOGLE_GENERATIVE_AI_API_KEY` is currently set in Cloud Run and `.env.local`. After migration, the Next.js app no longer calls Gemini directly -- the FastAPI backend handles LLM calls. But the env var remains configured, creating:
+- An active API key that nobody monitors for abuse
+- Potential for unexpected charges
+- Confusion about what the Next.js app actually needs
 
-**Why it happens:** ISR is designed for persistent server environments. Cloud Run's ephemeral filesystem and horizontal scaling break the cache sharing assumption.
-
-**Consequences:** More GitHub API calls than expected (though with the 60/hr unauthenticated limit and 1-hour revalidation, this is unlikely to be a real problem at portfolio traffic levels). Slight latency spike on first request after container restart.
+**Why it happens:** Environment variables are "set and forget." Nobody reviews them during a code migration.
 
 **Prevention:**
-- At current traffic levels, this is a non-issue. The 1-hour revalidation + low traffic means API limits will not be hit.
-- If traffic grows: add a GitHub personal access token (5,000 req/hr) as an environment variable.
-- Do NOT over-engineer: skip Redis/external cache layers. ISR on Cloud Run is fine for this use case.
-- Monitor: if you see 403s from GitHub in Cloud Run logs, add the token.
+- Remove `GOOGLE_GENERATIVE_AI_API_KEY` from Cloud Run environment config after verifying the new integration works
+- Remove from `.env.local` and update `.env.local.example`
+- Add the new env var (e.g., `NEXT_PUBLIC_ASSISTANT_API_URL` or `ASSISTANT_API_URL`) to `.env.local.example` with documentation
+- Consider revoking the old Google AI API key entirely if it is not used elsewhere
 
-**Phase:** Projects page phase. Monitor, do not preemptively solve.
+**Detection:** After migration, check `gcloud run services describe [SERVICE]` for lingering env vars.
+
+**Phase:** Final deployment phase, after confirming the new integration works in production.
+
+**Confidence:** HIGH -- the env var is documented in `.env.local.example`.
 
 ---
 
-### Pitfall 9: Tailwind v4 Theme Tokens and New Component Styles
+### Pitfall 9: CORS Misconfiguration at the Application Level
 
-**What goes wrong:** The site uses Tailwind v4 with a custom `@theme inline` block defining design tokens (colors, fonts). New components (enhanced project cards, writing cards, contact hero) might use hardcoded color values instead of the theme tokens, creating visual inconsistency and maintenance debt.
+**What goes wrong:** Even after solving Pitfall 2 (IAM auth blocking preflight), the FastAPI CORS middleware itself can be misconfigured in subtle ways that cause intermittent or hard-to-debug failures:
 
-**Why it happens:** Developers copy color values from a design tool (`#C8A55A`) instead of using the token (`text-gold`). Tailwind v4's `@theme` syntax is newer and less familiar, so developers may not know which tokens are available.
-
-**Consequences:** Slight color mismatches, inability to do future theme changes in one place, inconsistent hover/focus states.
-
-**Warning signs:**
-- Arbitrary color values in new component classes (e.g., `text-[#C8A55A]` instead of `text-gold`)
-- New components not using `border-border`, `bg-surface`, `text-text-primary` etc.
-- Shadow values hardcoded instead of using `shadow-[var(--shadow-card)]`
+1. **Wildcard origin (`*`) with credentials:** If FastAPI sets `Access-Control-Allow-Origin: *` AND the frontend sends `credentials: "include"`, the browser rejects the response. The CORS spec prohibits wildcard origins with credentials.
+2. **Missing allowed headers:** If the frontend sends custom headers (e.g., `X-Conversation-Id`), they must be listed in `Access-Control-Allow-Headers`. Omission causes preflight to fail.
+3. **Missing `Content-Type` in allowed headers:** If the request sends `Content-Type: application/json`, this triggers a preflight. If `Content-Type` is not in `Access-Control-Allow-Headers`, the request fails.
+4. **Caching preflight responses too long:** `Access-Control-Max-Age` set too high means CORS config changes don't take effect until the cache expires. During development, this causes "I fixed it but it's still broken" confusion.
 
 **Prevention:**
-- Document the available theme tokens from `globals.css` as a reference for all new component work.
-- Available color tokens: `primary`, `primary-hover`, `gold`, `gold-hover`, `gold-light`, `surface`, `border`, `text-primary`, `text-secondary`, `text-tertiary`, `sage`, `amber`.
-- Available shadow tokens: `--shadow-card`, `--shadow-card-hover`, `--shadow-button`.
-- Available font tokens: `font-sans` (Inter), `font-mono` (JetBrains), `font-display` (Playfair Display).
-- Lint rule: no arbitrary color values except for one-off accent needs.
+- FastAPI CORS middleware should set `allow_origins` to the specific Next.js Cloud Run URL (not `*`)
+- Include `Content-Type` and any custom headers in `allow_headers`
+- Set `Access-Control-Max-Age` to a short value (300 seconds) during development
+- Test CORS with `curl -X OPTIONS -H "Origin: https://your-nextjs-url.run.app" -H "Access-Control-Request-Method: POST" https://your-fastapi-url.run.app/chat -v`
 
-**Phase:** All phases. Enforce from the start.
+**Phase:** During FastAPI service configuration phase.
 
----
-
-### Pitfall 10: Logo Accent CSS Change Cascading Unintentionally
-
-**What goes wrong:** The "logo accent" requirement is a CSS change. If the logo uses a shared color token (e.g., `text-gold` or `text-primary`), changing that token affects every element using it site-wide. Alternatively, adding a new CSS class for the logo accent might conflict with existing navbar styles.
-
-**Why it happens:** CSS changes feel safe but have global scope. A token change in `globals.css` affects dozens of elements.
-
-**Consequences:** Navbar, buttons, headings, or card accents unexpectedly change color. Visual regression across the site.
-
-**Warning signs:**
-- Modifying `:root` CSS custom properties to change logo color
-- Not checking which components use the changed token
-
-**Prevention:**
-- Do NOT modify existing theme tokens to achieve the logo accent. Create a new, scoped class or use an inline style/arbitrary value specifically on the logo element.
-- If the accent is a new color, add it as a new token (e.g., `--color-logo-accent`) rather than repurposing `--color-gold`.
-- Visually review the homepage, projects, writing, and contact pages after any CSS token change.
-- This is a small change; keep it small. One class on one element.
-
-**Phase:** Branding assets phase. Lowest risk, but test all pages after.
+**Confidence:** HIGH -- standard CORS specification behavior.
 
 ---
 
@@ -258,58 +277,158 @@ Adding a `mailto:` button alongside is straightforward, but forgetting the analy
 
 Mistakes that cause annoyance but are fixable.
 
-### Pitfall 11: Sitemap Not Updated for New Pages
+### Pitfall 10: `conversation_id` Format Mismatch
 
-**What goes wrong:** The sitemap at `src/app/sitemap.ts` currently lists all routes. If new pages are added or existing page priorities/frequencies change, the sitemap is forgotten.
-
-**Prevention:** After adding/modifying any page, update `sitemap.ts`. The writing page priority should increase from 0.5 if it now has real content.
-
-**Phase:** Final polish, but check after each page phase.
-
----
-
-### Pitfall 12: metadataBase Mismatch
-
-**What goes wrong:** The `layout.tsx` sets `metadataBase` to `https://dweinbeck.com`, but the site is described as live at `dan-weinbeck.com` in the project context. If these are different domains or if one redirects to the other, OG images and canonical URLs will point to the wrong domain.
-
-**Warning signs:** OG image URLs in HTML source pointing to wrong domain.
-
-**Prevention:** Verify which domain is canonical. Update `metadataBase` and all hardcoded URLs in `sitemap.ts` and `page.tsx` (Person schema) to match.
-
-**Phase:** Branding assets phase (when touching OG image).
-
----
-
-### Pitfall 13: Form JS-Disabled Fallback Not Tested
-
-**What goes wrong:** The requirements call for a JS-disabled fallback for the contact form. The current `ContactForm` is a `"use client"` component using `useActionState` -- it requires JavaScript. Without JS, the form does not render at all (it is a client component). A `<noscript>` fallback showing just the email address is needed, but is easy to forget.
+**What goes wrong:** The current `useChat` hook generates a client-side `id` (UUID format) used as `conversationId` throughout the frontend (`ChatMessage`, `FeedbackButtons`, `LeadCaptureFlow`). The FastAPI backend returns its own `conversation_id` in the response. If the frontend and backend use different conversation IDs, features that reference conversations (feedback, lead capture, handoff email) will have inconsistent identifiers.
 
 **Prevention:**
-- Add a `<noscript>` block in the contact page showing the email address directly with a mailto link.
-- Test by disabling JavaScript in Chrome DevTools > Settings.
-- The mailto link and copy button (which also requires JS) should have the email visible as plain text regardless.
+- Decide: does the frontend send its `id` to FastAPI, or does FastAPI assign the `conversation_id` and the frontend adopts it?
+- If FastAPI assigns: update the custom transport to extract `conversation_id` from the first response and use it for subsequent requests
+- If frontend assigns: send the `useChat` `id` as a parameter to FastAPI
 
-**Phase:** Contact redesign phase.
+**Phase:** Part of the transport rewrite design.
+
+**Confidence:** MEDIUM -- depends on the FastAPI API contract, which is not fully specified here.
 
 ---
 
-## Phase-Specific Warnings Summary
+### Pitfall 11: `HumanHandoff` Component Broken by Bulk Deletion
+
+**What goes wrong:** The `HumanHandoff` component imports `buildMailtoLink` from `@/lib/assistant/handoff`. This module is pure logic (string manipulation to build a `mailto:` URL) with **zero backend dependencies** -- no Firebase, no API calls. If `src/lib/assistant/` is bulk-deleted, this useful, self-contained utility is lost and the build breaks unnecessarily.
+
+**Prevention:**
+- Move `handoff.ts` to `src/lib/` or `src/lib/utils/` before deleting `src/lib/assistant/`
+- OR preserve `handoff.ts` in place and only delete assistant files that have backend dependencies
+- Update the import in `HumanHandoff.tsx` to match the new path
+
+**Detection:** Build failure with `Module not found: Can't resolve '@/lib/assistant/handoff'`
+
+**Phase:** During file cleanup. Simple file move.
+
+**Confidence:** HIGH -- verified by reading the module source. It has zero backend dependencies.
+
+---
+
+### Pitfall 12: `NEXT_PUBLIC_*` Exposure of FastAPI URL
+
+**What goes wrong:** If the FastAPI Cloud Run URL is stored as `NEXT_PUBLIC_ASSISTANT_API_URL`, it is embedded in the client JavaScript bundle and visible to anyone who opens browser DevTools. This is fine if the FastAPI service is designed to be public, but problematic if you intended any obscurity around the backend URL.
+
+**Prevention:**
+- If using a custom transport that calls FastAPI directly from the browser: accept that the URL is public, and ensure FastAPI has proper rate limiting, input validation, and abuse prevention
+- If using a Next.js proxy route: store the URL as a server-only env var (no `NEXT_PUBLIC_` prefix) so the browser never sees it
+- This is a conscious design decision, not a bug -- just make it intentionally
+
+**Phase:** During environment variable setup.
+
+**Confidence:** HIGH -- standard Next.js behavior for `NEXT_PUBLIC_` variables.
+
+---
+
+### Pitfall 13: `chatRequestSchema` in `src/lib/schemas/assistant.ts` Becomes Dead Code
+
+**What goes wrong:** The Zod schema `chatRequestSchema` was used by the old `/api/assistant/chat` route for request validation. After removing that route, this schema file has no consumers. It is not harmful but creates dead code.
+
+**Prevention:**
+- Delete `src/lib/schemas/assistant.ts` when removing the chat route
+- Or repurpose it if the custom transport needs client-side validation of the FastAPI response
+
+**Phase:** During file cleanup.
+
+**Confidence:** HIGH -- single consumer verified by grep.
+
+---
+
+## Phase-Specific Warnings
 
 | Phase Topic | Likely Pitfall | Mitigation |
 |-------------|---------------|------------|
-| Projects page | #1 Dual data sources, #2 Missing API fields | Unify type system first, audit API response |
-| Writing page | #6 No content strategy | Define frontmatter schema before UI |
-| Contact redesign | #3 Breaking server action, #7 Missing analytics, #13 No JS fallback | Wrap existing form, decide analytics early, add noscript |
-| OG image | #4 Cache not invalidated, #12 Domain mismatch | Test with platform debuggers, verify metadataBase |
-| Favicon | #5 Missing formats | Generate full icon set |
-| Logo accent | #10 CSS cascade | Scope to single element, do not modify global tokens |
-| All phases | #9 Theme token misuse | Reference token list, avoid arbitrary values |
+| Transport/integration rewrite | Pitfall 1 (AI SDK stream format) | Design custom ChatTransport or proxy first |
+| FastAPI service configuration | Pitfall 2 (CORS + IAM), Pitfall 9 (CORS app-level) | Set service to allow unauthenticated, add app-level auth, test with curl |
+| Backend code removal | Pitfall 3 (admin build break) | Map all imports before deleting; delete admin pages simultaneously |
+| Backend code removal | Pitfall 4 (dead fetch URLs) | Checklist of all 6 client-side fetch calls |
+| Backend code removal | Pitfall 6 (shared data files) | Do NOT delete projects.json or accomplishments.json |
+| Backend code removal | Pitfall 11 (handoff.ts) | Move to src/lib/ before bulk delete |
+| UI update | Pitfall 5 (citations/confidence) | Design new ChatMessage layout alongside transport |
+| Environment cleanup | Pitfall 8 (orphaned API key) | Remove GOOGLE_GENERATIVE_AI_API_KEY from Cloud Run |
+| Dependency cleanup | Pitfall 7 (orphaned packages) | Remove @ai-sdk/google after all code changes |
+
+---
+
+## Decision Matrix: Integration Architecture
+
+The biggest upfront decision is how the frontend talks to FastAPI. This decision cascades into every other pitfall.
+
+| Approach | Pitfalls Avoided | Pitfalls Introduced | Recommended? |
+|----------|------------------|---------------------|-------------|
+| **Custom ChatTransport** (browser calls FastAPI directly) | Avoids double-hop latency | Must handle CORS (P2, P9), exposes URL (P12), must convert JSON to stream format (P1) | YES -- cleanest long-term |
+| **Next.js proxy route** (browser calls Next.js, Next.js calls FastAPI) | Avoids CORS entirely (P2, P9), hides FastAPI URL (P12) | Adds latency, keeps some backend code, partially defeats purpose of external backend | Only if CORS is insurmountable |
+| **Drop useChat entirely** (manual fetch + useState) | Full control over response format (P1), no stream format conversion | Loses useChat state management, must reimplement status tracking, error handling, message array management | Only as last resort |
+
+**Recommendation:** Custom `ChatTransport` with unauthenticated Cloud Run service + application-level API key auth on FastAPI.
+
+---
+
+## Complete File Deletion Reference
+
+Files that are safe to delete (assistant-only, no non-assistant consumers):
+
+**API routes (5 files):**
+- `src/app/api/assistant/chat/route.ts`
+- `src/app/api/assistant/feedback/route.ts`
+- `src/app/api/assistant/facts/route.ts`
+- `src/app/api/assistant/prompt-versions/route.ts`
+- `src/app/api/assistant/reindex/route.ts`
+
+**Library modules (12 files -- but see warnings):**
+- `src/lib/assistant/gemini.ts` -- safe
+- `src/lib/assistant/knowledge.ts` -- safe
+- `src/lib/assistant/rate-limit.ts` -- safe
+- `src/lib/assistant/safety.ts` -- safe
+- `src/lib/assistant/filters.ts` -- safe
+- `src/lib/assistant/refusals.ts` -- safe
+- `src/lib/assistant/logging.ts` -- safe
+- `src/lib/assistant/analytics.ts` -- safe (but delete admin pages first)
+- `src/lib/assistant/facts-store.ts` -- safe (but delete admin pages first)
+- `src/lib/assistant/prompt-versions.ts` -- safe (but delete admin pages first)
+- `src/lib/assistant/lead-capture.ts` -- safe
+- `src/lib/assistant/prompts.ts` -- safe
+- `src/lib/assistant/handoff.ts` -- MOVE to src/lib/, do NOT delete (see Pitfall 11)
+
+**Admin pages (2 files):**
+- `src/app/control-center/assistant/page.tsx`
+- `src/app/control-center/assistant/facts/page.tsx`
+
+**Admin components (5 files):**
+- `src/components/admin/AssistantAnalytics.tsx`
+- `src/components/admin/TopQuestions.tsx`
+- `src/components/admin/UnansweredQuestions.tsx`
+- `src/components/admin/FactsEditor.tsx`
+- `src/components/admin/ReindexButton.tsx`
+- `src/components/admin/PromptVersions.tsx`
+
+**Schema (1 file):**
+- `src/lib/schemas/assistant.ts`
+
+**Data files (7 of 9 -- see Pitfall 6):**
+- `src/data/canon.json` -- safe to delete
+- `src/data/faq.json` -- safe to delete
+- `src/data/contact.json` -- safe to delete
+- `src/data/writing.json` -- safe to delete
+- `src/data/services.md` -- safe to delete
+- `src/data/safety-rules.json` -- safe to delete
+- `src/data/approved-responses.json` -- safe to delete
+- `src/data/projects.json` -- DO NOT DELETE (used by project pages)
+- `src/data/accomplishments.json` -- DO NOT DELETE (used by accomplishments page)
 
 ---
 
 ## Sources
 
-- Direct codebase analysis (HIGH confidence -- all findings based on reading the actual source files)
-- Next.js file-based metadata conventions (HIGH confidence -- well-documented in Next.js docs)
-- GitHub REST API `/users/:user/repos` response schema (HIGH confidence -- stable API)
-- Social platform OG cache behavior (MEDIUM confidence -- based on known platform behavior patterns)
+- [AI SDK UI: Stream Protocol](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) -- HIGH confidence
+- [AI SDK UI: Transport](https://ai-sdk.dev/docs/ai-sdk-ui/transport) -- HIGH confidence
+- [AI SDK UI: useChat Reference](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) -- HIGH confidence
+- [FastAPI + AI SDK v5 streaming issue](https://github.com/vercel/ai/issues/7496) -- HIGH confidence
+- [FastAPI + AI SDK JSON data streaming discussion](https://github.com/vercel/ai/discussions/2840) -- MEDIUM confidence
+- [Cloud Run CORS with authentication issue](https://issuetracker.google.com/issues/361387319) -- HIGH confidence
+- [Cloud Run CORS discussion](https://discuss.google.dev/t/cloud-run-cors-policy/101265) -- MEDIUM confidence
+- Codebase analysis (direct file reads of all 30+ relevant source files) -- HIGH confidence
