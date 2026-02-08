@@ -12,7 +12,7 @@ Replace the internal Gemini-powered assistant backend with an external FastAPI R
 
 - [x] **Phase 13: Proxy Integration** - Rewrite API route to proxy FastAPI, end-to-end chat working
 - [x] **Phase 14: Citation and Confidence UI** - Render RAG citations and confidence in chat messages
-- [ ] **Phase 15: Dead Code Removal** - Delete old assistant backend, admin panel, and data files
+- [x] **Phase 15: Dead Code Removal** - Delete old assistant backend, admin panel, and data files
 - [ ] **Phase 16: Dependency and Environment Cleanup** - Remove orphaned packages and env vars
 
 ## Phase Details
@@ -70,8 +70,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 15-01-PLAN.md -- Move handoff.ts to utils, delete admin pages/routes/components
-- [ ] 15-02-PLAN.md -- Delete old assistant library files, data files, and useIdToken hook
+- [x] 15-01-PLAN.md -- Move handoff.ts to utils, delete admin pages/routes/components
+- [x] 15-02-PLAN.md -- Delete old assistant library files, data files, and useIdToken hook
 
 **Pitfall warnings:** Delete admin pages/components in the same commit as their backend dependencies (Pitfall 3). Do NOT delete `projects.json` or `accomplishments.json` (Pitfall 6). Move `handoff.ts` before bulk deletion (Pitfall 11).
 
@@ -100,5 +100,5 @@ Plans:
 |-------|---------------|--------|-----------|
 | 13. Proxy Integration | 2/2 | Complete | 2026-02-08 |
 | 14. Citation and Confidence UI | 2/2 | Complete | 2026-02-08 |
-| 15. Dead Code Removal | 0/2 | Not started | - |
+| 15. Dead Code Removal | 2/2 | Complete | 2026-02-08 |
 | 16. Dependency and Environment Cleanup | 0/TBD | Not started | - |
