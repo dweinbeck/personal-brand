@@ -1,20 +1,4 @@
-export const metadata = {
-  title: "FRD Creator — the Fast Custom GPT",
-  description: "A Custom GPT that takes a brain dump and instantly generates a clean FRD.md — no interview required",
-  publishedAt: "2026-02-07",
-  tags: ["ChatGPT", "LLM", "Prompt Engineering", "Context"],
-};
-
-This is the fast-track companion to [Setting up a Custom GPT](/building-blocks/custom-gpt). Instead of an interview that asks questions one at a time, this GPT takes everything you throw at it and immediately produces a complete FRD.
-
-### When to use which
-
-| Version | Best for |
-|---------|----------|
-| [FRD Interviewer](/building-blocks/custom-gpt) | When you have a vague idea and want to be guided |
-| **FRD Creator** (this one) | When you already know what you're building and just need the doc |
-
----
+Instead of an interview that asks questions one at a time, this GPT takes everything you throw at it and immediately produces a complete FRD. You paste a brain dump, it gives you a doc.
 
 ## What you're building (spec)
 
@@ -24,12 +8,6 @@ This is the fast-track companion to [Setting up a Custom GPT](/building-blocks/c
 | Job | Brain dump → `FRD.md` |
 | Inputs | A single message describing your project |
 | Output | One Markdown FRD in a fenced code block |
-
-### How it differs from the Interviewer
-
-The Interviewer asks questions one at a time and won't generate until every required field is captured. The Creator does the opposite: it takes whatever you give it and fills in the rest with smart defaults, marking true unknowns as TBD.
-
----
 
 ## Prereqs
 - ChatGPT Plus
@@ -60,7 +38,7 @@ The Interviewer asks questions one at a time and won't generate until every requ
 - Leave browsing OFF
 - Leave image generation OFF
 
-Same reasoning as the Interviewer: you want fast, consistent output.
+You want fast, consistent output — no extra tools needed.
 
 ---
 
@@ -115,7 +93,7 @@ Generate an FRD for: [one-sentence description]
 
 ### 6) (Optional) Upload a template as Knowledge
 
-Same template as the Interviewer version. Create a file named `frd-template.md`:
+Upload a template so the output stays consistent. Create a file named `frd-template.md`:
 
 ```
 ---

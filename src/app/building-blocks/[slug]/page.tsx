@@ -1,7 +1,8 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ArticleTabs } from "@/components/building-blocks/ArticleTabs";
 import type { TutorialMeta } from "@/lib/tutorials";
 import { getAllTutorials } from "@/lib/tutorials";
 
@@ -9,20 +10,22 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+const CONTENT_DIR = join(process.cwd(), "src/content/building-blocks");
+
 // Calculate reading time based on word count (~200 words per minute)
 function calculateReadingTime(slug: string): number {
   try {
-    const filePath = join(
-      process.cwd(),
-      "src/content/building-blocks",
-      `${slug}.mdx`,
-    );
-    const content = readFileSync(filePath, "utf-8");
+    const content = readFileSync(join(CONTENT_DIR, `${slug}.mdx`), "utf-8");
     const words = content.trim().split(/\s+/).length;
     return Math.max(1, Math.ceil(words / 200));
   } catch {
-    return 5; // Default estimate
+    return 5;
   }
+}
+
+// Check if a fast companion file exists for this slug
+function hasFastCompanion(slug: string): boolean {
+  return existsSync(join(CONTENT_DIR, `_${slug}-fast.mdx`));
 }
 
 export async function generateStaticParams() {
@@ -53,35 +56,6 @@ export async function generateMetadata({
   }
 }
 
-// Find the "fast way" heading and return its slug for anchor linking
-function getQuickVersionAnchor(slug: string): string | null {
-  try {
-    const filePath = join(
-      process.cwd(),
-      "src/content/building-blocks",
-      `${slug}.mdx`,
-    );
-    const content = readFileSync(filePath, "utf-8");
-    const prefixes = ["## The fast way", "## Quick version", "## TL;DR"];
-    for (const prefix of prefixes) {
-      const idx = content.indexOf(prefix);
-      if (idx !== -1) {
-        const lineEnd = content.indexOf("\n", idx);
-        const heading = content
-          .substring(idx + 3, lineEnd === -1 ? undefined : lineEnd)
-          .trim();
-        return heading
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-");
-      }
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 export default async function TutorialPage({ params }: PageProps) {
   const { slug } = await params;
 
@@ -95,7 +69,19 @@ export default async function TutorialPage({ params }: PageProps) {
   const metadata = mod.metadata as TutorialMeta;
   const Content = mod.default;
   const readingTime = calculateReadingTime(slug);
-  const quickAnchor = getQuickVersionAnchor(slug);
+  const showTabs = hasFastCompanion(slug);
+
+  let FastContent: React.ComponentType | null = null;
+  if (showTabs) {
+    try {
+      const fastMod = await import(
+        `@/content/building-blocks/_${slug}-fast.mdx`
+      );
+      FastContent = fastMod.default;
+    } catch {
+      // No fast companion found — render without tabs
+    }
+  }
 
   const date = new Date(metadata.publishedAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -129,26 +115,28 @@ export default async function TutorialPage({ params }: PageProps) {
             ))}
           </div>
         </div>
-
-        {quickAnchor && (
-          <div className="mt-5">
-            <a
-              href={`#${quickAnchor}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gold hover:text-gold-dark transition-colors"
-            >
-              <span>⚡</span>
-              <span>Jump to fast version</span>
-              <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        )}
       </header>
 
       <hr className="border-border mb-10" />
 
-      <div className="prose prose-neutral max-w-none">
-        <Content />
-      </div>
+      {FastContent ? (
+        <ArticleTabs
+          manualContent={
+            <div className="prose prose-neutral max-w-none">
+              <Content />
+            </div>
+          }
+          fastContent={
+            <div className="prose prose-neutral max-w-none">
+              <FastContent />
+            </div>
+          }
+        />
+      ) : (
+        <div className="prose prose-neutral max-w-none">
+          <Content />
+        </div>
+      )}
     </article>
   );
 }
