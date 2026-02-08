@@ -1,10 +1,9 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
-
-const ADMIN_EMAIL = "daniel.weinbeck@gmail.com";
+import { type ReactNode, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 export function AdminGuard({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();

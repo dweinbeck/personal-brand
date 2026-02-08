@@ -3,6 +3,7 @@ import type { Person, WithContext } from "schema-dts";
 import { BlogTeaser } from "@/components/home/BlogTeaser";
 import { FeaturedProjects } from "@/components/home/FeaturedProjects";
 import { HeroSection } from "@/components/home/HeroSection";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -18,7 +19,7 @@ const personJsonLd: WithContext<Person> = {
   jobTitle: "AI Developer & Data Scientist",
   description:
     "I build practical AI agents and data products that ship. Interests in business intelligence, statistical modeling, intuitive UX, and polished design.",
-  email: "daniel.weinbeck@gmail.com",
+  email: CONTACT_EMAIL,
   sameAs: [
     "https://www.linkedin.com/in/dw789/",
     "https://github.com/dweinbeck",

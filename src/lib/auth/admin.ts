@@ -1,7 +1,6 @@
-import { getAuth } from "firebase-admin/auth";
 import { getApps } from "firebase-admin/app";
-
-const ADMIN_EMAIL = "daniel.weinbeck@gmail.com";
+import { getAuth } from "firebase-admin/auth";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 export type AdminAuthResult =
   | { authorized: true; email: string }
@@ -56,7 +55,9 @@ export async function verifyAdmin(request: Request): Promise<AdminAuthResult> {
 /**
  * Helper to create an error response for unauthorized requests.
  */
-export function unauthorizedResponse(result: Extract<AdminAuthResult, { authorized: false }>) {
+export function unauthorizedResponse(
+  result: Extract<AdminAuthResult, { authorized: false }>,
+) {
   return new Response(JSON.stringify({ error: result.error }), {
     status: result.status,
     headers: { "Content-Type": "application/json" },

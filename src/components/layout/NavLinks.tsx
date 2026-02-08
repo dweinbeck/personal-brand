@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-
-const ADMIN_EMAIL = "daniel.weinbeck@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 const baseLinks = [
   { name: "Home", href: "/" },

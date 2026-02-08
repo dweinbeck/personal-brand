@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 type LeadCaptureFlowProps = {
   intent: "hire" | "consult";
@@ -44,10 +45,10 @@ export function LeadCaptureFlow({
       <div className="rounded-xl border border-sage/30 bg-sage/5 p-4 text-sm text-text-primary">
         Thanks! Dan will reach out soon. You can also email him directly at{" "}
         <a
-          href="mailto:daniel.weinbeck@gmail.com"
+          href={`mailto:${CONTACT_EMAIL}`}
           className="font-medium text-primary underline"
         >
-          daniel.weinbeck@gmail.com
+          {CONTACT_EMAIL}
         </a>
       </div>
     );

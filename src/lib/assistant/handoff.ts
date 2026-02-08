@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from "@/lib/constants";
+
 type Message = {
   role: string;
   content: string;
@@ -16,7 +18,7 @@ export function buildConversationSummary(messages: Message[]): string {
 
 export function buildMailtoLink(
   messages: Message[],
-  email = "daniel.weinbeck@gmail.com",
+  email = CONTACT_EMAIL,
 ): string {
   const summary = buildConversationSummary(messages);
   const subject = encodeURIComponent("Following up from AI Assistant chat");

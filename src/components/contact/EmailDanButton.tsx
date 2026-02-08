@@ -2,17 +2,16 @@
 
 import { useCallback } from "react";
 import { trackEvent } from "@/lib/analytics";
-
-const EMAIL = "daniel.weinbeck@gmail.com";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 export function EmailDanButton() {
   const handleClick = useCallback(() => {
-    trackEvent("mailto_click", { email: EMAIL });
+    trackEvent("mailto_click", { email: CONTACT_EMAIL });
   }, []);
 
   return (
     <a
-      href={`mailto:${EMAIL}`}
+      href={`mailto:${CONTACT_EMAIL}`}
       onClick={handleClick}
       className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-primary to-primary-hover px-5 py-3 text-sm font-medium text-white border border-gold/40 shadow-lg shadow-[rgba(27,42,74,0.20)] transition-all duration-200 hover:shadow-xl hover:shadow-[rgba(200,165,90,0.20)] hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold min-h-[44px]"
     >

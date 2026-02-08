@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { CopyEmailButton } from "@/components/contact/CopyEmailButton";
 import { EmailDanButton } from "@/components/contact/EmailDanButton";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
     "Get in touch with Dan Weinbeck. Email is fastest, or use the contact form.",
 };
-
-const EMAIL = "daniel.weinbeck@gmail.com";
 
 const OTHER_LINKS = [
   {
@@ -61,7 +60,7 @@ export default function ContactPage() {
         {/* Primary CTA Buttons */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <EmailDanButton />
-          <CopyEmailButton email={EMAIL} variant="cta" />
+          <CopyEmailButton email={CONTACT_EMAIL} variant="cta" />
           <a
             href="https://www.linkedin.com/in/dw789/"
             target="_blank"
@@ -101,9 +100,7 @@ export default function ContactPage() {
 
       {/* Contact Form Section */}
       <section>
-        <h2 className="text-2xl font-bold text-text-primary">
-          Send a Message
-        </h2>
+        <h2 className="text-2xl font-bold text-text-primary">Send a Message</h2>
         <p className="mt-2 text-sm text-text-secondary">
           All fields are required. I&rsquo;ll respond via the email you provide.
         </p>
@@ -119,10 +116,10 @@ export default function ContactPage() {
               JavaScript is required for the contact form. Please email me
               directly at{" "}
               <a
-                href={`mailto:${EMAIL}`}
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="font-medium text-primary hover:text-gold transition-colors underline"
               >
-                {EMAIL}
+                {CONTACT_EMAIL}
               </a>
             </p>
           </div>
@@ -153,9 +150,7 @@ export default function ContactPage() {
                 <span className="font-medium text-text-primary">
                   {link.name}
                 </span>
-                <p className="text-sm text-text-tertiary">
-                  {link.description}
-                </p>
+                <p className="text-sm text-text-tertiary">{link.description}</p>
               </div>
               <span className="sr-only"> (opens in a new tab)</span>
             </a>

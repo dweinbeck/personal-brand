@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { CONTACT_EMAIL } from "@/lib/constants";
 import { saveContactSubmission } from "@/lib/firebase";
 import { contactSchema } from "@/lib/schemas/contact";
 
@@ -87,8 +88,7 @@ export async function submitContact(
     console.error("Failed to save contact submission:", error);
     return {
       success: false,
-      message:
-        "Couldn't send right now. Please email me at daniel.weinbeck@gmail.com",
+      message: `Couldn't send right now. Please email me at ${CONTACT_EMAIL}`,
     };
   }
 }
