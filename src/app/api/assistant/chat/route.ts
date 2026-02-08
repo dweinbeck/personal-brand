@@ -56,13 +56,12 @@ export async function POST(request: Request) {
     }
 
     // 5. Return as UIMessageStream (same protocol useChat expects)
+    const partId = "fastapi-response";
     const stream = createUIMessageStream({
       execute: ({ writer }) => {
-        writer.write({
-          type: "text-delta",
-          delta: text,
-          id: "fastapi-response",
-        });
+        writer.write({ type: "text-start", id: partId });
+        writer.write({ type: "text-delta", delta: text, id: partId });
+        writer.write({ type: "text-end", id: partId });
       },
     });
     return createUIMessageStreamResponse({ stream });
