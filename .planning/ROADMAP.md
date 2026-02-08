@@ -27,13 +27,13 @@ Replace the internal Gemini-powered assistant backend with an external FastAPI R
   2. The chat loading indicator shows while waiting for the FastAPI response and disappears when the answer renders
   3. If the FastAPI service is unavailable or returns an error, the user sees a clear error message (not a frozen chat)
   4. The assistant page works identically in local development and production (env var driven)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 13-01: TBD
-- [ ] 13-02: TBD
+- [ ] 13-01-PLAN.md -- Create Zod schemas and FastAPI client wrapper
+- [ ] 13-02-PLAN.md -- Rewrite route handler as FastAPI proxy + verify end-to-end
 
-**Research flags:** The exact FastAPI response schema has discrepancies across research files -- must be verified against the actual `chatbot-assistant` repo. The `UIMessageChunk` field names must be verified against `node_modules/ai/dist/` type declarations.
+**Research flags:** RESOLVED. FastAPI schema verified against actual `chatbot-assistant/app/schemas/chat.py`. UIMessageChunk field names verified against `node_modules/ai/dist/index.d.ts`. See `13-RESEARCH.md` for full resolution.
 
 ---
 
@@ -96,7 +96,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 13. Proxy Integration | 0/TBD | Not started | - |
+| 13. Proxy Integration | 0/2 | Planned | - |
 | 14. Citation and Confidence UI | 0/TBD | Not started | - |
 | 15. Dead Code Removal | 0/TBD | Not started | - |
 | 16. Dependency and Environment Cleanup | 0/TBD | Not started | - |
