@@ -1,8 +1,13 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
 import { useRef, useEffect, useState, useMemo } from "react";
+import { z } from "zod";
+
+type ChatMetadata = { confidence?: "low" | "medium" | "high" };
+type ChatMessage_UI = UIMessage<ChatMetadata>;
 import { ChatHeader } from "./ChatHeader";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -16,9 +21,14 @@ const transport = new DefaultChatTransport({
   api: "/api/assistant/chat",
 });
 
+const metadataSchema = z.object({
+  confidence: z.enum(["low", "medium", "high"]).optional(),
+});
+
 export function ChatInterface() {
-  const { messages, sendMessage, status, error, id } = useChat({
+  const { messages, sendMessage, status, error, id } = useChat<ChatMessage_UI>({
     transport,
+    messageMetadataSchema: metadataSchema,
   });
 
   const [input, setInput] = useState("");
@@ -116,7 +126,7 @@ export function ChatInterface() {
                 key={message.id}
                 role={message.role as "user" | "assistant"}
                 parts={message.parts ?? []}
-                metadata={message.metadata as { confidence?: "low" | "medium" | "high" } | undefined}
+                metadata={message.metadata}
                 messageId={message.id}
                 conversationId={conversationId}
               />

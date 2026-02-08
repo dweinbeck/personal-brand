@@ -1,10 +1,10 @@
 "use client";
 
 const SUGGESTED_PROMPTS = [
-  "Best AI projects",
-  "Background & experience",
-  "Hiring & collaboration",
-  "Current projects",
+  "How does the chatbot backend work?",
+  "What projects has Dan built?",
+  "How is the portfolio site deployed?",
+  "What's Dan's experience with AI?",
 ];
 
 type SuggestedPromptsProps = {
