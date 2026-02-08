@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 ## Current Position
 
 Phase: 14 of 16 (Citation and Confidence UI)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-08 — Completed 14-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-08 — Completed 14-02-PLAN.md
 
-Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [██████████______] 38%
+Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [████████████____] 67%
 
 ## Performance Metrics
 
@@ -36,8 +36,8 @@ Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [██████████_____
 
 **v1.3 Velocity:**
 - Phase 13: 2 plans completed (2 min, 8 min) across 2 waves
-- Phase 14: 1 plan completed (2 min)
-- Requirements delivered: 2/5 (ASST-01, ASST-02)
+- Phase 14: 2 plans completed (2 min, 12 min) across 2 waves
+- Requirements delivered: 3/5 (ASST-01, ASST-02, ASST-04)
 
 ## Accumulated Context
 
@@ -53,6 +53,8 @@ Recent decisions affecting current work:
 - v1.3: UIMessageStream requires text-start → text-delta → text-end lifecycle (AI SDK v5 protocol)
 - v1.3: Citations temporarily appended as markdown; structured UI in Phase 14
 - v1.3: Route handler now writes structured source-url chunks + messageMetadata confidence (Phase 14 Plan 01)
+- v1.3: useChat<UIMessage<ChatMetadata>> generic needed for type-safe metadata (messageMetadataSchema alone does not infer types)
+- v1.3: ChatMessage now accepts parts[] + metadata instead of content string (Phase 14 Plan 02)
 
 ### Pending Todos
 
@@ -66,9 +68,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 14-01-PLAN.md
+Stopped at: Completed 14-02-PLAN.md (Phase 14 complete)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 14 Plan 02 (Frontend citation/confidence UI components).
+Execute Phase 15 (Dead Code Removal) -- research and plan needed.
