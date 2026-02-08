@@ -115,12 +115,8 @@ export function ChatInterface() {
               <ChatMessage
                 key={message.id}
                 role={message.role as "user" | "assistant"}
-                content={
-                  message.parts
-                    ?.filter((p) => p.type === "text")
-                    .map((p) => p.text)
-                    .join("") ?? ""
-                }
+                parts={message.parts ?? []}
+                metadata={message.metadata as { confidence?: "low" | "medium" | "high" } | undefined}
                 messageId={message.id}
                 conversationId={conversationId}
               />

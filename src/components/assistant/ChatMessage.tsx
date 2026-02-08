@@ -1,20 +1,43 @@
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { FeedbackButtons } from "./FeedbackButtons";
+import { CitationList } from "./CitationList";
+import { ConfidenceBadge } from "./ConfidenceBadge";
 
 type ChatMessageProps = {
   role: "user" | "assistant";
-  content: string;
+  parts: Array<{
+    type: string;
+    text?: string;
+    sourceId?: string;
+    url?: string;
+    title?: string;
+  }>;
+  metadata?: { confidence?: "low" | "medium" | "high" };
   messageId: string;
   conversationId: string;
 };
 
 export function ChatMessage({
   role,
-  content,
+  parts,
+  metadata,
   messageId,
   conversationId,
 }: ChatMessageProps) {
   const isUser = role === "user";
+
+  const textContent = parts
+    .filter((p) => p.type === "text")
+    .map((p) => p.text ?? "")
+    .join("");
+
+  const citations = parts
+    .filter((p) => p.type === "source-url")
+    .map((p) => ({
+      sourceId: p.sourceId ?? "",
+      url: p.url ?? "",
+      title: p.title,
+    }));
 
   return (
     <div
@@ -44,17 +67,23 @@ export function ChatMessage({
           }`}
         >
           {isUser ? (
-            <p className="text-sm leading-relaxed">{content}</p>
+            <p className="text-sm leading-relaxed">{textContent}</p>
           ) : (
-            <MarkdownRenderer content={content} />
+            <MarkdownRenderer content={textContent} />
           )}
         </div>
-        {!isUser && content && (
-          <div className="mt-1 flex items-center">
-            <FeedbackButtons
-              conversationId={conversationId}
-              messageId={messageId}
-            />
+        {!isUser && textContent && (
+          <div className="mt-1 flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              {metadata?.confidence && (
+                <ConfidenceBadge level={metadata.confidence} />
+              )}
+              <FeedbackButtons
+                conversationId={conversationId}
+                messageId={messageId}
+              />
+            </div>
+            <CitationList citations={citations} />
           </div>
         )}
       </div>
