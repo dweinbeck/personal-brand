@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-09)
 ## Current Position
 
 Phase: 22 of 25 (Code Validation & Commit)
-Plan: --
-Status: Ready to plan
-Last activity: 2026-02-09 -- Roadmap created for v1.5
+Plan: 1 of 1 -- COMPLETE
+Status: Phase complete
+Last activity: 2026-02-09 -- Completed 22-01-PLAN.md (Code Validation & Commit)
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
-[░░░░░░░░░░░░░░░░░░░░] 0/4 phases
+[█████░░░░░░░░░░░░░░░] 1/4 phases
 
 ## Performance Metrics
 
@@ -25,9 +25,15 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
 - Total milestone time: ~24 min
 - Requirements delivered: 7/7
 
+**v1.5 Velocity (current):**
+- Phases completed: 1 (22)
+- Plans completed: 1
+- Total milestone time: ~2 min
+- Requirements delivered: 4/4 (VAL-01 through VAL-04)
+
 **Cumulative:**
-- Total plans completed: 37 (across v1.0-v1.4)
-- Total phases completed: 21 (across v1.0-v1.4)
+- Total plans completed: 38 (across v1.0-v1.5)
+- Total phases completed: 22 (across v1.0-v1.5)
 
 ## Accumulated Context
 
@@ -38,6 +44,8 @@ Recent decisions affecting current work:
 - Ledger-based Firestore credits (transaction-safe, idempotent, audit trail)
 - Firebase Auth for end users (Google Sign-In, no custom auth)
 - Stripe Checkout redirect (not embedded, PCI-compliant out of the box)
+- Single coherent commit for billing code (all ~2,810 LOC as one logical unit)
+- Unanchored node_modules gitignore pattern (covers Vitest cache at any depth)
 
 ### Pending Todos
 
@@ -60,9 +68,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Roadmap created for v1.5 milestone
+Stopped at: Completed 22-01-PLAN.md (Code Validation & Commit)
 Resume file: None
 
 ## Next Step
 
-Plan Phase 22 (Code Validation & Commit).
+Plan Phase 23 (Infrastructure Configuration).
