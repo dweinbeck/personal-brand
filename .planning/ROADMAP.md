@@ -64,7 +64,10 @@ Plans:
   3. The save Server Action rejects writes in production (non-development) environments with a clear error message
   4. Slug validation prevents path traversal attacks and slug collisions with existing content
   5. Server-side admin auth verification (Firebase ID token) is enforced on the save action -- unauthenticated requests are rejected
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 18-01-PLAN.md -- Zod schemas, shared verifyAdminToken, and saveTutorial Server Action
+- [ ] 18-02-PLAN.md -- Replace content page placeholder with tutorial list table
 
 ### Phase 19: Content Editor UI
 **Goal**: Admin can author new Building Blocks tutorials through a form-guided editor with live preview, without manually writing MDX boilerplate
@@ -111,7 +114,7 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 17. Control Center Navigation | v1.4 | 1/1 | Complete | 2026-02-08 |
-| 18. Content Editor Infrastructure | v1.4 | 0/TBD | Not started | - |
+| 18. Content Editor Infrastructure | v1.4 | 0/2 | Not started | - |
 | 19. Content Editor UI | v1.4 | 0/TBD | Not started | - |
 | 20. Brand Scraper API Proxy | v1.4 | 0/TBD | Not started | - |
 | 21. Brand Scraper UI | v1.4 | 0/TBD | Not started | - |
