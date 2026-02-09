@@ -36,6 +36,7 @@ See .planning/MILESTONES.md for full history.
 - [x] **Phase 17: Control Center Navigation** - Horizontal nav bar linking all Control Center sections
 - [x] **Phase 18: Content Editor Infrastructure** - Listing page, Zod schemas, Server Action with filesystem writes, slug validation
 - [x] **Phase 19: Content Editor UI** - Form-guided editor with metadata fields, markdown textarea, live preview, and fast companion support
+- [ ] **Phase 19.1: Custom GPTs Page** - Public page with card grid linking to OpenAI Custom GPTs, reusing existing card/grid patterns (INSERTED)
 - [ ] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
 - [ ] **Phase 21: Brand Scraper UI** - URL submission form, SWR-based job polling, and brand data results gallery with confidence indicators
 
@@ -83,6 +84,20 @@ Plans:
 Plans:
 - [x] 19-01-PLAN.md -- Full editor UI: schema extension, TutorialEditor component, page wiring, and listing link
 
+### Phase 19.1: Custom GPTs Page (INSERTED)
+**Goal**: A new public page displays Custom GPTs as a responsive card grid consistent with Projects/Building Blocks styling, with card data sourced from a single editable data file
+**Depends on**: Phase 19 (site infrastructure and patterns are stable)
+**Requirements**: None (new public page, not part of original CC requirements)
+**Success Criteria** (what must be TRUE):
+  1. A new page route (e.g., `/custom-gpts`) exists titled "Custom GPTs" with appropriate SEO metadata
+  2. The page renders a responsive card grid visually consistent with the existing Projects and Building Blocks card layouts (same component, spacing, hover effects, typography)
+  3. Each card links directly to an external Custom GPT URL (sourced from a single data file, not hardcoded in the page component)
+  4. The data file contains 3-6 placeholder GPT entries with clearly marked placeholder URLs for easy editing
+  5. "Custom GPTs" appears in the site navigation and routes correctly with proper active-state styling
+  6. External links follow existing repo conventions (target, rel attributes)
+  7. Build, lint, and type checks pass with no regressions
+**Plans**: TBD
+
 ### Phase 20: Brand Scraper API Proxy
 **Goal**: The Next.js server can submit scrape jobs and poll results from the deployed Brand Scraper Fastify service, with typed responses and admin auth
 **Depends on**: Phase 17 (navigation provides access to brand scraper page)
@@ -93,7 +108,9 @@ Plans:
   3. Both API routes verify the Firebase ID token via `verifyAdmin()` and reject unauthenticated requests
   4. Brand scraper code is organized in `src/lib/brand-scraper/` (client, types) and `src/components/admin/brand-scraper/` (UI), cleanly separated from other admin features
   5. Zod schemas validate API responses and surface clear errors when the external service returns unexpected data
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 20-01-PLAN.md -- Typed HTTP client, Zod schemas, and two admin-authenticated API route proxies
 
 ### Phase 21: Brand Scraper UI
 **Goal**: Admin can submit a URL, watch the scrape job progress, and browse the extracted brand data in a visual gallery
@@ -109,7 +126,7 @@ Plans:
 
 ## Progress
 
-**Execution Order:** 17 -> 18 -> 19 -> 20 -> 21
+**Execution Order:** 17 -> 18 -> 19 -> 19.1 -> 20 -> 21
 
 Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent after Phase 17. They are sequenced content-first because the editor has more architectural novelty (filesystem writes, MDX validation). The brand scraper follows proven proxy patterns from v1.3.
 
@@ -118,5 +135,6 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | 17. Control Center Navigation | v1.4 | 1/1 | Complete | 2026-02-08 |
 | 18. Content Editor Infrastructure | v1.4 | 2/2 | Complete | 2026-02-08 |
 | 19. Content Editor UI | v1.4 | 1/1 | Complete | 2026-02-09 |
-| 20. Brand Scraper API Proxy | v1.4 | 0/TBD | Not started | - |
+| 19.1 Custom GPTs Page | v1.4 | 0/TBD | Not started | - |
+| 20. Brand Scraper API Proxy | v1.4 | 0/1 | Not started | - |
 | 21. Brand Scraper UI | v1.4 | 0/TBD | Not started | - |
