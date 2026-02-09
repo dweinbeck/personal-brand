@@ -6,7 +6,7 @@
 - ✅ **v1.1 Page Buildout & Polish** - Phases 7-10.1 (shipped 2026-02-05)
 - ✅ **v1.2 Content & Data Integration** - Phases 11-12 (shipped 2026-02-07)
 - ✅ **v1.3 Assistant Backend Integration** - Phases 13-16 (shipped 2026-02-08)
-- 🚧 **v1.4 Control Center: Content Editor & Brand Scraper** - Phases 17-21 (in progress)
+- ✅ **v1.4 Control Center: Content Editor & Brand Scraper** - Phases 17-21 (shipped 2026-02-09)
 
 ## Phases
 
@@ -17,7 +17,7 @@ See .planning/MILESTONES.md for full history.
 
 </details>
 
-### 🚧 v1.4 Control Center: Content Editor & Brand Scraper (In Progress)
+### ✅ v1.4 Control Center: Content Editor & Brand Scraper (Shipped 2026-02-09)
 
 **Milestone Goal:** Expand the Control Center with two new admin tools: a form-guided Building Blocks content editor with live preview that writes MDX directly to the filesystem, and a Brand Scraper frontend that submits URLs to the deployed Cloud Run API and displays extracted brand data (colors, fonts, logos, assets) in a card gallery.
 
@@ -38,7 +38,7 @@ See .planning/MILESTONES.md for full history.
 - [x] **Phase 19: Content Editor UI** - Form-guided editor with metadata fields, markdown textarea, live preview, and fast companion support
 - [x] **Phase 19.1: Custom GPTs Page** - Public page with card grid linking to OpenAI Custom GPTs, reusing existing card/grid patterns (INSERTED)
 - [x] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
-- [ ] **Phase 21: Brand Scraper UI** - URL submission form, SWR-based job polling, and brand data results gallery with confidence indicators
+- [x] **Phase 21: Brand Scraper UI** - URL submission form, SWR-based job polling, and brand data results gallery with confidence indicators
 
 ## Phase Details
 
@@ -127,7 +127,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 21-01-PLAN.md -- Install SWR, BrandTaxonomy schema, useJobStatus hook, form/status/confidence components
-- [ ] 21-02-PLAN.md -- Gallery sub-components, results grid, page orchestrator, and route wiring
+- [x] 21-02-PLAN.md -- Gallery sub-components, results grid, page orchestrator, and route wiring
 
 ## Progress
 
@@ -142,4 +142,4 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | 19. Content Editor UI | v1.4 | 1/1 | Complete | 2026-02-09 |
 | 19.1 Custom GPTs Page | v1.4 | 1/1 | Complete | 2026-02-08 |
 | 20. Brand Scraper API Proxy | v1.4 | 1/1 | Complete | 2026-02-09 |
-| 21. Brand Scraper UI | v1.4 | 1/2 | In progress | - |
+| 21. Brand Scraper UI | v1.4 | 2/2 | Complete | 2026-02-09 |
