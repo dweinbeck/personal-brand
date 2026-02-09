@@ -77,11 +77,12 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 001 | Fix FRD Interviewer link and lint errors | 2026-02-08 | a0c31f8 | [001-fix-frd-link-and-lint-errors](./quick/001-fix-frd-link-and-lint-errors/) |
+| 002 | Fix broken documentation links on project pages | 2026-02-08 | 8377843 | [002-fix-broken-documentation-links-on-projec](./quick/002-fix-broken-documentation-links-on-projec/) |
 
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 16-01-PLAN.md (final phase of v1.3)
+Stopped at: Completed quick-002 (fix broken documentation links on project pages)
 Resume file: None
 
 ## Next Step
