@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 
 ## Current Position
 
-Phase: 19.1 of 21 (Custom GPTs Page — INSERTED)
-Plan: 0 of 1
+Phase: 20 of 21 (Brand Scraper API Proxy)
+Plan: 0 of 2
 Status: Planned
-Last activity: 2026-02-09 -- Planned Phase 19.1 (1 plan, 1 wave)
+Last activity: 2026-02-08 -- Completed 19.1-01-PLAN.md (Custom GPTs Page)
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-19 complete, 19.1 inserted
-[██████████░░░░░░░░░░] 3/6 v1.4 phases
+Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-19.1 complete, 20-21 planned
+[████████████░░░░░░░░] 4/6 v1.4 phases
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-19 complete, 19.1 i
 - Phase 17: 1 plan completed (~3 min)
 - Phase 18: 2 plans completed (4 min, ~1 min)
 - Phase 19: 1 plan completed (~4 min)
+- Phase 19.1: 1 plan completed (~2 min)
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting v1.4:
 - Single TutorialEditor component (all form state co-located for simplicity)
 - Fast companion files written body-only (no metadata block, matching existing convention)
 - Auto-slug from title with manual override support
+- Inter font for GPT card titles (not Playfair Display -- short names render better in sans-serif)
+- All GPT tags inline without color coding (simpler than TutorialCard topic badges)
 
 ### Pending Todos
 
@@ -89,10 +92,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-09
-Stopped at: Planned Phase 19.1 (Custom GPTs Page)
+Last session: 2026-02-08
+Stopped at: Completed 19.1-01-PLAN.md (Custom GPTs Page)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 19.1: `/gsd:execute-phase 19.1`
+Execute Phase 20: `/gsd:execute-phase 20`
