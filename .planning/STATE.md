@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-08)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** No active milestone
+**Current focus:** v1.4 — Control Center: Content Editor & Brand Scraper
 
 ## Current Position
 
-Phase: —
+Phase: Not started (defining requirements)
 Plan: —
-Status: Between milestones
-Last activity: 2026-02-08 -- Completed v1.3 milestone
+Status: Defining requirements
+Last activity: 2026-02-08 — Milestone v1.4 started
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED
+Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 IN PROGRESS
 
 ## Performance Metrics
 
@@ -67,12 +67,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed v1.3 milestone archival
+Stopped at: Defining v1.4 requirements
 Resume file: None
 
 ## Next Step
 
-Start a new milestone with `/gsd:new-milestone`. Candidate directions:
-- Real writing content + article authoring pipeline
-- Control center / personal tools dashboard
-- Site polish and performance optimization
+Define requirements and create roadmap for v1.4.
