@@ -1,439 +1,372 @@
-# Technology Stack: FastAPI RAG Backend Integration
+# Technology Stack: Control Center Content Editor + Brand Scraper UI
 
-**Project:** dan-weinbeck.com -- Assistant Backend Migration
+**Project:** dan-weinbeck.com -- Control Center Expansion (Milestone 2)
 **Researched:** 2026-02-08
 **Overall confidence:** HIGH
 
 ## Executive Summary
 
-The core architectural decision is **how the browser connects to the FastAPI backend**: either directly via CORS or through a Next.js API route proxy. After researching both approaches, the recommendation is a **thin Next.js API route proxy** that translates between FastAPI's JSON response format and the Vercel AI SDK's UIMessageStream protocol. This avoids CORS configuration entirely, keeps the FastAPI backend private (no public internet exposure), and preserves the existing `useChat` hook with zero frontend transport changes.
+This milestone adds two admin tools to the existing Control Center at `/control-center/`: a Building Blocks content editor (form-guided MDX authoring with live preview) and a Brand Scraper UI (async job submission + polling + rich brand taxonomy display). After researching the ecosystem, the recommendation is to add **zero heavy editor libraries** and instead build on what already exists in the codebase. The project already has `react-markdown@10.1.0` for preview rendering, `@mdx-js/mdx@3.1.1` (transitive via `@mdx-js/loader`) for MDX compilation, and `zod@4.3.6` for form validation. The only new dependency recommended is `swr@2.4.0` for the brand scraper polling pattern.
 
-**Zero new npm dependencies are needed.** The existing `ai@6.0.71` SDK has all the primitives required to build the translation layer.
-
----
-
-## Architecture Decision: Proxy vs. Direct CORS
-
-### Option A: Direct CORS (Browser to FastAPI)
-
-The browser calls the FastAPI Cloud Run service directly. Requires:
-- FastAPI `CORSMiddleware` configured with the frontend's origin
-- FastAPI Cloud Run service set to `--allow-unauthenticated` (public internet)
-- Custom `ChatTransport` implementation in the frontend to handle FastAPI's JSON response format
-- `NEXT_PUBLIC_CHATBOT_URL` environment variable exposed to the browser
-
-**Pros:**
-- One fewer network hop (lower latency per request)
-- No proxy code to maintain
-
-**Cons:**
-- FastAPI must be publicly accessible -- cannot use Cloud Run IAM
-- CORS preflight (OPTIONS) adds latency on first request per session
-- Requires a custom `ChatTransport` class that returns `ReadableStream<UIMessageChunk>` from a non-streaming JSON response
-- Backend URL leaked to browser (minor, but unnecessary exposure)
-- Cloud Run IAM authentication is incompatible with CORS preflight requests (Google issue tracker #361387319 -- unresolved as of 2026-02-08). The OPTIONS request is rejected with 403 before reaching the app.
-
-### Option B: Next.js API Route Proxy (Recommended)
-
-The browser calls `/api/assistant/chat` (same origin, no CORS). The Next.js route handler calls the FastAPI service, translates the response, and returns a UIMessageStream.
-
-**Pros:**
-- Zero CORS issues (same-origin request from browser)
-- FastAPI can stay private or use Cloud Run IAM service-to-service auth
-- No custom ChatTransport needed -- `DefaultChatTransport` continues to work unchanged
-- Frontend code changes are minimal (only remove old Gemini-specific logic from route handler)
-- Backend URL stays server-side only (not exposed to browser)
-- Can add server-side rate limiting, logging, safety checks in the proxy
-
-**Cons:**
-- Extra network hop (Next.js Cloud Run to FastAPI Cloud Run)
-- Both services are in `us-central1` on Cloud Run, so inter-service latency is ~1-5ms (negligible vs. LLM response time of 1-3 seconds)
-
-### Recommendation: Option B (Proxy)
-
-**Use the Next.js API route proxy because:**
-
-1. **No CORS at all.** CORS between authenticated Cloud Run services is a known pain point with no native GCP solution. Avoiding it entirely is the simplest path.
-2. **FastAPI stays internal.** The chatbot service can require IAM authentication, reducing attack surface. Only the Next.js service account needs `roles/run.invoker`.
-3. **Existing frontend works unchanged.** The `DefaultChatTransport({ api: "/api/assistant/chat" })` and `useChat` hook need zero modifications. Only the route handler implementation changes.
-4. **Inter-service latency is negligible.** Both services run in `us-central1`. The ~1-5ms overhead is invisible compared to LLM inference time.
-5. **Preserves server-side concerns.** Rate limiting, logging, and future safety checks remain in the Next.js layer without duplicating them in FastAPI.
-
-**Confidence:** HIGH -- based on verified Cloud Run networking behavior, GCP IAM/CORS limitation (issue tracker #361387319), and confirmed Vercel AI SDK architecture.
+**Critical architectural finding:** The site deploys to Cloud Run with `output: "standalone"`. The container filesystem is ephemeral -- files written at runtime are lost on container restart or redeploy. The content editor CANNOT write `.mdx` files to the filesystem in production. The recommended approach is **local-development-only filesystem writes** via a Server Action that detects `process.env.NODE_ENV === "development"` and refuses writes in production. Content authored locally is committed to git and deployed via Cloud Build like all other content.
 
 ---
 
-## Recommended Stack Changes
+## Recommended Stack Additions
 
-### What Changes
+### New Dependencies
 
-| Area | Before | After | Why |
-|------|--------|-------|-----|
-| API route handler | `src/app/api/assistant/chat/route.ts` calls Gemini via `streamText()` | Same file calls FastAPI via `fetch()`, translates JSON to UIMessageStream | FastAPI is the new backend |
-| Response format | Streaming UIMessageStream from `streamText().toUIMessageStreamResponse()` | Non-streaming: fetch JSON from FastAPI, write to `createUIMessageStream` | FastAPI returns JSON, not streaming |
-| Gemini config | `@ai-sdk/google` provider + `gemini.ts` config | Removed (Gemini now runs inside FastAPI) | LLM moved to backend |
-| Safety pipeline | `src/lib/assistant/safety.ts` runs before Gemini call | Removed or simplified (FastAPI handles its own safety) | Backend owns safety logic |
-| Knowledge base | `src/data/` JSON/MD files loaded into system prompt | Removed (FastAPI uses Postgres FTS retrieval) | RAG replaces curated knowledge |
-| Environment vars | `GOOGLE_GENERATIVE_AI_API_KEY` | `CHATBOT_API_URL` (server-side only) | New backend endpoint |
+| Package | Version | Purpose | Rationale |
+|---------|---------|---------|-----------|
+| `swr` | `^2.4.0` | Brand scraper job polling | Vercel's data-fetching library with built-in `refreshInterval` for polling. Supports dynamic interval (set to `0` when job completes). Tiny (~4.5 kB gzipped). Already part of the Vercel/Next.js ecosystem. |
 
-### What Stays the Same
+### Already Installed (Use As-Is)
 
-| Component | Why Unchanged |
-|-----------|---------------|
-| `ChatInterface.tsx` | Uses `useChat` with `DefaultChatTransport({ api: "/api/assistant/chat" })` -- same API path |
-| `ChatMessage.tsx` | Renders `content` string -- format unchanged |
-| `ChatInput.tsx` | Sends `{ text: string }` via `sendMessage` -- unchanged |
-| `TypingIndicator.tsx` | Triggered by `status === "streaming" \|\| status === "submitted"` -- unchanged |
-| `FeedbackButtons.tsx` | Calls `/api/assistant/feedback` -- independent of chat backend |
-| `SuggestedPrompts.tsx` | Static UI -- no backend dependency |
-| `ExitRamps.tsx` | Static UI -- no backend dependency |
-| `HumanHandoff.tsx` | Uses `plainMessages` computed from current messages -- unchanged |
-| `MarkdownRenderer.tsx` | Parses markdown string -- format unchanged |
-| `useChat` hook | Returns `{ messages, sendMessage, status, error, id }` -- unchanged |
+| Package | Version | Purpose for This Milestone |
+|---------|---------|----------------------------|
+| `react-markdown` | `10.1.0` | Live preview of markdown content in the editor |
+| `@mdx-js/mdx` | `3.1.1` | Runtime MDX compilation for preview (validate `export const metadata` syntax) |
+| `remark-gfm` | `4.0.1` | GFM support in live preview (tables, strikethrough, task lists) |
+| `rehype-slug` | `6.0.0` | Heading IDs in preview |
+| `rehype-pretty-code` | `0.14.1` | Code block syntax highlighting in preview |
+| `zod` | `4.3.6` | Form validation for content editor metadata fields |
+| `clsx` | `2.1.1` | Conditional class composition for UI components |
+| `sharp` | `0.34.3` | Image processing for brand scraper asset thumbnails |
 
-### What Gets Removed
+### Installation
 
-| Component | Why Removed |
-|-----------|-------------|
-| `src/lib/assistant/gemini.ts` | Gemini model config -- LLM now in FastAPI |
-| `src/lib/assistant/knowledge.ts` | Curated knowledge loader -- replaced by RAG |
-| `src/lib/assistant/prompts.ts` | System prompt builder -- FastAPI manages prompts |
-| `src/lib/assistant/safety.ts` | Safety pipeline -- FastAPI handles safety |
-| `src/lib/assistant/refusals.ts` | Static refusal messages -- FastAPI handles |
-| `src/lib/assistant/filters.ts` | Input filters -- FastAPI handles |
-| `src/data/` directory | Knowledge base JSON/MD files -- replaced by Postgres |
-| `@ai-sdk/google` package | Google Gemini provider -- no longer used directly |
-
-### What Gets Added (New)
-
-| Component | Purpose |
-|-----------|---------|
-| `src/lib/assistant/fastapi-client.ts` | Typed fetch wrapper for FastAPI `/chat` endpoint |
-| `src/lib/schemas/fastapi.ts` | Zod schemas for FastAPI request/response validation |
-| Citation rendering in `ChatMessage.tsx` | Display source citations from FastAPI response |
-
----
-
-## Core Integration: Route Handler Translation Layer
-
-The new `/api/assistant/chat/route.ts` does three things:
-
-1. **Receive** the Vercel AI SDK UIMessage format (parts-based messages)
-2. **Translate** to FastAPI format (`{ messages: [{role, content}], conversation_id? }`)
-3. **Call** FastAPI and translate the JSON response back to a UIMessageStream
-
-### Schema Mapping
-
-**Vercel AI SDK sends (UIMessage format):**
-```typescript
-{
-  messages: [
-    {
-      id: "msg_123",
-      role: "user",
-      parts: [{ type: "text", text: "Tell me about Dan's experience" }]
-    }
-  ],
-  id: "chat_456"  // conversation ID
-}
+```bash
+npm install swr
 ```
 
-**FastAPI expects:**
-```typescript
-{
-  messages: [
-    { role: "user", content: "Tell me about Dan's experience" }
-  ],
-  conversation_id: "chat_456"  // optional
-}
+One package. That is it.
+
+---
+
+## Technology Decisions with Rationale
+
+### 1. Content Editor: Plain Textarea + react-markdown (NOT a Rich Editor Library)
+
+**Decision:** Use a standard HTML `<textarea>` for markdown input with `react-markdown` for split-pane live preview. Do NOT install MDXEditor, `@uiw/react-md-editor`, CodeMirror, or Monaco.
+
+**Why:**
+
+| Factor | Rich Editor Library | Textarea + react-markdown |
+|--------|--------------------|-----------------------------|
+| Bundle size | MDXEditor: ~851 kB gzipped; `@uiw/react-md-editor`: ~200 kB minified | 0 KB added (react-markdown already installed) |
+| Learning curve | Plugin APIs, custom toolbar configs, theme systems | Standard HTML/React patterns |
+| MDX compatibility | MDXEditor supports MDX but has complex plugin setup | User writes raw MDX directly -- what they see is what gets saved |
+| Maintenance burden | External dependency with breaking changes | No external dependency |
+| Admin-only usage | Overkill for a single admin user | Right-sized for the use case |
+
+**The content author is the site owner** -- a developer comfortable writing markdown. A WYSIWYG editor adds complexity without proportional value. The form-guided approach (structured metadata fields + freeform markdown body) means the editor only needs to handle the body content, which is straightforward markdown with code blocks.
+
+**Implementation pattern:**
+```
++------------------------------------------+
+| [Metadata Form Fields]                   |
+| Title: [_______________________]         |
+| Description: [_________________]         |
+| Tags: [tag1] [tag2] [+ add]             |
+| Published: [2026-02-08]                 |
++------------------------------------------+
+| [Markdown Body]        | [Live Preview]  |
+| <textarea>             | <react-markdown>|
+| # My heading           | My heading      |
+| Some text...           | Some text...    |
++------------------------------------------+
+| [Save Draft] [Publish]                   |
++------------------------------------------+
 ```
 
-**FastAPI returns:**
+**Confidence:** HIGH -- react-markdown@10.1.0 is already proven in this codebase (used in assistant chat), and the textarea approach avoids all editor library compatibility issues.
+
+### 2. MDX Preview Validation: @mdx-js/mdx evaluate()
+
+**Decision:** Use `@mdx-js/mdx`'s `evaluate()` function on the server to validate that authored content compiles as valid MDX before saving. Use `react-markdown` for the live preview (not full MDX rendering), since the content is primarily markdown with an `export const metadata` header.
+
+**Why:**
+- `@mdx-js/mdx@3.1.1` is already installed as a transitive dependency of `@mdx-js/loader`
+- The `evaluate()` function compiles and runs MDX in one step, returning a React component
+- This lets us validate that the metadata export + markdown body will compile without errors
+- For the live preview, `react-markdown` is sufficient since the body content is standard markdown
+- The metadata export line is handled by the structured form fields, not typed by hand
+
+**Usage pattern (server-side validation):**
 ```typescript
-{
-  response: "Dan has extensive experience in...",
-  citations: [
-    { source: "resume.md", content: "relevant excerpt", line_range: [10, 15] }
-  ],
-  confidence: 0.92,
-  conversation_id: "chat_456"
-}
+import { evaluate } from "@mdx-js/mdx";
+import * as runtime from "react/jsx-runtime";
+
+// Validate that the full MDX file compiles
+const mdxString = `export const metadata = ${JSON.stringify(metadata)};\n\n${body}`;
+await evaluate(mdxString, { ...runtime }); // Throws if invalid
 ```
 
-**Next.js proxy translates to UIMessageStream:**
+**Confidence:** HIGH -- verified via official MDX documentation at mdxjs.com/packages/mdx/.
+
+### 3. Filesystem Writes: Development-Only Server Action
+
+**Decision:** Write `.mdx` files via a Next.js Server Action that uses `fs.writeFile()` but ONLY in development mode. In production (Cloud Run), the action returns an error instructing the user to use the local dev server.
+
+**Why this is the right constraint:**
+- Cloud Run containers are ephemeral. Files written to the filesystem are lost on restart/redeploy.
+- The standalone output (`output: "standalone"` in next.config.ts) does not even include the `src/content/` directory in the production image.
+- Content changes require a `git commit` + Cloud Build deploy anyway to appear on the live site.
+- The content is baked into the Docker image at build time via `@next/mdx` imports.
+- Adding GCS FUSE volume mounts or GitHub API commits would be overengineering for a single-author blog.
+
+**Implementation pattern:**
 ```typescript
-createUIMessageStream({
-  execute: ({ writer }) => {
-    // Write the response text
-    writer.write({ type: "text-start", id: "resp-1" });
-    writer.write({ type: "text-delta", id: "resp-1", delta: response });
-    writer.write({ type: "text-end", id: "resp-1" });
-    // Optionally: write citations as custom data or append to text
-  },
-});
-```
+"use server";
+import { writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 
-### Key Technical Detail: Non-Streaming to Streaming Translation
-
-The FastAPI `/chat` endpoint returns a single JSON response (not streaming). The Vercel AI SDK `useChat` hook expects a `ReadableStream<UIMessageChunk>`. The translation happens in `createUIMessageStream`:
-
-- The proxy `await`s the full FastAPI JSON response
-- Then writes it as a single text-delta chunk to the UIMessageStream
-- The frontend receives it as if it were a very fast stream (one chunk)
-
-This works because `createUIMessageStream` does not require the source to be streaming -- it creates a stream from whatever the `execute` callback writes. The `useChat` hook processes it identically to a multi-chunk stream.
-
-**Confidence:** HIGH -- verified from `createUIMessageStream` API documentation at ai-sdk.dev, which accepts an `execute` callback with a `writer` that supports `write({ type: "text-delta", delta, id })`.
-
----
-
-## Environment Variables
-
-### New Variables
-
-| Variable | Scope | Value | Purpose |
-|----------|-------|-------|---------|
-| `CHATBOT_API_URL` | Server-side only (NOT `NEXT_PUBLIC_`) | `https://chatbot-assistant-HASH-uc.a.run.app` | FastAPI service URL |
-
-### Removed Variables
-
-| Variable | Why Removed |
-|----------|-------------|
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini API key -- LLM now runs in FastAPI with its own credentials |
-
-### Unchanged Variables
-
-All Firebase, Next.js, and GitHub variables remain unchanged.
-
-### Cloud Build Update
-
-The `cloudbuild.yaml` deployment step needs:
-- Add `CHATBOT_API_URL` to `--set-env-vars`
-- Remove `GOOGLE_GENERATIVE_AI_API_KEY` from `--update-secrets` (or keep if used elsewhere)
-
----
-
-## Dependencies: What to Install / Remove
-
-### Install: Nothing
-
-No new npm packages are needed. The existing stack provides everything:
-
-| Capability Needed | Already Have | Package |
-|-------------------|-------------|---------|
-| HTTP fetch to FastAPI | Native `fetch()` in Node.js 20 | Built-in |
-| UIMessageStream creation | `createUIMessageStream` | `ai@6.0.71` |
-| UIMessageStream response | `createUIMessageStreamResponse` | `ai@6.0.71` |
-| Request validation | Zod schemas | `zod@^4.3.6` |
-| Response validation | Zod schemas | `zod@^4.3.6` |
-| Markdown rendering | Existing `MarkdownRenderer` | Custom component |
-| Citation rendering | Extend `ChatMessage` | Custom component |
-
-### Remove (After Migration)
-
-| Package | Why Remove | When |
-|---------|-----------|------|
-| `@ai-sdk/google` | `^3.0.21` -- Google Gemini provider no longer called from frontend | After migration is validated and stable |
-
-**Important:** Do not remove `@ai-sdk/google` until the migration is fully tested. Keep it during development so you can A/B test or fall back to the old implementation.
-
-### Keep
-
-| Package | Why Keep |
-|---------|---------|
-| `ai` (`6.0.71`) | `useChat`, `createUIMessageStream`, `createUIMessageStreamResponse`, `DefaultChatTransport` |
-| `@ai-sdk/react` (`3.0.73`) | `useChat` hook for React |
-
----
-
-## CORS Configuration (If Direct Connection Were Chosen)
-
-**This section documents the CORS approach for reference, even though the proxy approach is recommended.**
-
-If the frontend were to call FastAPI directly, the FastAPI backend would need:
-
-```python
-from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://dan-weinbeck.com", "http://localhost:3000"],
-    allow_credentials=False,
-    allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
-)
-```
-
-And the Cloud Run FastAPI service would need `--allow-unauthenticated` because:
-- Browser CORS preflight sends an OPTIONS request without credentials
-- Cloud Run IAM rejects unauthenticated OPTIONS requests with 403
-- This is a known GCP limitation (issue tracker #361387319, unresolved)
-
-**By using the proxy approach, none of this is needed.** The FastAPI service can stay authenticated (IAM-protected), and the Next.js service account gets `roles/run.invoker`.
-
----
-
-## Service-to-Service Authentication (Proxy Approach)
-
-When the Next.js API route calls FastAPI on Cloud Run:
-
-### Option A: Public FastAPI Service (Simpler)
-
-Set FastAPI Cloud Run to `--allow-unauthenticated`. The Next.js route handler calls it with a plain `fetch()`. Since the URL is server-side only (not exposed to browser), the security risk is limited to URL discovery.
-
-### Option B: IAM-Authenticated FastAPI Service (Recommended)
-
-1. FastAPI Cloud Run requires authentication (default, no `--allow-unauthenticated`)
-2. Grant the Next.js service account `roles/run.invoker` on the FastAPI service:
-   ```bash
-   gcloud run services add-iam-policy-binding chatbot-assistant \
-     --member="serviceAccount:cloudrun-site@PROJECT.iam.gserviceaccount.com" \
-     --role="roles/run.invoker" \
-     --region=us-central1
-   ```
-3. Fetch an ID token in the route handler:
-   ```typescript
-   // In route handler (server-side only)
-   const metadataUrl = `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${CHATBOT_API_URL}`;
-   const tokenRes = await fetch(metadataUrl, {
-     headers: { "Metadata-Flavor": "Google" },
-   });
-   const idToken = await tokenRes.text();
-
-   const response = await fetch(`${CHATBOT_API_URL}/chat`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "Authorization": `Bearer ${idToken}`,
-     },
-     body: JSON.stringify(fastApiPayload),
-   });
-   ```
-
-**Recommendation:** Start with Option A (public) for development speed. Move to Option B (IAM) before production or as a fast-follow. The code change is small (add 5 lines for token fetch).
-
-**Confidence:** HIGH -- service-to-service auth via metadata server is the standard GCP pattern, documented at cloud.google.com/run/docs/authenticating/service-to-service.
-
----
-
-## Citation Rendering Strategy
-
-The FastAPI response includes `citations: [{ source, content, line_range }]`. These need to be displayed in the chat UI.
-
-### Approach: Append Citations to Message Text
-
-The simplest approach is to format citations as markdown and append them to the response text before writing to the UIMessageStream:
-
-```typescript
-let messageText = fastapiResponse.response;
-
-if (fastapiResponse.citations?.length > 0) {
-  messageText += "\n\n---\n**Sources:**\n";
-  for (const cite of fastapiResponse.citations) {
-    messageText += `- ${cite.source}\n`;
+export async function saveContent(slug: string, content: string) {
+  if (process.env.NODE_ENV !== "development") {
+    return { error: "Content editing requires the local dev server." };
   }
+  const dir = join(process.cwd(), "src/content/building-blocks");
+  await mkdir(dir, { recursive: true });
+  await writeFile(join(dir, `${slug}.mdx`), content, "utf-8");
+  return { success: true };
 }
-
-writer.write({ type: "text-delta", id: "resp-1", delta: messageText });
 ```
 
-This works because:
-- `ChatMessage.tsx` already renders markdown via `MarkdownRenderer`
-- No new component or data channel needed
-- Citations appear inline with the response
+**Alternative considered and rejected:**
 
-### Alternative: Structured Citation Data
+| Approach | Why Rejected |
+|----------|-------------|
+| GitHub API commits from production | Over-complex; requires GitHub API integration, branch management, PR workflow. The GITHUB_TOKEN in Cloud Run has repo access, but this creates a "CMS-via-API" system that is overkill. |
+| GCS FUSE volume mount | Content must be in the git repo for `@next/mdx` to compile it at build time. GCS storage doesn't solve the build pipeline requirement. |
+| Firestore-backed content | Would require rewriting the entire MDX rendering pipeline to load content from a database instead of the filesystem. Massive scope creep. |
+| TinaCMS / Decap CMS | External CMS systems add operational complexity. The site already has a custom admin panel. |
 
-If richer citation rendering is needed later (collapsible quotes, hover previews), the UIMessageStream protocol supports custom data types (`data-*` prefix) that could carry structured citation objects. But this requires frontend changes to parse and render them. Defer this to a future enhancement.
+**Confidence:** HIGH -- confirmed by examining the Dockerfile (standalone output with no src/ directory) and Cloud Run's documented ephemeral filesystem behavior.
 
-**Recommendation:** Start with markdown-appended citations. Upgrade to structured data later if needed.
+### 4. Brand Scraper Polling: SWR with Dynamic refreshInterval
 
-**Confidence:** MEDIUM -- the markdown approach is straightforward and tested via existing `MarkdownRenderer`. The custom data approach is verified to exist in the protocol but untested in this codebase.
+**Decision:** Use `swr@2.4.0` for polling the brand scraper job status endpoint. SWR's `refreshInterval` option supports dynamic values, allowing polling to stop automatically when the job completes.
 
----
+**Why SWR over alternatives:**
 
-## Zod Schemas for FastAPI Contract
+| Option | Verdict |
+|--------|---------|
+| `swr` | RECOMMENDED. Tiny (~4.5 kB gzip). Built-in `refreshInterval` with dynamic control. Stale-while-revalidate caching. Made by Vercel (same ecosystem as Next.js). |
+| `@tanstack/react-query` | Overkill. Much larger bundle. More powerful, but polling a single endpoint doesn't need query invalidation, infinite queries, etc. |
+| `useEffect` + `setInterval` | Works but requires manual cleanup, stale closure management, and error retry logic. SWR handles all of this out of the box. |
+| `useEffect` + `setTimeout` recursive | Same issues as setInterval but even more boilerplate. |
 
-Define TypeScript types and runtime validation for the FastAPI API contract using Zod v4 (already in the project at `^4.3.6`):
+**Implementation pattern:**
+```typescript
+"use client";
+import useSWR from "swr";
+import { useState } from "react";
+
+const fetcher = (url: string) => fetch(url).then(r => r.json());
+
+function useJobStatus(jobId: string | null) {
+  const [pollInterval, setPollInterval] = useState(2000);
+
+  const { data, error } = useSWR(
+    jobId ? `/api/brand-scraper/jobs/${jobId}` : null,
+    fetcher,
+    {
+      refreshInterval: pollInterval,
+      onSuccess: (data) => {
+        if (data.status === "complete" || data.status === "failed") {
+          setPollInterval(0); // Stop polling
+        }
+      },
+    }
+  );
+
+  return { data, error, isPolling: pollInterval > 0 };
+}
+```
+
+**Confidence:** HIGH -- SWR v2.4.0 confirmed published 8 days ago on npm. `refreshInterval` with dynamic values is documented in SWR's official API docs at swr.vercel.app/docs/api.
+
+### 5. Brand Scraper API Proxy: Next.js API Route
+
+**Decision:** Proxy brand scraper requests through a Next.js API route at `/api/brand-scraper/` rather than calling the Fastify Cloud Run service directly from the browser.
+
+**Why:**
+- Keeps the brand scraper service private (no `--allow-unauthenticated` needed)
+- Follows the same pattern established for the chatbot API proxy
+- Admin auth check can happen at the proxy layer (verify Firebase auth token)
+- Brand scraper URL configured via server-only env var (not `NEXT_PUBLIC_`)
+- Avoids CORS configuration on the Fastify service
+
+**Routes:**
+```
+POST /api/brand-scraper/scrape   → proxy to Fastify POST /scrape
+GET  /api/brand-scraper/jobs/[id] → proxy to Fastify GET /jobs/:id
+```
+
+**Confidence:** HIGH -- this pattern already exists in the codebase for the chatbot API (see `CHATBOT_API_URL` env var in cloudbuild.yaml).
+
+### 6. Color/Font/Asset Display: Custom Tailwind Components (No Library)
+
+**Decision:** Build color swatches, font previews, and asset galleries as custom React components using Tailwind CSS. Do NOT install a component library (shadcn/ui, Radix, etc.).
+
+**Why:**
+- The display requirements are straightforward: color squares with hex labels, font specimen text, image thumbnails
+- The project already has a mature component system (Button, Card) with consistent design tokens
+- Adding a component library for a few display components is disproportionate overhead
+- Tailwind's inline `style={{ backgroundColor: hex }}` handles dynamic color display perfectly
+- Google Fonts can be loaded dynamically via a `<link>` tag for font preview -- no library needed
+
+**Component patterns:**
 
 ```typescript
-// src/lib/schemas/fastapi.ts
-import { z } from "zod";
+// Color swatch (inline style for dynamic hex values)
+function ColorSwatch({ hex, name, confidence }: ColorProps) {
+  return (
+    <div className="flex items-center gap-3">
+      <div
+        className="h-10 w-10 rounded-lg border border-border shadow-sm"
+        style={{ backgroundColor: hex }}
+      />
+      <div>
+        <p className="text-sm font-mono">{hex}</p>
+        <p className="text-xs text-text-secondary">{name}</p>
+      </div>
+    </div>
+  );
+}
 
-export const fastApiCitationSchema = z.object({
-  source: z.string(),
-  content: z.string(),
-  line_range: z.tuple([z.number(), z.number()]).optional(),
-});
-
-export const fastApiRequestSchema = z.object({
-  messages: z.array(
-    z.object({
-      role: z.enum(["user", "assistant"]),
-      content: z.string(),
-    })
-  ),
-  conversation_id: z.string().optional(),
-});
-
-export const fastApiResponseSchema = z.object({
-  response: z.string(),
-  citations: z.array(fastApiCitationSchema).optional().default([]),
-  confidence: z.number().min(0).max(1).optional(),
-  conversation_id: z.string().optional(),
-});
-
-export type FastApiRequest = z.infer<typeof fastApiRequestSchema>;
-export type FastApiResponse = z.infer<typeof fastApiResponseSchema>;
-export type FastApiCitation = z.infer<typeof fastApiCitationSchema>;
+// Font preview (dynamic Google Fonts loading)
+function FontPreview({ fontFamily }: { fontFamily: string }) {
+  const fontUrl = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, "+")}&display=swap`;
+  return (
+    <>
+      <link rel="stylesheet" href={fontUrl} />
+      <p style={{ fontFamily }}>{fontFamily}</p>
+    </>
+  );
+}
 ```
 
-**Why validate the FastAPI response with Zod:**
-- Catches schema drift between frontend and backend at runtime
-- Provides TypeScript types inferred from the schema (single source of truth)
-- Fails fast with clear errors if FastAPI changes its response format
-- Already the project's pattern for API validation (see `src/lib/schemas/assistant.ts`)
+**Confidence:** HIGH -- these are standard CSS/HTML patterns with no library dependencies.
 
-**Confidence:** HIGH -- Zod v4 is installed and the schema pattern matches existing codebase.
+### 7. Form State Management: React 19 useActionState
 
----
+**Decision:** Use React 19's `useActionState` hook (already available via React 19.2.3) for the content editor form, paired with Zod validation in the Server Action.
 
-## What NOT to Add
+**Why:**
+- The project already uses this pattern in the contact form (`submitContact` action with Zod schema validation)
+- React 19's `useActionState` replaces the old `useFormState` and handles pending states
+- No need for react-hook-form, formik, or any form library
+- The content editor form has simple fields (title, description, tags, date, body) that don't need complex field arrays or nested validation
 
-| Library / Approach | Why Tempting | Why Not |
-|--------------------|-------------|---------|
-| `axios` | HTTP client for FastAPI calls | Native `fetch()` is sufficient for a single POST call. Axios adds 30KB for no benefit. |
-| `py-ai-datastream` | Python Vercel AI SDK protocol implementation | Only needed if FastAPI streams responses. FastAPI returns JSON; the proxy handles translation. |
-| `fastapi-ai-sdk` | FastAPI helper for Vercel AI SDK | Same as above -- unnecessary if using proxy approach with JSON responses. |
-| Custom `ChatTransport` | Direct browser-to-FastAPI connection | Proxy approach avoids this entirely. `DefaultChatTransport` works unchanged. |
-| `@ai-sdk/openai` or other provider | Replace `@ai-sdk/google` | No AI SDK provider is needed. The LLM runs inside FastAPI, not in Next.js. |
-| WebSocket transport | Real-time streaming from FastAPI | Overengineered. The FastAPI response is fast enough as JSON. Add streaming later if latency becomes an issue. |
-| `next-cors` | CORS middleware for Next.js | Not needed -- browser calls same origin. No CORS involved with proxy approach. |
-| Identity-Aware Proxy (IAP) | CORS + auth for Cloud Run | Heavyweight GCP solution. Only needed for direct browser-to-backend calls. Proxy avoids the problem entirely. |
-| API Gateway (GCP) | Routing and auth | Adds operational complexity for a two-service setup. Direct service-to-service is simpler. |
+**Confidence:** HIGH -- pattern already proven in `src/lib/actions/contact.ts`.
 
 ---
 
-## Migration Path Summary
+## What NOT to Add (and Why)
 
-| Phase | What Changes | Risk |
-|-------|-------------|------|
-| 1. Add FastAPI client + schemas | New files only, no existing code touched | None |
-| 2. Replace route handler internals | `route.ts` calls FastAPI instead of Gemini | Medium -- must test response format |
-| 3. Add citation rendering | Extend `ChatMessage` or `MarkdownRenderer` | Low |
-| 4. Remove old assistant code | Delete `src/lib/assistant/` files, `src/data/`, `@ai-sdk/google` | Low -- only after validating new path |
-| 5. Update env vars + Cloud Build | Config changes | Low |
+| Library | Why NOT |
+|---------|---------|
+| `@mdxeditor/editor` | 851 kB gzipped. Overkill for a single admin user writing markdown. |
+| `@uiw/react-md-editor` | ~200 kB minified. Adds textarea encapsulation + toolbar that isn't needed. |
+| `@uiw/react-codemirror` | Brings in CodeMirror 6 (~250+ kB). The content is markdown, not code. |
+| `monaco-editor` | VS Code's editor. Megabytes of bundle. Absurd for a content form. |
+| `@tanstack/react-query` | Heavier than SWR, more features than needed for polling one endpoint. |
+| `react-hook-form` | The form has 5 flat fields. React 19's `useActionState` is sufficient. |
+| `shadcn/ui` or `radix-ui` | The project has its own design system (Button, Card). Adding a component library mid-project creates inconsistency. |
+| `next-mdx-remote` | For loading MDX from remote sources. Content here is local filesystem. Not maintained well. |
+| `tina` / `decap-cms` | External CMS. The site already has a custom admin panel. |
+| `react-colorful` / `react-color` | For color PICKERS (letting users choose colors). We need color DISPLAY (showing scraped colors). Plain CSS. |
+| `google-fonts` / `use-googlefonts` | Dynamic font preview can be done with a `<link>` tag. No library needed. |
+
+---
+
+## Integration Points with Existing Stack
+
+### AdminGuard Protection
+Both new features live under `/control-center/` which already has `AdminGuard` in the layout. No auth changes needed.
+
+### Existing UI Components
+- `Card` component (default/clickable/featured variants) can be used for brand scraper job cards and result display
+- `Button` component (primary/secondary/ghost variants) for form actions
+
+### Existing Patterns to Reuse
+| Pattern | Location | Reuse For |
+|---------|----------|-----------|
+| Server Action + Zod validation | `src/lib/actions/contact.ts` | Content editor save action |
+| Rate limiting (in-memory Map) | `src/lib/actions/contact.ts` | Brand scraper submission throttling |
+| API proxy to external service | `CHATBOT_API_URL` pattern | Brand scraper API proxy |
+| Content directory scanning | `src/lib/tutorials.ts` | Listing existing content for editing |
+| MDX metadata extraction | `src/lib/tutorials.ts` | Pre-populating editor form for edits |
+
+### Environment Variables (New)
+
+| Variable | Scope | Purpose |
+|----------|-------|---------|
+| `BRAND_SCRAPER_API_URL` | Server-only | URL of the Fastify brand scraper Cloud Run service |
+
+Added to `cloudbuild.yaml` deploy step alongside existing `CHATBOT_API_URL`.
+
+---
+
+## Deployment Considerations
+
+### Content Editor Workflow
+```
+1. Developer runs `npm run dev` locally
+2. Opens /control-center/content-editor
+3. Fills in metadata form + writes markdown body
+4. Live preview shows rendered output
+5. Clicks "Save" → Server Action writes .mdx file to src/content/building-blocks/
+6. Developer reviews file, commits to git
+7. Cloud Build triggers → deploys new container with content baked in
+```
+
+This is NOT a "publish from production" CMS. It is a local authoring tool.
+
+### Brand Scraper Workflow
+```
+1. Admin opens /control-center/brand-scraper (works in dev and production)
+2. Enters URL, clicks "Scrape"
+3. Next.js API route proxies POST /scrape to Fastify service
+4. Returns job_id, UI starts SWR polling
+5. Polling hits GET /api/brand-scraper/jobs/:id every 2s
+6. When status === "complete", polling stops, UI renders BrandTaxonomy
+7. Results displayed: color palette, typography, logos, assets
+```
+
+This works in both development and production.
+
+---
+
+## Version Compatibility Matrix
+
+| Package | Version | React 19 | Next.js 16 | Notes |
+|---------|---------|----------|------------|-------|
+| `swr` | 2.4.0 | Yes | Yes | Peer dep: react >=16.11.0 |
+| `react-markdown` | 10.1.0 | Yes | Yes | Already installed, working |
+| `@mdx-js/mdx` | 3.1.1 | Yes | Yes | Already installed (transitive) |
+| `zod` | 4.3.6 | N/A | N/A | Schema library, no React dep |
+
+No version conflicts. SWR is the only new install and has minimal peer dependencies.
 
 ---
 
 ## Sources
 
-- [Vercel AI SDK Transport Documentation](https://ai-sdk.dev/docs/ai-sdk-ui/transport) -- HIGH confidence (official docs)
-- [Vercel AI SDK createUIMessageStream API](https://ai-sdk.dev/docs/reference/ai-sdk-ui/create-ui-message-stream) -- HIGH confidence (official docs)
-- [Vercel AI SDK Stream Protocol](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) -- HIGH confidence (official docs)
-- [GCP Cloud Run Service-to-Service Auth](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) -- HIGH confidence (official docs)
-- [GCP Cloud Run CORS + IAM Limitation](https://issuetracker.google.com/issues/361387319) -- HIGH confidence (official issue tracker, unresolved)
-- [FastAPI CORS Middleware](https://fastapi.tiangolo.com/tutorial/cors/) -- HIGH confidence (official docs)
-- [Vercel AI SDK GitHub Discussion: FastAPI Integration](https://github.com/vercel/ai/discussions/2840) -- MEDIUM confidence (community)
-- [py-ai-datastream (Python Vercel AI SDK Protocol)](https://github.com/elementary-data/py-ai-datastream) -- MEDIUM confidence (evaluated, not recommended)
-- [fastapi-ai-sdk](https://github.com/doganarif/fastapi-ai-sdk) -- MEDIUM confidence (evaluated, not recommended)
+### Verified (HIGH confidence)
+- [MDX on-demand compilation docs](https://mdxjs.com/guides/mdx-on-demand/) -- evaluate() function for runtime MDX validation
+- [@mdx-js/mdx API reference](https://mdxjs.com/packages/mdx/) -- compile and evaluate functions
+- [SWR official docs](https://swr.vercel.app/) -- refreshInterval API for polling
+- [SWR API reference](https://swr.vercel.app/docs/api) -- dynamic refreshInterval, onSuccess callback
+- [Cloud Run container contract](https://docs.cloud.google.com/run/docs/container-contract) -- ephemeral filesystem documentation
+- [Cloud Run volume mounts](https://docs.cloud.google.com/run/docs/configuring/services/cloud-storage-volume-mounts) -- GCS FUSE option (considered, rejected)
+- Existing codebase: `Dockerfile`, `cloudbuild.yaml`, `src/lib/actions/contact.ts`, `src/lib/tutorials.ts`
+
+### Consulted (MEDIUM confidence)
+- [MDXEditor](https://mdxeditor.dev/) -- evaluated, rejected due to bundle size (~851 kB gzipped)
+- [@uiw/react-md-editor](https://www.npmjs.com/package/@uiw/react-md-editor) -- evaluated, rejected (unnecessary dependency)
+- [@uiw/react-codemirror](https://github.com/uiwjs/react-codemirror) -- evaluated, rejected (CodeMirror overhead)
+- [Next.js fonts documentation](https://nextjs.org/docs/app/getting-started/fonts) -- dynamic font loading patterns
+- [React useInterval pattern](https://overreacted.io/making-setinterval-declarative-with-react-hooks/) -- considered, SWR chosen instead
+- [Strapi: 5 Best Markdown Editors for React](https://strapi.io/blog/top-5-markdown-editors-for-react) -- editor comparison reference

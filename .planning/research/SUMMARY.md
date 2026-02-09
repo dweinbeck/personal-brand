@@ -1,17 +1,17 @@
 # Project Research Summary
 
-**Project:** dan-weinbeck.com v1.3 -- Assistant Backend Integration (FastAPI RAG)
-**Domain:** Frontend integration with external RAG chatbot backend
+**Project:** dan-weinbeck.com -- Control Center: Content Editor & Brand Scraper (v1.4)
+**Domain:** Admin tooling -- MDX content authoring and async brand analysis dashboard
 **Researched:** 2026-02-08
-**Confidence:** HIGH (with one MEDIUM area)
+**Confidence:** HIGH
 
 ## Executive Summary
 
-The v1.3 milestone replaces the site's internal AI assistant backend (Gemini 2.0 Flash via Vercel AI SDK, curated JSON knowledge base, safety pipeline) with an external FastAPI RAG service deployed on GCP Cloud Run. The FastAPI backend handles retrieval, LLM orchestration, safety, and returns structured JSON responses with answer text, source citations, and confidence scores. From the Next.js frontend's perspective, this is overwhelmingly a **deletion milestone**: ~27-30 files removed, 2 files modified, and only 2-3 new files created.
+This milestone adds two independent admin tools to the existing Control Center at `/control-center/`: a Building Blocks Content Editor (form-guided MDX authoring with live preview and filesystem writes) and a Brand Scraper UI (URL submission, async job polling, and rich brand data gallery). The research conclusively shows that both features can be built with **one new dependency** (`swr@2.4.0` for polling) by leveraging existing packages (`react-markdown`, `@mdx-js/mdx`, `zod`) and established codebase patterns (Server Actions with `useActionState`, API route proxies, AdminGuard, Firebase auth). No heavy editor libraries, no component frameworks, no query libraries beyond SWR.
 
-**The central architectural decision is proxy vs. direct CORS.** The STACK researcher recommends a **Next.js API route proxy** (browser calls same-origin `/api/assistant/chat`, which calls FastAPI server-to-server and translates JSON to UIMessageStream). The ARCHITECTURE researcher designed for **direct CORS with a custom `ChatTransport`** (browser calls FastAPI directly). **This summary recommends the proxy approach.** The rationale: (1) Cloud Run IAM authentication is incompatible with browser CORS preflight -- a documented, unresolved GCP limitation (issue #361387319), meaning direct CORS requires making FastAPI fully public; (2) the proxy requires zero frontend transport changes -- `DefaultChatTransport` and `useChat` work unchanged; (3) inter-service latency between two `us-central1` Cloud Run services is 1-5ms, negligible against 1-3s LLM inference time; (4) zero new npm dependencies are needed. The proxy approach eliminates the entire CORS problem class and the need to build/debug a custom `ChatTransport`, which the ARCHITECTURE researcher flagged as having LOW confidence on exact `UIMessageChunk` field names.
+The most consequential architecture decision is already settled: **the content editor writes files to the local filesystem in development mode only**. Cloud Run's ephemeral filesystem, combined with the site's build-time MDX compilation via `@next/mdx` and `dynamicParams = false`, makes production filesystem writes fundamentally impossible -- not just impractical. Content authored in the editor is committed to git and deployed through Cloud Build like all other content. This constraint simplifies the entire editor architecture: no GitHub API integration, no Firestore content storage, no runtime MDX compilation. A plain textarea with `react-markdown` preview, backed by a `fs.writeFile()` Server Action gated on `NODE_ENV === "development"`, is the right approach.
 
-Key risks are: (1) removing backend code will break the admin panel at build time unless admin pages/components are deleted in the same commit; (2) two shared data files (`projects.json`, `accomplishments.json`) must NOT be deleted during `src/data/` cleanup; (3) `FeedbackButtons` and `LeadCaptureFlow` make fire-and-forget fetch calls that silently fail if routes are removed -- these need explicit decisions; (4) the exact FastAPI response schema has discrepancies across research files that must be resolved against the actual backend code before implementation.
+The brand scraper follows the proven chatbot proxy pattern: a Next.js API route proxies requests to the deployed Fastify Cloud Run service, keeping `BRAND_SCRAPER_API_URL` server-side and reusing `verifyAdmin()` for auth. SWR's `refreshInterval` with dynamic control handles the poll-until-complete pattern cleanly. The primary risks are GCS signed URL expiration (images break after 1 hour), polling memory leaks if `useEffect` cleanup is wrong, and rendering performance with large `BrandTaxonomy` responses. All are solvable with standard patterns documented in PITFALLS.md.
 
 ## Key Findings
 
@@ -19,204 +19,204 @@ Key risks are: (1) removing backend code will break the admin panel at build tim
 
 See full details: [STACK.md](.planning/research/STACK.md)
 
-**Zero new npm dependencies.** The existing `ai@6.0.71` SDK provides `createUIMessageStream` and `createUIMessageStreamResponse` for building the proxy translation layer. Native `fetch()` in Node.js 20 handles the server-to-server call to FastAPI. `zod@^4.3.6` (already installed) provides runtime validation of the FastAPI response.
+The stack delta is minimal by design. The existing codebase already contains every library needed except one.
 
-**Core technologies:**
-- **`createUIMessageStream` / `createUIMessageStreamResponse`** (from `ai@6.0.71`) -- translates FastAPI JSON into UIMessageStream protocol so `useChat` works unchanged
-- **Native `fetch()`** -- calls FastAPI from the Next.js route handler; no HTTP client library needed
-- **Zod v4** -- runtime validation of FastAPI response schema; catches drift between services
-- **`CHATBOT_API_URL`** (server-side only, NOT `NEXT_PUBLIC_`) -- FastAPI endpoint; stays private because proxy handles the call
+**Core technologies (all existing except SWR):**
+- **`swr@2.4.0`** (NEW): Brand scraper job polling -- built-in `refreshInterval` with dynamic stop, ~4.5 kB gzipped, Vercel ecosystem
+- **`react-markdown@10.1.0`** (existing): Live preview in the content editor -- already proven in the assistant chat
+- **`@mdx-js/mdx@3.1.1`** (existing, transitive): Server-side MDX validation via `evaluate()` before saving
+- **`zod@4.3.6`** (existing): Form validation for content metadata and brand scraper API responses
+- **React 19 `useActionState`** (existing): Form state management for content editor, matching the contact form pattern
 
-**Remove after migration validated:**
-- `@ai-sdk/google` -- Gemini provider no longer called from Next.js
-- `GOOGLE_GENERATIVE_AI_API_KEY` -- orphaned secret; revoke or remove from Cloud Run config
+**What NOT to add (and why):**
+- MDXEditor (851 kB gzip), `@uiw/react-md-editor` (200 kB), CodeMirror, Monaco -- overkill for a single-admin markdown textarea
+- `@tanstack/react-query` -- heavier than SWR, unnecessary for polling one endpoint
+- `react-hook-form` -- 5 flat fields handled by `useActionState`
+- `shadcn/ui` or Radix -- project has its own design system (Button, Card)
+- `next-mdx-remote` -- would introduce a second MDX compilation path; use `react-markdown` for preview instead
 
 ### Expected Features
 
 See full details: [FEATURES.md](.planning/research/FEATURES.md)
 
-**Must have (table stakes):**
-- **Citation rendering** -- collapsible "Sources (N)" section below each answer with parsed file paths, relevance text, and GitHub permalink URLs
-- **Confidence indicator** -- color-coded pill (high/medium/low) near the citation trigger
-- **Loading state** -- existing `TypingIndicator` wired to new fetch lifecycle (shows during proxy round-trip)
-- **Error handling** -- graceful states for network failure, timeout (15s AbortController), 4xx/5xx from FastAPI, invalid response shape
-- **Type safety** -- Zod schemas for FastAPI request/response contract (`src/lib/schemas/fastapi.ts`)
+**Content Editor -- must have (table stakes):**
+- TS-1: Metadata form fields (title, description, publishedAt, tags) matching `TutorialMeta`
+- TS-2: Slug auto-generation from title with uniqueness validation against existing files
+- TS-3: Plain textarea with markdown toolbar (heading, bold, code, link quick-insert)
+- TS-4: Edit/Preview tab toggle using `react-markdown` with `remark-gfm` and prose classes
+- TS-5: Save to filesystem via Server Action (`fs.writeFile`, dev-only, assembles `export const metadata` + body)
+- TS-6: Unsaved changes protection (`beforeunload` + dirty state tracking)
 
-**Should have (low-effort differentiators):**
-- **Clickable GitHub permalinks** -- parse citation `source` string into `https://github.com/{owner}/{repo}/blob/{sha}/{path}#L{start}-L{end}` links
-- **Updated suggested prompts** -- reflect RAG capabilities ("How does the chatbot backend work?" instead of generic prompts)
-- **Citation count in collapsed state** -- "Cited N sources" visible even when collapsed (inherent in citation component design)
+**Content Editor -- should have:**
+- D-3: Word count and estimated reading time (trivial, reuses existing `calculateReadingTime()` formula)
+- D-4: Draft support via `_draft-` filename prefix (leverages existing underscore-skip convention in `tutorials.ts`)
 
-**Defer (v2+):**
-- Streaming responses from FastAPI (backend rewrite for marginal UX gain)
-- Multi-turn conversation context (backend `/chat` accepts single `question`, not conversation array)
-- Low-confidence clarification messaging (needs backend API contract extension)
-- RAG-specific admin analytics (admin tooling deferred; backend has its own observability via structlog)
+**Content Editor -- defer to v2+:**
+- D-1: Edit existing tutorials (medium effort, can use manual file editing for now)
+- D-2: Fast companion file support (edge case)
+- AF-1 through AF-6: WYSIWYG editing, image upload, collaboration, revision history, scheduling, SEO analysis
+
+**Brand Scraper -- must have (table stakes):**
+- TS-7: URL submission form with validation
+- TS-8: Job status polling with SWR (queued/processing/succeeded/partial/failed states)
+- TS-9: Brand data gallery (color palette, typography, logos, design tokens, identity sections)
+- TS-10: Confidence indicators (three-tier color system using existing `--color-sage`/`--color-amber` tokens)
+- TS-11: Download links for `brand.json` and `assets.zip` via GCS signed URLs
+
+**Brand Scraper -- should have:**
+- D-5: Brand gallery/history in Firestore (transforms tool from single-use to brand reference library)
+
+**Brand Scraper -- defer to v2+:**
+- D-6: Color contrast matrix (WCAG)
+- D-7: Re-scrape button
+- D-8: Side-by-side brand comparison
+- AF-7 through AF-11: WebSocket streaming, manual data editing, automated monitoring, design tool export, public sharing
 
 ### Architecture Approach
 
-See full details: [ARCHITECTURE-fastapi-integration.md](.planning/research/ARCHITECTURE-fastapi-integration.md)
+See full details: [ARCHITECTURE.md](.planning/research/ARCHITECTURE.md)
 
-The new architecture uses the Next.js API route (`/api/assistant/chat`) as a thin translation proxy. The browser POSTs to the same-origin route (no CORS). The route handler: (1) extracts text from UIMessage `parts`; (2) calls FastAPI with `{messages: [{role, content}], conversation_id?}`; (3) receives JSON `{response, citations, confidence, conversation_id}`; (4) writes the response as a UIMessageStream via `createUIMessageStream`; (5) appends formatted citations as markdown to the response text (simplest approach; structured citation data can be added later).
+Both features are implemented as **sub-routes** under `/control-center/` (not tabs on the existing page), following the established Todoist sub-route pattern. A new `ControlCenterNav` horizontal nav component is added inside the AdminGuard wrapper in `layout.tsx`. The content editor uses Server Actions for filesystem writes; the brand scraper uses API route proxies. Components are organized into feature subfolders (`components/admin/content-editor/`, `components/admin/brand-scraper/`) to keep the `admin/` directory manageable.
 
 **Major components:**
-1. **Proxy route handler** (`src/app/api/assistant/chat/route.ts`) -- rewritten internals; same path, new implementation; translates between Vercel AI SDK UIMessage format and FastAPI JSON
-2. **FastAPI client** (`src/lib/assistant/fastapi-client.ts`) -- typed `fetch` wrapper with Zod validation of FastAPI response
-3. **Zod schemas** (`src/lib/schemas/fastapi.ts`) -- request/response contract validation; single source of truth for TypeScript types
-4. **CitationList component** (new, ~80-100 lines) -- collapsible source display with GitHub permalink construction
-5. **ConfidenceBadge component** (new, ~30-40 lines) -- color-coded confidence pill
+1. **Control Center Navigation** -- horizontal nav bar with Dashboard/Content/Brand Scraper links, `usePathname` for active state
+2. **Content Editor** -- `ContentEditorForm` (client) with metadata fields + textarea, `MdxPreview` (client) with `react-markdown`, `saveContent` Server Action with Zod validation + path traversal protection + dev-only guard
+3. **Brand Scraper Proxy** -- API routes at `/api/admin/brand-scraper/` mirroring the chatbot proxy pattern, typed `BrandScraperClient` in `lib/brand-scraper/client.ts`
+4. **Brand Scraper UI** -- `BrandScraperForm` (URL input + SWR polling), `BrandScraperResults` (gallery sections for colors, typography, logos, tokens), `BrandScraperJobStatus` (polling indicator)
 
-**What stays unchanged:** `ChatInterface.tsx`, `ChatInput.tsx`, `ChatMessage.tsx` (minor modification for citations), `TypingIndicator.tsx`, `FeedbackButtons.tsx`, `SuggestedPrompts.tsx`, `ExitRamps.tsx`, `HumanHandoff.tsx`, `MarkdownRenderer.tsx`, `useChat` hook with `DefaultChatTransport`.
-
-**What gets removed:** ~27-30 files including all assistant backend logic (`gemini.ts`, `safety.ts`, `filters.ts`, `refusals.ts`, `knowledge.ts`, `prompts.ts`, `rate-limit.ts`), 7 of 9 data files, admin routes (`facts`, `prompt-versions`, `reindex`), admin components (`FactsEditor`, `PromptVersions`, `ReindexButton`), and admin pages.
+**Key architecture decisions:**
+- Content editor pages are RSC wrappers around client form components (matches contact form pattern)
+- Brand scraper uses API routes (not Server Actions) because polling requires `fetch` calls, not form submissions
+- Server-side auth (`verifyAdmin()` / Firebase token verification) is mandatory on every mutation -- AdminGuard is client-side only
+- `react-markdown` for preview (not full MDX compilation) -- 95% accurate, zero API calls, instant rendering
+- State management: `useState` for form/polling state, no Context, no URL params for editor content
 
 ### Critical Pitfalls
 
 See full details: [PITFALLS.md](.planning/research/PITFALLS.md)
 
-1. **`useChat` cannot consume plain JSON responses** -- if the route handler does not translate to UIMessageStream, the chat silently freezes with no error. Prevention: use `createUIMessageStream` in the proxy to emit proper `text-delta` chunks. This is the core integration point; get it right first.
+1. **Ephemeral filesystem on Cloud Run (P1)** -- Files written at runtime vanish on restart/redeploy. The standalone Dockerfile does not even include `src/content/` in the production image. MDX is compiled at build time; runtime writes are invisible to `@next/mdx`. The editor MUST gate writes on `NODE_ENV === "development"` and show a clear warning in production.
 
-2. **Removing backend code breaks admin panel at build time** -- admin pages import from `@/lib/assistant/analytics`, `@/lib/assistant/facts-store`, and `@/lib/assistant/prompt-versions`. Deleting these files without simultaneously deleting the admin pages causes `Module not found` build failures that block the entire site deploy. Prevention: delete admin pages/components in the same commit as their backend dependencies.
+2. **Invalid MDX breaks the entire site build (P2)** -- A single syntax error in an MDX file blocks deployment of ALL content. Validate MDX with `@mdx-js/mdx evaluate()` before saving. The form-guided editor eliminates metadata syntax errors; only the body needs validation.
 
-3. **Two shared data files must survive `src/data/` cleanup** -- `projects.json` (used by project pages) and `accomplishments.json` (used by accomplishments page) are NOT assistant-only. Deleting them breaks core site features silently (pages render empty, no build error). Prevention: explicit safe-delete list; only delete 7 of 9 files.
+3. **Path traversal in slug input (P3)** -- A slug like `../../lib/firebase` escapes the content directory. Sanitize with `/^[a-z0-9][a-z0-9-]*[a-z0-9]$/` regex AND validate the resolved path stays within `CONTENT_DIR` using `path.resolve()`.
 
-4. **Client-side fetch calls to deleted routes fail silently** -- `FeedbackButtons` and `LeadCaptureFlow` use try/catch with empty catch blocks. After route deletion, user feedback data is permanently lost with zero visible error. Prevention: keep `/api/assistant/feedback` route (it uses Firestore directly, no assistant backend dependency). Decision needed on `LeadCaptureFlow`.
+4. **Client-side AdminGuard does not protect server mutations (P4)** -- Every Server Action and API route must verify the Firebase ID token server-side. For Server Actions, pass the token via FormData; for API routes, use the existing `verifyAdmin()` with Bearer header.
 
-5. **`handoff.ts` is a pure utility with zero backend dependencies** -- bulk-deleting `src/lib/assistant/` will break `HumanHandoff` unnecessarily. Prevention: move `handoff.ts` to `src/lib/utils/` before cleanup.
+5. **Polling memory leaks (P7)** -- Use `setTimeout` chains (not `setInterval`) with proper `useEffect` cleanup. SWR handles this correctly with `refreshInterval` set to `0` when job completes. Add a max polling duration (5 minutes) as a safety net.
 
 ## Implications for Roadmap
 
-Based on combined research, the milestone should be structured in 5 phases. The ordering follows the principle: validate the core integration first, layer UI features on top, then clean up dead code last (so a working fallback exists throughout development).
+Based on the dependency chains, architecture patterns, and pitfall severity, the research suggests 5 phases:
 
-### Phase 1: Proxy Route Handler + FastAPI Client
+### Phase 1: Control Center Navigation
 
-**Rationale:** This is the highest-risk, highest-value work. If the proxy translation does not work, nothing else matters. Do it first so failures surface immediately. This phase has zero frontend changes -- only server-side code.
+**Rationale:** Foundation for all subsequent features. Without navigation, new pages are unreachable. Smallest possible scope to establish the routing pattern.
+**Delivers:** `ControlCenterNav` component, modified `layout.tsx`, working links to Dashboard/Content/Brand Scraper (content and scraper pages can be placeholder/empty initially)
+**Addresses:** Pitfall 16 (route state on refresh) by using proper Next.js routes instead of client-side tabs
+**Avoids:** Converting existing `page.tsx` to client component (anti-pattern identified in ARCHITECTURE.md)
+**Estimated scope:** 2 files (1 new component, 1 modified layout)
 
-**Delivers:**
-- Rewritten `src/app/api/assistant/chat/route.ts` that calls FastAPI and returns UIMessageStream
-- `src/lib/assistant/fastapi-client.ts` with typed fetch wrapper
-- `src/lib/schemas/fastapi.ts` with Zod request/response schemas
-- `CHATBOT_API_URL` environment variable configured
-- End-to-end chat working with FastAPI backend (basic text responses, no citation UI yet)
+### Phase 2: Content Editor -- Listing + Server Action Scaffolding
 
-**Addresses:** TS-3 (loading state), TS-4 (error handling), TS-5 (type safety)
-**Avoids:** Pitfall 1 (stream format mismatch), Pitfall 2 (CORS -- eliminated entirely by proxy)
+**Rationale:** Read-before-write. Proves the content discovery pipeline works in the admin context before adding mutation logic. Also establishes the Zod schema, Server Action skeleton, and server-side auth pattern that Phase 3 depends on. Getting slug sanitization and path traversal prevention right at this stage avoids security issues later.
+**Delivers:** Content listing page showing existing MDX files, Zod content schema, Server Action with auth verification and dev-only guard (save logic implemented but not yet wired to UI), slug utility with validation
+**Addresses:** TS-2 (slug validation infrastructure), Pitfall 3 (path traversal), Pitfall 4 (server-side auth), Pitfall 5 (slug collision)
+**Uses:** Existing `getAllTutorials()` from `lib/tutorials.ts` for listing
+**Estimated scope:** 5 files (content page, ContentList component, Zod schema, Server Action, slug utility)
 
-### Phase 2: Citation and Confidence UI
+### Phase 3: Content Editor -- Form, Preview, Save
 
-**Rationale:** With the core integration proven, layer on the RAG-specific UI. Citations and confidence are the whole value proposition of switching to a RAG backend -- shipping without them wastes the integration effort. Low risk because it builds on a working chat flow.
+**Rationale:** Most complex feature in the milestone. Depends on Phase 2's schema, action, and listing. Contains the full create/preview/save loop. Bundles all content editor table stakes plus low-effort differentiators.
+**Delivers:** Working content editor with metadata form, markdown textarea with toolbar, Edit/Preview tab toggle via `react-markdown`, save to filesystem, unsaved changes protection, word count, draft support
+**Addresses:** TS-1, TS-3, TS-4, TS-5, TS-6 (all remaining content editor table stakes), D-3, D-4 (low-effort differentiators)
+**Avoids:** Pitfall 2 (MDX validation before save), Pitfall 6 (no MDX compiler in client bundle), Pitfall 10 (unsaved changes via `beforeunload`), Pitfall 13 (preview parity via shared prose classes + `remark-gfm`), Pitfall 14 (bundle size -- textarea, not rich editor)
+**Estimated scope:** 5 files (ContentEditorForm, MdxPreview, new/page.tsx, [slug]/page.tsx for edit, EditorTabs or inline tab toggle)
 
-**Delivers:**
-- `CitationList` component with collapsible sources, GitHub permalink URLs, relevance text
-- `ConfidenceBadge` component with color-coded pills (high/medium/low)
-- `ChatMessage.tsx` modified to render citations and confidence below assistant messages
-- Metadata row layout: `[ConfidenceBadge] [Sources (N)] [FeedbackButtons]`
+### Phase 4: Brand Scraper -- API Proxy + Types
 
-**Addresses:** TS-1 (citation rendering), TS-2 (confidence indicator), D-1 (GitHub permalinks), D-4 (citation count)
-**Avoids:** Pitfall 5 (not rendering new schema fields)
+**Rationale:** Server-side plumbing before UI. Can be tested with curl independently of any frontend code. Mirrors the proven `fastapi-client.ts` pattern exactly. This is the phase where the `BrandTaxonomy` response shape is confirmed against the live API.
+**Delivers:** Working API proxy (POST submit job, GET poll status), typed `BrandScraperClient`, Zod schemas for `BrandTaxonomy` response, `BRAND_SCRAPER_API_URL` env var integration
+**Addresses:** API proxy infrastructure needed by all brand scraper UI features
+**Avoids:** Pitfall 4 (auth on every route via `verifyAdmin()`), Pitfall 15 (error message mapping at proxy layer)
+**Estimated scope:** 4 files (2 API routes, client.ts, types.ts)
 
-### Phase 3: UX Polish and Suggested Prompts
+### Phase 5: Brand Scraper -- UI + Results Gallery
 
-**Rationale:** Quick wins that improve the user experience without touching core integration code. Can be done in parallel with Phase 4 cleanup if time is tight.
-
-**Delivers:**
-- Updated `SuggestedPrompts` to reflect RAG capabilities
-- Updated `PrivacyDisclosure` wording (conversations now go to external service)
-- Any edge case handling discovered during Phase 1-2 testing
-
-**Addresses:** D-2 (smart empty state with RAG context)
-
-### Phase 4: Dead Code Removal and Admin Cleanup
-
-**Rationale:** Delete old server code only after the new integration is proven and validated. Git history preserves everything for rollback. This phase is high file count but low risk -- it is all deletion, verified by `npm run build` passing.
-
-**Delivers:**
-- Remove assistant backend: `gemini.ts`, `safety.ts`, `filters.ts`, `refusals.ts`, `knowledge.ts`, `prompts.ts`, `rate-limit.ts`, `facts-store.ts`, `prompt-versions.ts`
-- Remove 7 data files (keep `projects.json` and `accomplishments.json`)
-- Remove admin routes: `facts`, `prompt-versions`, `reindex`
-- Remove admin pages and components: `FactsEditor`, `PromptVersions`, `ReindexButton`, `AssistantAnalytics`, `TopQuestions`, `UnansweredQuestions`, facts page, analytics page
-- Move `handoff.ts` to `src/lib/utils/` and update import in `HumanHandoff.tsx`
-- Remove `src/lib/schemas/assistant.ts`
-
-**Avoids:** Pitfall 3 (admin build break -- delete together), Pitfall 6 (shared data files -- skip 2), Pitfall 11 (handoff.ts -- move first)
-
-### Phase 5: Dependency and Environment Cleanup
-
-**Rationale:** Final cleanup after all code changes. Reduces Docker image size and removes orphaned secrets.
-
-**Delivers:**
-- Uninstall `@ai-sdk/google` from `package.json`
-- Remove `GOOGLE_GENERATIVE_AI_API_KEY` from Cloud Run config and `.env.local`
-- Add `CHATBOT_API_URL` to `.env.local.example` with documentation
-- Update `cloudbuild.yaml` env vars (add `CHATBOT_API_URL`, remove Gemini key)
-- Optional: configure Cloud Run IAM service-to-service auth (FastAPI stays private, Next.js SA gets `roles/run.invoker`)
-
-**Avoids:** Pitfall 7 (orphaned dependencies), Pitfall 8 (orphaned API key)
+**Rationale:** UI wired to working API from Phase 4. Polling logic and gallery rendering are the key complexities. SWR is installed at the start of this phase. This is the largest phase by component count but each component is straightforward (display-only with Tailwind).
+**Delivers:** URL submission form, SWR-based job polling with status display, full brand data gallery (colors, typography, logos, tokens, identity sections), confidence badges, download links
+**Addresses:** TS-7, TS-8, TS-9, TS-10, TS-11 (all brand scraper table stakes)
+**Avoids:** Pitfall 7 (polling leaks -- SWR handles cleanup), Pitfall 8 (signed URL expiration -- display timestamp, auto-refresh on image error), Pitfall 9 (CORS -- use `<img>` for display, proxy API route for downloads), Pitfall 11 (large responses -- lazy-load images, collapse secondary sections), Pitfall 17 (mobile responsiveness -- responsive grid for brand cards)
+**Estimated scope:** 7+ files (page, form, job status, results container, color/typography/logo/token sections, confidence badge, download links)
 
 ### Phase Ordering Rationale
 
-- **Phase 1 first:** Core integration. If the proxy translation layer does not work, nothing else can proceed. Surfaces the hardest technical risk immediately.
-- **Phase 2 before 3:** Citations/confidence are table stakes for a RAG assistant. They should be shipped immediately after the core integration, not deferred to polish.
-- **Phase 3 can parallel Phase 4:** Suggested prompts and privacy disclosure are independent of code deletion.
-- **Phase 4 before 5:** Code must be deleted before dependencies can be safely removed (removing `@ai-sdk/google` before deleting the code that imports it would break the build).
-- **Phase 5 last:** Environment/dependency cleanup is safest after all code changes are complete and validated.
+- **Phase 1 first:** Every other phase needs navigation to be reachable in the UI.
+- **Phases 2-3 before 4-5:** Content editor is the more architecturally complex feature (filesystem writes, MDX validation, auth in Server Actions via FormData token). Ship it first to surface issues early. Brand scraper follows proven patterns (API proxy, polling) with lower novelty risk.
+- **Phase 2 before 3:** Read-only listing + schema + auth validation before write operations. This catches path traversal and slug collision bugs before the form exists to trigger them.
+- **Phase 4 before 5:** Server proxy tested independently before client polling is wired up. Matches "plumbing then UI" principle from the chatbot integration.
+- **Content editor (2-3) and brand scraper (4-5) are independent after Phase 1.** They could be parallelized by different developers if needed, though the roadmapper may choose sequential ordering for a solo developer.
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 1:** The exact `UIMessageChunk` field names need verification against `node_modules/ai/dist/` type declarations. The ARCHITECTURE researcher flagged this as LOW confidence. During Phase 1 planning, inspect the actual TypeScript types or write a minimal test. Additionally, the FastAPI response schema has discrepancies between research files (see Gaps section) -- resolve against actual backend code.
+**Phases likely needing deeper research during planning:**
+- **Phase 3 (Content Editor Form):** The `useActionState` + Firebase token-via-FormData pattern for Server Actions has nuance. The token is passed as a hidden field, verified server-side with `getAuth().verifyIdToken()`. May need a spike to confirm the auth flow works end-to-end before building the full form.
+- **Phase 5 (Brand Scraper UI):** The `BrandTaxonomy` response shape from the Fastify API must be confirmed against the live service before Zod schemas and gallery components are finalized. If the response shape differs from assumptions, gallery components need adjustment. Recommend running a test scrape during Phase 4 and documenting the actual JSON.
 
-**Phases with standard patterns (skip `/gsd:research-phase`):**
-- **Phase 2:** Citation UI is well-documented (Perplexity, ChatGPT patterns). Component design is straightforward.
-- **Phase 3:** Content updates only. No research needed.
-- **Phase 4:** File deletion guided by the complete dependency map in PITFALLS.md. Follow the safe-delete checklist.
-- **Phase 5:** Standard GCP Cloud Run configuration and `npm uninstall`.
+**Phases with standard patterns (skip deep research):**
+- **Phase 1 (Navigation):** Standard Next.js layout + `usePathname` for active state. Fully documented pattern.
+- **Phase 2 (Content Listing):** Reuses existing `getAllTutorials()`. Zod schema is trivial. Straightforward.
+- **Phase 4 (API Proxy):** Carbon copy of the chatbot proxy pattern already working in the codebase at `src/app/api/assistant/chat/route.ts`.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Zero new dependencies; all capabilities verified in existing `ai@6.0.71` package. Proxy approach eliminates CORS unknowns entirely. |
-| Features | HIGH | Feature list derived from direct inspection of both codebases. Citation/confidence UI patterns well-documented across Perplexity, ChatGPT, and AI UX pattern libraries. |
-| Architecture | HIGH (proxy), MEDIUM (UIMessageChunk) | Proxy pattern is straightforward (fetch + createUIMessageStream). But exact UIMessageChunk field names are not fully documented publicly -- must verify at implementation time. |
-| Pitfalls | HIGH | All pitfalls identified through direct codebase analysis. Every import chain, fetch call, and data file dependency was traced. |
+| Stack | HIGH | Only 1 new dep (SWR). All other packages already installed and proven in this codebase. Version compatibility verified on npm. |
+| Features | HIGH | Feature landscape derived from direct codebase analysis of existing content system, AdminGuard, and control center patterns. Table stakes/differentiator split is clear. Anti-features well-justified. |
+| Architecture | HIGH | Component structure, route tree, data flow, and auth patterns all mirror established codebase patterns. No novel architecture introduced. Every proposed pattern has a working precedent in the existing code. |
+| Pitfalls | HIGH | 5 critical + 8 moderate + 4 minor pitfalls identified with concrete prevention strategies. Verified against Dockerfile, next.config.ts, AdminGuard source, Cloud Run docs, and GCP documentation. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-1. **FastAPI response schema discrepancy.** The FEATURES researcher (who inspected `chatbot-assistant/app/schemas/chat.py` directly) reports: `{answer, citations: [{source, relevance}], confidence: "low"|"medium"|"high"}` with `question` as the request field. The STACK/ARCHITECTURE researchers report: `{response, citations: [{source, content, line_range}], confidence: 0.92}` with `messages` array as the request format. These are fundamentally different field names and types. **Resolution:** During Phase 1 planning, inspect the actual FastAPI schemas in the `chatbot-assistant` repo to determine the true contract. The Zod schemas must match the real API, not the research assumptions.
+1. **BrandTaxonomy response schema:** The exact JSON shape returned by the Fastify brand scraper API needs to be confirmed against the live service. The Zod schema in Phase 4 should be written from actual API responses, not assumptions. Run a test scrape job during Phase 4 planning and use the real response to define `types.ts`.
 
-2. **`UIMessageChunk` exact type shape.** The ARCHITECTURE researcher flagged this as LOW confidence. The discriminated union field names (`type: "text-delta"`, `textDelta` vs `delta`) must be verified from `node_modules/ai/dist/` or by examining `DefaultChatTransport.processResponseStream()`. **Resolution:** First task in Phase 1 implementation should be a type inspection/test.
+2. **GCS signed URL TTL:** Assumed 1 hour based on common defaults. Confirm actual TTL from the brand scraper service configuration. This affects whether URL expiration warnings and auto-refresh logic are needed in the UI, or if TTLs are long enough to ignore.
 
-3. **Feedback route disposition.** The `/api/assistant/feedback` route and `FeedbackButtons` component should survive the migration (they write to Firestore independently of the chat backend). But the `logConversation()` call in the current chat route (which populates the analytics Firestore collections) will be lost. **Decision needed:** Is conversation logging important enough to replicate in the proxy, or is backend-side observability (structlog) sufficient?
+3. **Content editor "edit existing" flow (D-1):** Deferred from MVP but will be the most requested follow-up. The MDX parsing infrastructure already exists in `tutorials.ts` (`extractMetadataFromSource()`). When prioritized post-MVP, this should be straightforward to add as an enhancement to Phase 3's `[slug]/page.tsx`.
 
-4. **`LeadCaptureFlow` component.** This component imports `detectHiringIntent` from `lead-capture.ts` and posts to `/api/assistant/feedback`. If `lead-capture.ts` is deleted and the feedback route behavior changes, lead capture data may be lost. **Decision needed:** Is lead capture still a feature? If yes, preserve `lead-capture.ts` and ensure the feedback route handles lead data. If no, remove the component.
+4. **`next.config.ts` `images.remotePatterns`:** If brand scraper results include image URLs from GCS, and the UI uses Next.js `<Image>` components (for optimization), the GCS hostname must be added to `remotePatterns`. Alternatively, use plain `<img>` tags for admin-only brand asset display (simpler, no config change needed). Decision point during Phase 5 implementation.
 
-5. **Service-to-service authentication.** The STACK researcher recommends starting with public FastAPI (simpler) and adding IAM auth later. If IAM auth is desired from day one, the proxy route handler needs ~5 lines of code to fetch an ID token from the GCP metadata server. **Decision point:** Phase 1 planning should decide public vs. IAM-authenticated FastAPI.
+5. **Server Action auth pattern:** The recommended approach (Firebase ID token passed via FormData, verified with `getAuth().verifyIdToken()`) is sound but differs from the API route pattern (Bearer header). If this proves awkward during Phase 2 implementation, the fallback is to use an API route for the save operation instead of a Server Action, which the ARCHITECTURE researcher documented as Option B.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [Vercel AI SDK createUIMessageStream API](https://ai-sdk.dev/docs/reference/ai-sdk-ui/create-ui-message-stream) -- proxy translation layer
-- [Vercel AI SDK Transport Documentation](https://ai-sdk.dev/docs/ai-sdk-ui/transport) -- transport architecture
-- [Vercel AI SDK Stream Protocol](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) -- UIMessage Stream Protocol format
-- [Vercel AI SDK useChat Reference](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) -- hook API and status values
-- [AI SDK ChatTransport Interface Source](https://github.com/vercel/ai/blob/main/packages/ai/src/ui/chat-transport.ts) -- interface definition
-- [GCP Cloud Run Service-to-Service Auth](https://docs.google.com/run/docs/authenticating/service-to-service) -- IAM auth pattern
-- [GCP Cloud Run CORS + IAM Limitation](https://issuetracker.google.com/issues/361387319) -- unresolved, confirms proxy is the right call
-- [FastAPI CORS Middleware](https://fastapi.tiangolo.com/tutorial/cors/) -- CORS configuration reference
-- [GitHub Permalink Format](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet) -- citation URL construction
-- Direct codebase analysis of 30+ files across `src/lib/assistant/`, `src/app/api/assistant/`, `src/components/assistant/`, `src/data/`, `src/app/control-center/assistant/`
-- Direct inspection of `chatbot-assistant` repo schemas (`app/schemas/chat.py`, `app/routers/chat.py`)
+- Existing codebase: `Dockerfile`, `next.config.ts`, `src/lib/tutorials.ts`, `src/content/building-blocks/*.mdx`, `src/app/control-center/`, `src/components/admin/AdminGuard.tsx`, `src/lib/auth/admin.ts`, `src/lib/actions/contact.ts`, `src/app/api/assistant/chat/route.ts`, `src/app/building-blocks/[slug]/page.tsx`
+- [MDX packages documentation](https://mdxjs.com/packages/mdx/) -- compile/evaluate API for validation
+- [MDX troubleshooting](https://mdxjs.com/docs/troubleshooting-mdx/) -- common MDX syntax errors that break builds
+- [MDX on-demand compilation](https://mdxjs.com/guides/mdx-on-demand/) -- evaluate() function for runtime validation
+- [SWR API reference](https://swr.vercel.app/docs/api) -- dynamic `refreshInterval` for polling
+- [Cloud Run container contract](https://docs.cloud.google.com/run/docs/container-contract) -- ephemeral filesystem behavior
+- [GCS signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls) -- expiration behavior
+- [GCS CORS configuration](https://cloud.google.com/storage/docs/cross-origin) -- browser access patterns for signed URLs
+- [Next.js security: Server Components and Actions](https://nextjs.org/blog/security-nextjs-server-components-actions) -- server-side auth requirements
+- [React useEffect cleanup](https://react.dev/learn/synchronizing-with-effects) -- polling cleanup patterns
+- [Firebase Admin Auth](https://firebase.google.com/docs/auth/admin/) -- verifyIdToken for server-side auth
 
 ### Secondary (MEDIUM confidence)
-- [Vercel AI SDK GitHub Discussion: FastAPI Integration](https://github.com/vercel/ai/discussions/2840) -- community patterns
-- [FastAPI + AI SDK v5 Integration Issues](https://github.com/vercel/ai/issues/7496) -- known challenges
-- [ShapeofAI Citation Patterns](https://www.shapeof.ai/patterns/citations) -- UI patterns
-- [Agentic Design Confidence Visualization](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns) -- badge patterns
-- [py-ai-datastream](https://github.com/elementary-data/py-ai-datastream) -- evaluated, not recommended
-- [fastapi-ai-sdk](https://github.com/doganarif/fastapi-ai-sdk) -- evaluated, not recommended
+- [Next.js Security Checklist (Arcjet)](https://blog.arcjet.com/next-js-security-checklist/) -- path traversal prevention patterns
+- [CMS slug patterns (Sanity, DatoCMS)](https://www.sanity.io/answers/best-practice-validation-for-different-types-of-fields-slugs-titles-etc) -- slug validation rules
+- [Next.js App Router unsaved changes](https://github.com/vercel/next.js/discussions/50700) -- community patterns for `beforeunload` in App Router
+- [Brand.dev Styleguide API](https://docs.brand.dev/api-reference/screenshot-styleguide/extract-design-system-and-styleguide-from-website) -- brand data display reference implementation
+- [Confidence Visualization Patterns](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns) -- tiered badge patterns
+- [5 Best Markdown Editors for React (Strapi)](https://strapi.io/blog/top-5-markdown-editors-for-react) -- editor comparison (evaluated, all rejected)
+
+### Tertiary (LOW confidence)
+- BrandTaxonomy response shape -- inferred from project context, needs validation against live Fastify API
+- GCS signed URL TTL -- assumed 1 hour, needs confirmation from brand scraper service config
 
 ---
 *Research completed: 2026-02-08*

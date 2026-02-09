@@ -1,275 +1,490 @@
-# Domain Pitfalls: Replacing Internal API Backend with External FastAPI Service
+# Domain Pitfalls: Control Center Content Editor + Brand Scraper UI
 
-**Domain:** Next.js internal API route swap to cross-origin FastAPI Cloud Run service
+**Domain:** Adding MDX content editor and async job-based brand scraper UI to existing Next.js personal site
 **Researched:** 2026-02-08
-**Overall confidence:** HIGH (based on codebase analysis + verified AI SDK documentation)
+**Overall confidence:** HIGH (based on codebase analysis + verified documentation + web research)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause the assistant to break entirely or require architectural rework.
+Mistakes that cause data loss, security vulnerabilities, or require architectural rework.
 
-### Pitfall 1: Vercel AI SDK `useChat` Cannot Consume Plain JSON Responses
+### Pitfall 1: Filesystem Writes on Cloud Run Are Ephemeral -- Content Vanishes on Redeploy
 
-**What goes wrong:** The FastAPI backend returns `{response, citations, confidence, conversation_id}` as a plain JSON object. The current `ChatInterface.tsx` uses `useChat` from `@ai-sdk/react` with `DefaultChatTransport`, which expects the **UI Message Stream Protocol** -- a Server-Sent Events stream with specific event types (`start`, `text-start`, `text-delta`, `text-end`, `finish`) and the header `x-vercel-ai-ui-message-stream: v1`. Sending plain JSON back will cause `useChat` to silently fail: no messages will appear in the UI, no error will be thrown, and the chat will appear frozen.
+**What goes wrong:** The content editor writes `.mdx` files to `src/content/building-blocks/` on the local filesystem. On Cloud Run, the container filesystem is ephemeral -- every new deployment, every scale-to-zero event, and every instance restart wipes all written files. An admin writes a new building block article, it appears to work, but the next deployment erases it. Even worse, if Cloud Run scales to multiple instances, each instance has its own filesystem -- content written on instance A is invisible to instance B.
 
-**Why it happens:** Developers assume `useChat` is a generic HTTP client that can parse any response format. It is not. It is tightly coupled to the AI SDK stream protocol. The `DefaultChatTransport` specifically processes SSE data frames and reconstructs `parts`-based messages from them.
+**Why it happens:** Developers test locally where `fs.writeFileSync()` works perfectly and persists across restarts. The Cloud Run environment looks identical at runtime but has fundamentally different persistence guarantees.
 
 **Consequences:**
-- Chat appears to submit (spinner shows) but no response ever renders
-- No error is thrown -- `useChat` silently drops non-conforming responses
-- The `status` may stay stuck on `"submitted"` indefinitely
+- Content created via the editor is silently lost on next deploy or scale event
+- Multi-instance deployments serve inconsistent content (some instances have the file, others do not)
+- Admin believes content was published successfully -- no error is shown
+- The site may break if ISR/build cached a reference to a page that no longer exists
 
-**Prevention -- three options, ordered by recommendation:**
+**Why this is critical FOR THIS PROJECT specifically:**
+- The existing Dockerfile uses `output: "standalone"` and copies only `.next/standalone` and `.next/static` to the runner stage -- source content files are not even in the production container
+- Building blocks pages use `generateStaticParams()` with `dynamicParams = false` (line 36 of `[slug]/page.tsx`), meaning pages not generated at build time return 404 -- writing a new `.mdx` file at runtime would never be accessible
+- MDX files are compiled by `@next/mdx` at BUILD time via webpack, not at runtime -- a new `.mdx` file written at runtime cannot be imported via `await import()` because it was never compiled
 
-1. **RECOMMENDED: Write a custom `ChatTransport`** that replaces `DefaultChatTransport`. This transport fetches from the FastAPI URL, receives the JSON response, and converts it into a synthetic `ReadableStream` that conforms to the UI Message Stream Protocol before returning it to `useChat`. This preserves the entire `useChat` state machine (status, messages, error handling). The `ChatTransport` interface requires implementing a `sendMessages` method that returns a UI message stream.
+**Prevention -- the fundamental architecture decision:**
+The content editor CANNOT write files to the Cloud Run filesystem and expect them to persist or be served. The workflow must be one of:
 
-2. **Alternative: Add an SSE proxy route** in Next.js (`/api/assistant/chat`) that forwards to FastAPI, receives JSON, then re-emits as a proper `createUIMessageStream`. This adds latency (double-hop) but requires zero frontend changes.
+1. **RECOMMENDED: Git-commit workflow.** The editor composes MDX content, validates it, then commits the file to the GitHub repo via the GitHub API. This triggers a Cloud Build redeploy, and the new content is included in the next build. This matches how the site already works (MDX files compiled at build time).
 
-3. **Alternative: Drop `useChat` entirely** and manage chat state manually with `useState` + `fetch`. This throws away `useChat`'s built-in message management, status tracking, and error handling, but gives full control over the response format.
+2. **Alternative: Store content in Firestore/GCS, render with `next-mdx-remote` at runtime.** This requires abandoning `@next/mdx` for building blocks pages and switching to runtime MDX compilation. It is a larger architectural change but enables instant publishing without redeploy.
 
-**Detection:** If after wiring up the FastAPI URL the chat submits but never renders a response, this is the cause. Check the Network tab -- if the response is `200 OK` with JSON body but nothing renders, the transport layer is rejecting the format.
+3. **Alternative: Local-only editor.** The editor works only in `npm run dev` mode for local authoring. Content is committed via normal git workflow. The editor is a DX tool, not a production CMS.
 
-**Phase:** Must be resolved in the FIRST phase, before any other work. This is the core integration decision.
+**Detection:** Write content via the editor, wait for a new deploy or scale event, check if the content still exists. If it is gone, this pitfall was not addressed.
 
-**Confidence:** HIGH -- verified via [AI SDK Stream Protocol docs](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) and [FastAPI integration issues](https://github.com/vercel/ai/issues/7496).
+**Phase:** Must be the FIRST architecture decision. Every other content editor decision flows from this.
+
+**Confidence:** HIGH -- verified by reading the Dockerfile (standalone output, no source files copied to runner), `next.config.ts` (build-time MDX compilation), and `[slug]/page.tsx` (`dynamicParams = false`).
 
 ---
 
-### Pitfall 2: CORS Preflight Fails on Cloud Run with IAM Authentication
+### Pitfall 2: Invalid MDX Breaks the Entire Site Build
 
-**What goes wrong:** If the FastAPI Cloud Run service has "Require authentication" enabled in Cloud Run settings (IAM-level), **all browser CORS preflight OPTIONS requests will return 403 Forbidden**. This is not a bug in your CORS code -- Cloud Run's IAM layer rejects the OPTIONS request before it ever reaches your FastAPI app, because browsers cannot attach `Authorization` headers to preflight requests (per the CORS spec).
+**What goes wrong:** The admin writes MDX content with a syntax error -- an unclosed JSX tag, a curly brace without a matching close, or an `import` statement with a typo. If the content editor commits this to the repo (per the git-commit workflow), the next `npm run build` fails because `@next/mdx` compiles ALL `.mdx` files at build time. A single invalid MDX file prevents the entire site from deploying.
 
-**Why it happens:** Cloud Run's IAM authentication runs at the infrastructure level, before the request reaches the application container. Preflight OPTIONS requests are sent by the browser without credentials. There is no way to add credentials to a preflight request -- the CORS spec prohibits it.
+**Specific error patterns in MDX that cause build failures:**
+- Unclosed JSX tags: `<div>content` without `</div>`
+- Bare curly braces: `The price is {expensive}` (MDX interprets `{expensive}` as a JS expression)
+- Invalid imports: `import Foo from './Foo'` where `Foo` does not exist
+- HTML comments: `<!-- comment -->` (MDX does not support HTML comments, use `{/* comment */}`)
+- Indented code blocks following JSX (indentation ambiguity)
+
+**Why it happens:** MDX looks like Markdown but is actually a strict superset with JSX compilation semantics. Authors who know Markdown but not JSX will produce invalid MDX frequently.
 
 **Consequences:**
-- Every cross-origin request from the Next.js frontend will fail
-- Browser console shows `Access to fetch has been blocked by CORS policy`
-- The FastAPI CORS middleware never executes because the request never reaches it
+- Cloud Build fails, no new version deploys
+- ALL site content (not just the bad article) becomes un-deployable
+- If the broken commit reaches `master`, the site cannot be updated until the MDX error is fixed
+- The admin may not know the build broke until someone notices the deploy failed
 
 **Prevention:**
-- **Set the FastAPI Cloud Run service to "Allow unauthenticated invocations"** and handle authentication at the application level (API key in header, JWT validation in FastAPI middleware, etc.)
-- OR use a **Next.js proxy route** that calls FastAPI server-to-server (no browser CORS involved), but this adds latency and defeats the purpose of direct integration
-- Do NOT use Cloud Run IAM authentication if the service receives direct browser requests
+- **Validate MDX before committing.** Use `@mdx-js/mdx` `compile()` in a server action to attempt compilation before the content is committed to git. If compilation fails, show the error to the admin and block the commit.
+- **Form-guided editor reduces syntax errors.** If the editor uses structured form fields (title, description, tags, body) and assembles the MDX file from those fields, the metadata export is always valid. Only the body content can have MDX errors.
+- **Live preview catches errors visually.** Use `@mdx-js/mdx` `evaluate()` for client-side preview. If the preview shows an error boundary instead of rendered content, the admin knows something is wrong before saving.
+- **Branch-based commits.** Commit to a feature branch, not `master`. Trigger a preview build. Only merge to `master` after the build succeeds.
 
-**Detection:** If all chat requests fail with CORS errors and the FastAPI service has `--no-allow-unauthenticated` in its deploy config, this is the cause. Check with: `gcloud run services describe [SERVICE] --format='value(spec.template.metadata.annotations)'`
+**Detection:** `npm run build` fails with `Error: [MDX compilation error]` referencing the new file.
 
-**Phase:** Must be resolved during FastAPI service configuration, before any frontend integration work begins.
+**Phase:** Must be implemented alongside the editor -- validation is not optional.
 
-**Confidence:** HIGH -- this is a [documented Cloud Run limitation](https://issuetracker.google.com/issues/361387319) that Google has acknowledged as an open issue.
+**Confidence:** HIGH -- verified by [MDX troubleshooting docs](https://mdxjs.com/docs/troubleshooting-mdx/) and direct testing of `@next/mdx` build behavior.
 
 ---
 
-### Pitfall 3: Removing Backend Code Breaks the Admin Panel at Build Time
+### Pitfall 3: Path Traversal in Slug/Filename Generation
 
-**What goes wrong:** The admin panel pages (`/control-center/assistant/` and `/control-center/assistant/facts/`) are **server components** that import directly from `@/lib/assistant/analytics`, `@/lib/assistant/facts-store`, and `@/lib/assistant/prompt-versions` at build time. These modules import `db` from `@/lib/firebase`. If you delete the `src/lib/assistant/` directory (or even individual files like `analytics.ts`, `facts-store.ts`, `prompt-versions.ts`), the build will fail with unresolved import errors.
+**What goes wrong:** The admin enters a slug like `../../lib/firebase` or `../../../etc/passwd`. If the server action naively constructs a file path with `path.join(CONTENT_DIR, slug + '.mdx')`, the resulting path escapes the content directory. In a git-commit workflow, a malicious slug could overwrite arbitrary files in the repository. In a filesystem-write workflow, it could overwrite application code.
 
-**Specific import chain that breaks:**
+**Why it happens:** The existing `[slug]/page.tsx` already uses `path.join(CONTENT_DIR, slug + '.mdx')` for reading (line 18). Developers copy this pattern for writing without adding path validation.
 
+**Consequences:**
+- Repository files overwritten via git commit (e.g., `package.json`, `next.config.ts`)
+- Application code modified at runtime (in filesystem-write scenarios)
+- Build broken by overwriting critical files
+
+**Prevention:**
+- **Sanitize the slug BEFORE any filesystem or git operation:**
+  ```typescript
+  function sanitizeSlug(input: string): string {
+    return input
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')  // Only allow alphanumeric and hyphens
+      .replace(/-+/g, '-')           // Collapse multiple hyphens
+      .replace(/^-|-$/g, '');        // Trim leading/trailing hyphens
+  }
+  ```
+- **Validate the resolved path stays within the content directory:**
+  ```typescript
+  const resolved = path.resolve(CONTENT_DIR, sanitizedSlug + '.mdx');
+  if (!resolved.startsWith(path.resolve(CONTENT_DIR))) {
+    throw new Error('Invalid slug: path traversal detected');
+  }
+  ```
+- **Use Zod schema validation** on the slug field with a regex pattern: `z.string().regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/)`
+- **Server-side validation is mandatory** -- do NOT rely on client-side slug sanitization alone
+
+**Detection:** Test with slugs containing `../`, `/`, `\`, null bytes, and URL-encoded path separators.
+
+**Phase:** Must be implemented in the server action that processes editor submissions.
+
+**Confidence:** HIGH -- standard web security concern, verified by [Next.js security best practices](https://blog.arcjet.com/next-js-security-checklist/) and the existing code pattern in `[slug]/page.tsx`.
+
+---
+
+### Pitfall 4: Client-Side AdminGuard Does Not Protect Server Actions
+
+**What goes wrong:** The existing `AdminGuard` component (in `src/components/admin/AdminGuard.tsx`) only checks auth on the client side by comparing `user.email` to `ADMIN_EMAIL`. Any server action that writes content or triggers jobs is callable by anyone who knows the API endpoint -- they just need to send a POST request directly, bypassing the React UI entirely.
+
+**Existing code that demonstrates the vulnerability:**
+```typescript
+// AdminGuard.tsx -- client-side only
+if (!user || user.email !== ADMIN_EMAIL) {
+  router.replace("/");  // Redirects in browser, but server action is still callable
+}
 ```
-src/app/control-center/assistant/page.tsx
-  -> imports getAnalytics from @/lib/assistant/analytics
-  -> imports AssistantAnalytics from @/components/admin/AssistantAnalytics
-     -> imports type AnalyticsData from @/lib/assistant/analytics
 
-src/app/control-center/assistant/facts/page.tsx
-  -> imports getFacts from @/lib/assistant/facts-store
-  -> imports getPromptVersions from @/lib/assistant/prompt-versions
-  -> imports FactsEditor (which imports type Fact, FactCategory from @/lib/assistant/facts-store)
-  -> imports PromptVersions (which imports type PromptVersion from @/lib/assistant/prompt-versions)
-  -> imports ReindexButton (which calls /api/assistant/reindex)
-```
-
-**Why it happens:** Developers focus on removing the chat route and assistant logic but forget that the admin panel pages are tightly coupled to the same backend modules. The admin pages are server components that call Firestore directly at render time -- they are not just API consumers.
+The control center layout wraps children in `AdminGuard`, but this only prevents rendering the UI -- it does not prevent direct HTTP requests to server actions or API routes.
 
 **Consequences:**
-- `npm run build` fails with `Module not found` errors
-- The entire site fails to deploy, not just the assistant
-- CI/CD pipeline (Cloud Build) breaks
+- Anyone can call the content creation server action and commit arbitrary MDX to the repository
+- Anyone can trigger brand scraper jobs
+- Anyone can modify or delete content through direct API calls
+- Client-side auth is trivially bypassed by sending requests via `curl`, Postman, or any HTTP client
 
 **Prevention:**
-- **Map ALL imports BEFORE deleting any files.** The complete dependency graph is documented above.
-- Delete admin pages AND their supporting admin components at the same time as the backend code, OR replace them with new admin pages that talk to the FastAPI backend
-- Run `npm run build` after every deletion batch
-- The full list of admin components to delete together: `AssistantAnalytics.tsx`, `TopQuestions.tsx`, `UnansweredQuestions.tsx`, `FactsEditor.tsx`, `PromptVersions.tsx`, `ReindexButton.tsx`
+- **Every server action must verify the Firebase ID token server-side** before performing any write operation:
+  ```typescript
+  import { getAuth } from 'firebase-admin/auth';
 
-**Detection:** `npm run build` failure with `Module not found: Can't resolve '@/lib/assistant/...'`
+  async function verifyAdmin(request: Request): Promise<boolean> {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return false;
+    try {
+      const token = authHeader.split('Bearer ')[1];
+      const decoded = await getAuth().verifyIdToken(token);
+      return decoded.email === ADMIN_EMAIL;
+    } catch {
+      return false;
+    }
+  }
+  ```
+- **For Server Actions specifically:** Extract the ID token from cookies or headers and validate with Firebase Admin SDK
+- The existing `firebase-admin` dependency already supports `verifyIdToken()` -- no new packages needed
+- Consider adding Firebase custom claims (`admin: true`) instead of hardcoding email comparison
 
-**Phase:** Must be addressed in the same phase as backend code removal. Cannot delete selectively.
+**Detection:** Use `curl` to call a server action endpoint without any auth headers. If it succeeds, server-side auth is missing.
 
-**Confidence:** HIGH -- verified by direct codebase analysis. Every import path is documented above.
+**Phase:** Must be implemented for EVERY write-operation server action (content creation, content deletion, job triggering).
+
+**Confidence:** HIGH -- verified by reading `AdminGuard.tsx` (client-side only) and `firebase.ts` (Admin SDK already available). This is a [well-documented security anti-pattern](https://nextjs.org/blog/security-nextjs-server-components-actions).
 
 ---
 
-### Pitfall 4: Client Components Still Fetch Deleted API Routes (Silent Runtime Failures)
+### Pitfall 5: Slug Collision with Existing Content
 
-**What goes wrong:** Six client components make `fetch()` calls to `/api/assistant/*` routes that will no longer exist after backend removal. Unlike build-time import errors, these fail silently at runtime -- no build error, no TypeScript error, just broken functionality for users.
+**What goes wrong:** The admin creates a new building block with slug `setting-up-a-repo`. This slug already exists as `src/content/building-blocks/setting-up-a-repo.mdx`. In a git-commit workflow, the commit overwrites the existing file, destroying the original content. In a filesystem-write workflow, `fs.writeFileSync` silently overwrites.
 
-**Components and their dead routes:**
-
-| Component | Route | What Breaks |
-|-----------|-------|-------------|
-| `ChatInterface.tsx` | `/api/assistant/chat` | Chat completely broken (but addressed by transport rewrite) |
-| `FeedbackButtons.tsx` | `/api/assistant/feedback` | Thumbs up/down silently fail (fire-and-forget catch) |
-| `LeadCaptureFlow.tsx` | `/api/assistant/feedback` | Lead capture form submits but data is lost |
-| `FactsEditor.tsx` | `/api/assistant/facts` | Admin can't add/delete facts |
-| `ReindexButton.tsx` | `/api/assistant/reindex` | Cache clear button does nothing |
-| `PromptVersions.tsx` | `/api/assistant/prompt-versions` | Prompt rollback silently fails |
-
-**Why it happens:** TypeScript and the build process cannot detect dead `fetch()` URLs -- these are runtime string literals, not static imports. The `FeedbackButtons` and `LeadCaptureFlow` components are especially dangerous because they use `try/catch` with empty catch blocks, meaning failures produce zero visible errors.
+**Why it happens:** The editor does not check for existing content before writing. The admin may not remember what slugs are already in use, especially as the content library grows.
 
 **Consequences:**
-- User feedback data is permanently lost (no error shown to user, data goes nowhere)
-- Lead capture data (name, email, timeline, problem) is permanently lost
-- Admin panel appears functional but all mutations silently fail
-- No monitoring alerts because errors are swallowed client-side
+- Existing content permanently overwritten (in git workflow, recoverable from git history but disruptive)
+- No warning to the admin
+- If the overwritten content was significantly different, published links may lead to confusing content
 
 **Prevention:**
-- **Create a checklist of ALL client-side fetch calls** before removing routes (the table above IS that checklist)
-- For each deleted route, either: (a) redirect the fetch to a FastAPI equivalent, (b) create a thin Next.js proxy route, or (c) remove the component
-- **Decision required:** Does the FastAPI backend provide feedback/analytics endpoints? If not, these features are simply gone and the components should be removed or stubbed
+- **Check for existing files before creating:**
+  ```typescript
+  const existingFiles = fs.readdirSync(CONTENT_DIR)
+    .filter(f => f.endsWith('.mdx') && !f.startsWith('_'));
+  const existingSlugs = existingFiles.map(f => f.replace('.mdx', ''));
+  if (existingSlugs.includes(sanitizedSlug)) {
+    return { error: 'A building block with this slug already exists' };
+  }
+  ```
+- **In the git-commit workflow:** Check the GitHub API for existing file at the path before creating
+- **Show existing slugs in the editor UI** so the admin can see what is taken
+- **Separate create vs. edit flows:** If editing existing content, load it first and use the update (not create) path
 
-**Detection:** Test every interactive feature after migration. Click every button. Submit every form. Check Network tab for 404s.
+**Detection:** Try creating content with a slug that matches an existing article. If no warning appears, this pitfall exists.
 
-**Phase:** Must be addressed in the same phase as route deletion. Create a test plan that exercises every client-side fetch.
+**Phase:** Must be implemented in the server action alongside slug sanitization.
 
-**Confidence:** HIGH -- verified by direct codebase grep results.
+**Confidence:** HIGH -- the existing content directory has files that could be collided with.
 
 ---
 
 ## Moderate Pitfalls
 
-Mistakes that cause delays, broken features, or technical debt.
+Mistakes that cause broken features, poor UX, or technical debt.
 
-### Pitfall 5: New Response Schema Fields (Citations, Confidence) Not Rendered
+### Pitfall 6: Live MDX Preview Requires Runtime Compilation (Bundle Size Impact)
 
-**What goes wrong:** The FastAPI backend returns `{response, citations, confidence, conversation_id}` but the current `ChatMessage` component only renders a single `content` string via `MarkdownRenderer`. If you wire up the `response` field to `content` and ignore `citations` and `confidence`, you ship a functionally correct but feature-incomplete integration -- the RAG backend's value proposition (source attribution, confidence scoring) is invisible to users.
+**What goes wrong:** The content editor needs a live preview showing how the MDX will render. But the site currently uses `@next/mdx` which compiles MDX at build time via webpack. There is no runtime MDX compiler in the current bundle. Adding one (`@mdx-js/mdx` `evaluate()` or `next-mdx-remote`) pulls in the entire MDX compiler into the client bundle -- approximately 200-400KB gzipped depending on plugins.
 
-**Why it happens:** The natural first instinct is "make it work" by mapping `response` to `content`. This technically works but wastes the FastAPI backend's most valuable outputs.
-
-**Consequences:**
-- Users cannot verify claims (no citation links)
-- No confidence indicator means users cannot gauge response reliability
-- You build the hardest part (integration) but skip the easiest part (rendering new fields)
-
-**Prevention:**
-- Plan the `ChatMessage` component redesign ALONGSIDE the transport rewrite, not as a separate phase
-- Design the citation and confidence UI before starting implementation
-- Decide: do citations render inline (markdown links) or as a separate section below the response?
-- The custom `ChatTransport` should expose these fields through the message metadata or as custom parts
-
-**Detection:** After integration works, manually check if citations and confidence are visible. If not, this was missed.
-
-**Phase:** Should be addressed in the same phase as the transport rewrite, or immediately after.
-
-**Confidence:** HIGH -- this follows from the FastAPI response schema vs. current component props.
-
----
-
-### Pitfall 6: `src/data/` Files Shared Between Assistant and Non-Assistant Code
-
-**What goes wrong:** The `src/data/` directory contains 9 files. Developers may assume these are all "assistant knowledge base files" and delete them during cleanup. But TWO files are imported by non-assistant code:
-
-| File | Non-Assistant Consumer | What Breaks |
-|------|----------------------|-------------|
-| `src/data/projects.json` | `src/lib/github.ts` (project pages) | Projects page renders empty, project detail pages 404 |
-| `src/data/accomplishments.json` | `src/lib/accomplishments.ts` (accomplishments page) | Accomplishments page renders empty |
-
-The remaining 7 files (`canon.json`, `faq.json`, `contact.json`, `writing.json`, `services.md`, `safety-rules.json`, `approved-responses.json`) are consumed only by assistant code and CAN be safely deleted.
-
-**Why it happens:** All 9 files live in the same directory with no naming convention distinguishing "assistant-only" from "shared" data. A developer doing cleanup sees `src/data/` listed as "assistant knowledge base" and deletes the whole directory.
+**Why it happens:** Developers assume MDX preview "just works" because the site already renders MDX. But the existing rendering happens at build time, not runtime.
 
 **Consequences:**
-- Projects page breaks (core site feature)
-- Accomplishments page breaks (core site feature)
-- Build may succeed (JSON imports are valid) but pages render empty
+- Client bundle size increases significantly (matters for the entire site if not code-split properly)
+- Preview may not match build output exactly (different remark/rehype plugin configurations)
+- Preview crashes on invalid MDX with unhelpful error messages
 
 **Prevention:**
-- **Do NOT delete `src/data/projects.json` or `src/data/accomplishments.json`**
-- Safe to delete: `canon.json`, `faq.json`, `contact.json`, `writing.json`, `services.md`, `safety-rules.json`, `approved-responses.json`
-- Consider moving shared data files to `src/data/site/` to prevent future confusion
+- **Use `@mdx-js/mdx` `compile()` + `evaluate()` on the SERVER** via a server action, returning rendered HTML to the client for preview. This keeps the MDX compiler out of the client bundle entirely.
+- **Code-split aggressively.** If runtime compilation must be client-side, use `next/dynamic` with `{ ssr: false }` to load the compiler only on the editor page, not site-wide.
+- **Match plugin configuration exactly.** The preview server action must use the same `remarkPlugins` and `rehypePlugins` as `next.config.ts` (remark-gfm, rehype-slug, rehype-pretty-code with github-light theme). Mismatched plugins cause "looks different in preview vs. published" bugs.
+- **Wrap preview rendering in an error boundary** to catch MDX compilation errors gracefully instead of crashing the editor.
 
-**Detection:** After cleanup, navigate to the Projects page and Accomplishments page. If they render empty with no errors, data files were incorrectly deleted.
+**Detection:** Check the client bundle size before and after adding the editor. If it increased by more than 50KB, the MDX compiler leaked into the client bundle.
 
-**Phase:** Must be addressed during file cleanup/deletion phase. Use the safe-delete list above.
+**Phase:** Implement alongside the editor form -- preview is a core editor feature.
 
-**Confidence:** HIGH -- verified by codebase grep.
+**Confidence:** HIGH -- verified by reading `next.config.ts` plugin configuration and MDX documentation on [MDX on-demand compilation](https://mdxjs.com/guides/mdx-on-demand/).
 
 ---
 
-### Pitfall 7: Orphaned Dependencies Bloat the Bundle
+### Pitfall 7: Brand Scraper Polling Interval Too Aggressive / Memory Leaks
 
-**What goes wrong:** After removing all assistant backend code, three npm packages become potentially unused:
-- `@ai-sdk/google` -- only used by `src/lib/assistant/gemini.ts` (WILL be orphaned)
-- `ai` -- used by the chat route (server-side `streamText`, `createUIMessageStream`) and `ChatInterface.tsx` (`DefaultChatTransport`)
-- `@ai-sdk/react` -- only used by `ChatInterface.tsx` (`useChat`)
+**What goes wrong:** The brand scraper UI polls the Fastify API for job status. Common mistakes:
+1. **Polling too fast** (every 500ms) creates unnecessary load on the API and may trigger rate limiting
+2. **Not clearing intervals on unmount** causes memory leaks -- the polling continues after the user navigates away, accumulating stale closures
+3. **Not stopping polling when job completes** wastes resources and can cause stale state bugs when a new job starts
 
-**Important distinction:** If you write a custom `ChatTransport` (Pitfall 1, option 1), you still need `@ai-sdk/react` (for `useChat`) and `ai` (for the `ChatTransport` type). Only `@ai-sdk/google` becomes fully orphaned.
+**Specific React pattern that leaks:**
+```typescript
+// BAD: leaks if component unmounts
+useEffect(() => {
+  setInterval(() => fetchJobStatus(jobId), 1000);
+}, [jobId]);
 
-If you drop `useChat` entirely (Pitfall 1, option 3), ALL THREE packages become orphaned.
+// BAD: stale closure - always polls with initial jobId
+useEffect(() => {
+  const id = setInterval(() => fetchJobStatus(jobId), 1000);
+  return () => clearInterval(id);
+}, []); // Missing jobId dependency
+```
 
-**Why it happens:** Developers focus on deleting source files but forget to clean up `package.json`. The packages don't cause build failures -- they just add dead weight.
+**Prevention:**
+- **Use a proper polling hook with cleanup:**
+  ```typescript
+  function usePolling(jobId: string | null, enabled: boolean) {
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+      if (!jobId || !enabled) return;
+
+      let cancelled = false;
+      const poll = async () => {
+        try {
+          const res = await fetch(`/api/brand-scraper/jobs/${jobId}`);
+          const json = await res.json();
+          if (!cancelled) {
+            setData(json);
+            if (json.status === 'completed' || json.status === 'failed') {
+              return; // Stop polling
+            }
+          }
+        } catch (err) {
+          if (!cancelled) console.error(err);
+        }
+        if (!cancelled) {
+          timeoutId = setTimeout(poll, 3000); // 3s interval
+        }
+      };
+
+      let timeoutId = setTimeout(poll, 0);
+      return () => {
+        cancelled = true;
+        clearTimeout(timeoutId);
+      };
+    }, [jobId, enabled]);
+
+    return data;
+  }
+  ```
+- **Use `setTimeout` chains instead of `setInterval`** -- this prevents overlapping requests if one takes longer than the interval
+- **3-5 second polling interval** is appropriate for scraper jobs that take 10-60 seconds
+- **Exponential backoff** for very long jobs: start at 2s, increase to 5s after 30s, 10s after 60s
+
+**Detection:** Navigate away from the scraper page while a job is running, then check the Network tab -- if requests continue, there is a leak. Also check the browser Memory profiler for growing heap.
+
+**Phase:** Must be built correctly from the start -- retrofitting proper cleanup into broken polling code is error-prone.
+
+**Confidence:** HIGH -- well-documented React pattern, verified by [React useEffect cleanup docs](https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development).
+
+---
+
+### Pitfall 8: GCS Signed URL Expiration Breaks Image Display
+
+**What goes wrong:** The brand scraper API returns GCS signed URLs for scraped logos and screenshots with a 1-hour TTL. If the admin views brand data, leaves the tab open for an hour, and then tries to download or interact with the images, all signed URLs have expired and return `403 Forbidden`. The images appear broken with no indication of why.
+
+**Why it happens:** Signed URLs are designed for temporary access. The UI treats them as permanent image sources.
 
 **Consequences:**
-- Larger Docker image (matters for Cloud Run cold start)
-- Potential client bundle bloat
-- Misleading `package.json` suggests AI SDK provider is still in use
+- Broken image placeholders after 1 hour
+- Admin refreshes the page but gets the SAME expired URLs from cached API response
+- No user-facing error message -- just broken images
+- If the admin tries to share a brand report link, the images are broken for the recipient
 
 **Prevention:**
-- After all code changes, manually review which `ai`/`@ai-sdk` packages are still imported
-- Remove `@ai-sdk/google` from dependencies regardless of transport approach
-- Run `npm run build` after removing packages to verify nothing breaks
+- **Display a timestamp showing when URLs expire** so the admin knows to refresh
+- **Auto-refresh signed URLs:** When the component detects an image load error, re-fetch the job data from the API to get fresh signed URLs
+- **Cache job results with TTL in the UI:** Store the fetch timestamp and automatically refetch after 45 minutes (before the 1-hour expiration)
+- **Consider proxying images through a Next.js API route** that fetches from GCS server-side (no signed URL needed if using service account credentials), but this adds load to the Next.js server
+- **For sharing/persistence:** Download images to a permanent location when the admin explicitly "saves" a brand analysis
 
-**Detection:** `grep -r "@ai-sdk/google" src/` returns no results after cleanup.
+**Detection:** View brand data, wait 1+ hours, check if images still load.
 
-**Phase:** Final cleanup phase, after all code changes are complete.
+**Phase:** Should be addressed in the brand scraper UI implementation, not deferred.
 
-**Confidence:** HIGH -- verified by grep of all AI SDK imports.
+**Confidence:** HIGH -- GCS signed URL expiration is [documented behavior](https://cloud.google.com/storage/docs/access-control/signed-urls). The 1-hour TTL is specified in the project context.
 
 ---
 
-### Pitfall 8: `GOOGLE_GENERATIVE_AI_API_KEY` Becomes an Orphaned Secret
+### Pitfall 9: CORS When Loading GCS Signed URL Images in the Browser
 
-**What goes wrong:** The environment variable `GOOGLE_GENERATIVE_AI_API_KEY` is currently set in Cloud Run and `.env.local`. After migration, the Next.js app no longer calls Gemini directly -- the FastAPI backend handles LLM calls. But the env var remains configured, creating:
-- An active API key that nobody monitors for abuse
-- Potential for unexpected charges
-- Confusion about what the Next.js app actually needs
+**What goes wrong:** The brand scraper API returns signed URLs pointing to `storage.googleapis.com`. When the Next.js frontend tries to load these images in `<img>` tags, basic image loading works fine (no CORS for `<img src>`). BUT if the frontend uses `fetch()` to download images, draws them on a `<canvas>` for processing, or applies CSS `filter` operations that require pixel access, CORS will block the request because the GCS bucket does not have CORS configured for the Next.js domain.
 
-**Why it happens:** Environment variables are "set and forget." Nobody reviews them during a code migration.
+**Why it happens:** `<img>` tags are exempt from CORS (they load cross-origin images natively). But any JavaScript-based image access requires CORS headers. Developers test with `<img>` tags, everything works, then add a "download" button using `fetch()` and it fails.
+
+**Consequences:**
+- Image display works but "Download" or "Copy" buttons fail with CORS errors
+- Canvas-based image manipulation (color extraction, thumbnail generation) fails
+- The error message in the console is confusing: the signed URL works in a new tab but fails in JavaScript
 
 **Prevention:**
-- Remove `GOOGLE_GENERATIVE_AI_API_KEY` from Cloud Run environment config after verifying the new integration works
-- Remove from `.env.local` and update `.env.local.example`
-- Add the new env var (e.g., `NEXT_PUBLIC_ASSISTANT_API_URL` or `ASSISTANT_API_URL`) to `.env.local.example` with documentation
-- Consider revoking the old Google AI API key entirely if it is not used elsewhere
+- **For display-only:** Use `<img>` or Next.js `<Image>` tags with signed URLs -- no CORS needed
+- **For download:** Use a Next.js API route that fetches the image server-side and streams it to the client. The server-to-server request has no CORS.
+- **If client-side access is needed:** Configure CORS on the GCS bucket:
+  ```json
+  [
+    {
+      "origin": ["https://your-site.run.app"],
+      "method": ["GET"],
+      "responseHeader": ["Content-Type"],
+      "maxAgeSeconds": 3600
+    }
+  ]
+  ```
+  Apply with: `gsutil cors set cors.json gs://your-bucket`
+- **For the `<Image>` component:** Add the GCS hostname to `images.remotePatterns` in `next.config.ts`
 
-**Detection:** After migration, check `gcloud run services describe [SERVICE]` for lingering env vars.
+**Detection:** Images display fine but any JavaScript-based image operation (fetch, canvas, download) fails with CORS errors.
 
-**Phase:** Final deployment phase, after confirming the new integration works in production.
+**Phase:** Should be addressed when implementing the brand data display cards.
 
-**Confidence:** HIGH -- the env var is documented in `.env.local.example`.
+**Confidence:** HIGH -- standard CORS behavior, verified by [GCS CORS documentation](https://cloud.google.com/storage/docs/cross-origin).
 
 ---
 
-### Pitfall 9: CORS Misconfiguration at the Application Level
+### Pitfall 10: Unsaved Editor Changes Lost on Navigation
 
-**What goes wrong:** Even after solving Pitfall 2 (IAM auth blocking preflight), the FastAPI CORS middleware itself can be misconfigured in subtle ways that cause intermittent or hard-to-debug failures:
+**What goes wrong:** The admin spends 20 minutes writing a building block article in the editor. They accidentally click a navigation link, press the browser back button, or close the tab. All unsaved content is lost instantly with no warning.
 
-1. **Wildcard origin (`*`) with credentials:** If FastAPI sets `Access-Control-Allow-Origin: *` AND the frontend sends `credentials: "include"`, the browser rejects the response. The CORS spec prohibits wildcard origins with credentials.
-2. **Missing allowed headers:** If the frontend sends custom headers (e.g., `X-Conversation-Id`), they must be listed in `Access-Control-Allow-Headers`. Omission causes preflight to fail.
-3. **Missing `Content-Type` in allowed headers:** If the request sends `Content-Type: application/json`, this triggers a preflight. If `Content-Type` is not in `Access-Control-Allow-Headers`, the request fails.
-4. **Caching preflight responses too long:** `Access-Control-Max-Age` set too high means CORS config changes don't take effect until the cache expires. During development, this causes "I fixed it but it's still broken" confusion.
+**Why it happens:** Next.js App Router does not have built-in "unsaved changes" protection. The `beforeunload` event handles tab close/refresh, but client-side navigation via `<Link>` or `router.push()` does not trigger `beforeunload`.
+
+**Consequences:**
+- Complete loss of in-progress content (could be significant for long articles)
+- Admin frustration and distrust of the editor
+- May cause the admin to avoid the editor entirely and revert to manual file editing
 
 **Prevention:**
-- FastAPI CORS middleware should set `allow_origins` to the specific Next.js Cloud Run URL (not `*`)
-- Include `Content-Type` and any custom headers in `allow_headers`
-- Set `Access-Control-Max-Age` to a short value (300 seconds) during development
-- Test CORS with `curl -X OPTIONS -H "Origin: https://your-nextjs-url.run.app" -H "Access-Control-Request-Method: POST" https://your-fastapi-url.run.app/chat -v`
+- **Handle `beforeunload` for tab close/refresh:**
+  ```typescript
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+  ```
+- **Intercept client-side navigation:** Override `router.push` / `router.back` to check for unsaved changes. This is notoriously difficult in the App Router -- see the [community gist](https://gist.github.com/icewind/71d31b2984948271db33784bb0df8393) for a working approach.
+- **Auto-save to localStorage** as a fallback: save editor state to `localStorage` every 30 seconds. On editor mount, check for recovered content and offer to restore it.
+- **"Save Draft" functionality:** Allow saving incomplete content as a draft (either in localStorage or Firestore) before the full commit workflow.
 
-**Phase:** During FastAPI service configuration phase.
+**Detection:** Start editing, type content, then click a navigation link. If no warning appears and content is lost, this pitfall exists.
 
-**Confidence:** HIGH -- standard CORS specification behavior.
+**Phase:** Should be implemented alongside the editor form for a minimum viable experience. Auto-save can be added in a later iteration.
+
+**Confidence:** HIGH -- well-documented Next.js App Router limitation, verified by [community discussions](https://github.com/vercel/next.js/discussions/50700).
+
+---
+
+### Pitfall 11: Large BrandTaxonomy Response Overwhelms the UI
+
+**What goes wrong:** The brand scraper returns a `BrandTaxonomy` object that can contain dozens of colors, multiple font families, many logo variations, and full-page screenshots. If rendered naively in a card gallery, the page becomes a wall of unsorted data that is hard to navigate and slow to render.
+
+**Specific scale concerns:**
+- A brand may have 20+ colors (primary, secondary, accent, background, text, gradient stops)
+- Logo variations: SVG, PNG, favicon, Apple touch icon, Open Graph image -- each in multiple sizes
+- Screenshots may be several MB each
+- Typography data may include system font stacks with 10+ fallback fonts
+
+**Why it happens:** Developers render the API response directly into UI components without data reduction or categorization.
+
+**Consequences:**
+- Slow page rendering (many large images loading simultaneously)
+- Overwhelming UI that does not surface the most important brand elements
+- Browser memory issues if many large screenshots are loaded at once
+
+**Prevention:**
+- **Categorize and summarize on the server** before rendering: group colors by role (primary, secondary, neutral), limit logo display to the 3-4 most important variants
+- **Lazy-load images:** Use `loading="lazy"` on all brand images, or use Intersection Observer to load images only when they scroll into view
+- **Paginate or collapse sections:** Show primary colors by default, put full palette behind an expandable section
+- **Limit screenshot display:** Show thumbnail previews, load full screenshots on click
+- **Set `sizes` and `quality` on Next.js `<Image>` components** to avoid loading full-resolution images
+
+**Detection:** Load a brand with many colors and logos. If the page takes more than 2 seconds to become interactive, or if scrolling is janky, the response is too large for the current rendering approach.
+
+**Phase:** Should be considered during brand card gallery design.
+
+**Confidence:** MEDIUM -- depends on actual BrandTaxonomy response size, which varies by target site.
+
+---
+
+### Pitfall 12: Race Condition in Content File Writes (Git-Commit Workflow)
+
+**What goes wrong:** The admin creates two articles in quick succession. Both trigger GitHub API commits to the same branch. If the second commit starts before the first completes, it may be based on a stale tree SHA, causing the GitHub API to reject it with a `409 Conflict` or silently overwrite the first commit.
+
+**Why it happens:** The GitHub Contents API `PUT /repos/{owner}/{repo}/contents/{path}` requires the current file's SHA for updates, but for new file creation it does not. However, if two commits happen near-simultaneously, the branch HEAD moves between the first commit and the second commit's push, potentially causing a conflict.
+
+**Consequences:**
+- Second article creation fails with an opaque error
+- Or worse: second commit force-pushes and loses the first article
+- Admin sees success for both but only one article actually exists
+
+**Prevention:**
+- **Serialize git operations:** Use a queue (even a simple in-memory lock) to ensure only one git operation happens at a time
+- **Use the GitHub API's `sha` parameter** for all operations and handle 409 Conflict responses with a retry
+- **Show a "publishing" state** that prevents the admin from creating another article while one is in progress
+- **For the MVP:** This is unlikely to be a real problem since there is only one admin user. Add the serialization lock if it becomes an issue.
+
+**Detection:** Rapidly create two articles in succession. If one fails or is lost, this race condition exists.
+
+**Phase:** Can be deferred past MVP since single-admin usage makes this rare.
+
+**Confidence:** MEDIUM -- depends on GitHub API behavior with concurrent commits, which is well-documented but the exact conflict resolution depends on timing.
+
+---
+
+### Pitfall 13: MDX Preview Does Not Match Published Output
+
+**What goes wrong:** The live preview in the editor renders MDX with a basic configuration, but the published site uses specific remark/rehype plugins (remark-gfm, rehype-slug, rehype-pretty-code with github-light theme). The preview shows raw code blocks, missing GFM tables, or unstyled headings, while the published version looks correct. Or vice versa -- preview looks great but the published version is different.
+
+**Why it happens:** The preview compilation uses different (or no) plugins compared to the build-time compilation in `next.config.ts`.
+
+**Specific plugin mismatches to watch for:**
+- `remark-gfm`: Without it, tables, strikethrough, and task lists do not render in preview
+- `rehype-pretty-code`: Without it, code blocks show as plain `<pre>` instead of syntax-highlighted
+- `rehype-slug`: Without it, headings do not get anchor IDs in preview
+- Prose styling: Preview may not have `@tailwindcss/typography` prose classes applied
+
+**Prevention:**
+- **Extract plugin configuration to a shared constant** used by both `next.config.ts` and the preview server action:
+  ```typescript
+  // src/lib/mdx-config.ts
+  export const remarkPlugins = ['remark-gfm'];
+  export const rehypePlugins = [
+    'rehype-slug',
+    ['rehype-pretty-code', { theme: 'github-light' }],
+  ];
+  ```
+- **Wrap preview output in the same prose classes** used by the building blocks page: `prose prose-neutral max-w-none`
+- **Test preview parity** by comparing the preview of an existing article against its published version
+
+**Detection:** Preview an existing article in the editor and compare side-by-side with the published page. Any visual differences indicate a plugin mismatch.
+
+**Phase:** Must be addressed when building the preview feature.
+
+**Confidence:** HIGH -- verified by reading the specific plugin configuration in `next.config.ts` lines 34-42.
 
 ---
 
@@ -277,158 +492,130 @@ If you drop `useChat` entirely (Pitfall 1, option 3), ALL THREE packages become 
 
 Mistakes that cause annoyance but are fixable.
 
-### Pitfall 10: `conversation_id` Format Mismatch
+### Pitfall 14: Build Size Increase from Editor Libraries
 
-**What goes wrong:** The current `useChat` hook generates a client-side `id` (UUID format) used as `conversationId` throughout the frontend (`ChatMessage`, `FeedbackButtons`, `LeadCaptureFlow`). The FastAPI backend returns its own `conversation_id` in the response. If the frontend and backend use different conversation IDs, features that reference conversations (feedback, lead capture, handoff email) will have inconsistent identifiers.
+**What goes wrong:** Adding a rich MDX editor component (like MDXEditor at 851KB gzipped) to the admin pages bloats the client bundle for ALL pages if not properly code-split. Even visitors who never access `/control-center` download editor code.
 
 **Prevention:**
-- Decide: does the frontend send its `id` to FastAPI, or does FastAPI assign the `conversation_id` and the frontend adopts it?
-- If FastAPI assigns: update the custom transport to extract `conversation_id` from the first response and use it for subsequent requests
-- If frontend assigns: send the `useChat` `id` as a parameter to FastAPI
+- **Use `next/dynamic` with `ssr: false`** for editor components -- they are admin-only and do not need SSR
+- **Keep the editor on a dedicated route** (`/control-center/content/new`) that is code-split from the rest of the site
+- **Prefer lighter alternatives:** A plain `<textarea>` with a server-side preview action is much smaller than a rich editor component. For a single-admin personal site, a textarea may be sufficient.
+- **Monitor bundle size:** Run `npm run build` and check `.next/analyze` (if configured) or the build output for page sizes
 
-**Phase:** Part of the transport rewrite design.
+**Detection:** Check the build output for page sizes. If the homepage or other public pages increased in size, editor code leaked into shared chunks.
 
-**Confidence:** MEDIUM -- depends on the FastAPI API contract, which is not fully specified here.
+**Phase:** Design decision during editor implementation.
+
+**Confidence:** HIGH -- standard Next.js code-splitting concern.
 
 ---
 
-### Pitfall 11: `HumanHandoff` Component Broken by Bulk Deletion
+### Pitfall 15: Brand Scraper Job Errors Show Raw API Responses
 
-**What goes wrong:** The `HumanHandoff` component imports `buildMailtoLink` from `@/lib/assistant/handoff`. This module is pure logic (string manipulation to build a `mailto:` URL) with **zero backend dependencies** -- no Firebase, no API calls. If `src/lib/assistant/` is bulk-deleted, this useful, self-contained utility is lost and the build breaks unnecessarily.
+**What goes wrong:** The Fastify brand scraper API returns error responses with internal details (stack traces, internal URLs, database errors). If the frontend renders these directly, the admin sees confusing technical error messages instead of actionable descriptions.
 
 **Prevention:**
-- Move `handoff.ts` to `src/lib/` or `src/lib/utils/` before deleting `src/lib/assistant/`
-- OR preserve `handoff.ts` in place and only delete assistant files that have backend dependencies
-- Update the import in `HumanHandoff.tsx` to match the new path
+- **Map API error codes to user-friendly messages** in the frontend:
+  ```typescript
+  const ERROR_MESSAGES: Record<string, string> = {
+    'INVALID_URL': 'The URL you entered is not valid.',
+    'SCRAPE_TIMEOUT': 'The website took too long to respond. Try again later.',
+    'RATE_LIMITED': 'Too many requests. Please wait a moment.',
+    'UNKNOWN': 'Something went wrong. Please try again.',
+  };
+  ```
+- **Never render raw error response bodies** in the UI
+- **Log the full error to the console** for debugging, show the friendly message to the user
 
-**Detection:** Build failure with `Module not found: Can't resolve '@/lib/assistant/handoff'`
+**Detection:** Trigger a scraper job with an invalid URL or unreachable domain. If the error message contains technical details (stack traces, internal paths), this pitfall exists.
 
-**Phase:** During file cleanup. Simple file move.
+**Phase:** Implement during brand scraper UI error handling.
 
-**Confidence:** HIGH -- verified by reading the module source. It has zero backend dependencies.
+**Confidence:** MEDIUM -- depends on the Fastify API's actual error response format.
 
 ---
 
-### Pitfall 12: `NEXT_PUBLIC_*` Exposure of FastAPI URL
+### Pitfall 16: Control Center Tab/Route State Lost on Refresh
 
-**What goes wrong:** If the FastAPI Cloud Run URL is stored as `NEXT_PUBLIC_ASSISTANT_API_URL`, it is embedded in the client JavaScript bundle and visible to anyone who opens browser DevTools. This is fine if the FastAPI service is designed to be public, but problematic if you intended any obscurity around the backend URL.
+**What goes wrong:** The control center currently has a flat structure (repos and todoist lists on one page). Adding content editor and brand scraper creates a need for tabs or sub-routes. If implemented as client-side tabs (e.g., React state), refreshing the page always returns to the first tab. The URL does not reflect which section the admin is viewing.
 
 **Prevention:**
-- If using a custom transport that calls FastAPI directly from the browser: accept that the URL is public, and ensure FastAPI has proper rate limiting, input validation, and abuse prevention
-- If using a Next.js proxy route: store the URL as a server-only env var (no `NEXT_PUBLIC_` prefix) so the browser never sees it
-- This is a conscious design decision, not a bug -- just make it intentionally
+- **Use Next.js routes instead of client-side tabs:** `/control-center/content`, `/control-center/brands`, `/control-center/repos`. Each section is a proper route with its own URL.
+- **If using tabs within a section:** Sync the active tab to a URL search parameter (`?tab=drafts`) so it survives refresh
+- The existing control center already uses routes for sub-pages (`/control-center/todoist/[projectId]`), so this pattern is established
 
-**Phase:** During environment variable setup.
+**Detection:** Navigate to a specific control center section, refresh the page. If you are returned to the default view instead of the section you were on, route state is not persisted.
 
-**Confidence:** HIGH -- standard Next.js behavior for `NEXT_PUBLIC_` variables.
+**Phase:** Architecture decision when adding new control center sections.
+
+**Confidence:** HIGH -- follows from the existing routing pattern in the codebase.
 
 ---
 
-### Pitfall 13: `chatRequestSchema` in `src/lib/schemas/assistant.ts` Becomes Dead Code
+### Pitfall 17: Mobile Responsiveness for Admin Tools
 
-**What goes wrong:** The Zod schema `chatRequestSchema` was used by the old `/api/assistant/chat` route for request validation. After removing that route, this schema file has no consumers. It is not harmful but creates dead code.
+**What goes wrong:** Admin tools (content editor with live preview, brand data card gallery) are designed for desktop but accessed on mobile. A side-by-side editor+preview layout is unusable on a phone screen. Color swatches and font previews are too small to be useful on mobile.
 
 **Prevention:**
-- Delete `src/lib/schemas/assistant.ts` when removing the chat route
-- Or repurpose it if the custom transport needs client-side validation of the FastAPI response
+- **Stack editor and preview vertically on mobile** (editor above, preview below with a toggle)
+- **Do not block mobile access entirely** -- the admin may want to review content or check brand data on the go
+- **But do not prioritize mobile editor experience** for MVP -- writing long-form MDX on a phone is not a realistic workflow
+- **Brand cards should be responsive** -- they are read-only and should work well at any screen size
 
-**Phase:** During file cleanup.
+**Detection:** View the control center on a phone-width viewport (375px). If content overflows or controls are unreachable, responsive design is missing.
 
-**Confidence:** HIGH -- single consumer verified by grep.
+**Phase:** Can be addressed incrementally -- start with desktop, add responsive breakpoints.
+
+**Confidence:** HIGH -- standard responsive design concern.
 
 ---
 
 ## Phase-Specific Warnings
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Transport/integration rewrite | Pitfall 1 (AI SDK stream format) | Design custom ChatTransport or proxy first |
-| FastAPI service configuration | Pitfall 2 (CORS + IAM), Pitfall 9 (CORS app-level) | Set service to allow unauthenticated, add app-level auth, test with curl |
-| Backend code removal | Pitfall 3 (admin build break) | Map all imports before deleting; delete admin pages simultaneously |
-| Backend code removal | Pitfall 4 (dead fetch URLs) | Checklist of all 6 client-side fetch calls |
-| Backend code removal | Pitfall 6 (shared data files) | Do NOT delete projects.json or accomplishments.json |
-| Backend code removal | Pitfall 11 (handoff.ts) | Move to src/lib/ before bulk delete |
-| UI update | Pitfall 5 (citations/confidence) | Design new ChatMessage layout alongside transport |
-| Environment cleanup | Pitfall 8 (orphaned API key) | Remove GOOGLE_GENERATIVE_AI_API_KEY from Cloud Run |
-| Dependency cleanup | Pitfall 7 (orphaned packages) | Remove @ai-sdk/google after all code changes |
+| Phase Topic | Likely Pitfall | Mitigation | Severity |
+|-------------|---------------|------------|----------|
+| Architecture decision: how content is persisted | Pitfall 1 (ephemeral filesystem) | Choose git-commit or CMS workflow FIRST | CRITICAL |
+| Content editor server action | Pitfall 3 (path traversal), Pitfall 5 (slug collision) | Sanitize slug, check for existing files | CRITICAL |
+| Content editor server action | Pitfall 4 (auth bypass) | Verify Firebase ID token server-side | CRITICAL |
+| MDX validation | Pitfall 2 (invalid MDX breaks build) | Compile before committing, use error boundary | CRITICAL |
+| Live preview | Pitfall 6 (bundle size), Pitfall 13 (plugin mismatch) | Server-side compilation, shared plugin config | MODERATE |
+| Brand scraper polling | Pitfall 7 (memory leaks) | setTimeout chains with cleanup, not setInterval | MODERATE |
+| Brand data display | Pitfall 8 (expired URLs), Pitfall 9 (CORS) | Auto-refresh URLs, configure GCS CORS or proxy | MODERATE |
+| Brand data display | Pitfall 11 (large responses) | Categorize data, lazy-load images | MODERATE |
+| Editor UX | Pitfall 10 (unsaved changes) | beforeunload + localStorage auto-save | MODERATE |
+| Control center navigation | Pitfall 16 (route state) | Use Next.js routes, not client-side tabs | MINOR |
+| Bundle optimization | Pitfall 14 (editor bundle size) | Dynamic imports, code-split editor | MINOR |
+| Error handling | Pitfall 15 (raw errors) | Map API errors to user-friendly messages | MINOR |
 
 ---
 
-## Decision Matrix: Integration Architecture
+## Decision Matrix: Content Persistence Architecture
 
-The biggest upfront decision is how the frontend talks to FastAPI. This decision cascades into every other pitfall.
+This is the most consequential architectural decision for the content editor. Every other editor decision cascades from it.
 
-| Approach | Pitfalls Avoided | Pitfalls Introduced | Recommended? |
-|----------|------------------|---------------------|-------------|
-| **Custom ChatTransport** (browser calls FastAPI directly) | Avoids double-hop latency | Must handle CORS (P2, P9), exposes URL (P12), must convert JSON to stream format (P1) | YES -- cleanest long-term |
-| **Next.js proxy route** (browser calls Next.js, Next.js calls FastAPI) | Avoids CORS entirely (P2, P9), hides FastAPI URL (P12) | Adds latency, keeps some backend code, partially defeats purpose of external backend | Only if CORS is insurmountable |
-| **Drop useChat entirely** (manual fetch + useState) | Full control over response format (P1), no stream format conversion | Loses useChat state management, must reimplement status tracking, error handling, message array management | Only as last resort |
+| Approach | Pros | Cons | Recommended? |
+|----------|------|------|-------------|
+| **Git-commit via GitHub API** | Matches existing workflow; content is version-controlled; triggers rebuild automatically; no new infrastructure | Requires rebuild to publish (minutes, not seconds); admin must wait for deploy; needs MDX validation before commit | **YES -- best fit for this project** |
+| **Firestore/GCS + runtime MDX** | Instant publishing; no rebuild needed; content editable without git | Requires abandoning @next/mdx for runtime compilation; significant architecture change; must replicate all remark/rehype plugins at runtime; content not in git | NO -- too much rearchitecting |
+| **Local-only editor (dev mode)** | Simplest; no security concerns; normal git workflow | Only works locally; cannot edit from any device; not a "control center" feature | MAYBE -- as a v0 stepping stone |
+| **Headless CMS (Contentful, Sanity)** | Built-in editor, preview, publishing workflow; scales well | External dependency; monthly cost; overkill for single-admin personal site; must migrate existing MDX files | NO -- overengineered for use case |
 
-**Recommendation:** Custom `ChatTransport` with unauthenticated Cloud Run service + application-level API key auth on FastAPI.
-
----
-
-## Complete File Deletion Reference
-
-Files that are safe to delete (assistant-only, no non-assistant consumers):
-
-**API routes (5 files):**
-- `src/app/api/assistant/chat/route.ts`
-- `src/app/api/assistant/feedback/route.ts`
-- `src/app/api/assistant/facts/route.ts`
-- `src/app/api/assistant/prompt-versions/route.ts`
-- `src/app/api/assistant/reindex/route.ts`
-
-**Library modules (12 files -- but see warnings):**
-- `src/lib/assistant/gemini.ts` -- safe
-- `src/lib/assistant/knowledge.ts` -- safe
-- `src/lib/assistant/rate-limit.ts` -- safe
-- `src/lib/assistant/safety.ts` -- safe
-- `src/lib/assistant/filters.ts` -- safe
-- `src/lib/assistant/refusals.ts` -- safe
-- `src/lib/assistant/logging.ts` -- safe
-- `src/lib/assistant/analytics.ts` -- safe (but delete admin pages first)
-- `src/lib/assistant/facts-store.ts` -- safe (but delete admin pages first)
-- `src/lib/assistant/prompt-versions.ts` -- safe (but delete admin pages first)
-- `src/lib/assistant/lead-capture.ts` -- safe
-- `src/lib/assistant/prompts.ts` -- safe
-- `src/lib/assistant/handoff.ts` -- MOVE to src/lib/, do NOT delete (see Pitfall 11)
-
-**Admin pages (2 files):**
-- `src/app/control-center/assistant/page.tsx`
-- `src/app/control-center/assistant/facts/page.tsx`
-
-**Admin components (5 files):**
-- `src/components/admin/AssistantAnalytics.tsx`
-- `src/components/admin/TopQuestions.tsx`
-- `src/components/admin/UnansweredQuestions.tsx`
-- `src/components/admin/FactsEditor.tsx`
-- `src/components/admin/ReindexButton.tsx`
-- `src/components/admin/PromptVersions.tsx`
-
-**Schema (1 file):**
-- `src/lib/schemas/assistant.ts`
-
-**Data files (7 of 9 -- see Pitfall 6):**
-- `src/data/canon.json` -- safe to delete
-- `src/data/faq.json` -- safe to delete
-- `src/data/contact.json` -- safe to delete
-- `src/data/writing.json` -- safe to delete
-- `src/data/services.md` -- safe to delete
-- `src/data/safety-rules.json` -- safe to delete
-- `src/data/approved-responses.json` -- safe to delete
-- `src/data/projects.json` -- DO NOT DELETE (used by project pages)
-- `src/data/accomplishments.json` -- DO NOT DELETE (used by accomplishments page)
+**Recommendation:** Git-commit via GitHub API. The site already uses build-time MDX compilation with `@next/mdx`. The editor is a nicer interface for the same workflow: write MDX, commit to repo, deploy. The admin accepts a 2-3 minute delay between "save" and "published" because this is a personal site, not a breaking-news platform.
 
 ---
 
 ## Sources
 
-- [AI SDK UI: Stream Protocol](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) -- HIGH confidence
-- [AI SDK UI: Transport](https://ai-sdk.dev/docs/ai-sdk-ui/transport) -- HIGH confidence
-- [AI SDK UI: useChat Reference](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) -- HIGH confidence
-- [FastAPI + AI SDK v5 streaming issue](https://github.com/vercel/ai/issues/7496) -- HIGH confidence
-- [FastAPI + AI SDK JSON data streaming discussion](https://github.com/vercel/ai/discussions/2840) -- MEDIUM confidence
-- [Cloud Run CORS with authentication issue](https://issuetracker.google.com/issues/361387319) -- HIGH confidence
-- [Cloud Run CORS discussion](https://discuss.google.dev/t/cloud-run-cors-policy/101265) -- MEDIUM confidence
-- Codebase analysis (direct file reads of all 30+ relevant source files) -- HIGH confidence
+- [MDX Troubleshooting](https://mdxjs.com/docs/troubleshooting-mdx/) -- HIGH confidence (official MDX docs)
+- [MDX On-Demand Compilation](https://mdxjs.com/guides/mdx-on-demand/) -- HIGH confidence (official MDX docs)
+- [Next.js Security: Server Components and Actions](https://nextjs.org/blog/security-nextjs-server-components-actions) -- HIGH confidence (official Next.js blog)
+- [Next.js Security Checklist](https://blog.arcjet.com/next-js-security-checklist/) -- MEDIUM confidence (third-party but well-researched)
+- [Cloud Run Ephemeral Filesystem](https://docs.google.com/run/docs/configuring/services/in-memory-volume-mounts) -- HIGH confidence (official GCP docs)
+- [Cloud Run Volume Mounts with Cloud Storage](https://medium.com/google-cloud/step-by-step-guide-to-cloud-run-volume-mounts-with-cloud-storage-137937e15765) -- MEDIUM confidence (community guide)
+- [GCS Signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls) -- HIGH confidence (official GCP docs)
+- [GCS CORS Configuration](https://cloud.google.com/storage/docs/cross-origin) -- HIGH confidence (official GCP docs)
+- [Next.js App Router Unsaved Changes](https://github.com/vercel/next.js/discussions/50700) -- MEDIUM confidence (community discussion)
+- [React useEffect Cleanup](https://react.dev/learn/synchronizing-with-effects) -- HIGH confidence (official React docs)
+- [Next.js Standalone Output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output) -- HIGH confidence (official Next.js docs)
+- [Firebase Admin Auth](https://firebase.google.com/docs/auth/admin/) -- HIGH confidence (official Firebase docs)
+- Codebase analysis: `Dockerfile`, `next.config.ts`, `[slug]/page.tsx`, `tutorials.ts`, `AdminGuard.tsx`, `firebase.ts`, `AuthContext.tsx`, control center pages -- HIGH confidence (direct file reads)
