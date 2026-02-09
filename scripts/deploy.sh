@@ -23,11 +23,8 @@ fi
 PROJECT_ID="${1:?Usage: ./scripts/deploy.sh <GCP_PROJECT_ID> [REGION]}"
 REGION="${2:-us-central1}"
 SERVICE_NAME="personal-brand"
-REPO_NAME="personal-brand"
-IMAGE_NAME="site"
 SA_NAME="cloudrun-site"
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
-IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest"
 
 echo "==> Deploying to project: ${PROJECT_ID}, region: ${REGION}"
 
@@ -43,7 +40,7 @@ gcloud services enable \
 
 # 3. Create Artifact Registry repository (idempotent)
 echo "==> Creating Artifact Registry repository..."
-gcloud artifacts repositories create "${REPO_NAME}" \
+gcloud artifacts repositories create "personal-brand" \
   --repository-format=docker \
   --location="${REGION}" \
   --description="Personal brand site Docker images" \
@@ -65,35 +62,14 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
 
 # 6. Build and push image via Cloud Build
 # NEXT_PUBLIC_* vars must be available at build time (baked into client JS bundle)
-echo "==> Building image with Cloud Build..."
+echo "==> Building and deploying via Cloud Build..."
+SHORT_SHA="$(git rev-parse --short HEAD)"
 gcloud builds submit \
   --config cloudbuild.yaml \
-  --substitutions="_IMAGE_URI=${IMAGE_URI},_NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY:-},_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-},_NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-${PROJECT_ID}}" \
+  --substitutions="SHORT_SHA=${SHORT_SHA},_REGION=${REGION},_NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY:-},_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-},_NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-${PROJECT_ID}},_CHATBOT_API_URL=${CHATBOT_API_URL:-}" \
   --quiet
 
-# 7. Deploy to Cloud Run
-echo "==> Deploying to Cloud Run..."
-gcloud run deploy "${SERVICE_NAME}" \
-  --image "${IMAGE_URI}" \
-  --region "${REGION}" \
-  --service-account "${SA_EMAIL}" \
-  --port 3000 \
-  --memory 512Mi \
-  --cpu 1 \
-  --min-instances 0 \
-  --max-instances 3 \
-  --set-env-vars "FIREBASE_PROJECT_ID=${PROJECT_ID},NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY:-},NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-},NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-${PROJECT_ID}},GITHUB_TOKEN=${GITHUB_TOKEN:-},TODOIST_API_TOKEN=${TODOIST_API_TOKEN:-}" \
-  --allow-unauthenticated
-
-# NOTE: Secret Manager is NOT needed for this deployment.
-# firebase-admin uses Application Default Credentials (ADC) via the
-# Cloud Run service account, which has roles/datastore.user for Firestore.
-# No private keys or secrets need to be stored in Secret Manager.
-# If you need additional secrets in the future, use:
-#   gcloud secrets create MY_SECRET --data-file=-
-#   gcloud run deploy ... --update-secrets=MY_ENV_VAR=MY_SECRET:latest
-
-# 8. Print the service URL
+# 7. Print the service URL
 echo ""
 echo "==> Deployment complete!"
 gcloud run services describe "${SERVICE_NAME}" \
