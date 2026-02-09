@@ -221,7 +221,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             <h2 className="text-xl font-semibold text-text-primary mb-6">
               README
             </h2>
-            <ReadmeRenderer content={readme} />
+            <ReadmeRenderer
+              content={readme}
+              repoSlug={project.repo ?? undefined}
+            />
           </section>
         )}
 
