@@ -34,7 +34,7 @@ See .planning/MILESTONES.md for full history.
 | CC-07 | Control Center navigation to switch between features (repos, todoist, editor, brand scraper) | 17 |
 
 - [x] **Phase 17: Control Center Navigation** - Horizontal nav bar linking all Control Center sections
-- [ ] **Phase 18: Content Editor Infrastructure** - Listing page, Zod schemas, Server Action with filesystem writes, slug validation
+- [x] **Phase 18: Content Editor Infrastructure** - Listing page, Zod schemas, Server Action with filesystem writes, slug validation
 - [ ] **Phase 19: Content Editor UI** - Form-guided editor with metadata fields, markdown textarea, live preview, and fast companion support
 - [ ] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
 - [ ] **Phase 21: Brand Scraper UI** - URL submission form, SWR-based job polling, and brand data results gallery with confidence indicators
@@ -66,8 +66,8 @@ Plans:
   5. Server-side admin auth verification (Firebase ID token) is enforced on the save action -- unauthenticated requests are rejected
 **Plans**: 2 plans
 Plans:
-- [ ] 18-01-PLAN.md -- Zod schemas, shared verifyAdminToken, and saveTutorial Server Action
-- [ ] 18-02-PLAN.md -- Replace content page placeholder with tutorial list table
+- [x] 18-01-PLAN.md -- Zod schemas, shared verifyAdminToken, and saveTutorial Server Action
+- [x] 18-02-PLAN.md -- Replace content page placeholder with tutorial list table
 
 ### Phase 19: Content Editor UI
 **Goal**: Admin can author new Building Blocks tutorials through a form-guided editor with live preview, without manually writing MDX boilerplate
@@ -114,7 +114,7 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 17. Control Center Navigation | v1.4 | 1/1 | Complete | 2026-02-08 |
-| 18. Content Editor Infrastructure | v1.4 | 0/2 | Not started | - |
+| 18. Content Editor Infrastructure | v1.4 | 2/2 | Complete | 2026-02-08 |
 | 19. Content Editor UI | v1.4 | 0/TBD | Not started | - |
 | 20. Brand Scraper API Proxy | v1.4 | 0/TBD | Not started | - |
 | 21. Brand Scraper UI | v1.4 | 0/TBD | Not started | - |
