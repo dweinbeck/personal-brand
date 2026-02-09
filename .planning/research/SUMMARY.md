@@ -1,223 +1,178 @@
 # Project Research Summary
 
-**Project:** dan-weinbeck.com -- Control Center: Content Editor & Brand Scraper (v1.4)
-**Domain:** Admin tooling -- MDX content authoring and async brand analysis dashboard
-**Researched:** 2026-02-08
+**Project:** dan-weinbeck.com -- Billing/Credits System Validation & Deployment (v1.5)
+**Domain:** Stripe billing + Firebase Auth deployment on GCP Cloud Run
+**Researched:** 2026-02-09
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This milestone adds two independent admin tools to the existing Control Center at `/control-center/`: a Building Blocks Content Editor (form-guided MDX authoring with live preview and filesystem writes) and a Brand Scraper UI (URL submission, async job polling, and rich brand data gallery). The research conclusively shows that both features can be built with **one new dependency** (`swr@2.4.0` for polling) by leveraging existing packages (`react-markdown`, `@mdx-js/mdx`, `zod`) and established codebase patterns (Server Actions with `useActionState`, API route proxies, AdminGuard, Firebase auth). No heavy editor libraries, no component frameworks, no query libraries beyond SWR.
+Milestone v1.5 is a **configuration and deployment milestone, not a coding milestone**. The billing/credits system (~3K LOC across 30+ files) is fully implemented but uncommitted. It spans a ledger-based credits system (Firestore transactions, Stripe Checkout, webhook processing, idempotent debit/refund), Firebase Auth (Google Sign-In with `verifyUser()`/`verifyAdmin()` guards), a user-facing billing page, a brand-scraper-with-billing flow, and a full admin panel for user/credit/pricing management. All npm dependencies are already installed and current. No new packages are needed. No new code needs to be written. The work is: commit the code, configure infrastructure, deploy, and validate end-to-end.
 
-The most consequential architecture decision is already settled: **the content editor writes files to the local filesystem in development mode only**. Cloud Run's ephemeral filesystem, combined with the site's build-time MDX compilation via `@next/mdx` and `dynamicParams = false`, makes production filesystem writes fundamentally impossible -- not just impractical. Content authored in the editor is committed to git and deployed through Cloud Build like all other content. This constraint simplifies the entire editor architecture: no GitHub API integration, no Firestore content storage, no runtime MDX compilation. A plain textarea with `react-markdown` preview, backed by a `fs.writeFile()` Server Action gated on `NODE_ENV === "development"`, is the right approach.
+The recommended approach is a strict sequence: (1) validate the code locally (build, lint, test), (2) configure all infrastructure (GCP Secret Manager secrets, IAM bindings, Firebase Auth domains, Firestore indexes, Stripe webhook endpoint, tool pricing seed data), (3) deploy to Cloud Run, and (4) run manual E2E smoke tests across all critical flows (signup, purchase, tool usage, failure refund, admin panel). The infrastructure dependencies form a serial chain -- Firebase Auth must work before Stripe can be tested, Stripe secrets must exist before checkout works, and tool pricing must be seeded before debit works. Skipping or misordering any step results in cryptic runtime failures.
 
-The brand scraper follows the proven chatbot proxy pattern: a Next.js API route proxies requests to the deployed Fastify Cloud Run service, keeping `BRAND_SCRAPER_API_URL` server-side and reusing `verifyAdmin()` for auth. SWR's `refreshInterval` with dynamic control handles the poll-until-complete pattern cleanly. The primary risks are GCS signed URL expiration (images break after 1 hour), polling memory leaks if `useEffect` cleanup is wrong, and rendering performance with large `BrandTaxonomy` responses. All are solvable with standard patterns documented in PITFALLS.md.
+The top risks are all infrastructure configuration errors, not code bugs: deploying Stripe test keys to production (payments appear to work but no money is collected), forgetting to register the Stripe webhook endpoint (users pay but credits are never granted), and missing IAM bindings on the Cloud Run service account for Secret Manager (service crashes on startup). Each of these has been identified with specific verification commands in the research. The existing code already handles the hard parts correctly -- the webhook has dual idempotency, the debit flow has transactional safety with auto-refund, and the admin routes use `verifyAdmin()`. The risk is purely in the deployment plumbing.
 
 ## Key Findings
 
-### Recommended Stack
+### Stack Assessment
 
-See full details: [STACK.md](.planning/research/STACK.md)
+See full details: [STACK.md](STACK.md)
 
-The stack delta is minimal by design. The existing codebase already contains every library needed except one.
+**No new npm dependencies needed.** Every package used by the billing code is already installed: `stripe@20.3.1`, `firebase@12.8.0`, `firebase-admin@13.6.0`, `zod@4.3.6`, `swr@2.4.0`. All are at or near latest versions.
 
-**Core technologies (all existing except SWR):**
-- **`swr@2.4.0`** (NEW): Brand scraper job polling -- built-in `refreshInterval` with dynamic stop, ~4.5 kB gzipped, Vercel ecosystem
-- **`react-markdown@10.1.0`** (existing): Live preview in the content editor -- already proven in the assistant chat
-- **`@mdx-js/mdx@3.1.1`** (existing, transitive): Server-side MDX validation via `evaluate()` before saving
-- **`zod@4.3.6`** (existing): Form validation for content metadata and brand scraper API responses
-- **React 19 `useActionState`** (existing): Form state management for content editor, matching the contact form pattern
+- **GCS signed URLs require no new package:** `firebase-admin@13.6.0` bundles `@google-cloud/storage@7.18.0` as a transitive dependency. The brand scraper service generates signed URLs externally and passes them through -- the Next.js app just renders them as download links. Zero code changes needed.
+- **Stripe CLI is the only new local tool:** Required for webhook testing (`stripe listen --forward-to localhost:3000/api/billing/webhook`). Install with `brew install stripe/stripe-cli/stripe`.
+- **Do not upgrade Vitest to v4 during this milestone.** Major version bump adds risk with no benefit to billing validation.
 
-**What NOT to add (and why):**
-- MDXEditor (851 kB gzip), `@uiw/react-md-editor` (200 kB), CodeMirror, Monaco -- overkill for a single-admin markdown textarea
-- `@tanstack/react-query` -- heavier than SWR, unnecessary for polling one endpoint
-- `react-hook-form` -- 5 flat fields handled by `useActionState`
-- `shadcn/ui` or Radix -- project has its own design system (Button, Card)
-- `next-mdx-remote` -- would introduce a second MDX compilation path; use `react-markdown` for preview instead
+### Feature Landscape
 
-### Expected Features
+See full details: [FEATURES-billing-validation.md](FEATURES-billing-validation.md)
 
-See full details: [FEATURES.md](.planning/research/FEATURES.md)
+**Must have -- code validation (Priority 1):**
+- V-1 through V-3: Build passes, lint passes, all 41 tests pass -- the first gate before anything else
+- D-1 through D-8: All infrastructure prerequisites (Stripe secrets, webhook, Firebase Auth domains, Firestore indexes, security rules, tool pricing seed, service account permissions)
 
-**Content Editor -- must have (table stakes):**
-- TS-1: Metadata form fields (title, description, publishedAt, tags) matching `TutorialMeta`
-- TS-2: Slug auto-generation from title with uniqueness validation against existing files
-- TS-3: Plain textarea with markdown toolbar (heading, bold, code, link quick-insert)
-- TS-4: Edit/Preview tab toggle using `react-markdown` with `remark-gfm` and prose classes
-- TS-5: Save to filesystem via Server Action (`fs.writeFile`, dev-only, assembles `export const metadata` + body)
-- TS-6: Unsaved changes protection (`beforeunload` + dirty state tracking)
+**Must have -- E2E smoke tests (Priority 2):**
+- V-4 through V-9: Manual smoke tests covering signup (100 free credits), Stripe purchase ($5 for 500 credits), tool usage (50 credit debit), failure refund, admin panel, and insufficient-credits UX
 
-**Content Editor -- should have:**
-- D-3: Word count and estimated reading time (trivial, reuses existing `calculateReadingTime()` formula)
-- D-4: Draft support via `_draft-` filename prefix (leverages existing underscore-skip convention in `tutorials.ts`)
+**Must validate -- brand scraper signed URL integration (Priority 3):**
+- S-1 through S-4: GCS signed URL passthrough is already fully wired; just needs end-to-end verification with a real scrape
 
-**Content Editor -- defer to v2+:**
-- D-1: Edit existing tutorials (medium effort, can use manual file editing for now)
-- D-2: Fast companion file support (edge case)
-- AF-1 through AF-6: WYSIWYG editing, image upload, collaboration, revision history, scheduling, SEO analysis
+**Defer to future milestones:**
+- Customer portal, multiple credit packs, balance notifications, user usage history, automated E2E tests, rate limiting, revenue dashboard -- none are needed for launch
 
-**Brand Scraper -- must have (table stakes):**
-- TS-7: URL submission form with validation
-- TS-8: Job status polling with SWR (queued/processing/succeeded/partial/failed states)
-- TS-9: Brand data gallery (color palette, typography, logos, design tokens, identity sections)
-- TS-10: Confidence indicators (three-tier color system using existing `--color-sage`/`--color-amber` tokens)
-- TS-11: Download links for `brand.json` and `assets.zip` via GCS signed URLs
+**Explicitly never build:**
+- Subscriptions, embedded payment form, webhook retry queue, credit expiration, multi-currency, client-side balance caching, Stripe monetary refunds from admin panel
 
-**Brand Scraper -- should have:**
-- D-5: Brand gallery/history in Firestore (transforms tool from single-use to brand reference library)
+### Architecture
 
-**Brand Scraper -- defer to v2+:**
-- D-6: Color contrast matrix (WCAG)
-- D-7: Re-scrape button
-- D-8: Side-by-side brand comparison
-- AF-7 through AF-11: WebSocket streaming, manual data editing, automated monitoring, design tool export, public sharing
+See full details: [ARCHITECTURE-billing-deploy.md](ARCHITECTURE-billing-deploy.md)
 
-### Architecture Approach
+The architecture is fully implemented. No code files need modification. The milestone is 100% infrastructure configuration.
 
-See full details: [ARCHITECTURE.md](.planning/research/ARCHITECTURE.md)
-
-Both features are implemented as **sub-routes** under `/control-center/` (not tabs on the existing page), following the established Todoist sub-route pattern. A new `ControlCenterNav` horizontal nav component is added inside the AdminGuard wrapper in `layout.tsx`. The content editor uses Server Actions for filesystem writes; the brand scraper uses API route proxies. Components are organized into feature subfolders (`components/admin/content-editor/`, `components/admin/brand-scraper/`) to keep the `admin/` directory manageable.
-
-**Major components:**
-1. **Control Center Navigation** -- horizontal nav bar with Dashboard/Content/Brand Scraper links, `usePathname` for active state
-2. **Content Editor** -- `ContentEditorForm` (client) with metadata fields + textarea, `MdxPreview` (client) with `react-markdown`, `saveContent` Server Action with Zod validation + path traversal protection + dev-only guard
-3. **Brand Scraper Proxy** -- API routes at `/api/admin/brand-scraper/` mirroring the chatbot proxy pattern, typed `BrandScraperClient` in `lib/brand-scraper/client.ts`
-4. **Brand Scraper UI** -- `BrandScraperForm` (URL input + SWR polling), `BrandScraperResults` (gallery sections for colors, typography, logos, tokens), `BrandScraperJobStatus` (polling indicator)
-
-**Key architecture decisions:**
-- Content editor pages are RSC wrappers around client form components (matches contact form pattern)
-- Brand scraper uses API routes (not Server Actions) because polling requires `fetch` calls, not form submissions
-- Server-side auth (`verifyAdmin()` / Firebase token verification) is mandatory on every mutation -- AdminGuard is client-side only
-- `react-markdown` for preview (not full MDX compilation) -- 95% accurate, zero API calls, instant rendering
-- State management: `useState` for form/polling state, no Context, no URL params for editor content
+**Seven integration points, all requiring zero code changes:**
+1. **GCP Secret Manager** -- `cloudbuild.yaml` already references `stripe-secret-key:latest` and `stripe-webhook-secret:latest` via `--set-secrets`. The secrets just need to be created and IAM granted.
+2. **Firebase Auth** -- Client SDK config is already baked into Docker images via Cloud Build substitution variables. The custom domain needs to be added to Firebase Console's authorized domains list.
+3. **Stripe Webhook** -- Handler at `/api/billing/webhook` is complete with raw body reading, signature verification, and dual idempotency. The endpoint just needs to be registered in Stripe Dashboard.
+4. **Brand Scraper URL** -- `BRAND_SCRAPER_API_URL` is already wired in `cloudbuild.yaml`. Just needs the actual URL set in the Cloud Build trigger.
+5. **GCS Signed URLs** -- Already flow from Fastify service through API proxy to download buttons. No changes needed.
+6. **Firestore Indexes** -- Three composite indexes required for billing queries. Must be created before admin panel queries will work.
+7. **Checkout URL derivation** -- Uses `request.url` origin, which automatically picks up the custom domain. No changes needed.
 
 ### Critical Pitfalls
 
-See full details: [PITFALLS.md](.planning/research/PITFALLS.md)
+See full details: [PITFALLS.md](PITFALLS.md)
 
-1. **Ephemeral filesystem on Cloud Run (P1)** -- Files written at runtime vanish on restart/redeploy. The standalone Dockerfile does not even include `src/content/` in the production image. MDX is compiled at build time; runtime writes are invisible to `@next/mdx`. The editor MUST gate writes on `NODE_ENV === "development"` and show a clear warning in production.
+1. **Stripe test keys in production (P1)** -- Keys in Secret Manager must start with `sk_live_`, not `sk_test_`. The code works identically with both, so there is no runtime error to catch the mistake. Verify with `gcloud secrets versions access latest --secret=stripe-secret-key | head -c 10`.
 
-2. **Invalid MDX breaks the entire site build (P2)** -- A single syntax error in an MDX file blocks deployment of ALL content. Validate MDX with `@mdx-js/mdx evaluate()` before saving. The form-guided editor eliminates metadata syntax errors; only the body needs validation.
+2. **Webhook endpoint not registered (P2)** -- The webhook is the ONLY mechanism for granting credits after purchase. There is no polling fallback. If the endpoint is not registered in Stripe Dashboard, users pay but credits are never granted. No visible error to the user.
 
-3. **Path traversal in slug input (P3)** -- A slug like `../../lib/firebase` escapes the content directory. Sanitize with `/^[a-z0-9][a-z0-9-]*[a-z0-9]$/` regex AND validate the resolved path stays within `CONTENT_DIR` using `path.resolve()`.
+3. **Cloud Run SA missing Secret Manager IAM (P3)** -- The `setup-cicd.sh` script grants `secretmanager.secretAccessor` to the Cloud Build SA but NOT to the Cloud Run SA. Both need it. Without it, the service either fails to deploy or starts with empty Stripe env vars.
 
-4. **Client-side AdminGuard does not protect server mutations (P4)** -- Every Server Action and API route must verify the Firebase ID token server-side. For Server Actions, pass the token via FormData; for API routes, use the existing `verifyAdmin()` with Bearer header.
+4. **Firebase Auth domain not authorized (P4)** -- `dan-weinbeck.com` must be added to Firebase Console authorized domains. Without it, Google Sign-In fails with `auth/unauthorized-domain`, blocking all billing features.
 
-5. **Polling memory leaks (P7)** -- Use `setTimeout` chains (not `setInterval`) with proper `useEffect` cleanup. SWR handles this correctly with `refreshInterval` set to `0` when job completes. Add a max polling duration (5 minutes) as a safety net.
+5. **Webhook body parsing fragility (P5)** -- The current code correctly reads raw body via `request.text()`. If any future middleware reads the body first, signature verification breaks permanently. Document this constraint and never add body-reading middleware on the webhook path.
 
 ## Implications for Roadmap
 
-Based on the dependency chains, architecture patterns, and pitfall severity, the research suggests 5 phases:
+Based on the strict dependency chain in the infrastructure and the serial nature of the validation flow, the research suggests **4 phases**.
 
-### Phase 1: Control Center Navigation
+### Phase 1: Code Validation & Commit
 
-**Rationale:** Foundation for all subsequent features. Without navigation, new pages are unreachable. Smallest possible scope to establish the routing pattern.
-**Delivers:** `ControlCenterNav` component, modified `layout.tsx`, working links to Dashboard/Content/Brand Scraper (content and scraper pages can be placeholder/empty initially)
-**Addresses:** Pitfall 16 (route state on refresh) by using proper Next.js routes instead of client-side tabs
-**Avoids:** Converting existing `page.tsx` to client component (anti-pattern identified in ARCHITECTURE.md)
-**Estimated scope:** 2 files (1 new component, 1 modified layout)
+**Rationale:** The ~3K LOC billing code has never been build-checked, linted, or committed as a unit. This must happen first because all subsequent phases depend on working code. Local-only, no external dependencies.
+**Delivers:** Clean build, clean lint, 41 passing tests, all billing code committed to master
+**Addresses:** V-1 (build), V-2 (lint), V-3 (tests)
+**Avoids:** Deploying code that does not compile (the most basic failure mode)
+**Key tasks:** `npm run build`, `npm run lint`, `npm run test`, fix any issues, `git add` + `git commit` all billing/auth files
+**Estimated scope:** Small. Fix lint issues (likely unused imports, missing `type` keywords), verify client/server boundaries, commit.
 
-### Phase 2: Content Editor -- Listing + Server Action Scaffolding
+### Phase 2: Infrastructure Configuration
 
-**Rationale:** Read-before-write. Proves the content discovery pipeline works in the admin context before adding mutation logic. Also establishes the Zod schema, Server Action skeleton, and server-side auth pattern that Phase 3 depends on. Getting slug sanitization and path traversal prevention right at this stage avoids security issues later.
-**Delivers:** Content listing page showing existing MDX files, Zod content schema, Server Action with auth verification and dev-only guard (save logic implemented but not yet wired to UI), slug utility with validation
-**Addresses:** TS-2 (slug validation infrastructure), Pitfall 3 (path traversal), Pitfall 4 (server-side auth), Pitfall 5 (slug collision)
-**Uses:** Existing `getAllTutorials()` from `lib/tutorials.ts` for listing
-**Estimated scope:** 5 files (content page, ContentList component, Zod schema, Server Action, slug utility)
+**Rationale:** All infrastructure must be configured before deployment. The dependency chain is: Stripe secrets must exist before webhook can be configured, Firebase Auth must be configured before sign-in works, Firestore indexes must exist before admin queries work, and tool pricing must be seeded before debit works. This is a serial chain of GCP/Firebase/Stripe console operations.
+**Delivers:** Complete infrastructure ready for deployment -- all secrets, IAM bindings, webhook endpoint, Firebase Auth domains, Firestore indexes, and seed data in place
+**Addresses:** D-1 (Stripe secrets), D-2 (webhook registration), D-3 (live vs test keys), D-4 (Firebase Auth domains), D-5 (Firestore indexes), D-6 (Firestore security rules), D-7 (tool pricing seed), D-8 (service account permissions)
+**Avoids:** P1 (test keys in prod), P2 (webhook not registered), P3 (IAM missing), P4 (domain not authorized), P14 (pricing not seeded)
+**Key tasks:** (1) Create Stripe secrets in Secret Manager, (2) Grant IAM to Cloud Run SA, (3) Register Stripe webhook endpoint, (4) Add custom domain to Firebase Auth authorized domains, (5) Create Firestore composite indexes, (6) Seed tool pricing data, (7) Verify Cloud Build trigger substitution variables
+**Estimated scope:** Medium. All manual console/CLI operations, no code changes.
 
-### Phase 3: Content Editor -- Form, Preview, Save
+### Phase 3: Deploy & Smoke Test (Test Mode)
 
-**Rationale:** Most complex feature in the milestone. Depends on Phase 2's schema, action, and listing. Contains the full create/preview/save loop. Bundles all content editor table stakes plus low-effort differentiators.
-**Delivers:** Working content editor with metadata form, markdown textarea with toolbar, Edit/Preview tab toggle via `react-markdown`, save to filesystem, unsaved changes protection, word count, draft support
-**Addresses:** TS-1, TS-3, TS-4, TS-5, TS-6 (all remaining content editor table stakes), D-3, D-4 (low-effort differentiators)
-**Avoids:** Pitfall 2 (MDX validation before save), Pitfall 6 (no MDX compiler in client bundle), Pitfall 10 (unsaved changes via `beforeunload`), Pitfall 13 (preview parity via shared prose classes + `remark-gfm`), Pitfall 14 (bundle size -- textarea, not rich editor)
-**Estimated scope:** 5 files (ContentEditorForm, MdxPreview, new/page.tsx, [slug]/page.tsx for edit, EditorTabs or inline tab toggle)
+**Rationale:** Deploy with Stripe test keys first to validate the full flow end-to-end without real money. Test mode is identical to live mode in behavior -- it uses test cards (`4242 4242 4242 4242`) and test webhooks. This catches all integration issues before any real payment is processed.
+**Delivers:** Working billing system on production Cloud Run, validated with Stripe test payments
+**Addresses:** V-4 (signup flow), V-5 (purchase flow), V-6 (tool usage), V-7 (failure refund), V-8 (admin panel), V-9 (insufficient credits UX), S-1 through S-4 (signed URL integration)
+**Avoids:** P7 (checkout redirect origin mismatch -- test on production domain), P10 (cold start webhook timeout -- monitor delivery), P16 (success page before credits granted -- verify timing)
+**Key tasks:** (1) Deploy via Cloud Build or `scripts/deploy.sh`, (2) Test sign-in on custom domain, (3) Test full purchase flow with test card, (4) Test brand scraper debit/refund, (5) Test admin panel, (6) Verify Firestore documents, (7) Check Stripe Dashboard webhook delivery logs
+**Estimated scope:** Medium. One deployment plus thorough manual testing.
 
-### Phase 4: Brand Scraper -- API Proxy + Types
+### Phase 4: Go Live (Switch to Live Keys)
 
-**Rationale:** Server-side plumbing before UI. Can be tested with curl independently of any frontend code. Mirrors the proven `fastapi-client.ts` pattern exactly. This is the phase where the `BrandTaxonomy` response shape is confirmed against the live API.
-**Delivers:** Working API proxy (POST submit job, GET poll status), typed `BrandScraperClient`, Zod schemas for `BrandTaxonomy` response, `BRAND_SCRAPER_API_URL` env var integration
-**Addresses:** API proxy infrastructure needed by all brand scraper UI features
-**Avoids:** Pitfall 4 (auth on every route via `verifyAdmin()`), Pitfall 15 (error message mapping at proxy layer)
-**Estimated scope:** 4 files (2 API routes, client.ts, types.ts)
-
-### Phase 5: Brand Scraper -- UI + Results Gallery
-
-**Rationale:** UI wired to working API from Phase 4. Polling logic and gallery rendering are the key complexities. SWR is installed at the start of this phase. This is the largest phase by component count but each component is straightforward (display-only with Tailwind).
-**Delivers:** URL submission form, SWR-based job polling with status display, full brand data gallery (colors, typography, logos, tokens, identity sections), confidence badges, download links
-**Addresses:** TS-7, TS-8, TS-9, TS-10, TS-11 (all brand scraper table stakes)
-**Avoids:** Pitfall 7 (polling leaks -- SWR handles cleanup), Pitfall 8 (signed URL expiration -- display timestamp, auto-refresh on image error), Pitfall 9 (CORS -- use `<img>` for display, proxy API route for downloads), Pitfall 11 (large responses -- lazy-load images, collapse secondary sections), Pitfall 17 (mobile responsiveness -- responsive grid for brand cards)
-**Estimated scope:** 7+ files (page, form, job status, results container, color/typography/logo/token sections, confidence badge, download links)
+**Rationale:** After full validation in test mode, switch to live Stripe keys and make a real $5 purchase to verify the complete production flow. This is a small, focused phase -- just swap secret values and redeploy.
+**Delivers:** Live billing system accepting real payments
+**Addresses:** D-3 (live vs test keys verified)
+**Avoids:** P1 (test keys in production -- the entire point of this phase)
+**Key tasks:** (1) Update `stripe-secret-key` to `sk_live_*` in Secret Manager, (2) Create production webhook endpoint in Stripe Dashboard, (3) Update `stripe-webhook-secret` in Secret Manager, (4) Redeploy or restart Cloud Run, (5) Make a real $5 purchase, (6) Verify charge in Stripe live Dashboard, (7) Verify credits granted
+**Estimated scope:** Small. Secret swap, redeploy, one real purchase test.
 
 ### Phase Ordering Rationale
 
-- **Phase 1 first:** Every other phase needs navigation to be reachable in the UI.
-- **Phases 2-3 before 4-5:** Content editor is the more architecturally complex feature (filesystem writes, MDX validation, auth in Server Actions via FormData token). Ship it first to surface issues early. Brand scraper follows proven patterns (API proxy, polling) with lower novelty risk.
-- **Phase 2 before 3:** Read-only listing + schema + auth validation before write operations. This catches path traversal and slug collision bugs before the form exists to trigger them.
-- **Phase 4 before 5:** Server proxy tested independently before client polling is wired up. Matches "plumbing then UI" principle from the chatbot integration.
-- **Content editor (2-3) and brand scraper (4-5) are independent after Phase 1.** They could be parallelized by different developers if needed, though the roadmapper may choose sequential ordering for a solo developer.
+- **Phase 1 first:** Code must compile before it can be deployed. Committing first also enables git-based rollback for subsequent phases.
+- **Phase 2 before 3:** Infrastructure must exist before deployment. A deployment without secrets will crash. A deployment without Firebase Auth domains will block sign-in. A deployment without Firestore indexes will break admin queries.
+- **Phase 3 before 4:** Test mode validation catches integration bugs without financial consequences. Every issue found in test mode would be worse in live mode.
+- **Phase 4 last:** The only change is secret values. This is the smallest phase with the highest consequence, so it comes last when everything else is verified.
 
 ### Research Flags
 
 **Phases likely needing deeper research during planning:**
-- **Phase 3 (Content Editor Form):** The `useActionState` + Firebase token-via-FormData pattern for Server Actions has nuance. The token is passed as a hidden field, verified server-side with `getAuth().verifyIdToken()`. May need a spike to confirm the auth flow works end-to-end before building the full form.
-- **Phase 5 (Brand Scraper UI):** The `BrandTaxonomy` response shape from the Fastify API must be confirmed against the live service before Zod schemas and gallery components are finalized. If the response shape differs from assumptions, gallery components need adjustment. Recommend running a test scrape during Phase 4 and documenting the actual JSON.
+- **Phase 2 (Infrastructure Configuration):** The IAM binding requirements for Cloud Run SA vs Cloud Build SA need careful verification. The `setup-cicd.sh` script does not handle Stripe secrets. A phase research spike should verify the exact `gcloud` commands needed and whether the existing SA already has project-wide `secretmanager.secretAccessor`.
 
 **Phases with standard patterns (skip deep research):**
-- **Phase 1 (Navigation):** Standard Next.js layout + `usePathname` for active state. Fully documented pattern.
-- **Phase 2 (Content Listing):** Reuses existing `getAllTutorials()`. Zod schema is trivial. Straightforward.
-- **Phase 4 (API Proxy):** Carbon copy of the chatbot proxy pattern already working in the codebase at `src/app/api/assistant/chat/route.ts`.
+- **Phase 1 (Code Validation):** Standard `npm run build && npm run lint && npm run test`. Well-understood.
+- **Phase 3 (Deploy & Smoke Test):** Standard Cloud Build deployment + manual testing. The deployment pipeline is already proven for the existing site.
+- **Phase 4 (Go Live):** Secret swap + redeploy. Trivial.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Only 1 new dep (SWR). All other packages already installed and proven in this codebase. Version compatibility verified on npm. |
-| Features | HIGH | Feature landscape derived from direct codebase analysis of existing content system, AdminGuard, and control center patterns. Table stakes/differentiator split is clear. Anti-features well-justified. |
-| Architecture | HIGH | Component structure, route tree, data flow, and auth patterns all mirror established codebase patterns. No novel architecture introduced. Every proposed pattern has a working precedent in the existing code. |
-| Pitfalls | HIGH | 5 critical + 8 moderate + 4 minor pitfalls identified with concrete prevention strategies. Verified against Dockerfile, next.config.ts, AdminGuard source, Cloud Run docs, and GCP documentation. |
+| Stack | HIGH | All dependencies verified via `npm list` and `npm view` on 2026-02-09. No new packages needed. Versions current. |
+| Features | HIGH | Feature landscape derived from direct analysis of all 30+ billing source files. Table stakes are infrastructure config tasks, not code features. Clear priority ordering. |
+| Architecture | HIGH | All 7 integration points verified by reading `cloudbuild.yaml`, `deploy.sh`, and every billing source file. Zero code changes needed -- pure configuration. |
+| Pitfalls | HIGH | 6 critical + 6 moderate + 4 minor pitfalls identified with prevention strategies and detection commands. Key finding: IAM gap in `setup-cicd.sh` confirmed by direct code reading. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-1. **BrandTaxonomy response schema:** The exact JSON shape returned by the Fastify brand scraper API needs to be confirmed against the live service. The Zod schema in Phase 4 should be written from actual API responses, not assumptions. Run a test scrape job during Phase 4 planning and use the real response to define `types.ts`.
+1. **Cloud Build trigger substitution variables:** Whether `_NEXT_PUBLIC_FIREBASE_API_KEY`, `_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `_NEXT_PUBLIC_FIREBASE_PROJECT_ID`, and `_BRAND_SCRAPER_API_URL` are currently populated with real values cannot be verified from the codebase. If any are empty, the corresponding features will fail silently at runtime. Verify in GCP Console during Phase 2.
 
-2. **GCS signed URL TTL:** Assumed 1 hour based on common defaults. Confirm actual TTL from the brand scraper service configuration. This affects whether URL expiration warnings and auto-refresh logic are needed in the UI, or if TTLs are long enough to ignore.
+2. **Brand scraper service-to-service auth:** The brand scraper client uses plain `fetch()` without an Authorization header. If the brand scraper Cloud Run service requires IAM auth (not `--allow-unauthenticated`), a minor code change is needed in `client.ts` to add an ID token header. Determine during Phase 2 based on the brand scraper's deployment configuration.
 
-3. **Content editor "edit existing" flow (D-1):** Deferred from MVP but will be the most requested follow-up. The MDX parsing infrastructure already exists in `tutorials.ts` (`extractMetadataFromSource()`). When prioritized post-MVP, this should be straightforward to add as an enhancement to Phase 3's `[slug]/page.tsx`.
+3. **Signed URL TTL:** Assumed 1 hour based on project context. If the brand scraper uses a shorter TTL, download links could expire before users click them. Confirm during Phase 3 smoke testing. Acceptable risk for MVP either way.
 
-4. **`next.config.ts` `images.remotePatterns`:** If brand scraper results include image URLs from GCS, and the UI uses Next.js `<Image>` components (for optimization), the GCS hostname must be added to `remotePatterns`. Alternatively, use plain `<img>` tags for admin-only brand asset display (simpler, no config change needed). Decision point during Phase 5 implementation.
-
-5. **Server Action auth pattern:** The recommended approach (Firebase ID token passed via FormData, verified with `getAuth().verifyIdToken()`) is sound but differs from the API route pattern (Bearer header). If this proves awkward during Phase 2 implementation, the fallback is to use an API route for the save operation instead of a Server Action, which the ARCHITECTURE researcher documented as Option B.
+4. **Existing SA secret access:** The Cloud Run SA may already have project-wide `secretmanager.secretAccessor` from the existing `github-token` and `todoist-api-token` setup. Verify with `gcloud secrets get-iam-policy stripe-secret-key` during Phase 2 before adding redundant bindings.
 
 ## Sources
 
-### Primary (HIGH confidence)
-- Existing codebase: `Dockerfile`, `next.config.ts`, `src/lib/tutorials.ts`, `src/content/building-blocks/*.mdx`, `src/app/control-center/`, `src/components/admin/AdminGuard.tsx`, `src/lib/auth/admin.ts`, `src/lib/actions/contact.ts`, `src/app/api/assistant/chat/route.ts`, `src/app/building-blocks/[slug]/page.tsx`
-- [MDX packages documentation](https://mdxjs.com/packages/mdx/) -- compile/evaluate API for validation
-- [MDX troubleshooting](https://mdxjs.com/docs/troubleshooting-mdx/) -- common MDX syntax errors that break builds
-- [MDX on-demand compilation](https://mdxjs.com/guides/mdx-on-demand/) -- evaluate() function for runtime validation
-- [SWR API reference](https://swr.vercel.app/docs/api) -- dynamic `refreshInterval` for polling
-- [Cloud Run container contract](https://docs.cloud.google.com/run/docs/container-contract) -- ephemeral filesystem behavior
-- [GCS signed URLs](https://cloud.google.com/storage/docs/access-control/signed-urls) -- expiration behavior
-- [GCS CORS configuration](https://cloud.google.com/storage/docs/cross-origin) -- browser access patterns for signed URLs
-- [Next.js security: Server Components and Actions](https://nextjs.org/blog/security-nextjs-server-components-actions) -- server-side auth requirements
-- [React useEffect cleanup](https://react.dev/learn/synchronizing-with-effects) -- polling cleanup patterns
-- [Firebase Admin Auth](https://firebase.google.com/docs/auth/admin/) -- verifyIdToken for server-side auth
+### Primary (HIGH confidence -- direct codebase analysis)
+- All 30+ billing source files in `src/lib/billing/`, `src/lib/auth/`, `src/app/api/billing/`, `src/app/api/tools/`, `src/app/api/admin/billing/`, `src/components/billing/`, `src/components/tools/`, `src/components/auth/`
+- `cloudbuild.yaml` -- Stripe secrets wiring (line 39), env vars (line 38), min-instances (line 35)
+- `scripts/deploy.sh` -- Service account setup, IAM roles
+- `scripts/setup-cicd.sh` -- Secret Manager IAM bindings (Cloud Build SA only, NOT Cloud Run SA)
+- `firebase.json` -- No index configuration present
+- `firestore.rules` -- Deny-all rules confirmed
+- `.env.local.example` -- All required env vars documented
+- `docs/DEPLOYMENT.md` -- Stripe setup steps documented
+- Package versions verified via `npm list` and `npm view` on 2026-02-09
 
-### Secondary (MEDIUM confidence)
-- [Next.js Security Checklist (Arcjet)](https://blog.arcjet.com/next-js-security-checklist/) -- path traversal prevention patterns
-- [CMS slug patterns (Sanity, DatoCMS)](https://www.sanity.io/answers/best-practice-validation-for-different-types-of-fields-slugs-titles-etc) -- slug validation rules
-- [Next.js App Router unsaved changes](https://github.com/vercel/next.js/discussions/50700) -- community patterns for `beforeunload` in App Router
-- [Brand.dev Styleguide API](https://docs.brand.dev/api-reference/screenshot-styleguide/extract-design-system-and-styleguide-from-website) -- brand data display reference implementation
-- [Confidence Visualization Patterns](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns) -- tiered badge patterns
-- [5 Best Markdown Editors for React (Strapi)](https://strapi.io/blog/top-5-markdown-editors-for-react) -- editor comparison (evaluated, all rejected)
-
-### Tertiary (LOW confidence)
-- BrandTaxonomy response shape -- inferred from project context, needs validation against live Fastify API
-- GCS signed URL TTL -- assumed 1 hour, needs confirmation from brand scraper service config
+### Secondary (MEDIUM confidence -- training data, well-established patterns)
+- Stripe test/live mode key architecture and webhook retry behavior
+- GCP Secret Manager IAM model and Cloud Run `--set-secrets` requirements
+- Firebase Auth authorized domain configuration
+- GCS signed URL expiry behavior
+- Firestore composite index requirements and transaction retry behavior
+- Cloud Run cold start behavior with `min-instances=0`
 
 ---
-*Research completed: 2026-02-08*
+*Research completed: 2026-02-09*
 *Ready for roadmap: yes*
