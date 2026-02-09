@@ -155,16 +155,16 @@ gcloud run services update-traffic dan-weinbeck-site \
 Create the Stripe secrets in GCP Secret Manager:
 
 ```bash
-# Create secrets
-echo -n "sk_live_..." | gcloud secrets create stripe-secret-key --data-file=-
+# Create secrets (use sk_test_ / whsec_ for test mode, sk_live_ for production)
+echo -n "sk_test_..." | gcloud secrets create stripe-secret-key --data-file=-
 echo -n "whsec_..." | gcloud secrets create stripe-webhook-secret --data-file=-
 
-# Grant Cloud Build access
+# Grant Cloud Run service account access to read secrets at runtime
 gcloud secrets add-iam-policy-binding stripe-secret-key \
-  --member="serviceAccount:PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+  --member="serviceAccount:cloudrun-site@PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding stripe-webhook-secret \
-  --member="serviceAccount:PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+  --member="serviceAccount:cloudrun-site@PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 
@@ -175,6 +175,40 @@ gcloud secrets add-iam-policy-binding stripe-webhook-secret \
 3. Set URL to: `https://your-domain.com/api/billing/webhook`
 4. Select events: `checkout.session.completed`
 5. Copy the signing secret to `stripe-webhook-secret` in Secret Manager
+
+---
+
+## Firestore Setup
+
+### Deploy Indexes
+
+Composite indexes are defined in `firestore.indexes.json`. Deploy them to your Firebase project:
+
+```bash
+firebase deploy --only firestore:indexes --project=PROJECT_ID
+```
+
+This creates the indexes required by billing queries (`billing_tool_usage` and `billing_purchases` collections). Index creation may take a few minutes.
+
+### Deploy Rules
+
+Security rules are defined in `firestore.rules`. Deploy them:
+
+```bash
+firebase deploy --only firestore:rules --project=PROJECT_ID
+```
+
+The current rules deny all client-side access (`allow read, write: if false`). All Firestore operations go through the Admin SDK on the server.
+
+### Seed Tool Pricing
+
+Seed the `billing_tool_pricing` collection with default pricing data:
+
+```bash
+npx tsx scripts/seed-billing.ts
+```
+
+This is safe to run multiple times -- it only creates documents that don't already exist.
 
 ---
 
