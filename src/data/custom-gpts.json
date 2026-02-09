@@ -1,0 +1,30 @@
+[
+  {
+    "slug": "code-review-assistant",
+    "name": "Code Review Assistant",
+    "description": "Analyzes pull requests and code snippets for best practices, potential bugs, and performance improvements. Provides actionable feedback with clear explanations.",
+    "url": "https://chat.openai.com/g/g-PLACEHOLDER-code-review-assistant",
+    "tags": ["Code Review", "Developer Tools"]
+  },
+  {
+    "slug": "data-storyteller",
+    "name": "Data Storyteller",
+    "description": "Transforms raw data insights into compelling narratives for stakeholders. Helps craft data-driven presentations, reports, and executive summaries.",
+    "url": "https://chat.openai.com/g/g-PLACEHOLDER-data-storyteller",
+    "tags": ["Data", "Communication"]
+  },
+  {
+    "slug": "sql-query-builder",
+    "name": "SQL Query Builder",
+    "description": "Generates optimized SQL queries from natural language descriptions. Supports PostgreSQL, MySQL, and BigQuery dialects with query explanation.",
+    "url": "https://chat.openai.com/g/g-PLACEHOLDER-sql-query-builder",
+    "tags": ["SQL", "Databases"]
+  },
+  {
+    "slug": "career-coach",
+    "name": "Career Coach",
+    "description": "Provides personalized career guidance for analytics and tech professionals. Helps with resume reviews, interview preparation, and career transition strategies.",
+    "url": "https://chat.openai.com/g/g-PLACEHOLDER-career-coach",
+    "tags": ["Career", "Productivity"]
+  }
+]
