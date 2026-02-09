@@ -36,7 +36,7 @@ See .planning/MILESTONES.md for full history.
 - [x] **Phase 17: Control Center Navigation** - Horizontal nav bar linking all Control Center sections
 - [x] **Phase 18: Content Editor Infrastructure** - Listing page, Zod schemas, Server Action with filesystem writes, slug validation
 - [x] **Phase 19: Content Editor UI** - Form-guided editor with metadata fields, markdown textarea, live preview, and fast companion support
-- [ ] **Phase 19.1: Custom GPTs Page** - Public page with card grid linking to OpenAI Custom GPTs, reusing existing card/grid patterns (INSERTED)
+- [x] **Phase 19.1: Custom GPTs Page** - Public page with card grid linking to OpenAI Custom GPTs, reusing existing card/grid patterns (INSERTED)
 - [ ] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
 - [ ] **Phase 21: Brand Scraper UI** - URL submission form, SWR-based job polling, and brand data results gallery with confidence indicators
 
@@ -98,7 +98,7 @@ Plans:
   7. Build, lint, and type checks pass with no regressions
 **Plans**: 1 plan
 Plans:
-- [ ] 19.1-01-PLAN.md -- Data file, typed loader, page component, and navigation entry
+- [x] 19.1-01-PLAN.md -- Data file, typed loader, page component, and navigation entry
 
 ### Phase 20: Brand Scraper API Proxy
 **Goal**: The Next.js server can submit scrape jobs and poll results from the deployed Brand Scraper Fastify service, with typed responses and admin auth
@@ -140,6 +140,6 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | 17. Control Center Navigation | v1.4 | 1/1 | Complete | 2026-02-08 |
 | 18. Content Editor Infrastructure | v1.4 | 2/2 | Complete | 2026-02-08 |
 | 19. Content Editor UI | v1.4 | 1/1 | Complete | 2026-02-09 |
-| 19.1 Custom GPTs Page | v1.4 | 0/1 | Not started | - |
+| 19.1 Custom GPTs Page | v1.4 | 1/1 | Complete | 2026-02-08 |
 | 20. Brand Scraper API Proxy | v1.4 | 0/1 | Not started | - |
 | 21. Brand Scraper UI | v1.4 | 0/2 | Not started | - |
