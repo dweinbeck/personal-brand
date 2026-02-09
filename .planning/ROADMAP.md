@@ -50,7 +50,9 @@ See .planning/MILESTONES.md for full history.
   2. The nav bar highlights the currently active section based on the URL path
   3. Navigating to `/control-center/content` and `/control-center/brand-scraper` renders placeholder pages without errors
   4. The existing Dashboard page (`/control-center/`) continues to work with repos and Todoist content unchanged
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 17-01-PLAN.md -- ControlCenterNav component, layout wiring, and placeholder pages
 
 ### Phase 18: Content Editor Infrastructure
 **Goal**: The server-side plumbing for content authoring is complete -- MDX files can be listed, validated, and written to the filesystem
@@ -108,7 +110,7 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 17. Control Center Navigation | v1.4 | 0/TBD | Not started | - |
+| 17. Control Center Navigation | v1.4 | 0/1 | Planned | - |
 | 18. Content Editor Infrastructure | v1.4 | 0/TBD | Not started | - |
 | 19. Content Editor UI | v1.4 | 0/TBD | Not started | - |
 | 20. Brand Scraper API Proxy | v1.4 | 0/TBD | Not started | - |
