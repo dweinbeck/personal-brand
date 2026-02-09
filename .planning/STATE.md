@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 
 ## Current Position
 
-Phase: 18 of 21 (Content Editor Infrastructure)
-Plan: 2 of 2 (complete)
-Status: Phase 18 complete
-Last activity: 2026-02-09 -- Completed 18-01-PLAN.md
+Phase: 19 of 21 (Content Editor UI)
+Plan: 1 of 1 (complete)
+Status: Phase 19 complete
+Last activity: 2026-02-09 -- Completed 19-01-PLAN.md
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-18 complete
-[████████░░░░░░░░░░░░] 2/5 v1.4 phases
+Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-19 complete
+[████████████░░░░░░░░] 3/5 v1.4 phases
 
 ## Performance Metrics
 
@@ -46,6 +46,7 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-18 complete
 **v1.4 Velocity:**
 - Phase 17: 1 plan completed (~3 min)
 - Phase 18: 2 plans completed (4 min, ~1 min)
+- Phase 19: 1 plan completed (~4 min)
 
 ## Accumulated Context
 
@@ -61,6 +62,9 @@ Recent decisions affecting v1.4:
 - verifyAdminToken added alongside (not replacing) verifyAdmin for Server Action auth
 - Environment gate as first check in saveTutorial (fail fast before async work)
 - JSON.stringify for all MDX metadata values (safe serialization of special characters)
+- Single TutorialEditor component (all form state co-located for simplicity)
+- Fast companion files written body-only (no metadata block, matching existing convention)
+- Auto-slug from title with manual override support
 
 ### Pending Todos
 
@@ -82,9 +86,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 18-01-PLAN.md (Content Editor Infrastructure)
+Stopped at: Completed 19-01-PLAN.md (Content Editor UI)
 Resume file: None
 
 ## Next Step
 
-Plan Phase 19: Content Editor Form UI.
+Plan Phase 20: Brand Scraper UI.
