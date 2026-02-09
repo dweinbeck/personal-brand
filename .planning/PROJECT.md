@@ -43,18 +43,18 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Remove old assistant server code (API route, safety pipeline, knowledge base, rate limiting, logging, admin panel) — v1.3
 - ✓ Render citations from RAG responses in chat UI with confidence badges — v1.3
 - ✓ Clean up dead code and unused dependencies from old assistant — v1.3
+- ✓ Building Blocks content editor with form-guided inputs and live preview tab — v1.4
+- ✓ Editor writes MDX files directly to filesystem (matching published output format) — v1.4
+- ✓ Optional fast companion content support in editor — v1.4
+- ✓ Brand Scraper URL collector (submits to deployed Cloud Run API) — v1.4
+- ✓ Brand Scraper results gallery — 2-wide cards showing colors, fonts, logos, assets with confidence — v1.4
+- ✓ Brand Scraper component cleanly separated for potential reuse — v1.4
+- ✓ Control Center navigation to switch between features (repos, todoist, editor, brand scraper) — v1.4
+- ✓ Custom GPTs public page with responsive card grid — v1.4
 
 ### Active
 
-#### v1.4 — Control Center: Content Editor & Brand Scraper
-
-- [ ] Building Blocks content editor with form-guided inputs and live preview tab
-- [ ] Editor writes MDX files directly to filesystem (matching published output format)
-- [ ] Optional fast companion content support in editor
-- [ ] Brand Scraper URL collector (submits to deployed Cloud Run API)
-- [ ] Brand Scraper results gallery — 2-wide cards showing colors, fonts, logos, assets with confidence
-- [ ] Brand Scraper component cleanly separated for potential reuse
-- [ ] Control Center navigation to switch between features (repos, todoist, editor, brand scraper)
+None — all milestones through v1.4 shipped.
 
 ### Deferred
 
@@ -75,21 +75,16 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - RSS feed — defer until writing content exists
 - Dynamic per-page OG images — single branded image sufficient
 
-## Current Milestone: v1.4 Control Center — Content Editor & Brand Scraper
+## Current Milestone: None (all shipped)
 
-**Goal:** Expand the Control Center with two new admin tools: a form-guided Building Blocks content editor with live preview that writes MDX directly to the filesystem, and a Brand Scraper frontend that submits URLs to the deployed Cloud Run API and displays extracted brand data (colors, fonts, logos, assets) in a card gallery.
-
-**Target features:**
-- Building Blocks Editor (form-guided metadata + markdown body, live preview tab, MDX output)
-- Brand Scraper UI (URL collector + results gallery with confidence indicators)
-- Control Center navigation (tab/sidebar to switch between existing and new features)
+**Latest milestone:** v1.4 Control Center — Content Editor & Brand Scraper (shipped 2026-02-09)
 
 ## Current State
 
-**Shipped:** v1.3 on 2026-02-08
+**Shipped:** v1.4 on 2026-02-09
 **Live at:** https://dan-weinbeck.com
 
-Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, and production deployment on GCP Cloud Run.
+Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, and production deployment on GCP Cloud Run.
 
 ## Context
 
@@ -135,10 +130,10 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | Proxy to FastAPI (not direct CORS) | Cloud Run IAM incompatible with browser preflight; proxy eliminates CORS entirely | ✓ Good — simpler than original CORS plan |
 | Remove all old assistant server code | Clean break, FastAPI backend replaces everything | ✓ Good — 32 files, ~875 lines removed |
 | Control center deferred to future milestone | v1 is public-facing site; personal tools come later | ✓ Good — building in v1.4 |
-| Direct filesystem MDX writes for editor | Simple, git-native; rebuild required to publish — acceptable for single-user admin tool | — Pending |
-| Proxy brand-scraper API through Next.js route | Same pattern as chatbot proxy; keeps API URL server-side, avoids CORS | — Pending |
-| AdminGuard for Control Center auth | Existing pattern sufficient for personal admin tools; no new auth system needed | — Pending |
-| Brand Scraper as cleanly separated component | Well-organized code with clear boundaries, but no special packaging — extractable later if needed | — Pending |
+| Direct filesystem MDX writes for editor | Simple, git-native; rebuild required to publish — acceptable for single-user admin tool | ✓ Good |
+| Proxy brand-scraper API through Next.js route | Same pattern as chatbot proxy; keeps API URL server-side, avoids CORS | ✓ Good |
+| AdminGuard for Control Center auth | Existing pattern sufficient for personal admin tools; no new auth system needed | ✓ Good |
+| Brand Scraper as cleanly separated component | Well-organized code with clear boundaries, but no special packaging — extractable later if needed | ✓ Good |
 
 ---
-*Last updated: 2026-02-08 after v1.4 milestone started*
+*Last updated: 2026-02-09 after v1.4 milestone shipped*
