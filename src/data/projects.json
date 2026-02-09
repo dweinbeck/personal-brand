@@ -9,10 +9,19 @@
     "tags": ["Next.js", "TypeScript", "Firebase", "GCP"]
   },
   {
+    "slug": "brand-scraper",
+    "repo": "dweinbeck/brand-scraper",
+    "featured": true,
+    "status": "Live",
+    "name": "Brand Scraper",
+    "description": "A web scraper that automatically grabs the most important brand style components and images from any website a user specifies.",
+    "tags": ["TypeScript", "Web Scraping"]
+  },
+  {
     "slug": "chicago-bus-text-multiplier",
     "repo": "dweinbeck/chicago-bus-text-multiplier",
     "featured": true,
-    "status": "Live",
+    "status": "Planning",
     "name": "Chicago Bus Text-Multiplier",
     "description": "Stop relying on inaccurate bus arrival times. Integrates with the CTA API and Twilio to provide real-time multi-stop comparisons via SMS, using the only source that's consistently accurate \u2014 texting the bus stop number.",
     "tags": ["Twilio", "Python", "CTA API"]
@@ -21,7 +30,7 @@
     "slug": "envelope-budget-app",
     "repo": null,
     "featured": true,
-    "status": "In Development",
+    "status": "Planning",
     "name": "Dave Ramsey Digital Envelope App",
     "description": "A full-featured budget management app implementing the popular envelope method for personal finance. Users can allocate funds across custom categories, track real-time spending, and manage month-to-month rollovers.",
     "tags": ["React Native", "Firebase", "Fintech"]
@@ -30,7 +39,7 @@
     "slug": "60-second-lesson",
     "repo": null,
     "featured": true,
-    "status": "In Development",
+    "status": "Planning",
     "name": "60-Second Lesson",
     "description": "A micro-learning platform that delivers bite-sized lessons in under a minute. Each lesson is AI-generated based on trending topics and user interests, with spaced repetition to reinforce retention.",
     "tags": ["Next.js", "AI", "Education"]
