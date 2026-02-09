@@ -37,7 +37,7 @@ See .planning/MILESTONES.md for full history.
 - [x] **Phase 18: Content Editor Infrastructure** - Listing page, Zod schemas, Server Action with filesystem writes, slug validation
 - [x] **Phase 19: Content Editor UI** - Form-guided editor with metadata fields, markdown textarea, live preview, and fast companion support
 - [x] **Phase 19.1: Custom GPTs Page** - Public page with card grid linking to OpenAI Custom GPTs, reusing existing card/grid patterns (INSERTED)
-- [ ] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
+- [x] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
 - [ ] **Phase 21: Brand Scraper UI** - URL submission form, SWR-based job polling, and brand data results gallery with confidence indicators
 
 ## Phase Details
@@ -112,7 +112,7 @@ Plans:
   5. Zod schemas validate API responses and surface clear errors when the external service returns unexpected data
 **Plans**: 1 plan
 Plans:
-- [ ] 20-01-PLAN.md -- Typed HTTP client, Zod schemas, and two admin-authenticated API route proxies
+- [x] 20-01-PLAN.md -- Typed HTTP client, Zod schemas, and two admin-authenticated API route proxies
 
 ### Phase 21: Brand Scraper UI
 **Goal**: Admin can submit a URL, watch the scrape job progress, and browse the extracted brand data in a visual gallery
@@ -141,5 +141,5 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | 18. Content Editor Infrastructure | v1.4 | 2/2 | Complete | 2026-02-08 |
 | 19. Content Editor UI | v1.4 | 1/1 | Complete | 2026-02-09 |
 | 19.1 Custom GPTs Page | v1.4 | 1/1 | Complete | 2026-02-08 |
-| 20. Brand Scraper API Proxy | v1.4 | 0/1 | Not started | - |
+| 20. Brand Scraper API Proxy | v1.4 | 1/1 | Complete | 2026-02-09 |
 | 21. Brand Scraper UI | v1.4 | 0/2 | Not started | - |
