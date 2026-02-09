@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 
 ## Current Position
 
-Phase: 19.1 of 21 (Custom GPTs Page)
-Plan: 1 of 1
-Status: Complete (verified)
-Last activity: 2026-02-08 -- Executed Phase 19.1 (1 plan, 1 wave, verified)
+Phase: 20 of 21 (Brand Scraper API Proxy)
+Plan: 1 of 2
+Status: In progress
+Last activity: 2026-02-08 -- Completed 20-01-PLAN.md (API proxy routes + typed client)
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-19.1 complete, 20-21 planned
-[████████████░░░░░░░░] 4/6 v1.4 phases
+Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-20 in progress, 21 planned
+[██████████████░░░░░░] 5/6 v1.4 phases
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-19.1 complete, 20-2
 - Phase 18: 2 plans completed (4 min, ~1 min)
 - Phase 19: 1 plan completed (~4 min)
 - Phase 19.1: 1 plan completed (~2 min)
+- Phase 20: 1 plan completed (~3 min)
 
 ## Accumulated Context
 
@@ -68,6 +69,10 @@ Recent decisions affecting v1.4:
 - Auto-slug from title with manual override support
 - Inter font for GPT card titles (not Playfair Display -- short names render better in sans-serif)
 - All GPT tags inline without color coding (simpler than TutorialCard topic badges)
+- z.string() for job status (not z.enum) -- exact Fastify status values unconfirmed
+- .passthrough() on jobStatusSchema -- tolerate unexpected extra fields from Fastify
+- 30s timeout for submit, 10s for poll -- accounts for Cloud Run cold starts
+- Error body extraction on non-200 responses -- improvement over chatbot client pattern
 
 ### Pending Todos
 
@@ -93,9 +98,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 19.1-01-PLAN.md (Custom GPTs Page)
+Stopped at: Completed 20-01-PLAN.md (Brand Scraper API Proxy)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 20: `/gsd:execute-phase 20`
+Continue Phase 20: `/gsd:execute-phase 20` (plan 02 remaining)
