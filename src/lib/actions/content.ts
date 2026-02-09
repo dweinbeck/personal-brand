@@ -86,6 +86,22 @@ export async function saveTutorial(
     return { success: false, error: "Failed to write tutorial file." };
   }
 
+  // 6b. Write fast companion if provided
+  if (parsed.data.fastBody) {
+    const fastPath = path.resolve(CONTENT_DIR, `_${parsed.data.slug}-fast.mdx`);
+    if (!fastPath.startsWith(CONTENT_DIR + path.sep)) {
+      return { success: false, error: "Invalid slug." };
+    }
+    try {
+      await writeFile(fastPath, parsed.data.fastBody, "utf-8");
+    } catch {
+      return {
+        success: false,
+        error: "Failed to write fast companion file.",
+      };
+    }
+  }
+
   // 7. Return success
   return { success: true, slug: parsed.data.slug };
 }

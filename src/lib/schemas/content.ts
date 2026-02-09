@@ -36,6 +36,7 @@ export const saveTutorialSchema = z.object({
   slug: tutorialSlugSchema,
   metadata: tutorialMetaSchema,
   body: z.string().min(1, "Content body is required"),
+  fastBody: z.string().min(1, "Fast companion body is required").optional(),
 });
 
 export type SaveTutorialData = z.infer<typeof saveTutorialSchema>;
