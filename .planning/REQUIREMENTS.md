@@ -9,10 +9,10 @@ Requirements for Billing & Credits System — validate, configure, deploy.
 
 ### Code Validation
 
-- [ ] **VAL-01**: Billing code passes `npm run build` with zero TypeScript errors
-- [ ] **VAL-02**: Billing code passes `npm run lint` with zero Biome errors
-- [ ] **VAL-03**: Billing tests pass via `npm test` (all 26 existing test cases)
-- [ ] **VAL-04**: All billing code committed to master (~3K LOC across 30+ files)
+- [x] **VAL-01**: Billing code passes `npm run build` with zero TypeScript errors
+- [x] **VAL-02**: Billing code passes `npm run lint` with zero Biome errors
+- [x] **VAL-03**: Billing tests pass via `npm test` (all 26 existing test cases)
+- [x] **VAL-04**: All billing code committed to master (~3K LOC across 30+ files)
 
 ### Infrastructure — Stripe
 
@@ -102,10 +102,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VAL-01 | Phase 22 | Pending |
-| VAL-02 | Phase 22 | Pending |
-| VAL-03 | Phase 22 | Pending |
-| VAL-04 | Phase 22 | Pending |
+| VAL-01 | Phase 22 | Complete |
+| VAL-02 | Phase 22 | Complete |
+| VAL-03 | Phase 22 | Complete |
+| VAL-04 | Phase 22 | Complete |
 | INFRA-01 | Phase 23 | Pending |
 | INFRA-02 | Phase 23 | Pending |
 | INFRA-03 | Phase 23 | Pending |

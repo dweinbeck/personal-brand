@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 22 — Code Validation & Commit (v1.5 Billing & Credits System)
+**Current focus:** Phase 23 — Infrastructure Configuration (v1.5 Billing & Credits System)
 
 ## Current Position
 
