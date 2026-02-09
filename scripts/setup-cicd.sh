@@ -36,9 +36,6 @@ if [[ -f "$ENV_FILE" ]]; then
   source "$ENV_FILE"
 
   # Create secrets (or update if they exist)
-  echo "${GOOGLE_GENERATIVE_AI_API_KEY:-}" | gcloud secrets create google-ai-api-key --data-file=- 2>/dev/null \
-    || echo "${GOOGLE_GENERATIVE_AI_API_KEY:-}" | gcloud secrets versions add google-ai-api-key --data-file=-
-
   echo "${GITHUB_TOKEN:-}" | gcloud secrets create github-token --data-file=- 2>/dev/null \
     || echo "${GITHUB_TOKEN:-}" | gcloud secrets versions add github-token --data-file=-
 
@@ -48,7 +45,6 @@ if [[ -f "$ENV_FILE" ]]; then
   echo "    Secrets created/updated from .env.local"
 else
   echo "    ⚠️  .env.local not found. Create secrets manually:"
-  echo "    gcloud secrets create google-ai-api-key --data-file=-"
   echo "    gcloud secrets create github-token --data-file=-"
   echo "    gcloud secrets create todoist-api-token --data-file=-"
 fi
@@ -59,7 +55,7 @@ echo "==> Granting Cloud Build access to secrets..."
 PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
 CB_SA="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 
-for SECRET in google-ai-api-key github-token todoist-api-token; do
+for SECRET in github-token todoist-api-token; do
   gcloud secrets add-iam-policy-binding "${SECRET}" \
     --member="serviceAccount:${CB_SA}" \
     --role="roles/secretmanager.secretAccessor" \
