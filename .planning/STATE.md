@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 Phase: 16 of 16 (Dependency and Environment Cleanup)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-02-08 -- Completed 16-01-PLAN.md
+Last activity: 2026-02-08 -- Completed quick task 002: Fix broken documentation links on project pages
 
 Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [████████████████████] 100%
 
