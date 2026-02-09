@@ -33,7 +33,7 @@ See .planning/MILESTONES.md for full history.
 | CC-06 | Brand Scraper component cleanly separated for potential reuse | 20 |
 | CC-07 | Control Center navigation to switch between features (repos, todoist, editor, brand scraper) | 17 |
 
-- [ ] **Phase 17: Control Center Navigation** - Horizontal nav bar linking all Control Center sections
+- [x] **Phase 17: Control Center Navigation** - Horizontal nav bar linking all Control Center sections
 - [ ] **Phase 18: Content Editor Infrastructure** - Listing page, Zod schemas, Server Action with filesystem writes, slug validation
 - [ ] **Phase 19: Content Editor UI** - Form-guided editor with metadata fields, markdown textarea, live preview, and fast companion support
 - [ ] **Phase 20: Brand Scraper API Proxy** - Next.js API routes proxying to deployed Fastify service with typed client and Zod schemas
@@ -52,7 +52,7 @@ See .planning/MILESTONES.md for full history.
   4. The existing Dashboard page (`/control-center/`) continues to work with repos and Todoist content unchanged
 **Plans**: 1 plan
 Plans:
-- [ ] 17-01-PLAN.md -- ControlCenterNav component, layout wiring, and placeholder pages
+- [x] 17-01-PLAN.md -- ControlCenterNav component, layout wiring, and placeholder pages
 
 ### Phase 18: Content Editor Infrastructure
 **Goal**: The server-side plumbing for content authoring is complete -- MDX files can be listed, validated, and written to the filesystem
@@ -110,7 +110,7 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 17. Control Center Navigation | v1.4 | 0/1 | Planned | - |
+| 17. Control Center Navigation | v1.4 | 1/1 | Complete | 2026-02-08 |
 | 18. Content Editor Infrastructure | v1.4 | 0/TBD | Not started | - |
 | 19. Content Editor UI | v1.4 | 0/TBD | Not started | - |
 | 20. Brand Scraper API Proxy | v1.4 | 0/TBD | Not started | - |
