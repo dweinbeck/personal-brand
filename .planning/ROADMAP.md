@@ -43,12 +43,12 @@ Archived roadmaps:
 **Success Criteria** (what must be TRUE):
   1. `npm run build` completes with zero TypeScript errors across all billing files
   2. `npm run lint` completes with zero Biome errors across all billing files
-  3. `npm test` passes all 41 existing test cases
+  3. `npm test` passes all 26 existing test cases
   4. All ~3K LOC of billing, auth, and tool integration code is committed to master in a single coherent commit
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 22-01: TBD
+- [ ] 22-01-PLAN.md -- Fix gitignore, correct planning docs, run quality gates, and commit all billing code to master
 
 ### Phase 23: Infrastructure Configuration
 **Goal**: All external services (GCP Secret Manager, Stripe, Firebase Auth, Firestore) are configured and ready to receive a deployment
@@ -99,7 +99,7 @@ Phases execute in numeric order: 22 → 23 → 24 → 25
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 22. Code Validation & Commit | v1.5 | 0/? | Not started | - |
+| 22. Code Validation & Commit | v1.5 | 0/1 | Planned | - |
 | 23. Infrastructure Configuration | v1.5 | 0/? | Not started | - |
 | 24. Deploy & Smoke Test | v1.5 | 0/? | Not started | - |
 | 25. Go Live | v1.5 | 0/? | Not started | - |
