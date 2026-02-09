@@ -9,7 +9,7 @@
 - [x] **ASST-02**: Next.js API route proxies to FastAPI server-to-server (no CORS, no browser-to-backend direct connection)
 - [x] **ASST-03**: Remove old assistant server code (API route internals, safety pipeline, knowledge base, rate limiting, logging, admin routes/pages/components)
 - [x] **ASST-04**: Chat UI renders citations from RAG responses with collapsible source list, GitHub permalink URLs, and confidence badge
-- [ ] **ASST-05**: Clean up dead code and unused dependencies from old assistant (remove @ai-sdk/google, orphaned env vars, 7 assistant-only data files)
+- [x] **ASST-05**: Clean up dead code and unused dependencies from old assistant (remove @ai-sdk/google, orphaned env vars, 7 assistant-only data files)
 
 ## Future Requirements (Deferred)
 
@@ -46,4 +46,4 @@
 | ASST-02 | Phase 13 | Complete |
 | ASST-04 | Phase 14 | Complete |
 | ASST-03 | Phase 15 | Complete |
-| ASST-05 | Phase 16 | Pending |
+| ASST-05 | Phase 16 | Complete |
