@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 
 ## Current Position
 
-Phase: 15 of 16 (Dead Code Removal)
-Plan: 2 of 2 in current phase
+Phase: 16 of 16 (Dependency and Environment Cleanup)
+Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-02-08 — Completed quick task 001: Fix FRD link and lint errors
+Last activity: 2026-02-08 -- Completed 16-01-PLAN.md
 
-Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [████████████████] 90%
+Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [████████████████████] 100%
 
 ## Performance Metrics
 
@@ -38,7 +38,8 @@ Progress: v1.0 + v1.1 + v1.2 SHIPPED | v1.3 [███████████�
 - Phase 13: 2 plans completed (2 min, 8 min) across 2 waves
 - Phase 14: 2 plans completed (2 min, 12 min) across 2 waves
 - Phase 15: 2 plans completed (3 min, 2 min)
-- Requirements delivered: 4/5 (ASST-01, ASST-02, ASST-04, ASST-05)
+- Phase 16: 1 plan completed (5 min)
+- Requirements delivered: 5/5 (ASST-01, ASST-02, ASST-04, ASST-05, cleanup)
 
 ## Accumulated Context
 
@@ -51,13 +52,15 @@ Recent decisions affecting current work:
 - v1.3: Zero new npm dependencies -- existing ai@6.0.71 + zod provide all needed primitives
 - v1.3: FastAPI response schema verified and implemented: answer (string), citations (source/relevance), confidence (low/medium/high enum)
 - v1.3: safeParse for external API validation; FastApiError maps to HTTP status codes (503 network, 502 invalid shape)
-- v1.3: UIMessageStream requires text-start → text-delta → text-end lifecycle (AI SDK v5 protocol)
+- v1.3: UIMessageStream requires text-start -> text-delta -> text-end lifecycle (AI SDK v5 protocol)
 - v1.3: Citations temporarily appended as markdown; structured UI in Phase 14
 - v1.3: Route handler now writes structured source-url chunks + messageMetadata confidence (Phase 14 Plan 01)
 - v1.3: useChat<UIMessage<ChatMetadata>> generic needed for type-safe metadata (messageMetadataSchema alone does not infer types)
 - v1.3: ChatMessage now accepts parts[] + metadata instead of content string (Phase 14 Plan 02)
 - v1.3: handoff.ts moved to src/lib/utils/ before assistant/ directory cleanup (Phase 15 Plan 01)
 - v1.3: Dead code removal complete -- 875 lines removed across 20 files (Phase 15 Plan 02)
+- v1.3: @ai-sdk/google uninstalled; retained ai + @ai-sdk/react for FastAPI proxy (Phase 16 Plan 01)
+- v1.3: CHATBOT_API_URL passed as plain env var (not secret) -- it is a URL, not a credential (Phase 16 Plan 01)
 
 ### Pending Todos
 
@@ -67,7 +70,7 @@ None.
 
 - GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
 - FastAPI RAG backend returns generic "I don't know" for all questions -- backend knowledge base needs populating (chatbot-assistant repo concern)
-- ~~Pre-existing lint errors~~ RESOLVED: Quick task 001 fixed all 58 Biome lint errors (0 remaining)
+- User must configure _CHATBOT_API_URL in Cloud Build trigger before deploying (see 16-USER-SETUP.md)
 
 ### Quick Tasks Completed
 
@@ -78,9 +81,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed quick/001-PLAN.md (lint cleanup before deployment)
+Stopped at: Completed 16-01-PLAN.md (final phase of v1.3)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 16 (Deployment) -- the final phase of v1.3 milestone.
+v1.3 milestone is complete. All code, config, and documentation reflect the FastAPI proxy architecture. Ready for production deployment after user configures _CHATBOT_API_URL in Cloud Build trigger.

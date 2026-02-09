@@ -1,6 +1,6 @@
 # Milestone v1.3: Assistant Backend Integration
 
-**Status:** In progress
+**Status:** Complete
 **Phases:** 13-16
 **Total Plans:** TBD
 
@@ -13,7 +13,7 @@ Replace the internal Gemini-powered assistant backend with an external FastAPI R
 - [x] **Phase 13: Proxy Integration** - Rewrite API route to proxy FastAPI, end-to-end chat working
 - [x] **Phase 14: Citation and Confidence UI** - Render RAG citations and confidence in chat messages
 - [x] **Phase 15: Dead Code Removal** - Delete old assistant backend, admin panel, and data files
-- [ ] **Phase 16: Dependency and Environment Cleanup** - Remove orphaned packages and env vars
+- [x] **Phase 16: Dependency and Environment Cleanup** - Remove orphaned packages and env vars
 
 ## Phase Details
 
@@ -90,7 +90,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 16-01-PLAN.md -- Uninstall @ai-sdk/google, update CI/CD config, update documentation
+- [x] 16-01-PLAN.md -- Uninstall @ai-sdk/google, update CI/CD config, update documentation
 
 ---
 
@@ -101,4 +101,4 @@ Plans:
 | 13. Proxy Integration | 2/2 | Complete | 2026-02-08 |
 | 14. Citation and Confidence UI | 2/2 | Complete | 2026-02-08 |
 | 15. Dead Code Removal | 2/2 | Complete | 2026-02-08 |
-| 16. Dependency and Environment Cleanup | 0/1 | Not started | - |
+| 16. Dependency and Environment Cleanup | 1/1 | Complete | 2026-02-08 |
