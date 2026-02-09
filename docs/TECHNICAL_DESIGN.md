@@ -26,8 +26,8 @@ Next.js 16 application using App Router with React Server Components. Hybrid ren
 │ - Feedback API│            └─────────────────┘
 │ - Facts CRUD  │
 └───────┬───────┘            ┌─────────────────┐
-        │                    │ Gemini 2.0 Flash │
-        ▼                    │ (Google AI)      │
+        │                    │ FastAPI RAG      │
+        ▼                    │ Backend          │
 ┌───────────────┐            └─────────────────┘
 │ Firestore     │
 │ - Contact msgs│            ┌─────────────────┐
@@ -58,7 +58,7 @@ src/app/
 ├── assistant/
 │   └── page.tsx            # AI chat interface (ChatInterface client component)
 ├── api/assistant/
-│   ├── chat/route.ts       # Streaming chat API (Gemini 2.0 Flash)
+│   ├── chat/route.ts       # Streaming chat API (FastAPI RAG proxy)
 │   ├── feedback/route.ts   # Feedback collection endpoint
 │   ├── facts/route.ts      # Facts CRUD endpoint (admin)
 │   ├── reindex/route.ts    # Knowledge cache clear endpoint
@@ -137,23 +137,16 @@ src/components/
 
 1. `ChatInterface` (client component) uses `useChat` from `@ai-sdk/react` with `DefaultChatTransport` pointing to `/api/assistant/chat`
 2. User sends message via `sendMessage({ text })` — transport POSTs UI messages to route handler
-3. Route handler validates with Zod, checks rate limit (10 msg/15min per IP), runs safety pipeline
-4. Safety pipeline: sanitizes input (zero-width chars, HTML, encoding tricks), checks blocklist patterns and sensitive topics
-5. If blocked: returns pre-approved refusal via `createUIMessageStream` without calling Gemini
-6. If safe: builds system prompt from knowledge base (`src/data/` JSON/MD files), streams via `streamText()` with Gemini 2.0 Flash
-7. Response streamed back via `toUIMessageStreamResponse()` — client renders incrementally
-8. Conversation logged to Firestore `assistant_conversations` collection (fire-and-forget)
-9. Feedback buttons (thumbs up/down) POST to `/api/assistant/feedback`
-10. Admin dashboard at `/control-center/assistant` queries Firestore for analytics
-11. Facts editor at `/control-center/assistant/facts` provides CRUD for Firestore-based fact overrides
+3. Route handler validates with Zod, checks rate limit (10 msg/15min per IP), proxies to FastAPI RAG backend
+4. FastAPI backend performs RAG retrieval, LLM generation, and returns structured JSON (answer, citations, confidence)
+5. Route handler translates FastAPI response into UIMessageStream chunks (text, source-url, messageMetadata)
+6. Client receives stream via useChat hook and renders message with citations and confidence badge
+7. Conversation logged to Firestore `assistant_conversations` collection (fire-and-forget)
+8. Feedback buttons (thumbs up/down) POST to `/api/assistant/feedback`
+9. Admin dashboard at `/control-center/assistant` queries Firestore for analytics
+10. Facts editor at `/control-center/assistant/facts` provides CRUD for Firestore-based fact overrides
 
-**Knowledge Base (RAG approach):** Curated JSON/MD files in `src/data/` (~3K tokens total) loaded into the system prompt. No vector DB needed — fits entirely in context window. File-based data with optional Firestore overrides via admin editor.
-
-**System Prompt Layers:**
-1. Identity & behavior rules (~500 tokens) — tone, format, response structure
-2. Canonical facts from `src/data/` (~2000 tokens) — bio, projects, services, FAQ
-3. Site content index (~500 tokens) — page summaries with URLs for citations
-4. Safety guardrails (~300 tokens) — immutable rules, content boundaries, manipulation defense
+**Knowledge Base:** Managed by the external FastAPI RAG backend. The old `src/data/` files have been removed. The FastAPI service handles document retrieval, LLM generation, and returns structured responses with citations and confidence scores.
 
 ### Home Page Projects
 
@@ -311,7 +304,7 @@ Streaming chat API for the AI assistant.
 
 **Rate Limit:** 10 requests per 15 minutes per IP (429 with Retry-After header)
 
-**Safety:** Input sanitized and checked against blocklist before reaching Gemini
+**Safety:** Input validated and rate-limited before proxying to FastAPI backend
 
 ### `POST /api/assistant/feedback`
 
@@ -349,8 +342,8 @@ Rolls back to a previous prompt version. Input: `{ action: "rollback", versionId
 - **GitHub API:** ISR serves stale cache if API is unreachable; no client-side error state needed
 - **Navigation:** Active link uses exact match for `/` and `startsWith` for other routes
 - **AI Assistant rate limit:** In-memory Map tracking IP + timestamps; returns 429 with Retry-After header
-- **AI Assistant safety:** Multi-layer pipeline (sanitize → detect → refuse) before Gemini call; blocked queries return pre-approved static refusals
-- **AI Assistant streaming:** Error during Gemini streaming displays generic error in chat UI
+- **AI Assistant safety:** Input validation and rate limiting before proxying to FastAPI RAG backend
+- **AI Assistant streaming:** Error during FastAPI proxy displays generic error in chat UI
 - **AI conversation logging:** Fire-and-forget Firestore writes; failures logged to console only
 - **AI knowledge cache:** In-memory cache of parsed data files; cleared via admin reindex endpoint
 
@@ -379,15 +372,14 @@ Rolls back to a previous prompt version. Input: `{ action: "rollback", versionId
 - **Caching:** ISR with 5-minute revalidation
 - **Usage:** Admin-only Control Center
 
-### Google AI (Gemini)
+### FastAPI RAG Backend
 
-- **SDK:** `ai` + `@ai-sdk/google` (Vercel AI SDK)
-- **Model:** `gemini-2.0-flash` ($0.10/$0.40 per 1M tokens)
-- **Auth:** `GOOGLE_GENERATIVE_AI_API_KEY` env var
-- **Streaming:** `streamText()` → `toUIMessageStreamResponse()`
+- **Service:** External FastAPI RAG backend on Cloud Run
+- **Connection:** HTTP proxy via CHATBOT_API_URL env var
+- **Auth:** Cloud Run IAM (service-to-service)
+- **Response:** JSON with answer, citations (source + relevance), confidence (low/medium/high)
 - **Client:** `useChat()` from `@ai-sdk/react` with `DefaultChatTransport`
-- **Max output:** 1024 tokens per response
-- **Temperature:** 0.7
+- **Stream:** Route handler translates FastAPI JSON into UIMessageStream chunks
 
 ### MDX / Content
 
@@ -431,8 +423,8 @@ Rolls back to a previous prompt version. Input: `{ action: "rollback", versionId
 | 30 | Analytics stubs via console.log `trackEvent` | No analytics provider until event volume justifies it; stubs capture intent and integration points |
 | 31 | Client-side inline validation alongside server Zod validation | Immediate UX feedback on blur; server validation is authoritative; no duplication of schema |
 | 32 | Noscript fallback for contact form | Email-only fallback ensures contact is always possible without JS |
-| 33 | Gemini 2.0 Flash for AI assistant | GCP ecosystem, cheapest capable model ($0.10/$0.40 per 1M tokens) |
-| 34 | Vercel AI SDK (`ai` + `@ai-sdk/google` + `@ai-sdk/react`) | Cloud-agnostic, `streamText()` + `useChat()` pairing |
+| 33 | FastAPI RAG backend for AI assistant | Centralized RAG pipeline, backend-managed LLM, citation support |
+| 34 | `ai` + `@ai-sdk/react` (proxy to FastAPI) | UIMessageStream for streaming, useChat for client, FastAPI handles LLM |
 | 35 | Curated JSON/MD knowledge base over vector DB | ~3K tokens fits in system prompt; deterministic, cheap, reliable |
 | 36 | Route Handler over Server Action for chat API | Streaming requires persistent HTTP connection |
 | 37 | In-memory rate limit for chat (same pattern as contact) | Proven pattern, acceptable for personal site traffic |

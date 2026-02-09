@@ -226,8 +226,8 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 ### AI Assistant (Chat Engine)
 | ID | Requirement | Status |
 |----|-------------|--------|
-| ASST-02 | Streaming API route at /api/assistant/chat using Gemini 2.0 Flash | Complete |
-| ASST-03 | Curated knowledge base from src/data/ (canon, projects, FAQ, services, contact, writing) | Complete |
+| ASST-02 | Streaming API route at /api/assistant/chat proxying to FastAPI RAG backend | Complete |
+| ASST-03 | Knowledge base managed by external FastAPI RAG backend (old src/data/ files removed) | Complete |
 | ASST-04 | Rate limiting: 10 messages per 15 minutes per IP | Complete |
 | ASST-05 | Zod request validation with 1000-char input limit and 20-turn cap | Complete |
 | ASST-06 | System prompt with identity, canonical facts, site index, and safety layers | Complete |
@@ -251,7 +251,7 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 | ASST-16 | Input sanitization (zero-width chars, HTML tags, encoding tricks) | Complete |
 | ASST-17 | Pattern detection for prompt injection attempts | Complete |
 | ASST-18 | Pre-approved refusal messages for sensitive topics (salary, politics, private repos) | Complete |
-| ASST-19 | Safety pipeline runs before Gemini — blocked queries never reach API | Complete |
+| ASST-19 | Input validation and rate limiting before proxying to FastAPI backend | Complete |
 | ASST-20 | Configurable blocklist patterns in safety-rules.json | Complete |
 
 ### AI Assistant (Observability)

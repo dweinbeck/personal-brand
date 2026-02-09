@@ -24,7 +24,7 @@ These are used by API routes at runtime:
 
 | Variable | Description |
 |----------|-------------|
-| `GOOGLE_API_KEY` | Gemini API key for AI assistant |
+| `CHATBOT_API_URL` | URL for the external FastAPI RAG backend |
 | `GITHUB_TOKEN` | GitHub personal access token (for repo data) |
 | `TODOIST_API_TOKEN` | Todoist API token (for admin dashboard) |
 
@@ -67,7 +67,7 @@ docker build \
 
 # Run locally
 docker run -p 3000:3000 \
-  -e GOOGLE_API_KEY=your-gemini-key \
+  -e CHATBOT_API_URL=https://your-fastapi-service-url.run.app \
   -e GITHUB_TOKEN=your-github-token \
   dan-weinbeck-site
 ```
@@ -95,7 +95,7 @@ Configure these in Cloud Build trigger settings:
 
 Runtime environment variables are set in Cloud Run service settings (not in cloudbuild.yaml):
 
-- `GOOGLE_API_KEY`
+- `CHATBOT_API_URL`
 - `GITHUB_TOKEN`
 - `TODOIST_API_TOKEN`
 
@@ -150,6 +150,6 @@ gcloud run services update-traffic dan-weinbeck-site \
 | Issue | Solution |
 |-------|----------|
 | Build fails on Firebase credentials | Check `FIREBASE_PRIVATE_KEY` escaping—`\n` must be literal |
-| AI assistant not responding | Verify `GOOGLE_API_KEY` is set in Cloud Run env |
+| AI assistant not responding | Verify `CHATBOT_API_URL` is set in Cloud Run env and the FastAPI service is reachable |
 | GitHub data stale | ISR revalidates hourly; force refresh via redeploy |
 | Auth not working | Check Firebase Auth domain in console matches env var |
