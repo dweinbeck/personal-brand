@@ -33,12 +33,5 @@
     "description": "Direct Dan's Agent Builds",
     "url": "https://chatgpt.com/g/g-6966480200648191ae60710d06e8b48e-dan-s-ai-development-assistant",
     "tags": ["AI Agents", "Development"]
-  },
-  {
-    "slug": "financial-coach",
-    "name": "Financial Coach",
-    "description": "Make Better Financial Decisions in 2026",
-    "url": "https://chatgpt.com/g/g-695131aff94481918a3b1d412d02c766-financial-coach",
-    "tags": ["Finance", "Personal"]
   }
 ]
