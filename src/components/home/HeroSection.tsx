@@ -9,18 +9,12 @@ const taglines = [
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden pt-16 md:pt-24 pb-8 motion-safe:animate-fade-in-up">
-      {/* Radial gradient treatment — soft navy + gold color pools */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_35%,rgba(10,55,90,0.10),transparent_45%),radial-gradient(circle_at_75%_25%,rgba(200,160,80,0.08),transparent_40%)] -z-10" />
-      {/* Noise/grain overlay — breaks up digital smoothness */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] bg-repeat -z-10" />
-
+    <section className="relative pt-16 md:pt-24 pb-8 motion-safe:animate-fade-in-up">
+      <div className="absolute top-0 bottom-0 -left-10 -right-10 md:-left-20 md:-right-20 bg-gradient-to-b from-[rgba(200,165,90,0.04)] to-transparent rounded-b-3xl -z-10" />
       <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
         {/* Headshot */}
-        <div className="relative flex-shrink-0">
-          {/* Dot pattern behind portrait */}
-          <div className="absolute -inset-6 bg-[radial-gradient(circle,rgba(200,165,90,0.18)_1px,transparent_1px)] bg-[size:12px_12px] rounded-full opacity-60" />
-          <div className="relative w-[256px] h-[256px] rounded-full overflow-hidden ring-4 ring-gold/30 shadow-xl shadow-[rgba(0,0,0,0.3)]">
+        <div className="flex-shrink-0">
+          <div className="w-[256px] h-[256px] rounded-full overflow-hidden ring-4 ring-gold/30 shadow-xl shadow-[rgba(27,42,74,0.10)]">
             <Image
               src="/transparent-headshot-Dan Weinbeck-color.jpg"
               alt="Dan Weinbeck"
@@ -34,20 +28,20 @@ export function HeroSection() {
 
         {/* Text content */}
         <div className="text-center md:text-left">
-          <h1 className="font-display text-[3rem] md:text-[4.5rem] font-semibold tracking-tight leading-[1.05] text-white border-b border-gold pb-2 inline-block">
+          <h1 className="font-display text-[3rem] md:text-[4.5rem] font-semibold tracking-tight leading-[1.05] text-primary border-b border-primary pb-2 inline-block">
             Dan Weinbeck
           </h1>
           <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
             {taglines.map((tag) => (
               <span
                 key={tag}
-                className="px-4 py-1.5 text-sm font-medium rounded-full bg-white/10 text-gold border border-gold/40"
+                className="px-4 py-1.5 text-sm font-medium rounded-full bg-gold-light text-text-primary border border-primary"
               >
                 {tag}
               </span>
             ))}
           </div>
-          <p className="mt-4 text-base font-bold text-white/90">
+          <p className="mt-4 text-base font-bold text-text-primary">
             Director, Data &amp; Analytics at{" "}
             <a
               href="https://transparent.partners"
@@ -59,7 +53,7 @@ export function HeroSection() {
             </a>{" "}
             | Chicago, Illinois
           </p>
-          <p className="mt-1 text-base font-bold text-white/90">
+          <p className="mt-1 text-base font-bold text-text-primary">
             MBA, Tippie School of Management at the{" "}
             <a
               href="https://tippie.uiowa.edu/iowa-mba"
@@ -70,7 +64,7 @@ export function HeroSection() {
               University of Iowa
             </a>
           </p>
-          <p className="mt-3 max-w-lg text-white/60 leading-relaxed">
+          <p className="mt-3 max-w-lg text-text-secondary leading-relaxed">
             I build data products that ship and interfaces that make sense. 12+
             years of experience transforming the analytics function at 4 Fortune
             500 companies across Marketing, Sales, and Operations, with a
@@ -79,14 +73,14 @@ export function HeroSection() {
           </p>
 
           <div className="mt-8 flex items-center gap-4">
-            <span className="text-base font-semibold text-white/90">
+            <span className="text-base font-semibold text-text-primary">
               For More Information:
             </span>
             <a
               href="https://github.com/dweinbeck"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-gold transition-colors"
+              className="text-primary hover:text-gold transition-colors"
               aria-label="GitHub"
             >
               <span className="sr-only">GitHub</span>
@@ -103,7 +97,7 @@ export function HeroSection() {
               href="https://www.linkedin.com/in/dw789/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-gold transition-colors"
+              className="text-primary hover:text-gold transition-colors"
               aria-label="LinkedIn"
             >
               <span className="sr-only">LinkedIn</span>
@@ -118,7 +112,7 @@ export function HeroSection() {
             </a>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="text-white/50 hover:text-gold transition-colors"
+              className="text-primary hover:text-gold transition-colors"
               aria-label="Email"
             >
               <span className="sr-only">Email</span>
