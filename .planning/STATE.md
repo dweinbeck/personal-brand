@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-09)
 ## Current Position
 
 Phase: 23 of 25 (Infrastructure Configuration)
-Plan: 0 of 2 -- Plans created, ready to execute
-Status: Plans ready
-Last activity: 2026-02-09 -- Phase 23 plans created and verified (23-01, 23-02)
+Plan: 1 of 2 -- Plan 01 complete, Plan 02 ready
+Status: In progress
+Last activity: 2026-02-09 -- Completed 23-01-PLAN.md (Infrastructure Config Artifacts)
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
-[█████░░░░░░░░░░░░░░░] 1/4 phases
+[██████░░░░░░░░░░░░░░] 2/4 phases
 
 ## Performance Metrics
 
@@ -27,12 +27,12 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
 
 **v1.5 Velocity (current):**
 - Phases completed: 1 (22)
-- Plans completed: 1
-- Total milestone time: ~2 min
+- Plans completed: 2
+- Total milestone time: ~4 min
 - Requirements delivered: 4/4 (VAL-01 through VAL-04)
 
 **Cumulative:**
-- Total plans completed: 38 (across v1.0-v1.5)
+- Total plans completed: 39 (across v1.0-v1.5)
 - Total phases completed: 22 (across v1.0-v1.5)
 
 ## Accumulated Context
@@ -46,6 +46,8 @@ Recent decisions affecting current work:
 - Stripe Checkout redirect (not embedded, PCI-compliant out of the box)
 - Single coherent commit for billing code (all ~2,810 LOC as one logical unit)
 - Unanchored node_modules gitignore pattern (covers Vitest cache at any depth)
+- IAM binding corrected to Cloud Run SA (cloudrun-site@) for runtime secret access
+- Firestore composite indexes declared as infrastructure-as-code in firestore.indexes.json
 
 ### Pending Todos
 
@@ -68,9 +70,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 22-01-PLAN.md (Code Validation & Commit)
+Stopped at: Completed 23-01-PLAN.md (Infrastructure Config Artifacts)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 23 (Infrastructure Configuration) — `/gsd:execute-phase 23`
+Execute Phase 23 Plan 02 (Infrastructure Deploy) — `/gsd:execute-phase 23` (continues with 23-02)
