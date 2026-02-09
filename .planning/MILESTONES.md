@@ -1,5 +1,32 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.3 Assistant Backend Integration (Shipped: 2026-02-08)
+
+**Delivered:** Replaced internal Gemini-powered assistant with an external FastAPI RAG service proxy, added citation and confidence UI, removed 32 files of dead code, and cleaned up orphaned dependencies.
+
+**Phases completed:** 13-16 (7 plans total)
+
+**Key accomplishments:**
+
+- FastAPI proxy route replacing Gemini direct calls — Next.js API route proxies to external RAG backend on Cloud Run
+- Citation and confidence UI — collapsible source list with GitHub permalink URLs and color-coded confidence badges
+- Dead code removal — 32 files deleted (~875 lines), including old safety pipeline, knowledge base, admin panel, and data files
+- Dependency cleanup — @ai-sdk/google uninstalled, CI/CD config updated for CHATBOT_API_URL, stale env vars and secrets removed
+- Zero frontend transport changes — existing useChat hook and DefaultChatTransport preserved throughout migration
+
+**Stats:**
+
+- 153 files changed
+- +10,195 / -3,213 lines
+- 4 phases, 7 plans
+- 1 day (Feb 8, 2026)
+
+**Git range:** `40747ab` → `8377843`
+
+**What's next:** Real writing content, article authoring pipeline, control center vision
+
+---
+
 ## v1.2 Content & Data Integration (Shipped: 2026-02-07)
 
 **Delivered:** Live GitHub API integration replacing placeholder project data, individual project detail pages with README rendering, and company/university logos on About page accomplishment cards.

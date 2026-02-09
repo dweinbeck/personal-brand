@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with project cards pulling live data from GitHub's API, individual project detail pages with README rendering, a tutorials section, an About page with career accomplishments and company logos, a working contact form backed by Firestore, and production deployment on GCP Cloud Run.
+A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with project cards pulling live data from GitHub's API, individual project detail pages with README rendering, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, and production deployment on GCP Cloud Run.
 
 ## Core Value
 
@@ -39,14 +39,14 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Individual project detail pages with README rendering — v1.2
 - ✓ Homepage featured projects unified with projects page data source — v1.2
 - ✓ Company/university logos for About page accomplishments — v1.2
+- ✓ Assistant backend swap to external FastAPI RAG service (proxy to Cloud Run) — v1.3
+- ✓ Remove old assistant server code (API route, safety pipeline, knowledge base, rate limiting, logging, admin panel) — v1.3
+- ✓ Render citations from RAG responses in chat UI with confidence badges — v1.3
+- ✓ Clean up dead code and unused dependencies from old assistant — v1.3
 
 ### Active
 
-- [ ] Assistant backend swap to external FastAPI RAG service (chatbot-assistant on Cloud Run)
-- [ ] Direct frontend-to-backend connection (CORS, no proxy)
-- [ ] Remove old assistant server code (API route, safety pipeline, knowledge base, rate limiting, logging)
-- [ ] Render citations from RAG responses in chat UI
-- [ ] Clean up dead code and unused dependencies from old assistant
+(No active milestone)
 
 ### Deferred
 
@@ -67,27 +67,16 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - RSS feed — defer until writing content exists
 - Dynamic per-page OG images — single branded image sufficient
 
-## Current Milestone: v1.3 Assistant Backend Integration
-
-**Goal:** Replace the curated-knowledge AI assistant with the full RAG backend from chatbot-assistant, connecting the frontend directly to the deployed FastAPI service on Cloud Run.
-
-**Target features:**
-- Swap chat API from internal Next.js route to external FastAPI Cloud Run service
-- Direct CORS connection (no proxy layer)
-- Remove all old assistant server code (API route, safety pipeline, knowledge base, rate limiting)
-- Render RAG citations in chat responses
-- Clean up unused code and dependencies
-
 ## Current State
 
-**Shipped:** v1.2 on 2026-02-07
+**Shipped:** v1.3 on 2026-02-08
 **Live at:** https://dan-weinbeck.com
 
-Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant (curated knowledge base), and production deployment.
+Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~6,649 LOC TypeScript/TSX/CSS/MDX
+- **Codebase:** ~6,103 LOC TypeScript/TSX/CSS/MDX
 - **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK, react-markdown
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
@@ -123,10 +112,10 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | react-markdown for README rendering | Lightweight, supports GFM via remark-gfm plugin | ✓ Good |
 | SVG logos for accomplishment cards | Scalable, small file size, renders cleanly at 32x32px | ✓ Good |
 | Max 6 featured projects on homepage | Keeps homepage focused and performant | ✓ Good |
-| Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | ✓ Good — now integrating in v1.3 |
-| Direct CORS to FastAPI (no proxy) | Cleaner architecture, no middleware to maintain, backend handles its own auth/rate-limiting | — Pending |
-| Remove all old assistant server code | Clean break, FastAPI backend replaces everything | — Pending |
+| Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | ✓ Good — integrated in v1.3 |
+| Proxy to FastAPI (not direct CORS) | Cloud Run IAM incompatible with browser preflight; proxy eliminates CORS entirely | ✓ Good — simpler than original CORS plan |
+| Remove all old assistant server code | Clean break, FastAPI backend replaces everything | ✓ Good — 32 files, ~875 lines removed |
 | Control center deferred to future milestone | v1 is public-facing site; personal tools come later | — Pending |
 
 ---
-*Last updated: 2026-02-08 after v1.3 milestone start*
+*Last updated: 2026-02-08 after v1.3 milestone complete*
