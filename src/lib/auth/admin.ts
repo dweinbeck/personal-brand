@@ -1,3 +1,4 @@
+import "@/lib/firebase"; // Ensure Firebase Admin SDK is initialized
 import { getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { ADMIN_EMAIL } from "@/lib/constants";
@@ -41,7 +42,8 @@ export async function verifyAdmin(request: Request): Promise<AdminAuthResult> {
   if (getApps().length === 0) {
     return {
       authorized: false,
-      error: "Firebase not configured.",
+      error:
+        "Firebase Admin SDK not initialized. Check server logs — FIREBASE_PRIVATE_KEY may be missing or invalid.",
       status: 401,
     };
   }

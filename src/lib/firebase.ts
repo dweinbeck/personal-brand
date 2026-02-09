@@ -21,8 +21,8 @@ function getCredential(): Credential | undefined {
     try {
       return cert({ projectId, clientEmail, privateKey });
     } catch (error) {
-      console.warn(
-        "Failed to create Firebase credential from env vars:",
+      console.error(
+        "Firebase Admin SDK credential error — FIREBASE_PRIVATE_KEY is likely a placeholder. Download a real service account key from Firebase Console → Project Settings → Service Accounts.",
         error,
       );
       return undefined;
