@@ -1,7 +1,7 @@
 import {
   type JobStatus,
-  type ScrapeJobSubmission,
   jobStatusSchema,
+  type ScrapeJobSubmission,
   scrapeJobSubmissionSchema,
 } from "@/lib/brand-scraper/types";
 
