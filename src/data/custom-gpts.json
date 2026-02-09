@@ -1,30 +1,44 @@
 [
   {
-    "slug": "code-review-assistant",
-    "name": "Code Review Assistant",
-    "description": "Analyzes pull requests and code snippets for best practices, potential bugs, and performance improvements. Provides actionable feedback with clear explanations.",
-    "url": "https://chat.openai.com/g/g-PLACEHOLDER-code-review-assistant",
-    "tags": ["Code Review", "Developer Tools"]
+    "slug": "new-phase-planner",
+    "name": "New Phase Planner",
+    "description": "When you have an idea for more than a trivial set of updates to your product, use this",
+    "url": "https://chatgpt.com/g/g-69895e8109a881919e4012452f0a7cd8-new-phase-planner",
+    "tags": ["Product Development", "Planning"]
   },
   {
-    "slug": "data-storyteller",
-    "name": "Data Storyteller",
-    "description": "Transforms raw data insights into compelling narratives for stakeholders. Helps craft data-driven presentations, reports, and executive summaries.",
-    "url": "https://chat.openai.com/g/g-PLACEHOLDER-data-storyteller",
-    "tags": ["Data", "Communication"]
+    "slug": "building-block-writer",
+    "name": "Building Block Writer",
+    "description": "Creates AI Agent 'Building Blocks' in a two-part format: Fundamentals + Manual Completion",
+    "url": "https://chatgpt.com/g/g-698942629fa88191a559f4395751520e-building-block-writer",
+    "tags": ["AI Agents", "Development"]
   },
   {
-    "slug": "sql-query-builder",
-    "name": "SQL Query Builder",
-    "description": "Generates optimized SQL queries from natural language descriptions. Supports PostgreSQL, MySQL, and BigQuery dialects with query explanation.",
-    "url": "https://chat.openai.com/g/g-PLACEHOLDER-sql-query-builder",
-    "tags": ["SQL", "Databases"]
+    "slug": "frd-interviewer",
+    "name": "FRD Interviewer",
+    "description": "This GPT asks you questions until it has enough information to create a simple but comprehensive functional requirements document",
+    "url": "https://chatgpt.com/g/g-6987d85cd11081918ff321e9dc927966-frd-interviewer",
+    "tags": ["Requirements", "Product Development"]
   },
   {
-    "slug": "career-coach",
-    "name": "Career Coach",
-    "description": "Provides personalized career guidance for analytics and tech professionals. Helps with resume reviews, interview preparation, and career transition strategies.",
-    "url": "https://chat.openai.com/g/g-PLACEHOLDER-career-coach",
-    "tags": ["Career", "Productivity"]
+    "slug": "promptos",
+    "name": "PromptOS",
+    "description": "Business and Product Development Assistant",
+    "url": "https://chatgpt.com/g/g-69756b0917d88191b6688b32def74719-promptos",
+    "tags": ["Business", "Product Development"]
+  },
+  {
+    "slug": "dans-ai-development-assistant",
+    "name": "Dan's AI Development Assistant",
+    "description": "Direct Dan's Agent Builds",
+    "url": "https://chatgpt.com/g/g-6966480200648191ae60710d06e8b48e-dan-s-ai-development-assistant",
+    "tags": ["AI Agents", "Development"]
+  },
+  {
+    "slug": "financial-coach",
+    "name": "Financial Coach",
+    "description": "Make Better Financial Decisions in 2026",
+    "url": "https://chatgpt.com/g/g-695131aff94481918a3b1d412d02c766-financial-coach",
+    "tags": ["Finance", "Personal"]
   }
 ]
