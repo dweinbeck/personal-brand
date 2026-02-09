@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAllTutorials } from "@/lib/tutorials";
 
 export default async function ContentPage() {
@@ -5,11 +6,21 @@ export default async function ContentPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Building Blocks</h1>
-      <p className="text-sm text-gray-500 mb-8">
-        Manage your Building Blocks tutorials. {tutorials.length} tutorial(s)
-        published.
-      </p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Building Blocks</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage your Building Blocks tutorials. {tutorials.length}{" "}
+            tutorial(s) published.
+          </p>
+        </div>
+        <Link
+          href="/control-center/content/new"
+          className="inline-flex items-center rounded-lg bg-gold px-4 py-2 text-sm font-medium text-navy-dark hover:bg-gold/90 transition-colors"
+        >
+          + New Tutorial
+        </Link>
+      </div>
 
       {tutorials.length === 0 ? (
         <div className="rounded-lg bg-gray-50 px-6 py-12 text-center text-sm text-gray-500">
