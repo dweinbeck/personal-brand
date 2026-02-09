@@ -51,9 +51,7 @@ export function useJobStatus(jobId: string | null, token: string | null) {
     },
   );
 
-  const isTerminal = Boolean(
-    data && TERMINAL_STATUSES.includes(data.status),
-  );
+  const isTerminal = Boolean(data && TERMINAL_STATUSES.includes(data.status));
   const isPolling = pollInterval > 0 && jobId !== null;
   const isTimedOut = pollCount.current >= MAX_POLLS && !isTerminal;
 
