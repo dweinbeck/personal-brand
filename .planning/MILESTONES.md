@@ -1,5 +1,33 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.4 Control Center: Content Editor & Brand Scraper (Shipped: 2026-02-09)
+
+**Delivered:** Expanded the Control Center with two new admin tools — a form-guided Building Blocks content editor with live markdown preview and MDX output, and a Brand Scraper frontend with SWR polling and card gallery for extracted brand data. Also added a public Custom GPTs page and Control Center navigation with horizontal nav bar.
+
+**Phases completed:** 17-21 + 19.1 (8 plans total)
+
+**Key accomplishments:**
+
+- Control Center navigation with horizontal nav bar, active state highlighting, and layout wrapper
+- Content editor with form-guided inputs, live markdown preview, fast companion support, and MDX file output
+- Custom GPTs page with responsive 2-column card grid and navigation entry
+- Brand scraper API proxy with typed HTTP client, Zod schemas, and admin-guarded routes
+- Brand scraper UI with SWR polling, gallery sub-components (colors, fonts, logos, assets), confidence badges, and download links
+- Homepage dark theme refinement (reverted)
+
+**Stats:**
+
+- 72 files changed
+- +10,126 / -1,406 lines
+- 6 phases, 8 plans
+- 2 days (Feb 8-9, 2026)
+
+**Git range:** `561af30` → `b8ada7a`
+
+**What's next:** Real writing content, article authoring pipeline, further site polish
+
+---
+
 ## v1.3 Assistant Backend Integration (Shipped: 2026-02-08)
 
 **Delivered:** Replaced internal Gemini-powered assistant with an external FastAPI RAG service proxy, added citation and confidence UI, removed 32 files of dead code, and cleaned up orphaned dependencies.
@@ -23,7 +51,7 @@
 
 **Git range:** `40747ab` → `8377843`
 
-**What's next:** Real writing content, article authoring pipeline, control center vision
+**What's next:** Real writing content, article authoring pipeline, control center vision → delivered in v1.4
 
 ---
 
