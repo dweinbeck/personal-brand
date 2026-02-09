@@ -5,77 +5,50 @@
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.5 Billing & Credits System — validate, integrate, deploy
+**Current focus:** Phase 22 — Code Validation & Commit (v1.5 Billing & Credits System)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-09 — Milestone v1.5 started
+Phase: 22 of 25 (Code Validation & Commit)
+Plan: --
+Status: Ready to plan
+Last activity: 2026-02-09 -- Roadmap created for v1.5
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
-[░░░░░░░░░░░░░░░░░░░░] 0/? phases
+[░░░░░░░░░░░░░░░░░░░░] 0/4 phases
 
 ## Performance Metrics
 
-**v1.0 Velocity:**
-- Total plans completed: 14
-- Average duration: ~3.0 min
-- Total execution time: ~42 min
-
-**v1.1 Velocity:**
-- Phases completed: 5 (7-10.1)
-- Requirements delivered: 38/38
-- Phase 10.1: 2 plans in 2 waves
-
-**v1.2 Velocity:**
-- Phase 11: 3 plans completed (4 min, 4 min, 2 min)
-- Phase 12: 1 plan completed (~5 min)
-- Total milestone time: ~15 min
-- Requirements delivered: 5/5
-
-**v1.3 Velocity:**
-- Phase 13: 2 plans completed (2 min, 8 min) across 2 waves
-- Phase 14: 2 plans completed (2 min, 12 min) across 2 waves
-- Phase 15: 2 plans completed (3 min, 2 min)
-- Phase 16: 1 plan completed (5 min)
-- Total milestone time: ~34 min
-- Requirements delivered: 5/5 (ASST-01 through ASST-05)
-
-**v1.4 Velocity:**
-- Phase 17: 1 plan completed (~3 min)
-- Phase 18: 2 plans completed (4 min, ~1 min)
-- Phase 19: 1 plan completed (~4 min)
-- Phase 19.1: 1 plan completed (~2 min)
-- Phase 20: 1 plan completed (~3 min)
-- Phase 21: 2 plans completed (~4 min, ~3 min)
+**v1.4 Velocity (most recent):**
+- Phases completed: 6 (17-21 + 19.1)
+- Plans completed: 8
 - Total milestone time: ~24 min
-- Requirements delivered: 7/7 (CC-01 through CC-07)
+- Requirements delivered: 7/7
+
+**Cumulative:**
+- Total plans completed: 37 (across v1.0-v1.4)
+- Total phases completed: 21 (across v1.0-v1.4)
 
 ## Accumulated Context
 
 ### Decisions
 
 Full decision log in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+- Ledger-based Firestore credits (transaction-safe, idempotent, audit trail)
+- Firebase Auth for end users (Google Sign-In, no custom auth)
+- Stripe Checkout redirect (not embedded, PCI-compliant out of the box)
 
 ### Pending Todos
 
 None.
 
-### Roadmap Evolution
-
-All milestones through v1.4 shipped. v1.5 milestone started — billing & credits system.
-Note: ~3K LOC of billing code exists uncommitted from a prior session. Milestone validates and ships this code.
-
 ### Blockers/Concerns
 
-- GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
-- Content editor writes are dev-only — Cloud Run filesystem is ephemeral
-- Custom GPTs data has placeholder URLs in `src/data/custom-gpts.json` — update before production use
-- Brand-scraper v1.1 deployment dependency: assumes service will be live on Cloud Run before final integration phase
-- Stripe secrets (stripe-secret-key, stripe-webhook-secret) need GCP Secret Manager setup
-- Existing billing code is unvalidated — needs quality gates (lint, build, test) before committing
+- Brand-scraper v1.1 deployment dependency: assumes service will be live on Cloud Run before Phase 24 integration testing
+- Stripe secrets need GCP Secret Manager setup (Phase 23)
+- Cloud Run SA may need additional IAM for Secret Manager (research flagged gap in setup-cicd.sh)
+- Cloud Build trigger substitution variables must be verified for Firebase + Stripe + Brand Scraper URL
 
 ### Quick Tasks Completed
 
@@ -87,9 +60,9 @@ Note: ~3K LOC of billing code exists uncommitted from a prior session. Milestone
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Defining v1.5 requirements
+Stopped at: Roadmap created for v1.5 milestone
 Resume file: None
 
 ## Next Step
 
-Define requirements and create roadmap for v1.5.
+Plan Phase 22 (Code Validation & Commit).
