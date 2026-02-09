@@ -25,8 +25,11 @@ These are used by API routes at runtime:
 | Variable | Description |
 |----------|-------------|
 | `CHATBOT_API_URL` | URL for the external FastAPI RAG backend |
+| `BRAND_SCRAPER_API_URL` | URL for the external Brand Scraper service |
 | `GITHUB_TOKEN` | GitHub personal access token (for repo data) |
 | `TODOIST_API_TOKEN` | Todoist API token (for admin dashboard) |
+| `STRIPE_SECRET_KEY` | Stripe secret key (via Secret Manager on Cloud Run) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (via Secret Manager on Cloud Run) |
 
 ### Firebase Admin (Local Development Only)
 
@@ -142,6 +145,36 @@ gcloud run revisions list --service=dan-weinbeck-site
 gcloud run services update-traffic dan-weinbeck-site \
   --to-revisions=dan-weinbeck-site-00042-abc=100
 ```
+
+---
+
+## Stripe Setup
+
+### Secret Manager
+
+Create the Stripe secrets in GCP Secret Manager:
+
+```bash
+# Create secrets
+echo -n "sk_live_..." | gcloud secrets create stripe-secret-key --data-file=-
+echo -n "whsec_..." | gcloud secrets create stripe-webhook-secret --data-file=-
+
+# Grant Cloud Build access
+gcloud secrets add-iam-policy-binding stripe-secret-key \
+  --member="serviceAccount:PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding stripe-webhook-secret \
+  --member="serviceAccount:PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+### Webhook Configuration
+
+1. Go to [Stripe Dashboard → Webhooks](https://dashboard.stripe.com/webhooks)
+2. Click "Add endpoint"
+3. Set URL to: `https://your-domain.com/api/billing/webhook`
+4. Select events: `checkout.session.completed`
+5. Copy the signing secret to `stripe-webhook-secret` in Secret Manager
 
 ---
 

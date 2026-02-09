@@ -12,6 +12,7 @@ const navLinks = [
     href: "/control-center/brand-scraper",
     exact: false,
   },
+  { name: "Billing", href: "/control-center/billing", exact: false },
 ];
 
 export function ControlCenterNav() {

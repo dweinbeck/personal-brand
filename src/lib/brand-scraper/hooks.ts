@@ -16,7 +16,11 @@ const MAX_POLLS = 100;
  * - Stops after 100 polls (~5 minutes) as timeout protection
  * - Includes Bearer token in every request (admin-protected endpoint)
  */
-export function useJobStatus(jobId: string | null, token: string | null) {
+export function useJobStatus(
+  jobId: string | null,
+  token: string | null,
+  apiBase = "/api/admin/brand-scraper",
+) {
   const [pollInterval, setPollInterval] = useState(POLL_INTERVAL_MS);
   const pollCount = useRef(0);
 
@@ -34,7 +38,7 @@ export function useJobStatus(jobId: string | null, token: string | null) {
   );
 
   const { data, error, isLoading } = useSWR<JobStatus>(
-    jobId && token ? `/api/admin/brand-scraper/jobs/${jobId}` : null,
+    jobId && token ? `${apiBase}/jobs/${jobId}` : null,
     fetcher,
     {
       refreshInterval: pollInterval,

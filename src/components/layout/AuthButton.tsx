@@ -1,6 +1,7 @@
 "use client";
 
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getFirebaseAuth } from "@/lib/firebase-client";
@@ -44,7 +45,14 @@ export function AuthButton() {
           {initial}
         </button>
         {menuOpen && (
-          <div className="absolute right-0 mt-2 w-28 rounded-md bg-surface shadow-lg ring-1 ring-border py-1 z-50">
+          <div className="absolute right-0 mt-2 w-32 rounded-md bg-surface shadow-lg ring-1 ring-border py-1 z-50">
+            <Link
+              href="/billing"
+              onClick={() => setMenuOpen(false)}
+              className="block w-full px-4 py-2 text-sm text-text-secondary hover:bg-gold-light text-left"
+            >
+              Billing
+            </Link>
             <button
               type="button"
               onClick={() => {
