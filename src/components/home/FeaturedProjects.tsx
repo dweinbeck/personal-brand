@@ -8,7 +8,7 @@ export async function FeaturedProjects() {
 
   return (
     <section className="py-8 motion-safe:animate-fade-in-up">
-      <h2 className="text-2xl font-semibold tracking-tight text-text-primary text-center mb-10">
+      <h2 className="text-2xl font-semibold tracking-tight text-white text-center mb-10">
         Featured Projects
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
