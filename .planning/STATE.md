@@ -2,20 +2,20 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-08)
+See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.4 -- Control Center: Content Editor & Brand Scraper
+**Current focus:** None — all milestones through v1.4 shipped
 
 ## Current Position
 
-Phase: 21 of 21 (Brand Scraper UI)
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-02-09 -- Completed 21-02-PLAN.md (Gallery and page orchestrator)
+Phase: None
+Plan: None
+Status: Idle — awaiting next milestone
+Last activity: 2026-02-09 — Completed v1.4 milestone (Control Center: Content Editor & Brand Scraper)
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-21 complete
-[████████████████████] 6/6 v1.4 phases
+Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED
+[████████████████████] 5/5 milestones
 
 ## Performance Metrics
 
@@ -49,7 +49,9 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-21 complete
 - Phase 19: 1 plan completed (~4 min)
 - Phase 19.1: 1 plan completed (~2 min)
 - Phase 20: 1 plan completed (~3 min)
-- Phase 21: Plan 01 completed (~4 min), Plan 02 completed (~3 min)
+- Phase 21: 2 plans completed (~4 min, ~3 min)
+- Total milestone time: ~24 min
+- Requirements delivered: 7/7 (CC-01 through CC-07)
 
 ## Accumulated Context
 
@@ -57,42 +59,19 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-21 complete
 
 Full decision log in PROJECT.md Key Decisions table.
 
-Recent decisions affecting v1.4:
-- Direct filesystem MDX writes for editor (dev-only, not production CMS)
-- Proxy brand-scraper API through Next.js route (same pattern as chatbot)
-- AdminGuard for Control Center auth (existing pattern sufficient)
-- Brand Scraper as cleanly separated component (extractable later if needed)
-- verifyAdminToken added alongside (not replacing) verifyAdmin for Server Action auth
-- Environment gate as first check in saveTutorial (fail fast before async work)
-- JSON.stringify for all MDX metadata values (safe serialization of special characters)
-- Single TutorialEditor component (all form state co-located for simplicity)
-- Fast companion files written body-only (no metadata block, matching existing convention)
-- Auto-slug from title with manual override support
-- Inter font for GPT card titles (not Playfair Display -- short names render better in sans-serif)
-- All GPT tags inline without color coding (simpler than TutorialCard topic badges)
-- z.string() for job status (not z.enum) -- exact Fastify status values unconfirmed
-- .passthrough() on jobStatusSchema -- tolerate unexpected extra fields from Fastify
-- 30s timeout for submit, 10s for poll -- accounts for Cloud Run cold starts
-- Error body extraction on non-200 responses -- improvement over chatbot client pattern
-- BrandTaxonomy schema uses .passthrough() and all-optional sections for API tolerance
-- BrandConfidenceBadge recreates pill styles (numeric %) instead of importing existing ConfidenceBadge (text labels)
-- Plain <img> for logos/assets instead of next/image -- GCS signed URLs have dynamic hostnames
-- Per-swatch copiedHex state with 1.5s timeout for click-to-copy feedback
-- Async handleJobSubmitted with useCallback for token acquisition before polling starts
-
 ### Pending Todos
 
 None.
 
 ### Roadmap Evolution
 
-- Phase 19.1 inserted after Phase 19: Custom GPTs Page (URGENT) — public-facing page with card grid for OpenAI Custom GPTs, reusing existing Projects/Building Blocks patterns
+All milestones through v1.4 shipped. No active roadmap.
 
 ### Blockers/Concerns
 
 - GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
-- User must configure BRAND_SCRAPER_API_URL in Cloud Build trigger before deploying brand scraper features
-- Content editor writes are dev-only -- Cloud Run filesystem is ephemeral
+- Content editor writes are dev-only — Cloud Run filesystem is ephemeral
+- Custom GPTs data has placeholder URLs in `src/data/custom-gpts.json` — update before production use
 
 ### Quick Tasks Completed
 
@@ -104,9 +83,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 21-02-PLAN.md (Gallery and page orchestrator)
+Stopped at: v1.4 milestone completed and archived
 Resume file: None
 
 ## Next Step
 
-Phase 21 complete. v1.4 milestone fully delivered. All 6 phases (17-21) finished.
+All milestones shipped. Use `/gsd:new-milestone` to start v1.5.
