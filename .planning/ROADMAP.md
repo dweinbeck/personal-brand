@@ -124,7 +124,10 @@ Plans:
   3. When a job completes, a 2-wide card gallery displays extracted colors (swatches with hex codes), fonts (family names with specimens), logos (image thumbnails), and assets -- each with confidence badges
   4. Download links for `brand.json` and `assets.zip` are displayed when the job succeeds
   5. Polling stops automatically when the job reaches a terminal state and does not leak memory on page navigation
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 21-01-PLAN.md -- Install SWR, BrandTaxonomy schema, useJobStatus hook, form/status/confidence components
+- [ ] 21-02-PLAN.md -- Gallery sub-components, results grid, page orchestrator, and route wiring
 
 ## Progress
 
@@ -139,4 +142,4 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | 19. Content Editor UI | v1.4 | 1/1 | Complete | 2026-02-09 |
 | 19.1 Custom GPTs Page | v1.4 | 0/1 | Not started | - |
 | 20. Brand Scraper API Proxy | v1.4 | 0/1 | Not started | - |
-| 21. Brand Scraper UI | v1.4 | 0/TBD | Not started | - |
+| 21. Brand Scraper UI | v1.4 | 0/2 | Not started | - |
