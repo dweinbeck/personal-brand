@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** None — all milestones through v1.4 shipped
+**Current focus:** v1.5 Billing & Credits System — validate, integrate, deploy
 
 ## Current Position
 
-Phase: None
-Plan: None
-Status: Idle — awaiting next milestone
-Last activity: 2026-02-09 — Completed v1.4 milestone (Control Center: Content Editor & Brand Scraper)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-09 — Milestone v1.5 started
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED
-[████████████████████] 5/5 milestones
+Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
+[░░░░░░░░░░░░░░░░░░░░] 0/? phases
 
 ## Performance Metrics
 
@@ -65,13 +65,17 @@ None.
 
 ### Roadmap Evolution
 
-All milestones through v1.4 shipped. No active roadmap.
+All milestones through v1.4 shipped. v1.5 milestone started — billing & credits system.
+Note: ~3K LOC of billing code exists uncommitted from a prior session. Milestone validates and ships this code.
 
 ### Blockers/Concerns
 
 - GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
 - Content editor writes are dev-only — Cloud Run filesystem is ephemeral
 - Custom GPTs data has placeholder URLs in `src/data/custom-gpts.json` — update before production use
+- Brand-scraper v1.1 deployment dependency: assumes service will be live on Cloud Run before final integration phase
+- Stripe secrets (stripe-secret-key, stripe-webhook-secret) need GCP Secret Manager setup
+- Existing billing code is unvalidated — needs quality gates (lint, build, test) before committing
 
 ### Quick Tasks Completed
 
@@ -83,9 +87,9 @@ All milestones through v1.4 shipped. No active roadmap.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: v1.4 milestone completed and archived
+Stopped at: Defining v1.5 requirements
 Resume file: None
 
 ## Next Step
 
-All milestones shipped. Use `/gsd:new-milestone` to start v1.5.
+Define requirements and create roadmap for v1.5.
