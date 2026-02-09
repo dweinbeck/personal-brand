@@ -7,6 +7,21 @@ export type AdminAuthResult =
   | { authorized: false; error: string; status: 401 | 403 };
 
 /**
+ * Verifies a Firebase ID token belongs to the admin user.
+ * Returns true if the token is valid and the email matches ADMIN_EMAIL.
+ * Designed for Server Actions that receive a token directly (no Request object).
+ */
+export async function verifyAdminToken(idToken: string): Promise<boolean> {
+  if (getApps().length === 0) return false;
+  try {
+    const decoded = await getAuth().verifyIdToken(idToken);
+    return decoded.email === ADMIN_EMAIL;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Verifies the request is from an authenticated admin user.
  * Expects Authorization header with Bearer token (Firebase ID token).
  */
