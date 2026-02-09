@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-08)
 ## Current Position
 
 Phase: 21 of 21 (Brand Scraper UI)
-Plan: 1 of 2
-Status: In progress
-Last activity: 2026-02-09 -- Completed 21-01-PLAN.md (SWR and polling infrastructure)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-02-09 -- Completed 21-02-PLAN.md (Gallery and page orchestrator)
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-20 complete, 21 in progress
-[████████████████░░░░] 5/6 v1.4 phases
+Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-21 complete
+[████████████████████] 6/6 v1.4 phases
 
 ## Performance Metrics
 
@@ -49,7 +49,7 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phases 17-20 complete, 21 in 
 - Phase 19: 1 plan completed (~4 min)
 - Phase 19.1: 1 plan completed (~2 min)
 - Phase 20: 1 plan completed (~3 min)
-- Phase 21: Plan 01 completed (~4 min)
+- Phase 21: Plan 01 completed (~4 min), Plan 02 completed (~3 min)
 
 ## Accumulated Context
 
@@ -76,6 +76,9 @@ Recent decisions affecting v1.4:
 - Error body extraction on non-200 responses -- improvement over chatbot client pattern
 - BrandTaxonomy schema uses .passthrough() and all-optional sections for API tolerance
 - BrandConfidenceBadge recreates pill styles (numeric %) instead of importing existing ConfidenceBadge (text labels)
+- Plain <img> for logos/assets instead of next/image -- GCS signed URLs have dynamic hostnames
+- Per-swatch copiedHex state with 1.5s timeout for click-to-copy feedback
+- Async handleJobSubmitted with useCallback for token acquisition before polling starts
 
 ### Pending Todos
 
@@ -101,9 +104,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 21-01-PLAN.md (SWR and polling infrastructure)
+Stopped at: Completed 21-02-PLAN.md (Gallery and page orchestrator)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 21 Plan 02: `/gsd:execute-plan .planning/phases/21-brand-scraper-ui/21-02-PLAN.md`
+Phase 21 complete. v1.4 milestone fully delivered. All 6 phases (17-21) finished.
