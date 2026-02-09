@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-08)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.4 — Control Center: Content Editor & Brand Scraper
+**Current focus:** v1.4 -- Control Center: Content Editor & Brand Scraper
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-08 — Milestone v1.4 started
+Phase: 17 of 21 (Control Center Navigation)
+Plan: Not yet planned
+Status: Ready to plan
+Last activity: 2026-02-08 -- Roadmap created for v1.4
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 IN PROGRESS
+Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 Phase 17 ready
 
 ## Performance Metrics
 
@@ -48,6 +48,12 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 SHIPPED | v1.4 IN PROGRESS
 
 Full decision log in PROJECT.md Key Decisions table.
 
+Recent decisions affecting v1.4:
+- Direct filesystem MDX writes for editor (dev-only, not production CMS)
+- Proxy brand-scraper API through Next.js route (same pattern as chatbot)
+- AdminGuard for Control Center auth (existing pattern sufficient)
+- Brand Scraper as cleanly separated component (extractable later if needed)
+
 ### Pending Todos
 
 None.
@@ -55,7 +61,8 @@ None.
 ### Blockers/Concerns
 
 - GitHub API rate limiting: Public API allows 60 requests/hour unauthenticated; ISR caching mitigates this
-- User must configure _CHATBOT_API_URL in Cloud Build trigger before deploying v1.3 (see milestones archive)
+- User must configure BRAND_SCRAPER_API_URL in Cloud Build trigger before deploying brand scraper features
+- Content editor writes are dev-only -- Cloud Run filesystem is ephemeral
 
 ### Quick Tasks Completed
 
@@ -67,9 +74,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Defining v1.4 requirements
+Stopped at: Roadmap created for v1.4 milestone
 Resume file: None
 
 ## Next Step
 
-Define requirements and create roadmap for v1.4.
+Plan Phase 17: Control Center Navigation.
