@@ -96,7 +96,9 @@ Plans:
   5. "Custom GPTs" appears in the site navigation and routes correctly with proper active-state styling
   6. External links follow existing repo conventions (target, rel attributes)
   7. Build, lint, and type checks pass with no regressions
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 19.1-01-PLAN.md -- Data file, typed loader, page component, and navigation entry
 
 ### Phase 20: Brand Scraper API Proxy
 **Goal**: The Next.js server can submit scrape jobs and poll results from the deployed Brand Scraper Fastify service, with typed responses and admin auth
@@ -135,6 +137,6 @@ Note: Phases 18-19 (content editor) and 20-21 (brand scraper) are independent af
 | 17. Control Center Navigation | v1.4 | 1/1 | Complete | 2026-02-08 |
 | 18. Content Editor Infrastructure | v1.4 | 2/2 | Complete | 2026-02-08 |
 | 19. Content Editor UI | v1.4 | 1/1 | Complete | 2026-02-09 |
-| 19.1 Custom GPTs Page | v1.4 | 0/TBD | Not started | - |
+| 19.1 Custom GPTs Page | v1.4 | 0/1 | Not started | - |
 | 20. Brand Scraper API Proxy | v1.4 | 0/1 | Not started | - |
 | 21. Brand Scraper UI | v1.4 | 0/TBD | Not started | - |
