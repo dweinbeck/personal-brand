@@ -11,7 +11,7 @@ Requirements for Billing & Credits System — validate, configure, deploy.
 
 - [ ] **VAL-01**: Billing code passes `npm run build` with zero TypeScript errors
 - [ ] **VAL-02**: Billing code passes `npm run lint` with zero Biome errors
-- [ ] **VAL-03**: Billing tests pass via `npm test` (all 41 existing test cases)
+- [ ] **VAL-03**: Billing tests pass via `npm test` (all 26 existing test cases)
 - [ ] **VAL-04**: All billing code committed to master (~3K LOC across 30+ files)
 
 ### Infrastructure — Stripe
