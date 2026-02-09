@@ -7,7 +7,11 @@ import { usePathname } from "next/navigation";
 const navLinks = [
   { name: "Dashboard", href: "/control-center", exact: true },
   { name: "Content Editor", href: "/control-center/content", exact: false },
-  { name: "Brand Scraper", href: "/control-center/brand-scraper", exact: false },
+  {
+    name: "Brand Scraper",
+    href: "/control-center/brand-scraper",
+    exact: false,
+  },
 ];
 
 export function ControlCenterNav() {
