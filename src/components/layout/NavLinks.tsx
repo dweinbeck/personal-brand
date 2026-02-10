@@ -23,13 +23,14 @@ export function NavLinks() {
   const { user } = useAuth();
 
   const links = useMemo(() => {
-    if (user?.email === ADMIN_EMAIL) {
-      return [
-        ...baseLinks,
-        { name: "Control Center", href: "/control-center" },
-      ];
+    const result = [...baseLinks];
+    if (user) {
+      result.push({ name: "Envelopes", href: "/envelopes" });
     }
-    return baseLinks;
+    if (user?.email === ADMIN_EMAIL) {
+      result.push({ name: "Control Center", href: "/control-center" });
+    }
+    return result;
   }, [user]);
 
   function isActive(href: string) {
