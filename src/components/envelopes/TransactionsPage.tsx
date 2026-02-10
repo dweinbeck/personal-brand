@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { envelopeFetch } from "@/lib/envelopes/api";
 import { useEnvelopes, useTransactions } from "@/lib/envelopes/hooks";
 import { getWeekRange } from "@/lib/envelopes/week-math";
+import { type OverageContext, OverageModal } from "./OverageModal";
 import { TransactionForm } from "./TransactionForm";
 import { TransactionList } from "./TransactionList";
 import { WeekSelector } from "./WeekSelector";
@@ -20,6 +21,9 @@ export function TransactionsPage() {
   );
   const [isCreating, setIsCreating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [overageContext, setOverageContext] = useState<OverageContext | null>(
+    null,
+  );
 
   // Compute date strings for the API query
   const range = getWeekRange(weekStart);
@@ -48,7 +52,7 @@ export function TransactionsPage() {
 
   // -- CRUD handlers --
 
-  async function handleCreate(data: {
+  async function handleCreate(txnData: {
     envelopeId: string;
     amountCents: number;
     date: string;
@@ -58,12 +62,39 @@ export function TransactionsPage() {
     setIsSubmitting(true);
     try {
       const token = await getToken();
-      await envelopeFetch("/api/envelopes/transactions", token, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const createdTxn = await envelopeFetch<{ id: string }>(
+        "/api/envelopes/transactions",
+        token,
+        {
+          method: "POST",
+          body: JSON.stringify(txnData),
+        },
+      );
       await mutateTransactions();
-      await mutateEnvelopes();
+      const freshData = await mutateEnvelopes();
+
+      // Check if the target envelope is now over budget
+      if (freshData) {
+        const targetEnvelope = freshData.envelopes.find(
+          (e) => e.id === txnData.envelopeId,
+        );
+        if (targetEnvelope && targetEnvelope.remainingCents < 0) {
+          setOverageContext({
+            transactionId: createdTxn.id,
+            envelopeId: targetEnvelope.id,
+            envelopeTitle: targetEnvelope.title,
+            overageAmountCents: Math.abs(targetEnvelope.remainingCents),
+            donorEnvelopes: freshData.envelopes
+              .filter((e) => e.id !== targetEnvelope.id && e.remainingCents > 0)
+              .map((e) => ({
+                id: e.id,
+                title: e.title,
+                remainingCents: e.remainingCents,
+              })),
+          });
+          return;
+        }
+      }
       setIsCreating(false);
     } catch (err) {
       window.alert(
@@ -72,6 +103,11 @@ export function TransactionsPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function handleAllocated() {
+    mutateEnvelopes();
+    mutateTransactions();
   }
 
   async function handleUpdate(
@@ -210,6 +246,13 @@ export function TransactionsPage() {
         onUpdate={handleUpdate}
         onDelete={handleDelete}
         isSubmitting={isSubmitting}
+      />
+
+      <OverageModal
+        context={overageContext}
+        onClose={() => setOverageContext(null)}
+        onAllocated={handleAllocated}
+        getToken={getToken}
       />
     </div>
   );

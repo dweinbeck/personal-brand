@@ -14,6 +14,7 @@ import { EnvelopeCardGrid } from "./EnvelopeCardGrid";
 import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
 import { InlineTransactionForm } from "./InlineTransactionForm";
+import { type OverageContext, OverageModal } from "./OverageModal";
 import { SavingsBanner } from "./SavingsBanner";
 
 export function EnvelopesHomePage() {
@@ -25,6 +26,9 @@ export function EnvelopesHomePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [overageContext, setOverageContext] = useState<OverageContext | null>(
+    null,
+  );
 
   // Current week date constraints for inline transaction form
   const now = new Date();
@@ -151,11 +155,38 @@ export function EnvelopesHomePage() {
     setIsSubmitting(true);
     try {
       const token = await getToken();
-      await envelopeFetch("/api/envelopes/transactions", token, {
-        method: "POST",
-        body: JSON.stringify(txnData),
-      });
-      await mutate();
+      const createdTxn = await envelopeFetch<{ id: string }>(
+        "/api/envelopes/transactions",
+        token,
+        {
+          method: "POST",
+          body: JSON.stringify(txnData),
+        },
+      );
+      const freshData = await mutate();
+
+      // Check if the target envelope is now over budget
+      if (freshData) {
+        const targetEnvelope = freshData.envelopes.find(
+          (e) => e.id === txnData.envelopeId,
+        );
+        if (targetEnvelope && targetEnvelope.remainingCents < 0) {
+          setOverageContext({
+            transactionId: createdTxn.id,
+            envelopeId: targetEnvelope.id,
+            envelopeTitle: targetEnvelope.title,
+            overageAmountCents: Math.abs(targetEnvelope.remainingCents),
+            donorEnvelopes: freshData.envelopes
+              .filter((e) => e.id !== targetEnvelope.id && e.remainingCents > 0)
+              .map((e) => ({
+                id: e.id,
+                title: e.title,
+                remainingCents: e.remainingCents,
+              })),
+          });
+          return;
+        }
+      }
       setExpandedId(null);
     } catch (err) {
       window.alert(
@@ -164,6 +195,10 @@ export function EnvelopesHomePage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function handleAllocated() {
+    mutate();
   }
 
   // -- Loading state --
@@ -296,6 +331,13 @@ export function EnvelopesHomePage() {
           <CreateEnvelopeCard onClick={() => setIsCreating(true)} />
         )}
       </EnvelopeCardGrid>
+
+      <OverageModal
+        context={overageContext}
+        onClose={() => setOverageContext(null)}
+        onAllocated={handleAllocated}
+        getToken={getToken}
+      />
     </div>
   );
 }
