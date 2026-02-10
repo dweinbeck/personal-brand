@@ -34,25 +34,25 @@ Requirements for Billing & Credits System — validate, configure, deploy.
 
 ### Infrastructure — Deploy
 
-- [ ] **INFRA-10**: Billing-enabled build deployed to Cloud Run via Cloud Build
-- [ ] **INFRA-11**: All Cloud Build trigger substitution variables verified (Firebase, Stripe, Brand Scraper URL)
+- [x] **INFRA-10**: Billing-enabled build deployed to Cloud Run via Cloud Build
+- [x] **INFRA-11**: All Cloud Build trigger substitution variables verified (Firebase, Stripe, Brand Scraper URL)
 
 ### Brand Scraper v1.1 Integration
 
-- [ ] **BSINT-01**: `BRAND_SCRAPER_API_URL` updated to real Cloud Run URL when brand-scraper v1.1 is deployed
-- [ ] **BSINT-02**: GCS signed URL passthrough verified end-to-end (brand_json_url and assets_zip_url render as download buttons)
+- [x] **BSINT-01**: `BRAND_SCRAPER_API_URL` updated to real Cloud Run URL when brand-scraper v1.1 is deployed
+- [ ] **BSINT-02**: GCS signed URL passthrough verified end-to-end (brand_json_url and assets_zip_url render as download buttons) — BLOCKED: brand scraper worker not processing jobs
 
 ### End-to-End Validation
 
-- [ ] **E2E-01**: User can sign in with Google on production domain
-- [ ] **E2E-02**: New user receives 100 free credits on first sign-in (signup grant)
-- [ ] **E2E-03**: User can purchase 500 credits for $5 via Stripe Checkout (test mode)
-- [ ] **E2E-04**: Stripe webhook fires and credits are granted after purchase
-- [ ] **E2E-05**: User can submit a brand scrape and credits are debited (50 credits)
-- [ ] **E2E-06**: Failed scrape job auto-refunds credits to user
-- [ ] **E2E-07**: Admin can view all billing users with balance and margin data
-- [ ] **E2E-08**: Admin can adjust credits and refund usage from user detail page
-- [ ] **E2E-09**: Admin can edit tool pricing from pricing tab
+- [x] **E2E-01**: User can sign in with Google on production domain
+- [x] **E2E-02**: New user receives 100 free credits on first sign-in (signup grant)
+- [x] **E2E-03**: User can purchase 500 credits for $5 via Stripe Checkout (test mode)
+- [x] **E2E-04**: Stripe webhook fires and credits are granted after purchase
+- [x] **E2E-05**: User can submit a brand scrape and credits are debited (50 credits)
+- [ ] **E2E-06**: Failed scrape job auto-refunds credits to user — BLOCKED: brand scraper worker not processing jobs
+- [x] **E2E-07**: Admin can view all billing users with balance and margin data
+- [x] **E2E-08**: Admin can adjust credits and refund usage from user detail page
+- [x] **E2E-09**: Admin can edit tool pricing from pricing tab
 - [ ] **E2E-10**: Live mode verified — real $5 purchase completes and credits are granted
 
 ## Future Requirements
@@ -115,19 +115,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-07 | Phase 23 | Complete |
 | INFRA-08 | Phase 23 | Complete |
 | INFRA-09 | Phase 23 | Complete |
-| INFRA-10 | Phase 24 | Pending |
-| INFRA-11 | Phase 24 | Pending |
-| BSINT-01 | Phase 24 | Pending |
-| BSINT-02 | Phase 24 | Pending |
-| E2E-01 | Phase 24 | Pending |
-| E2E-02 | Phase 24 | Pending |
-| E2E-03 | Phase 24 | Pending |
-| E2E-04 | Phase 24 | Pending |
-| E2E-05 | Phase 24 | Pending |
-| E2E-06 | Phase 24 | Pending |
-| E2E-07 | Phase 24 | Pending |
-| E2E-08 | Phase 24 | Pending |
-| E2E-09 | Phase 24 | Pending |
+| INFRA-10 | Phase 24 | Complete |
+| INFRA-11 | Phase 24 | Complete |
+| BSINT-01 | Phase 24 | Complete |
+| BSINT-02 | Phase 24 | Blocked |
+| E2E-01 | Phase 24 | Complete |
+| E2E-02 | Phase 24 | Complete |
+| E2E-03 | Phase 24 | Complete |
+| E2E-04 | Phase 24 | Complete |
+| E2E-05 | Phase 24 | Complete |
+| E2E-06 | Phase 24 | Blocked |
+| E2E-07 | Phase 24 | Complete |
+| E2E-08 | Phase 24 | Complete |
+| E2E-09 | Phase 24 | Complete |
 | E2E-10 | Phase 25 | Pending |
 
 **Coverage:**
@@ -137,4 +137,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-09*
-*Last updated: 2026-02-09 after roadmap creation*
+*Last updated: 2026-02-10 after Phase 24 execution*

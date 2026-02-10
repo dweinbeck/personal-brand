@@ -31,7 +31,7 @@ Archived roadmaps:
 
 - [x] **Phase 22: Code Validation & Commit** - Verify existing billing code compiles, lints, tests, and commit to master ✅
 - [x] **Phase 23: Infrastructure Configuration** - Configure all GCP, Firebase, Stripe, and Firestore prerequisites ✅
-- [ ] **Phase 24: Deploy & Smoke Test** - Deploy to Cloud Run and validate all user flows with Stripe test mode
+- [x] **Phase 24: Deploy & Smoke Test** - Deploy to Cloud Run and validate all user flows with Stripe test mode ✅
 - [ ] **Phase 25: Go Live** - Switch to Stripe live keys and verify real payment processing
 
 ## Phase Details
@@ -79,8 +79,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 24-01-PLAN.md -- Trigger Cloud Build deployment and verify environment configuration
-- [ ] 24-02-PLAN.md -- Smoke test all E2E user flows (auth, billing, brand scraper, admin panel)
+- [x] 24-01-PLAN.md -- Trigger Cloud Build deployment and verify environment configuration ✅
+- [x] 24-02-PLAN.md -- Smoke test all E2E user flows (auth, billing, brand scraper, admin panel) ✅
 
 ### Phase 25: Go Live
 **Goal**: Billing system accepts real payments with live Stripe keys
@@ -103,5 +103,5 @@ Phases execute in numeric order: 22 → 23 → 24 → 25
 |-------|-----------|----------------|--------|-----------|
 | 22. Code Validation & Commit | v1.5 | 1/1 | Complete | 2026-02-09 |
 | 23. Infrastructure Configuration | v1.5 | 2/2 | Complete | 2026-02-09 |
-| 24. Deploy & Smoke Test | v1.5 | 0/2 | Not started | - |
+| 24. Deploy & Smoke Test | v1.5 | 2/2 | Complete | 2026-02-10 |
 | 25. Go Live | v1.5 | 0/? | Not started | - |

@@ -5,35 +5,35 @@
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 24 planned — ready for execution (v1.5 Billing & Credits System)
+**Current focus:** Phase 24 complete — ready for Phase 25 (v1.5 Billing & Credits System)
 
 ## Current Position
 
-Phase: 24 of 25 (Deploy & Smoke Test) — PLANNED
-Plan: 0 of 2 -- Ready for execution
-Status: Phase planned, not yet started
-Last activity: 2026-02-09 -- Planned Phase 24 (2 plans in 2 waves)
+Phase: 24 of 25 (Deploy & Smoke Test) — COMPLETE
+Plan: 2 of 2 -- All plans executed
+Status: Phase complete, verified (9/11 must-haves, 2 blocked on external dependency)
+Last activity: 2026-02-10 -- Completed Phase 24 (deploy + E2E smoke tests)
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
-[██████████░░░░░░░░░░] 2/4 phases
+[███████████████░░░░░] 3/4 phases
 
 ## Performance Metrics
 
-**v1.4 Velocity (most recent):**
+**v1.4 Velocity (most recent shipped):**
 - Phases completed: 6 (17-21 + 19.1)
 - Plans completed: 8
 - Total milestone time: ~24 min
 - Requirements delivered: 7/7
 
 **v1.5 Velocity (current):**
-- Phases completed: 2 (22, 23)
-- Plans completed: 4
-- Total milestone time: ~14 min
-- Requirements delivered: 13/13 (VAL-01–04, INFRA-01–09)
+- Phases completed: 3 (22, 23, 24)
+- Plans completed: 6
+- Total milestone time: ~97 min
+- Requirements delivered: 24/26 (VAL-01–04, INFRA-01–11, BSINT-01, E2E-01–05, E2E-07–09); 2 blocked
 
 **Cumulative:**
-- Total plans completed: 41 (across v1.0-v1.5)
-- Total phases completed: 23 (across v1.0-v1.5)
+- Total plans completed: 43 (across v1.0-v1.5)
+- Total phases completed: 24 (across v1.0-v1.5)
 
 ## Accumulated Context
 
@@ -47,6 +47,9 @@ Recent decisions affecting current work:
 - IAM binding corrected to Cloud Run SA (cloudrun-site@) for runtime secret access
 - Firebase auth domain uses *.firebaseapp.com (not custom domain)
 - Secret Manager secrets versioned (v2 with real test-mode values)
+- Cloud Build trigger is in global region, named deploy-on-push
+- Admin can refund any non-refunded usage (expanded from started/failed only)
+- E2E-06/BSINT-02 blocked on external brand scraper worker — not a billing code issue
 
 ### Pending Todos
 
@@ -54,7 +57,7 @@ None.
 
 ### Blockers/Concerns
 
-- Brand-scraper v1.1 deployment dependency: assumes service will be live on Cloud Run before Phase 24 integration testing
+- Brand scraper worker not processing jobs — E2E-06 and BSINT-02 remain blocked
 - `.env.local` has placeholder FIREBASE_PRIVATE_KEY — not blocking for production (Cloud Run uses ADC)
 
 ### Quick Tasks Completed
@@ -66,10 +69,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-09
-Stopped at: Planned Phase 24 (Deploy & Smoke Test)
+Last session: 2026-02-10
+Stopped at: Completed Phase 24 (Deploy & Smoke Test)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 24 (Deploy & Smoke Test) — `/gsd:execute-phase 24`
+Plan Phase 25 (Go Live) — `/gsd:plan-phase 25`
