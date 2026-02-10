@@ -13,8 +13,8 @@ const statusColors: Record<EnrichedProject["status"], string> = {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Link href={`/projects/${project.slug}`} className="block">
-      <div className="relative rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group">
+    <Link href={`/projects/${project.slug}`} className="block h-full">
+      <div className="relative flex h-full flex-col rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group">
         {/* Status badge */}
         <span
           className={`absolute top-4 right-4 px-2.5 py-0.5 text-xs font-medium rounded-full border ${statusColors[project.status]}`}
@@ -25,7 +25,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <h3 className="font-semibold text-text-primary pr-24 group-hover:text-gold transition-colors duration-200">
           {project.name}
         </h3>
-        <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3">
+        <p className="mt-3 flex-1 text-sm text-text-secondary leading-relaxed line-clamp-3">
           {project.description}
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
