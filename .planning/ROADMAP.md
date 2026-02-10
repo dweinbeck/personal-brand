@@ -30,7 +30,7 @@ Archived roadmaps:
 **Milestone Goal:** Validate, configure infrastructure for, and deploy the existing billing/credits system with Stripe payments, Firebase Auth for end users, brand-scraper v1.1 integration, and admin billing management. This is a validation and deployment milestone -- the code already exists (~3K LOC, 30+ files).
 
 - [x] **Phase 22: Code Validation & Commit** - Verify existing billing code compiles, lints, tests, and commit to master ✅
-- [ ] **Phase 23: Infrastructure Configuration** - Configure all GCP, Firebase, Stripe, and Firestore prerequisites
+- [x] **Phase 23: Infrastructure Configuration** - Configure all GCP, Firebase, Stripe, and Firestore prerequisites ✅
 - [ ] **Phase 24: Deploy & Smoke Test** - Deploy to Cloud Run and validate all user flows with Stripe test mode
 - [ ] **Phase 25: Go Live** - Switch to Stripe live keys and verify real payment processing
 
@@ -63,8 +63,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 23-01-PLAN.md -- Create Firestore indexes, firebase.json, seed script, and fix DEPLOYMENT.md IAM instructions
-- [ ] 23-02-PLAN.md -- Execute infrastructure configuration: GCP secrets, Stripe webhook, Firebase Auth, Firestore deploy, Cloud Build verification
+- [x] 23-01-PLAN.md -- Create Firestore indexes, firebase.json, seed script, and fix DEPLOYMENT.md IAM instructions ✅
+- [x] 23-02-PLAN.md -- Execute infrastructure configuration: GCP secrets, Stripe webhook, Firebase Auth, Firestore deploy, Cloud Build verification ✅
 
 ### Phase 24: Deploy & Smoke Test
 **Goal**: Billing-enabled site is live on Cloud Run and every user flow works end-to-end with Stripe test payments
@@ -101,6 +101,6 @@ Phases execute in numeric order: 22 → 23 → 24 → 25
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 22. Code Validation & Commit | v1.5 | 1/1 | Complete | 2026-02-09 |
-| 23. Infrastructure Configuration | v1.5 | 0/2 | Not started | - |
+| 23. Infrastructure Configuration | v1.5 | 2/2 | Complete | 2026-02-09 |
 | 24. Deploy & Smoke Test | v1.5 | 0/? | Not started | - |
 | 25. Go Live | v1.5 | 0/? | Not started | - |

@@ -16,21 +16,21 @@ Requirements for Billing & Credits System — validate, configure, deploy.
 
 ### Infrastructure — Stripe
 
-- [ ] **INFRA-01**: Stripe secrets (stripe-secret-key, stripe-webhook-secret) created in GCP Secret Manager
-- [ ] **INFRA-02**: Stripe webhook endpoint registered in Stripe Dashboard pointing to `https://dan-weinbeck.com/api/billing/webhook` listening for `checkout.session.completed`
-- [ ] **INFRA-03**: Cloud Run service account has `secretmanager.secretAccessor` on both Stripe secrets
+- [x] **INFRA-01**: Stripe secrets (stripe-secret-key, stripe-webhook-secret) created in GCP Secret Manager
+- [x] **INFRA-02**: Stripe webhook endpoint registered in Stripe Dashboard pointing to `https://dan-weinbeck.com/api/billing/webhook` listening for `checkout.session.completed`
+- [x] **INFRA-03**: Cloud Run service account has `secretmanager.secretAccessor` on both Stripe secrets
 
 ### Infrastructure — Firebase Auth
 
-- [ ] **INFRA-04**: `dan-weinbeck.com` and Cloud Run `.run.app` domain added to Firebase Auth authorized domains
-- [ ] **INFRA-05**: Google Sign-In provider enabled in Firebase Console
-- [ ] **INFRA-06**: `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` correctly set in Cloud Build trigger substitutions
+- [x] **INFRA-04**: `dan-weinbeck.com` and Cloud Run `.run.app` domain added to Firebase Auth authorized domains
+- [x] **INFRA-05**: Google Sign-In provider enabled in Firebase Console
+- [x] **INFRA-06**: `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` correctly set in Cloud Build trigger substitutions
 
 ### Infrastructure — Firestore
 
-- [ ] **INFRA-07**: Composite indexes created for billing queries (`billing_tool_usage` uid+createdAt, uid+externalJobId; `billing_purchases` uid+createdAt)
-- [ ] **INFRA-08**: Tool pricing seed data populated in production Firestore (`brand_scraper` active at 50 credits, 3 inactive placeholders)
-- [ ] **INFRA-09**: Firestore security rules deny client-side access to all billing collections
+- [x] **INFRA-07**: Composite indexes created for billing queries (`billing_tool_usage` uid+createdAt, uid+externalJobId; `billing_purchases` uid+createdAt)
+- [x] **INFRA-08**: Tool pricing seed data populated in production Firestore (`brand_scraper` active at 50 credits, 3 inactive placeholders)
+- [x] **INFRA-09**: Firestore security rules deny client-side access to all billing collections
 
 ### Infrastructure — Deploy
 
@@ -106,15 +106,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VAL-02 | Phase 22 | Complete |
 | VAL-03 | Phase 22 | Complete |
 | VAL-04 | Phase 22 | Complete |
-| INFRA-01 | Phase 23 | Pending |
-| INFRA-02 | Phase 23 | Pending |
-| INFRA-03 | Phase 23 | Pending |
-| INFRA-04 | Phase 23 | Pending |
-| INFRA-05 | Phase 23 | Pending |
-| INFRA-06 | Phase 23 | Pending |
-| INFRA-07 | Phase 23 | Pending |
-| INFRA-08 | Phase 23 | Pending |
-| INFRA-09 | Phase 23 | Pending |
+| INFRA-01 | Phase 23 | Complete |
+| INFRA-02 | Phase 23 | Complete |
+| INFRA-03 | Phase 23 | Complete |
+| INFRA-04 | Phase 23 | Complete |
+| INFRA-05 | Phase 23 | Complete |
+| INFRA-06 | Phase 23 | Complete |
+| INFRA-07 | Phase 23 | Complete |
+| INFRA-08 | Phase 23 | Complete |
+| INFRA-09 | Phase 23 | Complete |
 | INFRA-10 | Phase 24 | Pending |
 | INFRA-11 | Phase 24 | Pending |
 | BSINT-01 | Phase 24 | Pending |
