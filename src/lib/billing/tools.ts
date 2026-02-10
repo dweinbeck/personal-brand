@@ -23,12 +23,13 @@ export const TOOL_PRICING_SEED = [
     creditsPerUse: 5,
     costToUsCentsEstimate: 2,
   },
+  // NOTE: If already seeded in production, update via PUT /api/admin/billing/pricing
   {
     toolKey: "dave_ramsey",
-    label: "Dave Ramsey App",
-    active: false,
-    creditsPerUse: 10,
-    costToUsCentsEstimate: 5,
+    label: "Digital Envelopes",
+    active: true,
+    creditsPerUse: 100,
+    costToUsCentsEstimate: 0,
   },
 ] as const;
 
