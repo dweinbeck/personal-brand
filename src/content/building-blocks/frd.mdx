@@ -1,0 +1,65 @@
+export const metadata = {
+  title: "Creating a Product Requirements Document (PRD)",
+  description: "Turn an idea into shippable requirements",
+  publishedAt: "2026-02-10",
+  tags: ["Product Management", "FRD", "Planning"]
+};
+
+This building block will teach you how to establish a solid foundation for your project by creating a Product Requirements Document (PRD).
+
+### Outcomes
+- An understanding of how to create custom GPT's, how they work, and what they're good for
+- A reusable GPT you can run for any new idea
+- A consistent FRD structure
+- Faster "idea-to-build" speed with fewer scope misunderstandings
+---
+
+### 10-second custom GPT summary
+An FRD (Functional Requirements Document) is a short, structured spec that defines what a system must do and the constraints it must meet—including workflows, inputs/outputs, acceptance criteria, and non-functional limits like latency, cost, security, and rollback—so teams can build, test, and ship with clarity instead of guessing.
+
+## Why this building block matters
+- Prevents “prototype limbo” by turning ideas into testable, shippable requirements.
+- Aligns stakeholders on scope, workflows, data, and failure modes before you write code.
+- Creates the source-of-truth for evaluation, telemetry, security, and rollout plans.
+- Stops expensive rework caused by unclear definitions of “done,” edge cases, and non-functional constraints.
+
+If you plan on doing any development with AI-assisted coding, you'll need a great PRD to start the process.
+---
+
+## Prerequisites
+
+Before you start, make sure you have:
+- A one-sentence problem statement and target user role.
+- Access to any sample inputs/outputs (even 5–10 examples).
+- A rough understanding of where the agent runs (web app, Slack, backend job, etc.).
+
+Fundamentals (what matters + common pitfalls)
+Core concepts
+
+Functional requirements define what the system must do (workflows, inputs/outputs, tools, states).
+
+Non-functional requirements define constraints (latency, cost, reliability, security, privacy, compliance).
+
+Acceptance criteria make requirements testable (“done when…”), not aspirational.
+
+Traceability links: requirement → evaluation → telemetry → rollout/rollback.
+
+Key decisions
+Decision	Options	Recommendation	Why
+FRD format	Markdown, Google Doc, Notion, Confluence	Markdown in repo	Versionable, reviewable, stays close to code + tests
+Scope boundary	“All features” vs “v1 workflows only”	v1 workflows only	Forces shipping; backlog stays separate
+Evaluation approach	Manual QA, golden set, offline eval, online A/B	Golden set + offline eval	Fast iteration + measurable quality gates
+Tooling permissions	Full access, scoped tools, human-in-the-loop	Scoped tools + HITL for risky actions	Reduces blast radius and compliance risk
+Data handling	Store prompts, store redacted, store none	Store redacted + configurable retention	Enables debugging while protecting users
+Release strategy	Big bang, canary, feature flag	Feature flag + canary	Safe rollout + quick rollback
+Pitfalls
+
+Writing “The agent should be helpful” instead of specifying inputs, outputs, and acceptance tests.
+
+Skipping edge cases (rate limits, tool failures, ambiguous intent, missing data).
+
+No cost/latency budget → you discover it’s too slow/expensive after launch.
+
+No security/privacy section → you log sensitive data and can’t undo it.
+
+No rollback plan → incidents turn into multi-day outages.
