@@ -298,10 +298,12 @@ export async function refundUsage({
     if (usage.status === "refunded") {
       return; // Already refunded — idempotent
     }
-    if (usage.status !== "started" && usage.status !== "failed") {
-      throw new Error(
-        `Cannot refund usage in status "${usage.status}". Only "started" or "failed" usage can be refunded.`,
-      );
+    if (
+      usage.status !== "started" &&
+      usage.status !== "failed" &&
+      usage.status !== "succeeded"
+    ) {
+      throw new Error(`Cannot refund usage in status "${usage.status}".`);
     }
 
     const userRef = billingUsersCol().doc(usage.uid);

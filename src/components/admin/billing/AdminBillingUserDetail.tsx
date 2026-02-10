@@ -310,7 +310,7 @@ export function AdminBillingUserDetail({ uid }: { uid: string }) {
                       {formatTimestamp(u.createdAt)}
                     </td>
                     <td className="py-2 text-right">
-                      {(u.status === "started" || u.status === "failed") && (
+                      {u.status !== "refunded" && (
                         <button
                           type="button"
                           onClick={() => handleRefund(u.id)}
