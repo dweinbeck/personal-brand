@@ -5,17 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.6 Apps Hub Page
+**Current focus:** v1.6 Apps Hub Page — Phase 26
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 26 (Apps Hub Page)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-10 — Milestone v1.6 started
+Status: Ready to plan
+Last activity: 2026-02-10 — Roadmap created for v1.6
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 SHIPPED
 [████████████████████] 25/25 phases complete (6 milestones)
+v1.6: [░░░░░░░░░░░░░░░░░░░░] Phase 26 not started
 
 ## Performance Metrics
 
@@ -49,9 +50,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Milestone v1.6 started — defining requirements
+Stopped at: Roadmap created for v1.6 — ready to plan Phase 26
 Resume file: None
 
 ## Next Step
 
-Define requirements → create roadmap → `/gsd:plan-phase 26`
+`/gsd:plan-phase 26`
