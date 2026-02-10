@@ -40,10 +40,10 @@ See .planning/MILESTONES.md for full history of shipped milestones.
   3. Visitor sees the Dave Ramsey Digital Envelopes card as "Coming Soon" with a disabled button that cannot be clicked
   4. Visitor sees "Apps" in the main navigation with correct active state highlighting on /apps and /apps/* routes
   5. Search engines discover /apps and /apps/brand-scraper via the sitemap, and lint/test/build all pass
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 26-01: TBD
+- [ ] 26-01-PLAN.md -- Apps data, AppCard component, /apps page, navigation, sitemap
 
 ## Progress
 
@@ -58,7 +58,7 @@ Phase 26 is the only phase in v1.6.
 | 13-16 | v1.3 | 7/7 | Complete | 2026-02-08 |
 | 17-21 | v1.4 | 8/8 | Complete | 2026-02-09 |
 | 22-25 | v1.5 | 6/6 | Complete | 2026-02-10 |
-| 26. Apps Hub Page | v1.6 | 0/? | Not started | - |
+| 26. Apps Hub Page | v1.6 | 0/1 | Planned | - |
 
 ---
 *Roadmap created: 2026-02-10*
