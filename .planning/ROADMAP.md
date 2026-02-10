@@ -76,10 +76,11 @@ Plans:
   3. User can submit a brand scrape that debits 50 credits, and a failed scrape auto-refunds the credits
   4. Brand scraper results display GCS signed URL download buttons for brand JSON and assets ZIP
   5. Admin can view billing users with balances, adjust credits, refund usage, and edit tool pricing from the admin panel
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 24-01: TBD
+- [ ] 24-01-PLAN.md -- Trigger Cloud Build deployment and verify environment configuration
+- [ ] 24-02-PLAN.md -- Smoke test all E2E user flows (auth, billing, brand scraper, admin panel)
 
 ### Phase 25: Go Live
 **Goal**: Billing system accepts real payments with live Stripe keys
@@ -102,5 +103,5 @@ Phases execute in numeric order: 22 → 23 → 24 → 25
 |-------|-----------|----------------|--------|-----------|
 | 22. Code Validation & Commit | v1.5 | 1/1 | Complete | 2026-02-09 |
 | 23. Infrastructure Configuration | v1.5 | 2/2 | Complete | 2026-02-09 |
-| 24. Deploy & Smoke Test | v1.5 | 0/? | Not started | - |
+| 24. Deploy & Smoke Test | v1.5 | 0/2 | Not started | - |
 | 25. Go Live | v1.5 | 0/? | Not started | - |
