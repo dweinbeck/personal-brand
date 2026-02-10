@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { Person, WithContext } from "schema-dts";
-import { BlogTeaser } from "@/components/home/BlogTeaser";
+import { FeaturedBuildingBlocks } from "@/components/home/FeaturedBuildingBlocks";
 import { FeaturedProjects } from "@/components/home/FeaturedProjects";
 import { HeroSection } from "@/components/home/HeroSection";
 import { CONTACT_EMAIL } from "@/lib/constants";
@@ -39,7 +39,7 @@ export default function HomePage() {
       />
       <HeroSection />
       <FeaturedProjects />
-      <BlogTeaser />
+      <FeaturedBuildingBlocks />
     </div>
   );
 }

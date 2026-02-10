@@ -22,7 +22,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
   return (
     <Link
       href={`/building-blocks/${tutorial.slug}`}
-      className="relative rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block"
+      className="relative flex h-full flex-col rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block"
     >
       {/* Topic badge */}
       {primaryTag && (
@@ -37,7 +37,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         {tutorial.metadata.title}
       </h3>
 
-      <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3">
+      <p className="mt-3 flex-1 text-sm text-text-secondary leading-relaxed line-clamp-3">
         {tutorial.metadata.description}
       </p>
 

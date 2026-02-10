@@ -1,0 +1,25 @@
+import { TutorialCard } from "@/components/building-blocks/TutorialCard";
+import { Button } from "@/components/ui/Button";
+import { getAllTutorials } from "@/lib/tutorials";
+
+export async function FeaturedBuildingBlocks() {
+  const tutorials = await getAllTutorials();
+
+  return (
+    <section className="py-8 motion-safe:animate-fade-in-up">
+      <h2 className="text-2xl font-semibold tracking-tight text-text-primary text-center mb-10">
+        Building Blocks
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tutorials.map((tutorial) => (
+          <TutorialCard key={tutorial.slug} tutorial={tutorial} />
+        ))}
+      </div>
+      <div className="mt-8 text-center">
+        <Button variant="secondary" size="sm" href="/building-blocks">
+          See all tutorials
+        </Button>
+      </div>
+    </section>
+  );
+}

@@ -92,7 +92,7 @@ export function NavLinks() {
       {/* Mobile menu */}
       <div
         className={clsx(
-          "absolute top-full left-0 right-0 glass-warm border-b border-border shadow-sm md:hidden transition-all duration-200 overflow-hidden",
+          "absolute top-full left-0 right-0 bg-surface border-b border-border shadow-sm md:hidden transition-all duration-200 overflow-hidden",
           mobileOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0",
         )}
       >
