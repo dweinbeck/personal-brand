@@ -11,8 +11,17 @@ export async function GET(request: Request) {
   if (!auth.authorized) return unauthorizedResponse(auth);
 
   try {
-    const data = await listEnvelopesWithRemaining(auth.uid);
-    return Response.json(data);
+    const [access, data] = await Promise.all([
+      checkEnvelopeAccess(auth.uid, auth.email),
+      listEnvelopesWithRemaining(auth.uid),
+    ]);
+    return Response.json({
+      ...data,
+      billing: {
+        mode: access.mode,
+        reason: "reason" in access ? access.reason : undefined,
+      },
+    });
   } catch (error) {
     console.error(
       "GET /api/envelopes error:",

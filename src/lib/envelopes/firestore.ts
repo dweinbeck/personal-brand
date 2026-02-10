@@ -673,7 +673,7 @@ export async function listTransactionsForWeek(
  */
 export async function listEnvelopesWithRemaining(
   userId: string,
-): Promise<HomePageData> {
+): Promise<Omit<HomePageData, "billing">> {
   const today = new Date();
   const { start, end } = getWeekRange(today);
   const weekStartStr = format(start, "yyyy-MM-dd");
@@ -797,7 +797,6 @@ export async function listEnvelopesWithRemaining(
     envelopes,
     weekLabel: formatWeekLabel(today),
     cumulativeSavingsCents,
-    billing: { mode: "readwrite" as const },
   };
 }
 
@@ -874,7 +873,7 @@ export async function computeCumulativeSavings(
  */
 export async function getAnalyticsData(
   userId: string,
-): Promise<AnalyticsPageData> {
+): Promise<Omit<AnalyticsPageData, "billing">> {
   const today = new Date();
   const { start, end } = getWeekRange(today);
   const weekStartStr = format(start, "yyyy-MM-dd");
@@ -981,6 +980,5 @@ export async function getAnalyticsData(
     envelopes: envelopeHeaders,
     pivotRows,
     savingsByWeek,
-    billing: { mode: "readwrite" as const },
   };
 }

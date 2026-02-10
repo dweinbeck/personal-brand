@@ -22,8 +22,17 @@ export async function GET(request: Request) {
       );
     }
 
-    const data = await listTransactionsForWeek(auth.uid, weekStart, weekEnd);
-    return Response.json(data);
+    const [access, data] = await Promise.all([
+      checkEnvelopeAccess(auth.uid, auth.email),
+      listTransactionsForWeek(auth.uid, weekStart, weekEnd),
+    ]);
+    return Response.json({
+      ...data,
+      billing: {
+        mode: access.mode,
+        reason: "reason" in access ? access.reason : undefined,
+      },
+    });
   } catch (error) {
     console.error(
       "GET /api/envelopes/transactions error:",
