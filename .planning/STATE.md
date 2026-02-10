@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Planning next milestone
+**Current focus:** v1.6 Apps Hub Page
 
 ## Current Position
 
-Phase: 25 of 25 — All phases complete
-Plan: N/A
-Status: v1.5 milestone archived, ready for next milestone
-Last activity: 2026-02-10 — v1.5 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-10 — Milestone v1.6 started
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 SHIPPED
 [████████████████████] 25/25 phases complete (6 milestones)
@@ -49,9 +49,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: v1.5 milestone archived
+Stopped at: Milestone v1.6 started — defining requirements
 Resume file: None
 
 ## Next Step
 
-Start next milestone — `/gsd:new-milestone`
+Define requirements → create roadmap → `/gsd:plan-phase 26`

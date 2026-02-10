@@ -61,7 +61,12 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-(None — planning next milestone)
+- [ ] Apps hub page at /apps with 2-across grid displaying available tools
+- [ ] AppCard component matching TutorialCard visual style (badge, dates, tech stack tags)
+- [ ] Brand Scraper card (available, links to /apps/brand-scraper)
+- [ ] Dave Ramsey Digital Envelopes card (coming soon, disabled, will link to /(envelopes) route group)
+- [ ] "Apps" added to main navigation with correct active state
+- [ ] Apps routes added to sitemap (/apps and available app detail pages)
 
 ### Deferred
 
@@ -85,6 +90,16 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Dynamic per-page OG images — single branded image sufficient
 - Subscription / recurring billing — pre-paid credits model is intentional
 - Custom Stripe payment page (Elements) — Checkout redirect is PCI-compliant out of the box
+
+## Current Milestone: v1.6 Apps Hub Page
+
+**Goal:** Add a public /apps page showcasing available tools in a visual grid, with navigation and sitemap integration.
+
+**Target features:**
+- Apps index page with 2-across card grid matching Building Blocks style
+- App card component with badge, subtitle, description, dates, tech stack tags, enter/coming-soon button
+- Brand Scraper as live app, Dave Ramsey Digital Envelopes as coming soon
+- "Apps" in main nav, app routes in sitemap
 
 ## Current State
 
@@ -152,5 +167,7 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | ✓ Good — PCI-compliant, zero payment UI code |
 | Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | ✓ Good — ready for activation |
 
+| Apps hub page for tool discovery | Visitors can browse available tools from a single page; matches existing card patterns | — Pending |
+
 ---
-*Last updated: 2026-02-10 after v1.5 milestone*
+*Last updated: 2026-02-10 after v1.6 milestone start*
