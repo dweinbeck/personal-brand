@@ -2,7 +2,11 @@
 
 import useSWR from "swr";
 import { useAuth } from "@/context/AuthContext";
-import type { AnalyticsPageData, HomePageData, TransactionsPageData } from "@/lib/envelopes/types";
+import type {
+  AnalyticsPageData,
+  HomePageData,
+  TransactionsPageData,
+} from "@/lib/envelopes/types";
 import { envelopeFetch } from "./api";
 
 export function useEnvelopes() {

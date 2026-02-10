@@ -17,8 +17,8 @@ import {
   formatWeekLabel,
   getRemainingDaysPercent,
   getStatusLabel,
-  getWeekRange,
   getWeekNumber,
+  getWeekRange,
 } from "./week-math";
 
 const WEEK_OPTIONS = { weekStartsOn: 0 as const };
@@ -110,7 +110,10 @@ export function computeEnvelopeStatus(
   donatedAllocationsCents = 0,
 ): { remainingCents: number; status: "On Track" | "Watch" | "Over" } {
   const remainingCents =
-    weeklyBudgetCents - spentCents + receivedAllocationsCents - donatedAllocationsCents;
+    weeklyBudgetCents -
+    spentCents +
+    receivedAllocationsCents -
+    donatedAllocationsCents;
   const remainingDaysPercent = getRemainingDaysPercent(today);
   const status = getStatusLabel(
     remainingCents,
@@ -260,7 +263,7 @@ export function computeWeeklySavingsBreakdown(
   let weekStart = earliestWeekStart;
 
   while (weekStart < currentWeekStart) {
-    const weekStartDate = new Date(weekStart + "T00:00:00");
+    const weekStartDate = new Date(`${weekStart}T00:00:00`);
     const nextWeekDate = addWeeks(weekStartDate, 1);
     const weekEnd = format(
       new Date(nextWeekDate.getTime() - 86_400_000),
@@ -314,7 +317,7 @@ export function buildPivotRows(
   let weekStart = earliestWeekStart;
 
   while (weekStart <= currentWeekEnd) {
-    const weekStartDate = new Date(weekStart + "T00:00:00");
+    const weekStartDate = new Date(`${weekStart}T00:00:00`);
     const nextWeekDate = addWeeks(weekStartDate, 1);
     const weekEnd = format(
       new Date(nextWeekDate.getTime() - 86_400_000),
@@ -331,10 +334,7 @@ export function buildPivotRows(
         cells[t.envelopeId] = (cells[t.envelopeId] ?? 0) + t.amountCents;
       }
 
-      const totalCents = Object.values(cells).reduce(
-        (sum, v) => sum + v,
-        0,
-      );
+      const totalCents = Object.values(cells).reduce((sum, v) => sum + v, 0);
 
       const weekNumber = getWeekNumber(weekStartDate);
       rows.push({
@@ -716,13 +716,21 @@ export async function listEnvelopesWithRemaining(
         const allocData = allocDoc.data();
         const donorId = allocData.donorEnvelopeId as string;
         const amount = allocData.amountCents as number;
-        const recipientId = txEnvelopeMap.get(allocData.sourceTransactionId as string);
+        const recipientId = txEnvelopeMap.get(
+          allocData.sourceTransactionId as string,
+        );
 
         // Donor envelope gives funds
-        donatedByEnvelope.set(donorId, (donatedByEnvelope.get(donorId) ?? 0) + amount);
+        donatedByEnvelope.set(
+          donorId,
+          (donatedByEnvelope.get(donorId) ?? 0) + amount,
+        );
         // Recipient envelope (the one with the overage) receives funds
         if (recipientId) {
-          receivedByEnvelope.set(recipientId, (receivedByEnvelope.get(recipientId) ?? 0) + amount);
+          receivedByEnvelope.set(
+            recipientId,
+            (receivedByEnvelope.get(recipientId) ?? 0) + amount,
+          );
         }
       }
     }
@@ -746,9 +754,15 @@ export async function listEnvelopesWithRemaining(
         // Skip if already counted from the first query
         if (donatedByEnvelope.has(donorId)) continue;
 
-        donatedByEnvelope.set(donorId, (donatedByEnvelope.get(donorId) ?? 0) + amount);
+        donatedByEnvelope.set(
+          donorId,
+          (donatedByEnvelope.get(donorId) ?? 0) + amount,
+        );
         if (recipientId) {
-          receivedByEnvelope.set(recipientId, (receivedByEnvelope.get(recipientId) ?? 0) + amount);
+          receivedByEnvelope.set(
+            recipientId,
+            (receivedByEnvelope.get(recipientId) ?? 0) + amount,
+          );
         }
       }
     }
@@ -857,7 +871,9 @@ export async function computeCumulativeSavings(
  * This is a simplification for the analytics overview. The home page shows
  * allocation-adjusted status.
  */
-export async function getAnalyticsData(userId: string): Promise<AnalyticsPageData> {
+export async function getAnalyticsData(
+  userId: string,
+): Promise<AnalyticsPageData> {
   const today = new Date();
   const { start, end } = getWeekRange(today);
   const weekStartStr = format(start, "yyyy-MM-dd");
@@ -871,12 +887,12 @@ export async function getAnalyticsData(userId: string): Promise<AnalyticsPageDat
   ]);
 
   // 2. Parse envelope data
-  const envelopeHeaders = envSnap.docs.map(doc => ({
+  const envelopeHeaders = envSnap.docs.map((doc) => ({
     id: doc.id,
     title: doc.data().title as string,
   }));
 
-  const envelopeData = envSnap.docs.map(doc => {
+  const envelopeData = envSnap.docs.map((doc) => {
     const data = doc.data();
     const createdAt = data.createdAt?.toDate?.() ?? new Date();
     return {
@@ -892,7 +908,10 @@ export async function getAnalyticsData(userId: string): Promise<AnalyticsPageDat
   for (const doc of currentTxSnap.docs) {
     const data = doc.data();
     const envId = data.envelopeId as string;
-    spentByEnvelope.set(envId, (spentByEnvelope.get(envId) ?? 0) + (data.amountCents as number));
+    spentByEnvelope.set(
+      envId,
+      (spentByEnvelope.get(envId) ?? 0) + (data.amountCents as number),
+    );
   }
 
   let totalSpentCents = 0;
@@ -903,7 +922,11 @@ export async function getAnalyticsData(userId: string): Promise<AnalyticsPageDat
     const spent = spentByEnvelope.get(env.id) ?? 0;
     totalSpentCents += spent;
     totalBudgetCents += env.weeklyBudgetCents;
-    const { status } = computeEnvelopeStatus(env.weeklyBudgetCents, spent, today);
+    const { status } = computeEnvelopeStatus(
+      env.weeklyBudgetCents,
+      spent,
+      today,
+    );
     if (status === "On Track") onTrackCount++;
   }
 
@@ -916,7 +939,7 @@ export async function getAnalyticsData(userId: string): Promise<AnalyticsPageDat
   };
 
   // 4. Parse ALL transactions for pivot table and savings
-  const allTransactions = allTxSnap.docs.map(doc => {
+  const allTransactions = allTxSnap.docs.map((doc) => {
     const data = doc.data();
     return {
       envelopeId: data.envelopeId as string,
@@ -933,9 +956,16 @@ export async function getAnalyticsData(userId: string): Promise<AnalyticsPageDat
   for (const tx of allTransactions) {
     if (tx.date < earliestDate) earliestDate = tx.date;
   }
-  const earliestWeekStart = format(startOfWeek(new Date(earliestDate + "T00:00:00"), WEEK_OPTIONS), "yyyy-MM-dd");
+  const earliestWeekStart = format(
+    startOfWeek(new Date(`${earliestDate}T00:00:00`), WEEK_OPTIONS),
+    "yyyy-MM-dd",
+  );
 
-  const pivotRows = buildPivotRows(allTransactions, earliestWeekStart, weekEndStr);
+  const pivotRows = buildPivotRows(
+    allTransactions,
+    earliestWeekStart,
+    weekEndStr,
+  );
 
   // 6. Compute SAVINGS BREAKDOWN
   const savingsByWeek = computeWeeklySavingsBreakdown(

@@ -57,9 +57,7 @@ export function SummaryStats({
             allOnTrack ? "text-sage" : "text-amber-600",
           )}
         >
-          {allOnTrack
-            ? "On Track"
-            : `${onTrackCount}/${totalEnvelopeCount}`}
+          {allOnTrack ? "On Track" : `${onTrackCount}/${totalEnvelopeCount}`}
         </p>
       </Card>
     </div>
