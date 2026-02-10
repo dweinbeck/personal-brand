@@ -1,4 +1,5 @@
 import { unauthorizedResponse, verifyUser } from "@/lib/auth/user";
+import { checkEnvelopeAccess } from "@/lib/envelopes/billing";
 import {
   deleteTransaction,
   updateTransaction,
@@ -15,6 +16,14 @@ export async function PUT(
   const { transactionId } = await params;
 
   try {
+    const access = await checkEnvelopeAccess(auth.uid, auth.email);
+    if (access.mode === "readonly") {
+      return Response.json(
+        { error: "Insufficient credits. Purchase credits to continue editing." },
+        { status: 402 },
+      );
+    }
+
     const body = await request.json();
     const parsed = transactionUpdateSchema.safeParse(body);
 
@@ -55,6 +64,14 @@ export async function DELETE(
   const { transactionId } = await params;
 
   try {
+    const access = await checkEnvelopeAccess(auth.uid, auth.email);
+    if (access.mode === "readonly") {
+      return Response.json(
+        { error: "Insufficient credits. Purchase credits to continue editing." },
+        { status: 402 },
+      );
+    }
+
     await deleteTransaction(auth.uid, transactionId);
     return Response.json({ success: true });
   } catch (error) {

@@ -1,4 +1,5 @@
 import { unauthorizedResponse, verifyUser } from "@/lib/auth/user";
+import { checkEnvelopeAccess } from "@/lib/envelopes/billing";
 import {
   createEnvelope,
   listEnvelopesWithRemaining,
@@ -29,6 +30,14 @@ export async function POST(request: Request) {
   if (!auth.authorized) return unauthorizedResponse(auth);
 
   try {
+    const access = await checkEnvelopeAccess(auth.uid, auth.email);
+    if (access.mode === "readonly") {
+      return Response.json(
+        { error: "Insufficient credits. Purchase credits to continue editing." },
+        { status: 402 },
+      );
+    }
+
     const body = await request.json();
     const parsed = envelopeSchema.safeParse(body);
 
