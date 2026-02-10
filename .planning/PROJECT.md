@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with project cards pulling live data from GitHub's API, individual project detail pages with README rendering, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, and production deployment on GCP Cloud Run.
+A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with project cards pulling live data from GitHub's API, individual project detail pages with README rendering, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, a billing/credits system with Stripe payments for paid tools, and production deployment on GCP Cloud Run.
 
 ## Core Value
 
@@ -51,16 +51,17 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Brand Scraper component cleanly separated for potential reuse — v1.4
 - ✓ Control Center navigation to switch between features (repos, todoist, editor, brand scraper) — v1.4
 - ✓ Custom GPTs public page with responsive card grid — v1.4
+- ✓ Billing/credits system validated and committed (~2,810 LOC) — v1.5
+- ✓ Firebase Auth (Google Sign-In) for end users with AuthGuard and AuthButton — v1.5
+- ✓ Stripe Checkout integration with webhook processing and GCP Secret Manager — v1.5
+- ✓ Brand Scraper tool integration with billing (debit credits, auto-refund on failure) — v1.5
+- ✓ Update brand-scraper integration for v1.1 deployment (real Cloud Run URL, GCS signed URLs) — v1.5
+- ✓ Admin billing panel (user management, credit adjustments, usage refunds, pricing editor) — v1.5
+- ✓ Deploy billing system to production on Cloud Run with live Stripe payments — v1.5
 
 ### Active
 
-- [ ] Validate and commit existing billing/credits system (~3K LOC from prior session) — v1.5
-- [ ] Firebase Auth (Google Sign-In) for end users with AuthGuard and AuthButton — v1.5
-- [ ] Stripe Checkout integration with webhook processing and GCP Secret Manager — v1.5
-- [ ] Brand Scraper tool integration with billing (debit credits, auto-refund on failure) — v1.5
-- [ ] Update brand-scraper integration for v1.1 deployment (real Cloud Run URL, GCS signed URLs) — v1.5
-- [ ] Admin billing panel (user management, credit adjustments, usage refunds, pricing editor) — v1.5
-- [ ] Deploy billing system to production on Cloud Run — v1.5
+(None — planning next milestone)
 
 ### Deferred
 
@@ -68,11 +69,12 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Writing page displays real articles (replaces lorem ipsum)
 - Optimized logo assets (SVG preferred, PNG fallback)
 - Additional paid tools: 60-Second Lesson, Bus Text, Dave Ramsey App (pricing entries exist, tools inactive)
+- Brand scraper worker deployment (external service — jobs currently queued but not processed)
 
 ### Out of Scope
 
 - Todoist integration / control center — partially delivered v1.4 (editor + brand scraper)
-- OAuth / magic link login — no auth needed for public site
+- OAuth / magic link login — Firebase Auth (Google Sign-In) covers user auth needs
 - Real-time chat — not relevant for personal site
 - Video content — unnecessary complexity
 - Mobile app — web only
@@ -81,34 +83,20 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - GitHub activity sparklines — adds API complexity for minimal value
 - RSS feed — defer until writing content exists
 - Dynamic per-page OG images — single branded image sufficient
-
-## Current Milestone: v1.5 Billing & Credits System
-
-**Goal:** Validate, integrate, and deploy the existing billing/credits system with Stripe payments, Firebase Auth for end users, brand-scraper v1.1 integration, and admin billing management.
-
-**Target features:**
-- Ledger-based credits system (1 credit = 1 cent, 100 free on signup, 500 for $5)
-- Firebase Auth (Google Sign-In) for public users
-- Stripe Checkout with webhook processing
-- Brand Scraper as first paid tool (50 credits/use, auto-refund on failure)
-- Brand-scraper v1.1 integration (real Cloud Run URL, GCS signed URLs for downloads)
-- Admin billing panel (users, ledger, usage, pricing management)
-- Production deployment with Stripe secrets via GCP Secret Manager
-
-**Dependencies:**
-- Brand-scraper v1.1 deployed to Cloud Run (assumed available; Phases 5-7 in progress in ~/Documents/brand-scraper)
+- Subscription / recurring billing — pre-paid credits model is intentional
+- Custom Stripe payment page (Elements) — Checkout redirect is PCI-compliant out of the box
 
 ## Current State
 
-**Shipped:** v1.4 on 2026-02-09
+**Shipped:** v1.5 on 2026-02-10
 **Live at:** https://dan-weinbeck.com
 
-Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, and production deployment on GCP Cloud Run. Billing/credits system code exists uncommitted from a prior session (~3K LOC).
+Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~6,103 LOC TypeScript/TSX/CSS/MDX
-- **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK, react-markdown
+- **Codebase:** ~8,900 LOC TypeScript/TSX/CSS/MDX (estimated after v1.5 additions)
+- **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK + Auth, Stripe, react-markdown, Vitest
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
 - **LinkedIn:** https://www.linkedin.com/in/dw789/
@@ -118,11 +106,13 @@ Complete personal brand site with live GitHub data, project detail pages, career
 - chatbot-assistant provides: GitHub webhook ingestion, Postgres FTS + trigram search, Cloud Tasks async indexing, Gemini 2.5 Flash-Lite, mechanical citation verification
 - Control center shipped in v1.4 with content editor and brand scraper admin tools
 - Brand scraper API (brand-scraper) is a separate Fastify/Cloud Run service with async job processing, Playwright extraction, and GCS storage
-- Brand scraper API contract: POST /scrape → job_id, GET /jobs/:id → status + BrandTaxonomy result (colors, fonts, logos, assets with confidence scores)
-- Brand scraper v1.1 in progress: deploying to GCP Cloud Run (Cloud SQL, GCS, Cloud Tasks). Will add GCS signed URLs for brand_json_url and assets_zip_url downloads
-- Billing system (~3K LOC) exists uncommitted: Firestore ledger, Stripe Checkout, idempotent debit/webhook, admin panel, auth guards, brand scraper tool integration
-- Firebase Auth client SDK added for Google Sign-In (AuthGuard, AuthButton components)
-- 4 tool pricing entries exist: brand_scraper (active, 50 credits), lesson_60s, bus_text, dave_ramsey (inactive)
+- Brand scraper worker not processing jobs — BSINT-02 and E2E-06 will resolve when worker is deployed
+- Billing system live: ledger-based Firestore credits (1 credit = 1 cent), 100 free on signup, 500 for $5 via Stripe Checkout
+- Firebase Auth (Google Sign-In) for public users with AuthGuard/AuthButton components
+- Stripe webhook at /api/billing/webhook — signature-verified, idempotent on event ID + session ID
+- Admin billing panel at /control-center/billing — user list, detail, adjust credits, refund usage, edit pricing
+- 4 tool pricing entries: brand_scraper (active, 50 credits), lesson_60s, bus_text, dave_ramsey (inactive)
+- Stripe secrets via GCP Secret Manager: stripe-secret-key (v4, live), stripe-webhook-secret (v3, live)
 
 ## Constraints
 
@@ -157,11 +147,10 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | Proxy brand-scraper API through Next.js route | Same pattern as chatbot proxy; keeps API URL server-side, avoids CORS | ✓ Good |
 | AdminGuard for Control Center auth | Existing pattern sufficient for personal admin tools; no new auth system needed | ✓ Good |
 | Brand Scraper as cleanly separated component | Well-organized code with clear boundaries, but no special packaging — extractable later if needed | ✓ Good |
-
-| Ledger-based Firestore credits | Transaction-safe, idempotent, audit trail for all balance mutations | — Pending |
-| Firebase Auth for end users | Google Sign-In enables public tool access without building custom auth | — Pending |
-| Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | — Pending |
-| Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | — Pending |
+| Ledger-based Firestore credits | Transaction-safe, idempotent, audit trail for all balance mutations | ✓ Good — live with real payments |
+| Firebase Auth for end users | Google Sign-In enables public tool access without building custom auth | ✓ Good — seamless sign-in experience |
+| Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | ✓ Good — PCI-compliant, zero payment UI code |
+| Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | ✓ Good — ready for activation |
 
 ---
-*Last updated: 2026-02-09 after v1.5 milestone started*
+*Last updated: 2026-02-10 after v1.5 milestone*

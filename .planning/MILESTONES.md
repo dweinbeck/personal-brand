@@ -1,5 +1,32 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.5 Billing & Credits System (Shipped: 2026-02-10)
+
+**Delivered:** Validated, configured infrastructure for, and deployed the existing billing/credits system with Stripe live payments, Firebase Auth for end users, brand-scraper v1.1 integration, admin billing management, and production deployment on GCP Cloud Run accepting real payments.
+
+**Phases completed:** 22-25 (6 plans total)
+
+**Key accomplishments:**
+
+- Billing system validated and committed — ~2,810 LOC across 38 files, ledger-based Firestore credits with Stripe Checkout, all quality gates passing
+- Infrastructure fully configured — GCP Secret Manager secrets, Stripe webhook, Firebase Auth domains, Firestore composite indexes/security rules/seed data
+- Production deployment with E2E verification — 3 bugs found and fixed during smoke testing (checkout redirect URL, Zod null handling, admin refund scope)
+- Live payments operational — real $5 Stripe purchase verified end-to-end with live keys
+- Admin billing panel live — user management, credit adjustments, usage refunds, pricing editor
+
+**Stats:**
+
+- 56 source files changed (+5,025 / -555 lines)
+- 4 phases, 6 plans
+- 2 days (Feb 9-10, 2026)
+- 25/27 requirements shipped (2 blocked on external brand scraper worker)
+
+**Git range:** `50e6b7b` → `f4ecb68`
+
+**What's next:** Real writing content, additional paid tools, brand scraper worker deployment
+
+---
+
 ## v1.4 Control Center: Content Editor & Brand Scraper (Shipped: 2026-02-09)
 
 **Delivered:** Expanded the Control Center with two new admin tools — a form-guided Building Blocks content editor with live markdown preview and MDX output, and a Brand Scraper frontend with SWR polling and card gallery for extracted brand data. Also added a public Custom GPTs page and Control Center navigation with horizontal nav bar.
