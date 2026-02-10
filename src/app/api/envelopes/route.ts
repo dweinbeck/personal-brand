@@ -42,7 +42,9 @@ export async function POST(request: Request) {
     const access = await checkEnvelopeAccess(auth.uid, auth.email);
     if (access.mode === "readonly") {
       return Response.json(
-        { error: "Insufficient credits. Purchase credits to continue editing." },
+        {
+          error: "Insufficient credits. Purchase credits to continue editing.",
+        },
         { status: 402 },
       );
     }

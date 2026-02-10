@@ -15,6 +15,7 @@ import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
 import { InlineTransactionForm } from "./InlineTransactionForm";
 import { type OverageContext, OverageModal } from "./OverageModal";
+import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsBanner } from "./SavingsBanner";
 
 export function EnvelopesHomePage() {
@@ -29,6 +30,8 @@ export function EnvelopesHomePage() {
   const [overageContext, setOverageContext] = useState<OverageContext | null>(
     null,
   );
+
+  const isReadOnly = data?.billing?.mode === "readonly";
 
   // Current week date constraints for inline transaction form
   const now = new Date();
@@ -53,6 +56,7 @@ export function EnvelopesHomePage() {
     title: string;
     weeklyBudgetCents: number;
   }) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -75,6 +79,7 @@ export function EnvelopesHomePage() {
     envelopeId: string,
     formData: { title: string; weeklyBudgetCents: number; rollover?: boolean },
   ) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -94,6 +99,7 @@ export function EnvelopesHomePage() {
   }
 
   async function handleDelete(envelopeId: string) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -112,6 +118,7 @@ export function EnvelopesHomePage() {
   }
 
   async function handleReorder(envelopeId: string, direction: "up" | "down") {
+    if (isReadOnly) return;
     if (!data) return;
 
     const envelopes = [...data.envelopes];
@@ -152,6 +159,7 @@ export function EnvelopesHomePage() {
     merchant?: string;
     description?: string;
   }) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -237,6 +245,7 @@ export function EnvelopesHomePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+      {isReadOnly && <ReadOnlyBanner />}
       <GreetingBanner
         onTrackCount={onTrackCount}
         totalCount={envelopes.length}
@@ -298,6 +307,7 @@ export function EnvelopesHomePage() {
                 onMoveUp={() => handleReorder(env.id, "up")}
                 onMoveDown={() => handleReorder(env.id, "down")}
                 onAddTransaction={() => {
+                  if (isReadOnly) return;
                   setEditingId(null);
                   setDeletingId(null);
                   setExpandedId(expandedId === env.id ? null : env.id);
@@ -318,18 +328,19 @@ export function EnvelopesHomePage() {
           </div>
         ))}
 
-        {isCreating ? (
-          <Card variant="default">
-            <EnvelopeForm
-              mode="create"
-              onSubmit={handleCreate}
-              onCancel={() => setIsCreating(false)}
-              isSubmitting={isSubmitting}
-            />
-          </Card>
-        ) : (
-          <CreateEnvelopeCard onClick={() => setIsCreating(true)} />
-        )}
+        {!isReadOnly &&
+          (isCreating ? (
+            <Card variant="default">
+              <EnvelopeForm
+                mode="create"
+                onSubmit={handleCreate}
+                onCancel={() => setIsCreating(false)}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          ) : (
+            <CreateEnvelopeCard onClick={() => setIsCreating(true)} />
+          ))}
       </EnvelopeCardGrid>
 
       <OverageModal

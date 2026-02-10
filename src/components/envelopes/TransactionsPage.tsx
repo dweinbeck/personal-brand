@@ -9,6 +9,7 @@ import { envelopeFetch } from "@/lib/envelopes/api";
 import { useEnvelopes, useTransactions } from "@/lib/envelopes/hooks";
 import { getWeekRange } from "@/lib/envelopes/week-math";
 import { type OverageContext, OverageModal } from "./OverageModal";
+import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { TransactionForm } from "./TransactionForm";
 import { TransactionList } from "./TransactionList";
 import { WeekSelector } from "./WeekSelector";
@@ -44,6 +45,8 @@ export function TransactionsPage() {
     mutate: mutateEnvelopes,
   } = useEnvelopes();
 
+  const isReadOnly = txData?.billing?.mode === "readonly";
+
   const getToken = useCallback(async () => {
     const token = await user?.getIdToken();
     if (!token) throw new Error("Not authenticated");
@@ -59,6 +62,7 @@ export function TransactionsPage() {
     merchant?: string;
     description?: string;
   }) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -120,6 +124,7 @@ export function TransactionsPage() {
       description?: string;
     },
   ) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -143,6 +148,7 @@ export function TransactionsPage() {
   }
 
   async function handleDelete(transactionId: string) {
+    if (isReadOnly) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -215,30 +221,33 @@ export function TransactionsPage() {
         Transactions
       </h1>
 
+      {isReadOnly && <ReadOnlyBanner />}
+
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <WeekSelector weekStart={weekStart} onWeekChange={handleWeekChange} />
       </div>
 
-      {isCreating ? (
-        <Card variant="default" className="mb-6">
-          <TransactionForm
-            envelopes={envelopes}
-            onSubmit={handleCreate}
-            onCancel={() => setIsCreating(false)}
-            isSubmitting={isSubmitting}
-          />
-        </Card>
-      ) : (
-        <div className="mb-6">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsCreating(true)}
-          >
-            Add Transaction
-          </Button>
-        </div>
-      )}
+      {!isReadOnly &&
+        (isCreating ? (
+          <Card variant="default" className="mb-6">
+            <TransactionForm
+              envelopes={envelopes}
+              onSubmit={handleCreate}
+              onCancel={() => setIsCreating(false)}
+              isSubmitting={isSubmitting}
+            />
+          </Card>
+        ) : (
+          <div className="mb-6">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCreating(true)}
+            >
+              Add Transaction
+            </Button>
+          </div>
+        ))}
 
       <TransactionList
         transactions={transactions}

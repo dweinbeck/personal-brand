@@ -1,6 +1,7 @@
 "use client";
 
 import { useAnalytics } from "@/lib/envelopes/hooks";
+import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsChart } from "./SavingsChart";
 import { SummaryStats } from "./SummaryStats";
 import { WeeklyPivotTable } from "./WeeklyPivotTable";
@@ -26,8 +27,11 @@ export function AnalyticsPage() {
 
   if (!data) return null;
 
+  const isReadOnly = data?.billing?.mode === "readonly";
+
   return (
     <div className="space-y-8">
+      {isReadOnly && <ReadOnlyBanner />}
       <section>
         <h2 className="text-lg font-semibold font-display text-primary mb-4">
           This Week

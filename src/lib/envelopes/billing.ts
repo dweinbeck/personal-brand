@@ -1,8 +1,11 @@
 import { format, startOfWeek } from "date-fns";
 import { FieldValue } from "firebase-admin/firestore";
-import { db } from "@/lib/firebase";
 import { debitForToolUse } from "@/lib/billing/firestore";
-import type { EnvelopeAccessResult, EnvelopeBilling } from "@/lib/envelopes/types";
+import type {
+  EnvelopeAccessResult,
+  EnvelopeBilling,
+} from "@/lib/envelopes/types";
+import { db } from "@/lib/firebase";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -87,7 +90,11 @@ export async function checkEnvelopeAccess(
 
   // --- Step 2: Free week check ---
   if (billingDoc.firstAccessWeekStart === currentWeekStart) {
-    return { mode: "readwrite", weekStart: currentWeekStart, reason: "free_week" };
+    return {
+      mode: "readwrite",
+      weekStart: currentWeekStart,
+      reason: "free_week",
+    };
   }
 
   // --- Step 3: Already paid check ---
@@ -122,7 +129,11 @@ export async function checkEnvelopeAccess(
       error instanceof Error &&
       (error as Error & { statusCode?: number }).statusCode === 402
     ) {
-      return { mode: "readonly", weekStart: currentWeekStart, reason: "unpaid" };
+      return {
+        mode: "readonly",
+        weekStart: currentWeekStart,
+        reason: "unpaid",
+      };
     }
 
     // --- Step 6: Other errors -> re-throw ---
