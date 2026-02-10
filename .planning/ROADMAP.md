@@ -89,10 +89,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Stripe secrets in GCP Secret Manager contain live keys (sk_live_*, whsec_* for live endpoint)
   2. A real $5 purchase completes end-to-end: Checkout page loads, payment succeeds, webhook fires, 500 credits are granted
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 25-01: TBD
+- [ ] 25-01-PLAN.md -- Update GCP secrets with live Stripe keys, redeploy, and verify real $5 purchase
 
 ## Progress
 
@@ -104,4 +104,4 @@ Phases execute in numeric order: 22 → 23 → 24 → 25
 | 22. Code Validation & Commit | v1.5 | 1/1 | Complete | 2026-02-09 |
 | 23. Infrastructure Configuration | v1.5 | 2/2 | Complete | 2026-02-09 |
 | 24. Deploy & Smoke Test | v1.5 | 2/2 | Complete | 2026-02-10 |
-| 25. Go Live | v1.5 | 0/? | Not started | - |
+| 25. Go Live | v1.5 | 0/1 | Not started | - |
