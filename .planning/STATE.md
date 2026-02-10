@@ -5,35 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 24 complete — ready for Phase 25 (v1.5 Billing & Credits System)
+**Current focus:** v1.5 Billing & Credits System COMPLETE — milestone shipped
 
 ## Current Position
 
-Phase: 24 of 25 (Deploy & Smoke Test) — COMPLETE
-Plan: 2 of 2 -- All plans executed
-Status: Phase complete, verified (9/11 must-haves, 2 blocked on external dependency)
-Last activity: 2026-02-10 -- Completed Phase 24 (deploy + E2E smoke tests)
+Phase: 25 of 25 (Go Live) — COMPLETE
+Plan: 1 of 1 -- All plans executed
+Status: Milestone v1.5 complete, all phases shipped
+Last activity: 2026-02-10 -- Completed Phase 25 (live Stripe keys + real payment verified)
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 SHIPPED | v1.5 IN PROGRESS
-[███████████████░░░░░] 3/4 phases
+Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 SHIPPED
+[████████████████████] 4/4 phases
 
 ## Performance Metrics
 
-**v1.4 Velocity (most recent shipped):**
+**v1.4 Velocity:**
 - Phases completed: 6 (17-21 + 19.1)
 - Plans completed: 8
 - Total milestone time: ~24 min
 - Requirements delivered: 7/7
 
-**v1.5 Velocity (current):**
-- Phases completed: 3 (22, 23, 24)
-- Plans completed: 6
-- Total milestone time: ~97 min
-- Requirements delivered: 24/26 (VAL-01–04, INFRA-01–11, BSINT-01, E2E-01–05, E2E-07–09); 2 blocked
+**v1.5 Velocity (just shipped):**
+- Phases completed: 4 (22, 23, 24, 25)
+- Plans completed: 7
+- Requirements delivered: 25/27 (VAL-01-04, INFRA-01-11, BSINT-01, E2E-01-05, E2E-07-10); 2 blocked on external dependency
 
 **Cumulative:**
-- Total plans completed: 43 (across v1.0-v1.5)
-- Total phases completed: 24 (across v1.0-v1.5)
+- Total plans completed: 44 (across v1.0-v1.5)
+- Total phases completed: 25 (across v1.0-v1.5)
 
 ## Accumulated Context
 
@@ -46,10 +45,11 @@ Recent decisions affecting current work:
 - Stripe Checkout redirect (not embedded, PCI-compliant out of the box)
 - IAM binding corrected to Cloud Run SA (cloudrun-site@) for runtime secret access
 - Firebase auth domain uses *.firebaseapp.com (not custom domain)
-- Secret Manager secrets versioned (v2 with real test-mode values)
+- Secret Manager secrets versioned (v4 stripe-secret-key, v3 stripe-webhook-secret with live keys)
 - Cloud Build trigger is in global region, named deploy-on-push
 - Admin can refund any non-refunded usage (expanded from started/failed only)
 - E2E-06/BSINT-02 blocked on external brand scraper worker — not a billing code issue
+- Used daniel.weinbeck@gmail.com for Stripe account (consistent with admin identity)
 
 ### Pending Todos
 
@@ -70,9 +70,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed Phase 24 (Deploy & Smoke Test)
+Stopped at: Completed Phase 25 (Go Live) — v1.5 milestone shipped
 Resume file: None
 
 ## Next Step
 
-Plan Phase 25 (Go Live) — `/gsd:plan-phase 25`
+Archive milestone v1.5 — `/gsd:complete-milestone`

@@ -53,7 +53,7 @@ Requirements for Billing & Credits System — validate, configure, deploy.
 - [x] **E2E-07**: Admin can view all billing users with balance and margin data
 - [x] **E2E-08**: Admin can adjust credits and refund usage from user detail page
 - [x] **E2E-09**: Admin can edit tool pricing from pricing tab
-- [ ] **E2E-10**: Live mode verified — real $5 purchase completes and credits are granted
+- [x] **E2E-10**: Live mode verified — real $5 purchase completes and credits are granted
 
 ## Future Requirements
 
@@ -128,7 +128,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | E2E-07 | Phase 24 | Complete |
 | E2E-08 | Phase 24 | Complete |
 | E2E-09 | Phase 24 | Complete |
-| E2E-10 | Phase 25 | Pending |
+| E2E-10 | Phase 25 | Complete |
 
 **Coverage:**
 - v1.5 requirements: 27 total
@@ -137,4 +137,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-09*
-*Last updated: 2026-02-10 after Phase 24 execution*
+*Last updated: 2026-02-10 after Phase 25 execution*

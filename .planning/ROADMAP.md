@@ -7,7 +7,7 @@
 - ✅ **v1.2 Content & Data Integration** - Phases 11-12 (shipped 2026-02-07)
 - ✅ **v1.3 Assistant Backend Integration** - Phases 13-16 (shipped 2026-02-08)
 - ✅ **v1.4 Control Center: Content Editor & Brand Scraper** - Phases 17-21 (shipped 2026-02-09)
-- 🚧 **v1.5 Billing & Credits System** - Phases 22-25 (in progress)
+- ✅ **v1.5 Billing & Credits System** - Phases 22-25 (shipped 2026-02-10)
 
 ## Phases
 
@@ -25,14 +25,14 @@ Archived roadmaps:
 
 </details>
 
-### 🚧 v1.5 Billing & Credits System (In Progress)
+### ✅ v1.5 Billing & Credits System (Shipped 2026-02-10)
 
 **Milestone Goal:** Validate, configure infrastructure for, and deploy the existing billing/credits system with Stripe payments, Firebase Auth for end users, brand-scraper v1.1 integration, and admin billing management. This is a validation and deployment milestone -- the code already exists (~3K LOC, 30+ files).
 
 - [x] **Phase 22: Code Validation & Commit** - Verify existing billing code compiles, lints, tests, and commit to master ✅
 - [x] **Phase 23: Infrastructure Configuration** - Configure all GCP, Firebase, Stripe, and Firestore prerequisites ✅
 - [x] **Phase 24: Deploy & Smoke Test** - Deploy to Cloud Run and validate all user flows with Stripe test mode ✅
-- [ ] **Phase 25: Go Live** - Switch to Stripe live keys and verify real payment processing
+- [x] **Phase 25: Go Live** - Switch to Stripe live keys and verify real payment processing ✅
 
 ## Phase Details
 
@@ -92,7 +92,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 25-01-PLAN.md -- Update GCP secrets with live Stripe keys, redeploy, and verify real $5 purchase
+- [x] 25-01-PLAN.md -- Update GCP secrets with live Stripe keys, redeploy, and verify real $5 purchase ✅
 
 ## Progress
 
@@ -104,4 +104,4 @@ Phases execute in numeric order: 22 → 23 → 24 → 25
 | 22. Code Validation & Commit | v1.5 | 1/1 | Complete | 2026-02-09 |
 | 23. Infrastructure Configuration | v1.5 | 2/2 | Complete | 2026-02-09 |
 | 24. Deploy & Smoke Test | v1.5 | 2/2 | Complete | 2026-02-10 |
-| 25. Go Live | v1.5 | 0/1 | Not started | - |
+| 25. Go Live | v1.5 | 1/1 | Complete | 2026-02-10 |
