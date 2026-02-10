@@ -9,23 +9,23 @@ Requirements for the Apps Hub Page milestone. Single phase.
 
 ### Apps Data
 
-- [ ] **APPS-01**: App listing type defined with title, tag, subtitle, description, href, dates, techStack, available flag
-- [ ] **APPS-02**: App listings array with Brand Scraper (available) and Dave Ramsey Digital Envelopes (coming soon)
+- [x] **APPS-01**: App listing type defined with title, tag, subtitle, description, href, dates, techStack, available flag
+- [x] **APPS-02**: App listings array with Brand Scraper (available) and Dave Ramsey Digital Envelopes (coming soon)
 
 ### Apps UI
 
-- [ ] **APPS-03**: AppCard component with topic badge (top-right), subtitle, description, tech stack tags, dates, and action button
-- [ ] **APPS-04**: Available apps show "Enter App" button linking to app page; unavailable apps show disabled "Coming Soon" button
-- [ ] **APPS-05**: Apps index page at /apps with page metadata, intro text, and 2-across responsive grid (1-col mobile, 2-col desktop)
+- [x] **APPS-03**: AppCard component with topic badge (top-right), subtitle, description, tech stack tags, dates, and action button
+- [x] **APPS-04**: Available apps show "Enter App" button linking to app page; unavailable apps show disabled "Coming Soon" button
+- [x] **APPS-05**: Apps index page at /apps with page metadata, intro text, and 2-across responsive grid (1-col mobile, 2-col desktop)
 
 ### Navigation & SEO
 
-- [ ] **APPS-06**: "Apps" link added to main navigation with correct active state on /apps and /apps/*
-- [ ] **APPS-07**: Sitemap includes /apps and /apps/brand-scraper
+- [x] **APPS-06**: "Apps" link added to main navigation with correct active state on /apps and /apps/*
+- [x] **APPS-07**: Sitemap includes /apps and /apps/brand-scraper
 
 ### Quality
 
-- [ ] **APPS-08**: lint, test, and build all pass
+- [x] **APPS-08**: lint, test, and build all pass
 
 ## Future Requirements
 
@@ -50,14 +50,14 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| APPS-01 | Phase 26 | Pending |
-| APPS-02 | Phase 26 | Pending |
-| APPS-03 | Phase 26 | Pending |
-| APPS-04 | Phase 26 | Pending |
-| APPS-05 | Phase 26 | Pending |
-| APPS-06 | Phase 26 | Pending |
-| APPS-07 | Phase 26 | Pending |
-| APPS-08 | Phase 26 | Pending |
+| APPS-01 | Phase 26 | Complete |
+| APPS-02 | Phase 26 | Complete |
+| APPS-03 | Phase 26 | Complete |
+| APPS-04 | Phase 26 | Complete |
+| APPS-05 | Phase 26 | Complete |
+| APPS-06 | Phase 26 | Complete |
+| APPS-07 | Phase 26 | Complete |
+| APPS-08 | Phase 26 | Complete |
 
 **Coverage:**
 - v1.6 requirements: 8 total

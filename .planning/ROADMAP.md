@@ -8,7 +8,7 @@
 - ✅ **v1.3 Assistant Backend Integration** - Phases 13-16 (shipped 2026-02-08)
 - ✅ **v1.4 Control Center: Content Editor & Brand Scraper** - Phases 17-21 (shipped 2026-02-09)
 - ✅ **v1.5 Billing & Credits System** - Phases 22-25 (shipped 2026-02-10)
-- 🚧 **v1.6 Apps Hub Page** - Phase 26 (in progress)
+- ✅ **v1.6 Apps Hub Page** - Phase 26 (shipped 2026-02-10)
 
 ## Phases
 
@@ -26,11 +26,11 @@ See .planning/MILESTONES.md for full history of shipped milestones.
 
 </details>
 
-### 🚧 v1.6 Apps Hub Page (In Progress)
+### ✅ v1.6 Apps Hub Page (Complete)
 
 **Milestone Goal:** Visitors can discover and access available tools from a dedicated Apps page with visual card grid, navigation integration, and sitemap coverage.
 
-#### Phase 26: Apps Hub Page
+#### Phase 26: Apps Hub Page ✅
 **Goal**: Visitors can discover and access available tools from a dedicated /apps page
 **Depends on**: Phase 25 (v1.5 complete)
 **Requirements**: APPS-01, APPS-02, APPS-03, APPS-04, APPS-05, APPS-06, APPS-07, APPS-08
@@ -43,7 +43,7 @@ See .planning/MILESTONES.md for full history of shipped milestones.
 **Plans**: 1 plan
 
 Plans:
-- [ ] 26-01-PLAN.md -- Apps data, AppCard component, /apps page, navigation, sitemap
+- [x] 26-01-PLAN.md -- Apps data, AppCard component, /apps page, navigation, sitemap
 
 ## Progress
 
@@ -58,7 +58,7 @@ Phase 26 is the only phase in v1.6.
 | 13-16 | v1.3 | 7/7 | Complete | 2026-02-08 |
 | 17-21 | v1.4 | 8/8 | Complete | 2026-02-09 |
 | 22-25 | v1.5 | 6/6 | Complete | 2026-02-10 |
-| 26. Apps Hub Page | v1.6 | 0/1 | Planned | - |
+| 26. Apps Hub Page | v1.6 | 1/1 | Complete | 2026-02-10 |
 
 ---
 *Roadmap created: 2026-02-10*
