@@ -1,17 +1,13 @@
-import { FieldValue } from "firebase-admin/firestore";
 import { addWeeks, format, startOfWeek } from "date-fns";
+import { FieldValue } from "firebase-admin/firestore";
 import { db } from "@/lib/firebase";
+import type { Envelope, EnvelopeWithStatus, HomePageData } from "./types";
 import {
-  getWeekRange,
+  formatWeekLabel,
   getRemainingDaysPercent,
   getStatusLabel,
-  formatWeekLabel,
+  getWeekRange,
 } from "./week-math";
-import type {
-  Envelope,
-  EnvelopeWithStatus,
-  HomePageData,
-} from "./types";
 
 const WEEK_OPTIONS = { weekStartsOn: 0 as const };
 
@@ -160,7 +156,7 @@ export function computeCumulativeSavingsFromData(
 
   while (weekStart < currentWeekStart) {
     // Compute end of this week (Saturday) as YYYY-MM-DD
-    const weekStartDate = new Date(weekStart + "T00:00:00");
+    const weekStartDate = new Date(`${weekStart}T00:00:00`);
     const nextWeekDate = addWeeks(weekStartDate, 1);
     const weekEnd = format(
       new Date(nextWeekDate.getTime() - 86_400_000),
@@ -302,7 +298,11 @@ export async function deleteEnvelope(
     }
   }
 
-  const deleteRefs = [docRef, ...txSnap.docs.map((d) => d.ref), ...uniqueAllocRefs];
+  const deleteRefs = [
+    docRef,
+    ...txSnap.docs.map((d) => d.ref),
+    ...uniqueAllocRefs,
+  ];
 
   // Batch delete (max 500 ops per batch, use 450 for safety)
   const BATCH_LIMIT = 450;
@@ -321,7 +321,7 @@ export async function deleteEnvelope(
  * orderedIds[0] gets sortOrder 0, orderedIds[1] gets sortOrder 1, etc.
  */
 export async function reorderEnvelopes(
-  userId: string,
+  _userId: string,
   orderedIds: string[],
 ): Promise<void> {
   const batch = requireDb().batch();
@@ -360,7 +360,10 @@ export async function listEnvelopesWithRemaining(
   for (const doc of txSnap.docs) {
     const data = doc.data();
     const envId = data.envelopeId as string;
-    spentByEnvelope.set(envId, (spentByEnvelope.get(envId) ?? 0) + (data.amountCents as number));
+    spentByEnvelope.set(
+      envId,
+      (spentByEnvelope.get(envId) ?? 0) + (data.amountCents as number),
+    );
   }
 
   // Enrich envelopes with computed fields

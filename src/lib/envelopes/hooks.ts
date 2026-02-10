@@ -11,7 +11,8 @@ export function useEnvelopes() {
   const { data, error, isLoading, mutate } = useSWR<HomePageData>(
     user ? "/api/envelopes" : null,
     async (url: string) => {
-      const token = await user!.getIdToken();
+      const token = await user?.getIdToken();
+      if (!token) throw new Error("Not authenticated");
       return envelopeFetch<HomePageData>(url, token);
     },
   );
