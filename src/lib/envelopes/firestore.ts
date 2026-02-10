@@ -848,3 +848,102 @@ export async function computeCumulativeSavings(
     currentStr,
   );
 }
+
+/**
+ * Computes all analytics data for a user in a single batch.
+ * Uses parallel Firestore queries for efficiency (no N+1).
+ *
+ * NOTE: Summary on-track count uses raw spending (no overage allocations).
+ * This is a simplification for the analytics overview. The home page shows
+ * allocation-adjusted status.
+ */
+export async function getAnalyticsData(userId: string): Promise<AnalyticsPageData> {
+  const today = new Date();
+  const { start, end } = getWeekRange(today);
+  const weekStartStr = format(start, "yyyy-MM-dd");
+  const weekEndStr = format(end, "yyyy-MM-dd");
+
+  // 1. Parallel fetch: envelopes + current-week transactions + ALL transactions
+  const [envSnap, currentTxSnap, allTxSnap] = await Promise.all([
+    envelopesForUser(userId).get(),
+    transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
+    transactionsCol().where("userId", "==", userId).get(),
+  ]);
+
+  // 2. Parse envelope data
+  const envelopeHeaders = envSnap.docs.map(doc => ({
+    id: doc.id,
+    title: doc.data().title as string,
+  }));
+
+  const envelopeData = envSnap.docs.map(doc => {
+    const data = doc.data();
+    const createdAt = data.createdAt?.toDate?.() ?? new Date();
+    return {
+      id: doc.id,
+      weeklyBudgetCents: data.weeklyBudgetCents as number,
+      rollover: data.rollover as boolean,
+      createdAt: format(createdAt, "yyyy-MM-dd"),
+    };
+  });
+
+  // 3. Compute SUMMARY from current-week transactions
+  const spentByEnvelope = new Map<string, number>();
+  for (const doc of currentTxSnap.docs) {
+    const data = doc.data();
+    const envId = data.envelopeId as string;
+    spentByEnvelope.set(envId, (spentByEnvelope.get(envId) ?? 0) + (data.amountCents as number));
+  }
+
+  let totalSpentCents = 0;
+  let totalBudgetCents = 0;
+  let onTrackCount = 0;
+
+  for (const env of envelopeData) {
+    const spent = spentByEnvelope.get(env.id) ?? 0;
+    totalSpentCents += spent;
+    totalBudgetCents += env.weeklyBudgetCents;
+    const { status } = computeEnvelopeStatus(env.weeklyBudgetCents, spent, today);
+    if (status === "On Track") onTrackCount++;
+  }
+
+  const summary = {
+    totalSpentCents,
+    totalBudgetCents,
+    totalRemainingCents: totalBudgetCents - totalSpentCents,
+    onTrackCount,
+    totalEnvelopeCount: envelopeData.length,
+  };
+
+  // 4. Parse ALL transactions for pivot table and savings
+  const allTransactions = allTxSnap.docs.map(doc => {
+    const data = doc.data();
+    return {
+      envelopeId: data.envelopeId as string,
+      amountCents: data.amountCents as number,
+      date: data.date as string,
+    };
+  });
+
+  // 5. Compute PIVOT TABLE
+  let earliestDate = weekStartStr;
+  for (const env of envelopeData) {
+    if (env.createdAt < earliestDate) earliestDate = env.createdAt;
+  }
+  for (const tx of allTransactions) {
+    if (tx.date < earliestDate) earliestDate = tx.date;
+  }
+  const earliestWeekStart = format(startOfWeek(new Date(earliestDate + "T00:00:00"), WEEK_OPTIONS), "yyyy-MM-dd");
+
+  const pivotRows = buildPivotRows(allTransactions, earliestWeekStart, weekEndStr);
+
+  // 6. Compute SAVINGS BREAKDOWN
+  const savingsByWeek = computeWeeklySavingsBreakdown(
+    envelopeData,
+    allTransactions,
+    earliestWeekStart,
+    weekStartStr,
+  );
+
+  return { summary, envelopes: envelopeHeaders, pivotRows, savingsByWeek };
+}

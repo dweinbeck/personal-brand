@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { useAuth } from "@/context/AuthContext";
-import type { HomePageData, TransactionsPageData } from "@/lib/envelopes/types";
+import type { AnalyticsPageData, HomePageData, TransactionsPageData } from "@/lib/envelopes/types";
 import { envelopeFetch } from "./api";
 
 export function useEnvelopes() {
@@ -35,4 +35,19 @@ export function useTransactions(weekStart: string, weekEnd: string) {
   );
 
   return { data, error, isLoading, mutate };
+}
+
+export function useAnalytics() {
+  const { user } = useAuth();
+
+  const { data, error, isLoading } = useSWR<AnalyticsPageData>(
+    user ? "/api/envelopes/analytics" : null,
+    async (url: string) => {
+      const token = await user?.getIdToken();
+      if (!token) throw new Error("Not authenticated");
+      return envelopeFetch<AnalyticsPageData>(url, token);
+    },
+  );
+
+  return { data, error, isLoading };
 }
