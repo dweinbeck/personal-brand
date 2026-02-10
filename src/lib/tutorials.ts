@@ -63,7 +63,7 @@ export async function getAllTutorials(): Promise<Tutorial[]> {
 
   return tutorials.sort(
     (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() -
-      new Date(a.metadata.publishedAt).getTime(),
+      new Date(a.metadata.publishedAt).getTime() -
+      new Date(b.metadata.publishedAt).getTime(),
   );
 }

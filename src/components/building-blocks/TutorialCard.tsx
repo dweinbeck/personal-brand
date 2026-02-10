@@ -22,18 +22,18 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
   return (
     <Link
       href={`/building-blocks/${tutorial.slug}`}
-      className="relative flex h-full flex-col rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block"
+      className="flex h-full flex-col rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block"
     >
       {/* Topic badge */}
       {primaryTag && (
         <span
-          className={`absolute top-4 right-4 px-2.5 py-0.5 text-xs font-medium rounded-full border ${getTagColor(primaryTag)}`}
+          className={`self-start px-2.5 py-0.5 text-xs font-medium rounded-full border mb-3 ${getTagColor(primaryTag)}`}
         >
           {primaryTag}
         </span>
       )}
 
-      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-text-primary pr-24 group-hover:text-gold transition-colors duration-200">
+      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-text-primary group-hover:text-gold transition-colors duration-200">
         {tutorial.metadata.title}
       </h3>
 
