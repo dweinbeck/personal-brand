@@ -797,6 +797,7 @@ export async function listEnvelopesWithRemaining(
     envelopes,
     weekLabel: formatWeekLabel(today),
     cumulativeSavingsCents,
+    billing: { mode: "readwrite" as const },
   };
 }
 
@@ -975,5 +976,11 @@ export async function getAnalyticsData(
     weekStartStr,
   );
 
-  return { summary, envelopes: envelopeHeaders, pivotRows, savingsByWeek };
+  return {
+    summary,
+    envelopes: envelopeHeaders,
+    pivotRows,
+    savingsByWeek,
+    billing: { mode: "readwrite" as const },
+  };
 }
