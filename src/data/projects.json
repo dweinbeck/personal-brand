@@ -30,7 +30,7 @@
     "slug": "envelope-budget-app",
     "repo": null,
     "featured": true,
-    "status": "Planning",
+    "status": "In Development",
     "name": "Dave Ramsey Digital Envelope App",
     "description": "A full-featured budget management app implementing the popular envelope method for personal finance. Users can allocate funds across custom categories, track real-time spending, and manage month-to-month rollovers.",
     "tags": ["React Native", "Firebase", "Fintech"]
