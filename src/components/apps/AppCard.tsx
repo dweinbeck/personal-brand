@@ -1,5 +1,5 @@
-import type { AppListing } from "@/data/apps";
 import { Button } from "@/components/ui/Button";
+import type { AppListing } from "@/data/apps";
 
 const tagColors: Record<string, string> = {
   Branding: "bg-gold-light text-gold-hover border-gold",

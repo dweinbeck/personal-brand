@@ -13,6 +13,7 @@ const baseLinks = [
   { name: "Projects", href: "/projects" },
   { name: "Building Blocks", href: "/building-blocks" },
   { name: "Custom GPTs", href: "/custom-gpts" },
+  { name: "Apps", href: "/apps" },
   { name: "Assistant", href: "/assistant" },
   { name: "Contact", href: "/contact" },
 ];
