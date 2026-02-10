@@ -3,8 +3,11 @@
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
-type TransactionFormProps = {
-  envelopes: { id: string; title: string }[];
+type InlineTransactionFormProps = {
+  envelopeId: string;
+  defaultDate: string;
+  minDate: string;
+  maxDate: string;
   onSubmit: (data: {
     envelopeId: string;
     amountCents: number;
@@ -14,43 +17,26 @@ type TransactionFormProps = {
   }) => void;
   onCancel: () => void;
   isSubmitting: boolean;
-  initialValues?: {
-    envelopeId: string;
-    amountCents: number;
-    date: string;
-    merchant?: string;
-    description?: string;
-  };
 };
 
-export function TransactionForm({
-  envelopes,
+export function InlineTransactionForm({
+  envelopeId,
+  defaultDate,
+  minDate,
+  maxDate,
   onSubmit,
   onCancel,
   isSubmitting,
-  initialValues,
-}: TransactionFormProps) {
-  const mode = initialValues ? "edit" : "create";
-
-  const [envelopeId, setEnvelopeId] = useState(initialValues?.envelopeId ?? "");
-  const [costDollars, setCostDollars] = useState(
-    initialValues ? (initialValues.amountCents / 100).toFixed(2) : "",
-  );
-  const [date, setDate] = useState(initialValues?.date ?? "");
-  const [merchant, setMerchant] = useState(initialValues?.merchant ?? "");
-  const [description, setDescription] = useState(
-    initialValues?.description ?? "",
-  );
+}: InlineTransactionFormProps) {
+  const [date, setDate] = useState(defaultDate);
+  const [costDollars, setCostDollars] = useState("");
+  const [merchant, setMerchant] = useState("");
+  const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-
-    if (!envelopeId) {
-      setError("Please select an envelope.");
-      return;
-    }
 
     if (!date) {
       setError("Date is required.");
@@ -78,50 +64,31 @@ export function TransactionForm({
     "rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-2 focus:outline-offset-2 focus:outline-gold";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-3 border-t border-border pt-3"
+    >
       {error && (
         <p className="text-sm text-red-600" role="alert">
           {error}
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Envelope */}
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="txn-envelope"
-            className="text-sm font-medium text-text-primary"
-          >
-            Envelope
-          </label>
-          <select
-            id="txn-envelope"
-            required
-            value={envelopeId}
-            onChange={(e) => setEnvelopeId(e.target.value)}
-            className={inputClasses}
-          >
-            <option value="">Select envelope...</option>
-            {envelopes.map((env) => (
-              <option key={env.id} value={env.id}>
-                {env.title}
-              </option>
-            ))}
-          </select>
-        </div>
-
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Date */}
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="txn-date"
-            className="text-sm font-medium text-text-primary"
+            htmlFor={`inline-txn-date-${envelopeId}`}
+            className="text-xs font-medium text-text-primary"
           >
             Date
           </label>
           <input
-            id="txn-date"
+            id={`inline-txn-date-${envelopeId}`}
             type="date"
             required
+            min={minDate}
+            max={maxDate}
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className={inputClasses}
@@ -131,13 +98,13 @@ export function TransactionForm({
         {/* Cost */}
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="txn-cost"
-            className="text-sm font-medium text-text-primary"
+            htmlFor={`inline-txn-cost-${envelopeId}`}
+            className="text-xs font-medium text-text-primary"
           >
             Cost ($)
           </label>
           <input
-            id="txn-cost"
+            id={`inline-txn-cost-${envelopeId}`}
             type="number"
             required
             min="0.01"
@@ -152,13 +119,13 @@ export function TransactionForm({
         {/* Merchant */}
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="txn-merchant"
-            className="text-sm font-medium text-text-primary"
+            htmlFor={`inline-txn-merchant-${envelopeId}`}
+            className="text-xs font-medium text-text-primary"
           >
             Merchant
           </label>
           <input
-            id="txn-merchant"
+            id={`inline-txn-merchant-${envelopeId}`}
             type="text"
             maxLength={200}
             value={merchant}
@@ -171,13 +138,13 @@ export function TransactionForm({
         {/* Description */}
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="txn-description"
-            className="text-sm font-medium text-text-primary"
+            htmlFor={`inline-txn-description-${envelopeId}`}
+            className="text-xs font-medium text-text-primary"
           >
             Description
           </label>
           <input
-            id="txn-description"
+            id={`inline-txn-description-${envelopeId}`}
             type="text"
             maxLength={500}
             value={description}
@@ -189,18 +156,14 @@ export function TransactionForm({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 pt-1">
+      <div className="flex gap-2">
         <Button
           type="submit"
           variant="primary"
           size="sm"
           disabled={isSubmitting}
         >
-          {isSubmitting
-            ? "Saving..."
-            : mode === "create"
-              ? "Add Transaction"
-              : "Save"}
+          {isSubmitting ? "Adding..." : "Add"}
         </Button>
         <Button
           type="button"

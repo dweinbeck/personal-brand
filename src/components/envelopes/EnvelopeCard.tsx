@@ -17,6 +17,7 @@ type EnvelopeCardProps = {
   onCancelDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onAddTransaction: () => void;
 };
 
 export function EnvelopeCard({
@@ -30,6 +31,7 @@ export function EnvelopeCard({
   onCancelDelete,
   onMoveUp,
   onMoveDown,
+  onAddTransaction,
 }: EnvelopeCardProps) {
   if (isDeleting) {
     return (
@@ -81,6 +83,9 @@ export function EnvelopeCard({
           </Button>
           <Button variant="ghost" size="sm" onClick={onDelete}>
             Delete
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onAddTransaction}>
+            + Txn
           </Button>
         </div>
         <div className="flex gap-1">

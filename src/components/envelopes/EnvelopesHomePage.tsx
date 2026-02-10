@@ -1,5 +1,6 @@
 "use client";
 
+import { endOfWeek, format, startOfWeek } from "date-fns";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -12,6 +13,7 @@ import { EnvelopeCard } from "./EnvelopeCard";
 import { EnvelopeCardGrid } from "./EnvelopeCardGrid";
 import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
+import { InlineTransactionForm } from "./InlineTransactionForm";
 import { SavingsBanner } from "./SavingsBanner";
 
 export function EnvelopesHomePage() {
@@ -22,6 +24,18 @@ export function EnvelopesHomePage() {
   const [isCreating, setIsCreating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  // Current week date constraints for inline transaction form
+  const now = new Date();
+  const currentWeekStart = format(
+    startOfWeek(now, { weekStartsOn: 0 }),
+    "yyyy-MM-dd",
+  );
+  const currentWeekEnd = format(
+    endOfWeek(now, { weekStartsOn: 0 }),
+    "yyyy-MM-dd",
+  );
 
   const getToken = useCallback(async () => {
     const token = await user?.getIdToken();
@@ -127,6 +141,31 @@ export function EnvelopesHomePage() {
     }
   }
 
+  async function handleInlineTransaction(txnData: {
+    envelopeId: string;
+    amountCents: number;
+    date: string;
+    merchant?: string;
+    description?: string;
+  }) {
+    setIsSubmitting(true);
+    try {
+      const token = await getToken();
+      await envelopeFetch("/api/envelopes/transactions", token, {
+        method: "POST",
+        body: JSON.stringify(txnData),
+      });
+      await mutate();
+      setExpandedId(null);
+    } catch (err) {
+      window.alert(
+        err instanceof Error ? err.message : "Failed to add transaction.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   // -- Loading state --
   if (isLoading) {
     return (
@@ -189,37 +228,60 @@ export function EnvelopesHomePage() {
       )}
 
       <EnvelopeCardGrid>
-        {envelopes.map((env: EnvelopeWithStatus, i: number) =>
-          editingId === env.id ? (
-            <Card variant="default" key={env.id}>
-              <EnvelopeForm
-                mode="edit"
-                initialValues={{
-                  title: env.title,
-                  weeklyBudgetCents: env.weeklyBudgetCents,
-                  rollover: env.rollover,
+        {envelopes.map((env: EnvelopeWithStatus, i: number) => (
+          <div
+            key={env.id}
+            className={expandedId === env.id ? "col-span-full" : undefined}
+          >
+            {editingId === env.id ? (
+              <Card variant="default">
+                <EnvelopeForm
+                  mode="edit"
+                  initialValues={{
+                    title: env.title,
+                    weeklyBudgetCents: env.weeklyBudgetCents,
+                    rollover: env.rollover,
+                  }}
+                  onSubmit={(formData) => handleUpdate(env.id, formData)}
+                  onCancel={() => setEditingId(null)}
+                  isSubmitting={isSubmitting}
+                />
+              </Card>
+            ) : (
+              <EnvelopeCard
+                envelope={env}
+                isFirst={i === 0}
+                isLast={i === envelopes.length - 1}
+                isDeleting={deletingId === env.id}
+                onEdit={() => {
+                  setExpandedId(null);
+                  setEditingId(env.id);
                 }}
-                onSubmit={(formData) => handleUpdate(env.id, formData)}
-                onCancel={() => setEditingId(null)}
+                onDelete={() => setDeletingId(env.id)}
+                onConfirmDelete={() => handleDelete(env.id)}
+                onCancelDelete={() => setDeletingId(null)}
+                onMoveUp={() => handleReorder(env.id, "up")}
+                onMoveDown={() => handleReorder(env.id, "down")}
+                onAddTransaction={() => {
+                  setEditingId(null);
+                  setDeletingId(null);
+                  setExpandedId(expandedId === env.id ? null : env.id);
+                }}
+              />
+            )}
+            {expandedId === env.id && editingId !== env.id && (
+              <InlineTransactionForm
+                envelopeId={env.id}
+                defaultDate={format(now, "yyyy-MM-dd")}
+                minDate={currentWeekStart}
+                maxDate={currentWeekEnd}
+                onSubmit={handleInlineTransaction}
+                onCancel={() => setExpandedId(null)}
                 isSubmitting={isSubmitting}
               />
-            </Card>
-          ) : (
-            <EnvelopeCard
-              key={env.id}
-              envelope={env}
-              isFirst={i === 0}
-              isLast={i === envelopes.length - 1}
-              isDeleting={deletingId === env.id}
-              onEdit={() => setEditingId(env.id)}
-              onDelete={() => setDeletingId(env.id)}
-              onConfirmDelete={() => handleDelete(env.id)}
-              onCancelDelete={() => setDeletingId(null)}
-              onMoveUp={() => handleReorder(env.id, "up")}
-              onMoveDown={() => handleReorder(env.id, "down")}
-            />
-          ),
-        )}
+            )}
+          </div>
+        ))}
 
         {isCreating ? (
           <Card variant="default">

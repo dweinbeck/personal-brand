@@ -87,11 +87,7 @@ export function TransactionRow({
 
       {/* Actions */}
       <div className="flex gap-1 sm:ml-auto">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsEditing(true)}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
           Edit
         </Button>
         <Button
