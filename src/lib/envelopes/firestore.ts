@@ -2,6 +2,7 @@ import { addWeeks, format, startOfWeek } from "date-fns";
 import { FieldValue } from "firebase-admin/firestore";
 import { db } from "@/lib/firebase";
 import type {
+  AllocationValidationResult,
   Envelope,
   EnvelopeTransaction,
   EnvelopeWithStatus,
@@ -94,13 +95,18 @@ type SavingsEnvelope = {
 
 /**
  * Computes remaining cents and status label for a single envelope.
+ * Optionally accounts for overage allocations (received increases balance,
+ * donated decreases balance). Defaults to 0 for backward compatibility.
  */
 export function computeEnvelopeStatus(
   weeklyBudgetCents: number,
   spentCents: number,
   today: Date,
+  receivedAllocationsCents = 0,
+  donatedAllocationsCents = 0,
 ): { remainingCents: number; status: "On Track" | "Watch" | "Over" } {
-  const remainingCents = weeklyBudgetCents - spentCents;
+  const remainingCents =
+    weeklyBudgetCents - spentCents + receivedAllocationsCents - donatedAllocationsCents;
   const remainingDaysPercent = getRemainingDaysPercent(today);
   const status = getStatusLabel(
     remainingCents,
@@ -108,6 +114,47 @@ export function computeEnvelopeStatus(
     remainingDaysPercent,
   );
   return { remainingCents, status };
+}
+
+/**
+ * Validates a set of overage allocations against constraints:
+ * - At least one allocation must be provided
+ * - Each donor envelope must exist in donorBalances
+ * - Each allocation must not exceed the donor's remaining balance
+ * - Total allocated must exactly equal the overage amount
+ *
+ * Returns all violations (does not short-circuit on first error).
+ */
+export function validateAllocations(
+  allocations: { donorEnvelopeId: string; amountCents: number }[],
+  overageAmountCents: number,
+  donorBalances: Map<string, number>,
+): AllocationValidationResult {
+  const errors: string[] = [];
+
+  if (allocations.length === 0) {
+    return { valid: false, errors: ["No allocations provided"] };
+  }
+
+  for (const alloc of allocations) {
+    const balance = donorBalances.get(alloc.donorEnvelopeId);
+    if (balance === undefined) {
+      errors.push(`Donor envelope ${alloc.donorEnvelopeId} not found`);
+    } else if (alloc.amountCents > balance) {
+      errors.push(
+        `Allocation for ${alloc.donorEnvelopeId} (${alloc.amountCents}) exceeds remaining balance (${balance})`,
+      );
+    }
+  }
+
+  const totalAllocated = allocations.reduce((sum, a) => sum + a.amountCents, 0);
+  if (totalAllocated !== overageAmountCents) {
+    errors.push(
+      `Total allocated (${totalAllocated}) does not equal overage (${overageAmountCents})`,
+    );
+  }
+
+  return errors.length > 0 ? { valid: false, errors } : { valid: true };
 }
 
 /**
@@ -419,7 +466,46 @@ export async function updateTransaction(
 }
 
 /**
+ * Creates overage allocation documents atomically via batched write.
+ * Each allocation links a donor envelope to a source transaction.
+ */
+export async function createAllocations(
+  userId: string,
+  sourceTransactionId: string,
+  allocations: { donorEnvelopeId: string; amountCents: number }[],
+): Promise<void> {
+  const batch = requireDb().batch();
+
+  for (const alloc of allocations) {
+    const docRef = allocationsCol().doc();
+    batch.set(docRef, {
+      userId,
+      sourceTransactionId,
+      donorEnvelopeId: alloc.donorEnvelopeId,
+      amountCents: alloc.amountCents,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  await batch.commit();
+}
+
+/**
+ * Finds all overage allocations linked to a source transaction.
+ * Returns the allocation document references for batch operations.
+ */
+export async function deleteAllocationsForTransaction(
+  transactionId: string,
+): Promise<FirebaseFirestore.DocumentReference[]> {
+  const allocSnap = await allocationsCol()
+    .where("sourceTransactionId", "==", transactionId)
+    .get();
+  return allocSnap.docs.map((d) => d.ref);
+}
+
+/**
  * Deletes a transaction. Verifies ownership before deleting.
+ * Cascade-deletes any linked overage allocations atomically.
  */
 export async function deleteTransaction(
   userId: string,
@@ -431,8 +517,19 @@ export async function deleteTransaction(
     throw new Error("Transaction not found or access denied.");
   }
 
-  // TODO: Phase 4 will add cascade-delete of related overage allocations here.
-  await docRef.delete();
+  // Cascade-delete linked overage allocations
+  const allocRefs = await deleteAllocationsForTransaction(transactionId);
+
+  if (allocRefs.length === 0) {
+    await docRef.delete();
+  } else {
+    const batch = requireDb().batch();
+    batch.delete(docRef);
+    for (const ref of allocRefs) {
+      batch.delete(ref);
+    }
+    await batch.commit();
+  }
 }
 
 /**
@@ -473,8 +570,9 @@ export async function listEnvelopesWithRemaining(
     transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
   ]);
 
-  // Build transaction sums by envelopeId
+  // Build transaction sums by envelopeId and map transaction IDs to envelope IDs
   const spentByEnvelope = new Map<string, number>();
+  const txEnvelopeMap = new Map<string, string>(); // txId -> envelopeId
   for (const doc of txSnap.docs) {
     const data = doc.data();
     const envId = data.envelopeId as string;
@@ -482,16 +580,77 @@ export async function listEnvelopesWithRemaining(
       envId,
       (spentByEnvelope.get(envId) ?? 0) + (data.amountCents as number),
     );
+    txEnvelopeMap.set(doc.id, envId);
+  }
+
+  // Query allocations linked to current-week transactions
+  const receivedByEnvelope = new Map<string, number>();
+  const donatedByEnvelope = new Map<string, number>();
+
+  const txIds = Array.from(txEnvelopeMap.keys());
+  if (txIds.length > 0) {
+    const envelopeIds = envSnap.docs.map((d) => d.id);
+
+    // Fetch allocations where current-week transactions are the source
+    for (let i = 0; i < txIds.length; i += 30) {
+      const chunk = txIds.slice(i, i + 30);
+      const allocSnap = await allocationsCol()
+        .where("sourceTransactionId", "in", chunk)
+        .get();
+      for (const allocDoc of allocSnap.docs) {
+        const allocData = allocDoc.data();
+        const donorId = allocData.donorEnvelopeId as string;
+        const amount = allocData.amountCents as number;
+        const recipientId = txEnvelopeMap.get(allocData.sourceTransactionId as string);
+
+        // Donor envelope gives funds
+        donatedByEnvelope.set(donorId, (donatedByEnvelope.get(donorId) ?? 0) + amount);
+        // Recipient envelope (the one with the overage) receives funds
+        if (recipientId) {
+          receivedByEnvelope.set(recipientId, (receivedByEnvelope.get(recipientId) ?? 0) + amount);
+        }
+      }
+    }
+
+    // Fetch allocations where user's envelopes are donors, then filter to current-week transactions
+    const txIdSet = new Set(txIds);
+    for (let i = 0; i < envelopeIds.length; i += 30) {
+      const chunk = envelopeIds.slice(i, i + 30);
+      const allocSnap = await allocationsCol()
+        .where("donorEnvelopeId", "in", chunk)
+        .get();
+      for (const allocDoc of allocSnap.docs) {
+        const allocData = allocDoc.data();
+        const sourceTxId = allocData.sourceTransactionId as string;
+        // Only count allocations linked to current-week transactions
+        if (!txIdSet.has(sourceTxId)) continue;
+        const donorId = allocData.donorEnvelopeId as string;
+        const amount = allocData.amountCents as number;
+        const recipientId = txEnvelopeMap.get(sourceTxId);
+
+        // Skip if already counted from the first query
+        if (donatedByEnvelope.has(donorId)) continue;
+
+        donatedByEnvelope.set(donorId, (donatedByEnvelope.get(donorId) ?? 0) + amount);
+        if (recipientId) {
+          receivedByEnvelope.set(recipientId, (receivedByEnvelope.get(recipientId) ?? 0) + amount);
+        }
+      }
+    }
   }
 
   // Enrich envelopes with computed fields
   const envelopes: EnvelopeWithStatus[] = envSnap.docs.map((doc) => {
     const data = doc.data() as Omit<Envelope, "id">;
     const spentCents = spentByEnvelope.get(doc.id) ?? 0;
+    const received = receivedByEnvelope.get(doc.id) ?? 0;
+    const donated = donatedByEnvelope.get(doc.id) ?? 0;
     const { remainingCents, status } = computeEnvelopeStatus(
       data.weeklyBudgetCents,
       spentCents,
       today,
+      received,
+      donated,
     );
 
     return {
