@@ -92,10 +92,10 @@ export const jobStatusSchema = z
   .object({
     job_id: z.string(),
     status: z.string(),
-    result: brandTaxonomySchema.optional(),
-    error: z.string().optional(),
-    brand_json_url: z.string().optional(),
-    assets_zip_url: z.string().optional(),
+    result: brandTaxonomySchema.nullish(),
+    error: z.string().nullish(),
+    brand_json_url: z.string().nullish(),
+    assets_zip_url: z.string().nullish(),
   })
   .passthrough();
 

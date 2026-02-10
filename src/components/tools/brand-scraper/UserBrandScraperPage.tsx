@@ -201,8 +201,8 @@ function BrandScraperContent() {
               <div className="mt-6">
                 <BrandResultsGallery
                   result={data.result}
-                  brandJsonUrl={data.brand_json_url}
-                  assetsZipUrl={data.assets_zip_url}
+                  brandJsonUrl={data.brand_json_url ?? undefined}
+                  assetsZipUrl={data.assets_zip_url ?? undefined}
                 />
               </div>
             )}
