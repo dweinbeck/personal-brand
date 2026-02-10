@@ -5,25 +5,24 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.6 Apps Hub Page — Complete
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 26 of 26 (Apps Hub Page)
-Plan: 1 of 1
-Status: Phase complete, milestone complete
-Last activity: 2026-02-10 — Phase 26 executed and verified
+Phase: 26 of 26 — all phases complete
+Plan: N/A
+Status: v1.6 shipped, ready for next milestone
+Last activity: 2026-02-10 — v1.6 milestone complete
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 SHIPPED
-[████████████████████] 25/25 phases complete (6 milestones)
-v1.6: [████████████████████] Phase 26 complete (1/1 plans)
+Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 + v1.6 SHIPPED
+[████████████████████] 26/26 phases complete (7 milestones)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 26
-- Total plans completed: 46
+- Total plans completed: 47
 - Timeline: Jan 18 → Feb 10, 2026 (24 days)
 
 ## Accumulated Context
@@ -31,12 +30,6 @@ v1.6: [████████████████████] Phase 26 co
 ### Decisions
 
 Full decision log in PROJECT.md Key Decisions table.
-
-| Decision | Phase | Rationale |
-|----------|-------|-----------|
-| Single TS file for app data (no JSON) | 26-01 | Only 2 entries, no need for separate JSON loader pattern |
-| Empty string for null dates in AppListing | 26-01 | Keeps type simple (all strings) with display-time handling |
-| Card as non-clickable div, button-only interaction | 26-01 | Differs from TutorialCard; apps have distinct Enter/Coming Soon states |
 
 ### Pending Todos
 
@@ -55,10 +48,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-10T14:37:39Z
-Stopped at: Completed 26-01-PLAN.md (Apps Hub Page)
+Last session: 2026-02-10
+Stopped at: v1.6 milestone completed
 Resume file: None
 
 ## Next Step
 
-`/gsd:audit-milestone` or `/gsd:complete-milestone`
+`/gsd:new-milestone`

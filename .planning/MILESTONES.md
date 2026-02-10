@@ -1,5 +1,31 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.6 Apps Hub Page (Shipped: 2026-02-10)
+
+**Delivered:** Added a public /apps page with a responsive 2-column card grid showcasing available tools (Brand Scraper live, Digital Envelopes coming soon), navigation integration, and sitemap coverage.
+
+**Phases completed:** 26 (1 plan total)
+
+**Key accomplishments:**
+
+- AppListing data type and getApps() data source with Brand Scraper (live) and Digital Envelopes (coming soon)
+- AppCard server component with topic badge, tech stack tags, formatted dates, and conditional Enter App / Coming Soon button
+- /apps index page with responsive 2-column card grid matching existing site patterns
+- "Apps" navigation link with correct active state on /apps and /apps/* routes
+- Sitemap extended with /apps and /apps/brand-scraper entries
+
+**Stats:**
+
+- 16 files changed (+1,348 / -22 lines)
+- 1 phase, 1 plan, 2 tasks
+- 1 day (Feb 10, 2026)
+
+**Git range:** `05a2ae5` → `24ac433`
+
+**What's next:** Additional paid tools, real writing content, brand scraper worker deployment
+
+---
+
 ## v1.5 Billing & Credits System (Shipped: 2026-02-10)
 
 **Delivered:** Validated, configured infrastructure for, and deployed the existing billing/credits system with Stripe live payments, Firebase Auth for end users, brand-scraper v1.1 integration, admin billing management, and production deployment on GCP Cloud Run accepting real payments.

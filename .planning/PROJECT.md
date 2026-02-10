@@ -58,15 +58,14 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Update brand-scraper integration for v1.1 deployment (real Cloud Run URL, GCS signed URLs) — v1.5
 - ✓ Admin billing panel (user management, credit adjustments, usage refunds, pricing editor) — v1.5
 - ✓ Deploy billing system to production on Cloud Run with live Stripe payments — v1.5
+- ✓ Apps hub page at /apps with 2-across grid displaying available tools — v1.6
+- ✓ AppCard component with topic badge, tech stack tags, dates, and conditional action button — v1.6
+- ✓ "Apps" navigation link with correct active state on /apps and /apps/* — v1.6
+- ✓ Sitemap includes /apps and /apps/brand-scraper — v1.6
 
 ### Active
 
-- [ ] Apps hub page at /apps with 2-across grid displaying available tools
-- [ ] AppCard component matching TutorialCard visual style (badge, dates, tech stack tags)
-- [ ] Brand Scraper card (available, links to /apps/brand-scraper)
-- [ ] Dave Ramsey Digital Envelopes card (coming soon, disabled, will link to /(envelopes) route group)
-- [ ] "Apps" added to main navigation with correct active state
-- [ ] Apps routes added to sitemap (/apps and available app detail pages)
+(None — planning next milestone)
 
 ### Deferred
 
@@ -91,26 +90,16 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Subscription / recurring billing — pre-paid credits model is intentional
 - Custom Stripe payment page (Elements) — Checkout redirect is PCI-compliant out of the box
 
-## Current Milestone: v1.6 Apps Hub Page
-
-**Goal:** Add a public /apps page showcasing available tools in a visual grid, with navigation and sitemap integration.
-
-**Target features:**
-- Apps index page with 2-across card grid matching Building Blocks style
-- App card component with badge, subtitle, description, dates, tech stack tags, enter/coming-soon button
-- Brand Scraper as live app, Dave Ramsey Digital Envelopes as coming soon
-- "Apps" in main nav, app routes in sitemap
-
 ## Current State
 
-**Shipped:** v1.5 on 2026-02-10
+**Shipped:** v1.6 on 2026-02-10
 **Live at:** https://dan-weinbeck.com
 
-Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
+Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), Apps hub page for tool discovery, and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~8,900 LOC TypeScript/TSX/CSS/MDX (estimated after v1.5 additions)
+- **Codebase:** ~9,200 LOC TypeScript/TSX/CSS/MDX (estimated after v1.6 additions)
 - **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK + Auth, Stripe, react-markdown, Vitest
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
@@ -167,7 +156,7 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | ✓ Good — PCI-compliant, zero payment UI code |
 | Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | ✓ Good — ready for activation |
 
-| Apps hub page for tool discovery | Visitors can browse available tools from a single page; matches existing card patterns | — Pending |
+| Apps hub page for tool discovery | Visitors can browse available tools from a single page; matches existing card patterns | ✓ Good |
 
 ---
-*Last updated: 2026-02-10 after v1.6 milestone start*
+*Last updated: 2026-02-10 after v1.6 milestone*
