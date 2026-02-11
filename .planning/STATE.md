@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 28 of 30 (scraper-service-backend)
-Plan: 01 of 04 in phase 28
-Status: In progress (plan 28-01 complete)
-Last activity: 2026-02-10 — Completed 28-01-PLAN.md (foundation types and infra)
+Phase: 27-28 of 30 (executing in parallel)
+Plan: 27-03 complete, 28-01 complete
+Status: In progress
+Last activity: 2026-02-10 — Completed 27-03-PLAN.md (schema alignment)
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [██░░░░░░░░] 1/10 plans
+Progress: v1.0-v1.6 SHIPPED | v1.7: [██░░░░░░░░] 2/10 plans
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 26
-- Total plans completed: 48
+- Total plans completed: 49
 - Timeline: Jan 18 → Feb 10, 2026 (24 days)
 
 ## Accumulated Context
@@ -37,6 +37,9 @@ Recent decisions affecting current work:
 - Cross-repo milestone: Phase 28 targets brand-scraper repo, all others target main site
 - [28-01] Assets uploaded individually to GCS, ZIP created on-demand (not buffered in memory)
 - [28-01] PipelineContext.onEvent callback is optional for backward compatibility
+- [27-03] Used .passthrough() on all Zod schemas for forward-compatibility with scraper service changes
+- [27-03] ExtractedField wrapper pattern: access value via entry.value.*, confidence via entry.confidence
+- [27-03] Defensive safeParse at UI layer (not just API proxy) with fallback download UI
 
 ### Pending Todos
 
@@ -44,7 +47,7 @@ None.
 
 ### Blockers/Concerns
 
-- Brand scraper schema mismatch — actual taxonomy shape differs from site Zod schemas (Phase 27 fixes this)
+- Brand scraper schema mismatch — RESOLVED by Phase 27-03 (Zod schemas now match real taxonomy)
 
 ### Quick Tasks Completed
 
@@ -56,11 +59,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 28-01-PLAN.md (foundation types and infra)
+Stopped at: Completed 27-03-PLAN.md (schema alignment)
 Resume file: None
 
 ## Next Step
 
-Continue phase 28 execution:
-- `/gsd:execute-phase 28-02` — Pipeline orchestrator with progress events
-- Phase 27 can execute in parallel (different repo)
+Continue parallel execution:
+- Phase 27: Plans 27-01 and 27-02 still need execution (navigation cleanup, home page rebuild)
+- Phase 28: `/gsd:execute-phase 28-02` — Pipeline orchestrator with progress events
