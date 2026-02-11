@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { JobStatusIndicator } from "@/components/admin/brand-scraper/JobStatusIndicator";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +14,7 @@ import {
   type ScrapeJobSubmission,
 } from "@/lib/brand-scraper/types";
 import { BrandCard } from "./BrandCard";
+import { ScrapeHistory } from "./ScrapeHistory";
 import { ScrapeProgressPanel } from "./ScrapeProgressPanel";
 
 const API_BASE = "/api/tools/brand-scraper";
@@ -29,6 +31,10 @@ function getErrorMessage(error: unknown): string | null {
 
 function BrandScraperContent() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const initialJobId = searchParams.get("jobId");
+  const hasInitialized = useRef(false);
+
   const [billing, setBilling] = useState<BillingMeResponse | null>(null);
   const [billingLoading, setBillingLoading] = useState(true);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -127,6 +133,29 @@ function BrandScraperContent() {
     fetchBilling();
   }, [reset, fetchBilling]);
 
+  // Auto-enter results view when ?jobId=xxx query param is present
+  useEffect(() => {
+    if (initialJobId && user && !hasInitialized.current) {
+      hasInitialized.current = true;
+      user.getIdToken().then((idToken) => {
+        setToken(idToken);
+        setJobId(initialJobId);
+      });
+    }
+  }, [initialJobId, user]);
+
+  // Handle "View Results" from history list
+  const handleViewResults = useCallback(
+    async (historyJobId: string) => {
+      if (!user) return;
+      const idToken = await user.getIdToken();
+      setToken(idToken);
+      setJobId(historyJobId);
+      setError(null);
+    },
+    [user],
+  );
+
   const inputStyles =
     "block w-full rounded-lg border border-border px-3 py-2 shadow-sm transition-colors focus:border-gold focus:ring-1 focus:ring-gold min-h-[44px]";
 
@@ -187,29 +216,32 @@ function BrandScraperContent() {
         </div>
       )}
 
-      {/* URL form — only when no active job */}
+      {/* URL form + history — only when no active job */}
       {!jobId && (
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-3 sm:flex-row sm:items-end"
-        >
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://example.com"
-            required
-            className={`flex-1 ${inputStyles}`}
-          />
-          <Button
-            type="submit"
-            variant="primary"
-            size="sm"
-            disabled={submitting || !hasEnough}
+        <>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3 sm:flex-row sm:items-end"
           >
-            {submitting ? "Submitting..." : `Scrape (${creditCost} credits)`}
-          </Button>
-        </form>
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://example.com"
+              required
+              className={`flex-1 ${inputStyles}`}
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+              disabled={submitting || !hasEnough}
+            >
+              {submitting ? "Submitting..." : `Scrape (${creditCost} credits)`}
+            </Button>
+          </form>
+          <ScrapeHistory onViewResults={handleViewResults} />
+        </>
       )}
 
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
