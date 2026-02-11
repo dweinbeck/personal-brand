@@ -136,7 +136,22 @@ export async function checkEnvelopeAccess(
       };
     }
 
-    // --- Step 6: Other errors -> re-throw ---
+    // --- Step 6: Tool config error -> readonly (degrade gracefully) ---
+    if (error instanceof Error) {
+      const msg = error.message;
+      if (msg.startsWith("Unknown tool:") || msg.includes("is not active")) {
+        console.warn(
+          `Envelope billing: tool config error, falling back to readonly — ${msg}`,
+        );
+        return {
+          mode: "readonly",
+          weekStart: currentWeekStart,
+          reason: "unpaid",
+        };
+      }
+    }
+
+    // --- Step 7: Other errors -> re-throw ---
     throw error;
   }
 }
