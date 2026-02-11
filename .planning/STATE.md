@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 27-28 of 30 (executing in parallel)
-Plan: 27-02 complete, 27-03 complete, 28-01 complete
-Status: In progress
-Last activity: 2026-02-11 — Completed 27-02-PLAN.md (home page rebuild)
+Plan: 27-01 complete, 27-02 complete, 27-03 complete, 28-01 complete
+Status: In progress — Phase 27 complete (3/3 plans), Phase 28 in progress
+Last activity: 2026-02-11 — Completed 27-01-PLAN.md (Projects removal + navigation cleanup)
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [███░░░░░░░] 3/10 plans
+Progress: v1.0-v1.6 SHIPPED | v1.7: [████░░░░░░] 4/10 plans
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 26
-- Total plans completed: 50
+- Total plans completed: 51
 - Timeline: Jan 18 → Feb 10, 2026 (24 days)
 
 ## Accumulated Context
@@ -42,6 +42,7 @@ Recent decisions affecting current work:
 - [27-03] Defensive safeParse at UI layer (not just API proxy) with fallback download UI
 - [27-02] Inline card rendering in AppsGrid (not reusing AppCard) for different button styling (primary full-width)
 - [27-02] Removed stale project references from sitemap.ts (blocking fix after 27-01 deleted routes)
+- [27-01] Kept src/lib/github.ts and src/types/project.ts intact (still used by home page FeaturedProjects)
 
 ### Pending Todos
 
@@ -61,11 +62,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 27-02-PLAN.md (home page rebuild)
+Stopped at: Completed 27-01-PLAN.md (Projects removal + navigation cleanup)
 Resume file: None
 
 ## Next Step
 
 Continue parallel execution:
-- Phase 27: Plan 27-01 still needs execution (navigation cleanup)
+- Phase 27: COMPLETE (all 3 plans done: 27-01, 27-02, 27-03)
 - Phase 28: `/gsd:execute-phase 28-02` — Pipeline orchestrator with progress events
