@@ -5,24 +5,24 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.7 — Phase 29 next (depends on completed 27+28)
+**Current focus:** v1.7 — Phase 29 in progress (plan 01 of 03 complete)
 
 ## Current Position
 
-Phase: 29 of 30 (ready to plan)
-Plan: None yet — Phase 29 needs planning
-Status: Phases 27+28 verified and complete. Phase 29 unblocked.
-Last activity: 2026-02-11 — Phases 27+28 verified (23/23 and 19/19 must-haves)
+Phase: 29 of 30 (Brand Card + Progress UI)
+Plan: 01 of 03 complete
+Status: In progress — Plan 01 (data layer + API proxy) complete
+Last activity: 2026-02-11 — Completed 29-01-PLAN.md
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [███████░░░] 7/10 plans (2/4 phases complete)
+Progress: v1.0-v1.6 SHIPPED | v1.7: [████████░░] 8/10 plans (2/4 phases complete)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 28
-- Total plans completed: 59
-- Timeline: Jan 18 → Feb 10, 2026 (24 days)
+- Total plans completed: 60
+- Timeline: Jan 18 → Feb 11, 2026 (25 days)
 
 ## Accumulated Context
 
@@ -53,6 +53,10 @@ Recent decisions affecting current work:
 - [27-02] Inline card rendering in AppsGrid (not reusing AppCard) for different button styling (primary full-width)
 - [27-02] Removed stale project references from sitemap.ts (blocking fix after 27-01 deleted routes)
 - [27-01] Kept src/lib/github.ts and src/types/project.ts intact (still used by home page FeaturedProjects)
+- [29-01] All new jobStatusSchema fields are nullish for backward compat with pre-Phase-28 jobs
+- [29-01] Font loading is best-effort (non-fatal) — UI renders fallback if Google Fonts fails
+- [29-01] Zip proxy uses 60s timeout for slow GCS operations
+- [29-01] Snake_case throughout new schemas per Phase 28-04 API convention
 
 ### Pending Todos
 
@@ -72,10 +76,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Phases 27+28 verified and complete
+Stopped at: Completed 29-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 29: Brand Card + Progress UI — plan and execute. Depends on completed Phases 27+28.
-Phase 30: Assets Page + User History — depends on Phase 29.
+Phase 29: Plan 02 (brand card rendering) — uses extended types and font hook from Plan 01.
+Then Plan 03 (progress UI). Then Phase 30.
