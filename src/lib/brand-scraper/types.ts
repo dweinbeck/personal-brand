@@ -287,3 +287,16 @@ export const jobStatusSchema = z
 export type ScrapeRequest = z.infer<typeof scrapeRequestSchema>;
 export type ScrapeJobSubmission = z.infer<typeof scrapeJobSubmissionSchema>;
 export type JobStatus = z.infer<typeof jobStatusSchema>;
+
+/**
+ * Client-side type for scrape history API responses.
+ * Firestore Timestamps are serialized to ISO strings by the API route.
+ */
+export type ScrapeHistoryEntry = {
+  id: string;
+  jobId: string;
+  siteUrl: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+};
