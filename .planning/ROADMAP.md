@@ -68,7 +68,11 @@ Plans:
   2. On completion, a single wide Brand Card shows a browser-tab header with favicon + hostname, logos, color palette swatches, and a description area rendered in the extracted font
   3. The Brand Card has "Download Brand JSON File" and "Download Assets" buttons
   4. Main site proxy route for on-demand zip requires authentication
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 29-01-PLAN.md — Extend Zod schemas with pipeline_meta + assets_manifest, create font loading utility, add zip proxy route
+- [ ] 29-02-PLAN.md — Create ScrapeProgressPanel and Brand Card section components (header, logos, colors, description, downloads)
+- [ ] 29-03-PLAN.md — Compose BrandCard container and wire progress panel + card into UserBrandScraperPage
 
 ### Phase 30: Assets Page + User History
 **Goal**: Users can browse individual assets with previews, download them, and revisit previously scraped brands from their history
@@ -100,7 +104,7 @@ Phases 27 and 28 operate on different repos and can execute concurrently with ze
 |-------|---------------|--------|-----------|
 | 27. Apps-first Home + Schema Alignment | 3/3 | Verified | 2026-02-11 |
 | 28. Scraper Service Backend | 4/4 | Verified | 2026-02-11 |
-| 29. Brand Card + Progress UI | 0/TBD | Not started | - |
+| 29. Brand Card + Progress UI | 0/3 | Not started | - |
 | 30. Assets Page + User History | 0/TBD | Not started | - |
 
 ---
