@@ -13,7 +13,7 @@
 
 - [x] **Phase 27: Apps-first Home + Schema Alignment** - Remove Projects, update navbar, rebuild Home around apps grid, fix Zod schemas
 - [x] **Phase 28: Scraper Service Backend** - Progress events, individual GCS assets, on-demand zip, enriched API response
-- [ ] **Phase 29: Brand Card + Progress UI** - New Brand Card component, live progress display, proxy routes
+- [x] **Phase 29: Brand Card + Progress UI** - New Brand Card component, live progress display, proxy routes
 - [ ] **Phase 30: Assets Page + User History** - Asset browsing with downloads and user scrape history
 
 ## Phase Details
@@ -70,9 +70,9 @@ Plans:
   4. Main site proxy route for on-demand zip requires authentication
 **Plans**: 3 plans
 Plans:
-- [ ] 29-01-PLAN.md — Extend Zod schemas with pipeline_meta + assets_manifest, create font loading utility, add zip proxy route
-- [ ] 29-02-PLAN.md — Create ScrapeProgressPanel and Brand Card section components (header, logos, colors, description, downloads)
-- [ ] 29-03-PLAN.md — Compose BrandCard container and wire progress panel + card into UserBrandScraperPage
+- [x] 29-01-PLAN.md — Extend Zod schemas with pipeline_meta + assets_manifest, create font loading utility, add zip proxy route
+- [x] 29-02-PLAN.md — Create ScrapeProgressPanel and Brand Card section components (header, logos, colors, description, downloads)
+- [x] 29-03-PLAN.md — Compose BrandCard container and wire progress panel + card into UserBrandScraperPage
 
 ### Phase 30: Assets Page + User History
 **Goal**: Users can browse individual assets with previews, download them, and revisit previously scraped brands from their history
@@ -104,7 +104,7 @@ Phases 27 and 28 operate on different repos and can execute concurrently with ze
 |-------|---------------|--------|-----------|
 | 27. Apps-first Home + Schema Alignment | 3/3 | Verified | 2026-02-11 |
 | 28. Scraper Service Backend | 4/4 | Verified | 2026-02-11 |
-| 29. Brand Card + Progress UI | 0/3 | Not started | - |
+| 29. Brand Card + Progress UI | 3/3 | Verified | 2026-02-11 |
 | 30. Assets Page + User History | 0/TBD | Not started | - |
 
 ---

@@ -35,7 +35,7 @@ Requirements for v1.7 milestone. Each maps to roadmap phases.
 - [x] **PROG-01**: Scraper service emits progress events during pipeline (page_started, page_done, asset_saved, asset_failed)
 - [x] **PROG-02**: Events persisted in job pipelineMeta JSONB, updated during processing (not only at end)
 - [x] **PROG-03**: GET /jobs/:id returns events in response
-- [ ] **PROG-04**: Main site UI shows live "Pages being scraped" and "Files saved" lists while job is running
+- [x] **PROG-04**: Main site UI shows live "Pages being scraped" and "Files saved" lists while job is running
 
 ### Asset Storage
 
@@ -43,16 +43,16 @@ Requirements for v1.7 milestone. Each maps to roadmap phases.
 - [x] **ASST-02**: Assets manifest (JSON) with metadata persisted to DB and/or GCS
 - [x] **ASST-03**: No automatic zip on completion; individual objects only
 - [x] **ASST-04**: On-demand zip endpoint (POST /jobs/:id/assets/zip) creates zip, uploads to GCS, returns signed URL
-- [ ] **ASST-05**: Main site proxy route for on-demand zip with auth gating
+- [x] **ASST-05**: Main site proxy route for on-demand zip with auth gating
 
 ### Brand Card
 
-- [ ] **CARD-01**: Single wide Brand Card replaces old 2x2 results gallery
-- [ ] **CARD-02**: Fake browser tab header showing favicon + site hostname
-- [ ] **CARD-03**: Multiple logos displayed from taxonomy assets.logos
-- [ ] **CARD-04**: Color palette swatches from color.palette with hex values
-- [ ] **CARD-05**: Description area rendered in extracted primary font-family (best-effort)
-- [ ] **CARD-06**: Buttons bottom-right: "Download Brand JSON File" and "Download Assets"
+- [x] **CARD-01**: Single wide Brand Card replaces old 2x2 results gallery
+- [x] **CARD-02**: Fake browser tab header showing favicon + site hostname
+- [x] **CARD-03**: Multiple logos displayed from taxonomy assets.logos
+- [x] **CARD-04**: Color palette swatches from color.palette with hex values
+- [x] **CARD-05**: Description area rendered in extracted primary font-family (best-effort)
+- [x] **CARD-06**: Buttons bottom-right: "Download Brand JSON File" and "Download Assets"
 
 ### Assets Page
 
@@ -126,18 +126,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROG-01 | Phase 28 | Complete |
 | PROG-02 | Phase 28 | Complete |
 | PROG-03 | Phase 28 | Complete |
-| PROG-04 | Phase 29 | Pending |
+| PROG-04 | Phase 29 | Complete |
 | ASST-01 | Phase 28 | Complete |
 | ASST-02 | Phase 28 | Complete |
 | ASST-03 | Phase 28 | Complete |
 | ASST-04 | Phase 28 | Complete |
-| ASST-05 | Phase 29 | Pending |
-| CARD-01 | Phase 29 | Pending |
-| CARD-02 | Phase 29 | Pending |
-| CARD-03 | Phase 29 | Pending |
-| CARD-04 | Phase 29 | Pending |
-| CARD-05 | Phase 29 | Pending |
-| CARD-06 | Phase 29 | Pending |
+| ASST-05 | Phase 29 | Complete |
+| CARD-01 | Phase 29 | Complete |
+| CARD-02 | Phase 29 | Complete |
+| CARD-03 | Phase 29 | Complete |
+| CARD-04 | Phase 29 | Complete |
+| CARD-05 | Phase 29 | Complete |
+| CARD-06 | Phase 29 | Complete |
 | APAG-01 | Phase 30 | Pending |
 | APAG-02 | Phase 30 | Pending |
 | APAG-03 | Phase 30 | Pending |
@@ -156,4 +156,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-11 — Phases 27+28 requirements marked Complete*
+*Last updated: 2026-02-11 — Phase 29 requirements marked Complete*
