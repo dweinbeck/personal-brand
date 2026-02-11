@@ -24,17 +24,19 @@ describe("Tool pricing seed", () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it("brand_scraper is active", () => {
-    const scraper = TOOL_PRICING_SEED.find(
-      (t) => t.toolKey === "brand_scraper",
-    );
-    expect(scraper).toBeDefined();
-    expect(scraper?.active).toBe(true);
+  it("active tools are marked active", () => {
+    const activeKeys = ["brand_scraper", "dave_ramsey"];
+    for (const key of activeKeys) {
+      const tool = TOOL_PRICING_SEED.find((t) => t.toolKey === key);
+      expect(tool).toBeDefined();
+      expect(tool?.active).toBe(true);
+    }
   });
 
   it("placeholder tools are inactive", () => {
+    const activeKeys = new Set(["brand_scraper", "dave_ramsey"]);
     const placeholders = TOOL_PRICING_SEED.filter(
-      (t) => t.toolKey !== "brand_scraper",
+      (t) => !activeKeys.has(t.toolKey),
     );
     for (const tool of placeholders) {
       expect(tool.active).toBe(false);

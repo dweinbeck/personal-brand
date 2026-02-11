@@ -25,9 +25,6 @@ export function NavLinks() {
 
   const links = useMemo(() => {
     const result = [...baseLinks];
-    if (user) {
-      result.push({ name: "Envelopes", href: "/envelopes" });
-    }
     if (user?.email === ADMIN_EMAIL) {
       result.push({ name: "Control Center", href: "/control-center" });
     }

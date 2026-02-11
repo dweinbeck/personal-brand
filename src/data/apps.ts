@@ -33,11 +33,11 @@ export function getApps(): AppListing[] {
       subtitle: "Zero-based budgeting with digital envelopes",
       description:
         "Manage your monthly budget using the Dave Ramsey envelope method. Allocate income to categories and track spending in real time.",
-      href: "/apps/envelopes",
-      launchedAt: "",
-      updatedAt: "",
+      href: "/envelopes",
+      launchedAt: "2026-02-10",
+      updatedAt: "2026-02-10",
       techStack: ["React", "Firebase", "Tailwind"],
-      available: false,
+      available: true,
     },
   ];
 }
