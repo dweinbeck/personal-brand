@@ -11,8 +11,8 @@
 
 **Milestone Goal:** Pivot the Home page to showcase apps as the primary content, remove the Projects section, and make Brand Scraper fully functional with real-time progress, proper taxonomy rendering, asset management, and user history. Cross-repo milestone touching both the main site and the brand-scraper Fastify service.
 
-- [ ] **Phase 27: Apps-first Home + Schema Alignment** - Remove Projects, update navbar, rebuild Home around apps grid, fix Zod schemas
-- [ ] **Phase 28: Scraper Service Backend** - Progress events, individual GCS assets, on-demand zip, enriched API response
+- [x] **Phase 27: Apps-first Home + Schema Alignment** - Remove Projects, update navbar, rebuild Home around apps grid, fix Zod schemas
+- [x] **Phase 28: Scraper Service Backend** - Progress events, individual GCS assets, on-demand zip, enriched API response
 - [ ] **Phase 29: Brand Card + Progress UI** - New Brand Card component, live progress display, proxy routes
 - [ ] **Phase 30: Assets Page + User History** - Asset browsing with downloads and user scrape history
 
@@ -34,9 +34,9 @@
   8. When a scraper response contains unexpected data, a fallback message appears with a "Download Brand JSON" link
 **Plans**: 3 plans
 Plans:
-- [ ] 27-01-PLAN.md — Remove Projects routing, update navbar, clean sitemap and 404 page
-- [ ] 27-02-PLAN.md — Rebuild Home page with apps grid and Building Blocks CTA
-- [ ] 27-03-PLAN.md — Align Zod schemas with real scraper taxonomy and update gallery components
+- [x] 27-01-PLAN.md — Remove Projects routing, update navbar, clean sitemap and 404 page
+- [x] 27-02-PLAN.md — Rebuild Home page with apps grid and Building Blocks CTA
+- [x] 27-03-PLAN.md — Align Zod schemas with real scraper taxonomy and update gallery components
 
 ### Phase 28: Scraper Service Backend
 **Goal**: The scraper service tracks granular pipeline progress, stores each asset individually in GCS, generates zips on demand, and returns enriched job responses with events and asset manifests
@@ -53,10 +53,10 @@ Plans:
   7. brand_json_url continues working via signed URL (no regression)
 **Plans**: 4 plans
 Plans:
-- [ ] 28-01-PLAN.md — Foundation: DB schema migration, types, PipelineContext.onEvent, GCS helpers
-- [ ] 28-02-PLAN.md — Wire progress event emission throughout pipeline and persist to DB
-- [ ] 28-03-PLAN.md — Individual asset uploads to GCS with manifest building
-- [ ] 28-04-PLAN.md — Enriched GET /jobs/:id response and POST zip endpoint
+- [x] 28-01-PLAN.md — Foundation: DB schema migration, types, PipelineContext.onEvent, GCS helpers
+- [x] 28-02-PLAN.md — Wire progress event emission throughout pipeline and persist to DB
+- [x] 28-03-PLAN.md — Individual asset uploads to GCS with manifest building
+- [x] 28-04-PLAN.md — Enriched GET /jobs/:id response and POST zip endpoint
 
 ### Phase 29: Brand Card + Progress UI
 **Goal**: Users see live scrape progress and a polished Brand Card displaying the extracted brand identity when the job completes
@@ -98,8 +98,8 @@ Phases 27 and 28 operate on different repos and can execute concurrently with ze
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 27. Apps-first Home + Schema Alignment | 0/3 | Planned | - |
-| 28. Scraper Service Backend | 0/4 | Planned | - |
+| 27. Apps-first Home + Schema Alignment | 3/3 | Verified | 2026-02-11 |
+| 28. Scraper Service Backend | 4/4 | Verified | 2026-02-11 |
 | 29. Brand Card + Progress UI | 0/TBD | Not started | - |
 | 30. Assets Page + User History | 0/TBD | Not started | - |
 

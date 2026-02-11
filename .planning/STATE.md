@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.7 — Phases 27+28 (parallelizable)
+**Current focus:** v1.7 — Phase 29 next (depends on completed 27+28)
 
 ## Current Position
 
-Phase: 27-28 of 30 (executing in parallel)
-Plan: 27-01 complete, 27-02 complete, 27-03 complete, 28-01 complete, 28-02 complete, 28-03 complete, 28-04 complete
-Status: In progress — Phase 27 complete (3/3 plans), Phase 28 COMPLETE (4/4 plans)
-Last activity: 2026-02-11 — Completed 28-04-PLAN.md (Enriched job response + on-demand zip)
+Phase: 29 of 30 (ready to plan)
+Plan: None yet — Phase 29 needs planning
+Status: Phases 27+28 verified and complete. Phase 29 unblocked.
+Last activity: 2026-02-11 — Phases 27+28 verified (23/23 and 19/19 must-haves)
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [███████░░░] 7/10 plans
+Progress: v1.0-v1.6 SHIPPED | v1.7: [███████░░░] 7/10 plans (2/4 phases complete)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
-- Total phases completed: 26
-- Total plans completed: 52
+- Total phases completed: 28
+- Total plans completed: 59
 - Timeline: Jan 18 → Feb 10, 2026 (24 days)
 
 ## Accumulated Context
@@ -72,11 +72,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 28-04-PLAN.md (Enriched job response + on-demand zip)
+Stopped at: Phases 27+28 verified and complete
 Resume file: None
 
 ## Next Step
 
-Phases 27 and 28 are both COMPLETE. Ready for:
-- Phase 29: Frontend integration (depends on both 27+28)
-- Phase 30: Integration tests (depends on 29)
+Phase 29: Brand Card + Progress UI — plan and execute. Depends on completed Phases 27+28.
+Phase 30: Assets Page + User History — depends on Phase 29.
