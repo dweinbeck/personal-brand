@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.7 — Phase 30 in progress (2 of 3 plans complete)
+**Current focus:** v1.7 — Phase 30 complete (3 of 3 plans complete)
 
 ## Current Position
 
 Phase: 30 of 30 (Assets Page + User History)
-Plan: 02 of 03 complete
-Status: In progress
-Last activity: 2026-02-11 — Completed 30-02-PLAN.md
+Plan: 03 of 03 complete
+Status: Phase complete
+Last activity: 2026-02-11 — Completed 30-03-PLAN.md
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [████████████░] 12/13 plans (3/4 phases, 30 in progress)
+Progress: v1.0-v1.6 SHIPPED | v1.7: [█████████████] 13/13 plans (4/4 phases complete)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
-- Total phases completed: 29
-- Total plans completed: 64
+- Total phases completed: 30
+- Total plans completed: 65
 - Timeline: Jan 18 → Feb 11, 2026 (25 days)
 
 ## Accumulated Context
@@ -70,6 +70,9 @@ Recent decisions affecting current work:
 - [30-02] Fresh token per zip download action (not cached mount token) to prevent expiry
 - [30-02] Single category skips section headers for cleaner layout
 - [30-02] Non-image file type label derived from content_type subtype with mapping table
+- [30-03] ScrapeHistory renders null when no entries (no empty state UI)
+- [30-03] hasInitialized ref prevents query param re-triggering after handleNewScrape
+- [30-03] Fresh token per handleViewResults call to prevent expiry
 
 ### Pending Todos
 
@@ -89,9 +92,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 30-02-PLAN.md
+Stopped at: Completed 30-03-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 30, Plan 03 (history UI) — final plan of v1.7.
+v1.7 milestone complete. All 4 phases (27-30) and 13 plans delivered.
