@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Planning next milestone
+**Current focus:** v1.7 — Apps-first Home + Brand Scraper Overhaul
 
 ## Current Position
 
-Phase: 26 of 26 — all phases complete
-Plan: N/A
-Status: v1.6 shipped, ready for next milestone
-Last activity: 2026-02-10 — v1.6 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-10 — Milestone v1.7 started
 
 Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 + v1.6 SHIPPED
 [████████████████████] 26/26 phases complete (7 milestones)
@@ -37,7 +37,7 @@ None.
 
 ### Blockers/Concerns
 
-- Brand scraper worker not processing jobs — BSINT-02 and E2E-06 remain blocked (external dependency)
+- Brand scraper schema mismatch — actual taxonomy shape differs from site Zod schemas (being fixed in v1.7)
 
 ### Quick Tasks Completed
 
@@ -49,9 +49,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: v1.6 milestone completed
+Stopped at: Defining v1.7 requirements
 Resume file: None
 
 ## Next Step
 
-`/gsd:new-milestone`
+Define requirements, then `/gsd:plan-phase`

@@ -65,7 +65,21 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-(None — planning next milestone)
+**v1.7 — Apps-first Home + Brand Scraper Overhaul:**
+
+- [ ] Remove Projects pages/routes with redirect to /
+- [ ] Navbar: Home, About, Building Blocks, Custom GPTs, Apps, Assistant, Contact + conditional Control Center
+- [ ] Home page: Apps grid section (3-wide, uniform cards, blue fill + gold border buttons)
+- [ ] Home page: Building Blocks CTA section below apps
+- [ ] Remove duplicative navigational Home sections
+- [ ] Fix taxonomy schema mismatch between scraper service and main site
+- [ ] Live progress UI during active scrape (pages scraped + files saved)
+- [ ] Individual GCS asset storage in scraper service (no auto-zip on completion)
+- [ ] On-demand zip generation endpoint in scraper service
+- [ ] Brand Card UI (single wide card with favicon tab, logos, palette, extracted font)
+- [ ] Assets page with previews and per-file downloads
+- [ ] User history for Brand Scraper (previously scraped URLs with View Results)
+- [ ] Defensive error handling for schema parsing failures
 
 ### Deferred
 
@@ -73,7 +87,6 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Writing page displays real articles (replaces lorem ipsum)
 - Optimized logo assets (SVG preferred, PNG fallback)
 - Additional paid tools: 60-Second Lesson, Bus Text, Dave Ramsey App (pricing entries exist, tools inactive)
-- Brand scraper worker deployment (external service — jobs currently queued but not processed)
 
 ### Out of Scope
 
@@ -89,6 +102,16 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Dynamic per-page OG images — single branded image sufficient
 - Subscription / recurring billing — pre-paid credits model is intentional
 - Custom Stripe payment page (Elements) — Checkout redirect is PCI-compliant out of the box
+
+## Current Milestone: v1.7 Apps-first Home + Brand Scraper Overhaul
+
+**Goal:** Pivot Home page to showcase apps as the primary content, remove Projects section, and make Brand Scraper fully functional with real-time progress, proper taxonomy rendering, asset management, and user history.
+
+**Target features:**
+- Apps-first Home page with 3-wide grid replacing Projects section
+- Updated navbar with conditional Control Center visibility
+- Brand Scraper end-to-end fix (schema alignment, progress events, Brand Card, assets page, history)
+- Cross-repo changes (main site + brand-scraper Fastify service)
 
 ## Current State
 
@@ -157,6 +180,8 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | ✓ Good — ready for activation |
 
 | Apps hub page for tool discovery | Visitors can browse available tools from a single page; matches existing card patterns | ✓ Good |
+| Remove Projects pages, pivot Home to apps-first | Projects section served its purpose; apps are the primary user-facing content now | — Pending |
+| Both-repo milestone (main site + scraper service) | Brand Scraper fixes require coordinated changes across service boundary | — Pending |
 
 ---
-*Last updated: 2026-02-10 after v1.6 milestone*
+*Last updated: 2026-02-10 after v1.7 milestone started*
