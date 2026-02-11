@@ -56,16 +56,16 @@ Requirements for v1.7 milestone. Each maps to roadmap phases.
 
 ### Assets Page
 
-- [ ] **APAG-01**: Route at /apps/brand-scraper/[jobId]/assets with asset list and previews
-- [ ] **APAG-02**: "Download Zip File" button at top triggers on-demand zip generation and download
-- [ ] **APAG-03**: Per-asset preview (image when possible) with filename/category and download button via signed URL
+- [x] **APAG-01**: Route at /apps/brand-scraper/[jobId]/assets with asset list and previews
+- [x] **APAG-02**: "Download Zip File" button at top triggers on-demand zip generation and download
+- [x] **APAG-03**: Per-asset preview (image when possible) with filename/category and download button via signed URL
 
 ### User History
 
-- [ ] **HIST-01**: Scrape submissions persist history record in Firestore keyed by uid (jobId, siteUrl, createdAt, status)
-- [ ] **HIST-02**: Authenticated history fetch API route returns list sorted by createdAt desc
-- [ ] **HIST-03**: History section below URL input showing previously scraped URLs + dates + "View Results"
-- [ ] **HIST-04**: "View Results" opens Brand Card for that job
+- [x] **HIST-01**: Scrape submissions persist history record in Firestore keyed by uid (jobId, siteUrl, createdAt, status)
+- [x] **HIST-02**: Authenticated history fetch API route returns list sorted by createdAt desc
+- [x] **HIST-03**: History section below URL input showing previously scraped URLs + dates + "View Results"
+- [x] **HIST-04**: "View Results" opens Brand Card for that job
 
 ### Scraper Service API
 
@@ -138,13 +138,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CARD-04 | Phase 29 | Complete |
 | CARD-05 | Phase 29 | Complete |
 | CARD-06 | Phase 29 | Complete |
-| APAG-01 | Phase 30 | Pending |
-| APAG-02 | Phase 30 | Pending |
-| APAG-03 | Phase 30 | Pending |
-| HIST-01 | Phase 30 | Pending |
-| HIST-02 | Phase 30 | Pending |
-| HIST-03 | Phase 30 | Pending |
-| HIST-04 | Phase 30 | Pending |
+| APAG-01 | Phase 30 | Complete |
+| APAG-02 | Phase 30 | Complete |
+| APAG-03 | Phase 30 | Complete |
+| HIST-01 | Phase 30 | Complete |
+| HIST-02 | Phase 30 | Complete |
+| HIST-03 | Phase 30 | Complete |
+| HIST-04 | Phase 30 | Complete |
 | SAPI-01 | Phase 28 | Complete |
 | SAPI-02 | Phase 28 | Complete |
 | SAPI-03 | Phase 28 | Complete |
@@ -156,4 +156,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-11 — Phase 29 requirements marked Complete*
+*Last updated: 2026-02-11 — Phase 30 requirements marked Complete (all v1.7 requirements complete)*

@@ -3,18 +3,18 @@
 ## Milestones
 
 - v1.0 through v1.6: See `.planning/MILESTONES.md`
-- **v1.7 Apps-first Home + Brand Scraper Overhaul** - Phases 27-30 (in progress)
+- **v1.7 Apps-first Home + Brand Scraper Overhaul** - Phases 27-30 (complete)
 
 ## Phases
 
-### v1.7 Apps-first Home + Brand Scraper Overhaul (In Progress)
+### v1.7 Apps-first Home + Brand Scraper Overhaul (Complete)
 
 **Milestone Goal:** Pivot the Home page to showcase apps as the primary content, remove the Projects section, and make Brand Scraper fully functional with real-time progress, proper taxonomy rendering, asset management, and user history. Cross-repo milestone touching both the main site and the brand-scraper Fastify service.
 
 - [x] **Phase 27: Apps-first Home + Schema Alignment** - Remove Projects, update navbar, rebuild Home around apps grid, fix Zod schemas
 - [x] **Phase 28: Scraper Service Backend** - Progress events, individual GCS assets, on-demand zip, enriched API response
 - [x] **Phase 29: Brand Card + Progress UI** - New Brand Card component, live progress display, proxy routes
-- [ ] **Phase 30: Assets Page + User History** - Asset browsing with downloads and user scrape history
+- [x] **Phase 30: Assets Page + User History** - Asset browsing with downloads and user scrape history
 
 ## Phase Details
 
@@ -87,9 +87,9 @@ Plans:
   5. Scrape submissions persist a history record in Firestore keyed by uid containing jobId, siteUrl, createdAt, and status
 **Plans**: 3 plans
 Plans:
-- [ ] 30-01-PLAN.md — History backend: Firestore helpers, scrape route write, job status update, history API route
-- [ ] 30-02-PLAN.md — Assets page: dynamic route, AssetsPage client component, AssetGrid with previews and downloads
-- [ ] 30-03-PLAN.md — History UI: ScrapeHistory component, wire into page, query param support for View Results
+- [x] 30-01-PLAN.md — History backend: Firestore helpers, scrape route write, job status update, history API route
+- [x] 30-02-PLAN.md — Assets page: dynamic route, AssetsPage client component, AssetGrid with previews and downloads
+- [x] 30-03-PLAN.md — History UI: ScrapeHistory component, wire into page, query param support for View Results
 
 ## Progress
 
@@ -109,7 +109,7 @@ Phases 27 and 28 operate on different repos and can execute concurrently with ze
 | 27. Apps-first Home + Schema Alignment | 3/3 | Verified | 2026-02-11 |
 | 28. Scraper Service Backend | 4/4 | Verified | 2026-02-11 |
 | 29. Brand Card + Progress UI | 3/3 | Verified | 2026-02-11 |
-| 30. Assets Page + User History | 0/TBD | Not started | - |
+| 30. Assets Page + User History | 3/3 | Verified | 2026-02-11 |
 
 ---
 *Roadmap created: 2026-02-10*
