@@ -1,13 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getAccomplishments } from "@/lib/accomplishments";
-import { fetchAllProjects } from "@/lib/github";
 import { getAllTutorials } from "@/lib/tutorials";
 
 const BASE_URL = "https://dan-weinbeck.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tutorials = await getAllTutorials();
-  const projects = await fetchAllProjects();
   const accomplishments = getAccomplishments();
 
   const now = new Date();
@@ -32,14 +30,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  // Project detail pages from GitHub API
-  const projectUrls: MetadataRoute.Sitemap = projects.map((p) => ({
-    url: `${BASE_URL}/projects/${p.slug}`,
-    lastModified: p.pushedAt ? new Date(p.pushedAt) : now,
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
-
   return [
     // Static pages
     {
@@ -52,12 +42,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${BASE_URL}/about`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/projects`,
-      lastModified: now,
-      changeFrequency: "weekly",
       priority: 0.8,
     },
     {
@@ -99,6 +83,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Dynamic pages
     ...accomplishmentUrls,
     ...tutorialUrls,
-    ...projectUrls,
   ];
 }

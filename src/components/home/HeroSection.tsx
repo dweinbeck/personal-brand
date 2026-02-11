@@ -31,11 +31,11 @@ export function HeroSection() {
           <h1 className="font-display text-[3rem] md:text-[4.5rem] font-semibold tracking-tight leading-[1.05] text-primary border-b border-primary pb-2 inline-block">
             Dan Weinbeck
           </h1>
-          <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
+          <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-1.5">
             {taglines.map((tag) => (
               <span
                 key={tag}
-                className="px-4 py-1.5 text-sm font-medium rounded-full bg-gold-light text-text-primary border border-primary"
+                className="px-3 py-0.5 text-sm font-medium rounded-full bg-gold-light text-text-primary border border-primary"
               >
                 {tag}
               </span>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { Person, WithContext } from "schema-dts";
-import { FeaturedBuildingBlocks } from "@/components/home/FeaturedBuildingBlocks";
-import { FeaturedProjects } from "@/components/home/FeaturedProjects";
+import { AppsGrid } from "@/components/home/AppsGrid";
+import { BuildingBlocksCta } from "@/components/home/BuildingBlocksCta";
 import { HeroSection } from "@/components/home/HeroSection";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
@@ -38,8 +38,8 @@ export default function HomePage() {
         }}
       />
       <HeroSection />
-      <FeaturedProjects />
-      <FeaturedBuildingBlocks />
+      <AppsGrid />
+      <BuildingBlocksCta />
     </div>
   );
 }
