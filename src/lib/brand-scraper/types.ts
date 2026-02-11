@@ -15,85 +15,196 @@ export const scrapeJobSubmissionSchema = z.object({
   status: z.string(),
 });
 
+// ---------------------------------------------------------------------------
+// Brand Taxonomy schemas — aligned with real scraper service output.
+// Every extracted item is wrapped in an ExtractedField envelope with
+// { value, confidence, evidence, needs_review }.
+// All object schemas use .passthrough() for forward-compatibility.
+// ---------------------------------------------------------------------------
+
+/**
+ * Evidence attached to each extracted field.
+ */
+const evidenceSchema = z
+  .object({
+    source_url: z.string(),
+    selector: z.string().optional(),
+    css_rule: z.string().optional(),
+    method: z.string(),
+  })
+  .passthrough();
+
+/**
+ * Generic ExtractedField wrapper used by the scraper service for every
+ * individually-extracted data point.
+ */
+function extractedFieldSchema<T extends z.ZodType>(valueSchema: T) {
+  return z
+    .object({
+      value: valueSchema,
+      confidence: z.number(),
+      evidence: z.array(evidenceSchema),
+      needs_review: z.boolean(),
+    })
+    .passthrough();
+}
+
+/** Infer the TypeScript type of an ExtractedField<T>. */
+export type ExtractedField<T> = {
+  value: T;
+  confidence: number;
+  evidence: z.infer<typeof evidenceSchema>[];
+  needs_review: boolean;
+  [key: string]: unknown;
+};
+
+// --- Value schemas for each data type ---
+
+const colorPaletteEntrySchema = z
+  .object({
+    hex: z.string(),
+    rgb: z.object({ r: z.number(), g: z.number(), b: z.number() }),
+    role: z.string().optional(),
+    frequency: z.number().optional(),
+  })
+  .passthrough();
+
+const typographyEntrySchema = z
+  .object({
+    family: z.string(),
+    weight: z.string(),
+    size: z.string().optional(),
+    line_height: z.string().optional(),
+    usage: z.string().optional(),
+    source: z.string().optional(),
+  })
+  .passthrough();
+
+const assetEntrySchema = z
+  .object({
+    url: z.string(),
+    local_path: z.string().optional(),
+    type: z.string(),
+    format: z.string().optional(),
+    sizes: z.string().optional(),
+    score: z.number().optional(),
+    downloaded: z.boolean().optional(),
+  })
+  .passthrough();
+
+// --- Top-level brand taxonomy ---
+
 /**
  * Validates the brand taxonomy returned as the `result` of a completed job.
- * Shape is a best guess (LOW confidence) based on expected scraper output.
- * Uses .passthrough() on all levels to tolerate unexpected extra fields.
+ * Aligned with the real scraper service taxonomy (ExtractedField wrappers).
+ * Uses .passthrough() generously for forward-compatibility.
  */
 export const brandTaxonomySchema = z
   .object({
-    colors: z
-      .array(
-        z.object({
-          hex: z.string(),
-          rgb: z
-            .object({ r: z.number(), g: z.number(), b: z.number() })
-            .optional(),
-          name: z.string().optional(),
-          role: z.string().optional(),
-          confidence: z.number(),
-          needs_review: z.boolean().optional(),
-        }),
-      )
+    brand_id: z.string(),
+    source: z
+      .object({
+        site_url: z.string(),
+        timestamp: z.string(),
+        pages_sampled: z.number(),
+      })
+      .passthrough(),
+    color: z
+      .object({
+        palette: z.array(extractedFieldSchema(colorPaletteEntrySchema)),
+        tokens_detected: z.boolean(),
+      })
+      .passthrough()
       .optional(),
-    fonts: z
-      .array(
-        z.object({
-          family: z.string(),
-          weights: z.array(z.number()).optional(),
-          usage: z.string().optional(),
-          source: z.string().optional(),
-          confidence: z.number(),
-          needs_review: z.boolean().optional(),
-        }),
-      )
-      .optional(),
-    logos: z
-      .array(
-        z.object({
-          url: z.string(),
-          format: z.string().optional(),
-          dimensions: z
-            .object({ width: z.number(), height: z.number() })
-            .optional(),
-          confidence: z.number(),
-          needs_review: z.boolean().optional(),
-        }),
-      )
+    typography: z
+      .object({
+        font_families: z.array(extractedFieldSchema(typographyEntrySchema)),
+        type_scale: z.record(z.string(), z.unknown()).optional(),
+      })
+      .passthrough()
       .optional(),
     assets: z
-      .array(
-        z.object({
-          url: z.string(),
-          type: z.string().optional(),
-          format: z.string().optional(),
-          confidence: z.number().optional(),
-        }),
-      )
+      .object({
+        logos: z.array(extractedFieldSchema(assetEntrySchema)).optional(),
+        favicons: z.array(extractedFieldSchema(assetEntrySchema)).optional(),
+        og_images: z.array(extractedFieldSchema(assetEntrySchema)).optional(),
+      })
+      .passthrough()
+      .optional(),
+    design_tokens: z
+      .object({
+        tokens: z.array(z.unknown()),
+        source_count: z.number(),
+      })
+      .passthrough()
       .optional(),
     identity: z
       .object({
         tagline: z.string().optional(),
-        industry: z.string().optional(),
+        industry_guess: z.string().optional(),
       })
+      .passthrough()
       .optional(),
+    governance: z
+      .object({
+        robots_respected: z.boolean().optional(),
+        license_hints: z.array(z.string()).optional(),
+      })
+      .passthrough()
+      .optional(),
+    meta: z
+      .object({
+        extraction_version: z.string(),
+        stages_completed: z.array(z.string()),
+        stages_failed: z.array(z.string()),
+        errors: z.array(
+          z
+            .object({
+              code: z.string(),
+              message: z.string(),
+              stage: z.string(),
+            })
+            .passthrough(),
+        ),
+        summary: z
+          .object({
+            fields_populated: z.number(),
+            low_confidence_count: z.number(),
+            duration_ms: z.number(),
+          })
+          .passthrough(),
+      })
+      .passthrough(),
   })
   .passthrough();
 
 export type BrandTaxonomy = z.infer<typeof brandTaxonomySchema>;
 
+// --- Job status schema ---
+
+/**
+ * Error object returned by the scraper service on failure.
+ */
+const jobErrorSchema = z
+  .object({
+    code: z.string(),
+    message: z.string(),
+    stage: z.string(),
+  })
+  .passthrough();
+
+export type JobError = z.infer<typeof jobErrorSchema>;
+
 /**
  * Validates the Fastify GET /jobs/:id response (job status polling).
  * Uses .passthrough() to avoid breaking on unexpected extra fields.
- * The `status` field uses z.string() (not z.enum()) because the exact
- * values are unconfirmed -- will be tightened in Phase 21.
  */
 export const jobStatusSchema = z
   .object({
     job_id: z.string(),
     status: z.string(),
     result: brandTaxonomySchema.nullish(),
-    error: z.string().nullish(),
+    error: jobErrorSchema.nullish(),
     brand_json_url: z.string().nullish(),
     assets_zip_url: z.string().nullish(),
   })
