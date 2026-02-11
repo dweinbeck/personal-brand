@@ -9,9 +9,22 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import type { BillingMeResponse } from "@/lib/billing/types";
 import { useJobStatus } from "@/lib/brand-scraper/hooks";
-import type { ScrapeJobSubmission } from "@/lib/brand-scraper/types";
+import {
+  brandTaxonomySchema,
+  type ScrapeJobSubmission,
+} from "@/lib/brand-scraper/types";
 
 const API_BASE = "/api/tools/brand-scraper";
+
+/** Extract a displayable error message from the new error shape (object) or legacy string. */
+function getErrorMessage(error: unknown): string | null {
+  if (!error) return null;
+  if (typeof error === "string") return error;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    return String((error as { message: unknown }).message);
+  }
+  return "An unknown error occurred.";
+}
 
 function BrandScraperContent() {
   const { user } = useAuth();
@@ -116,6 +129,18 @@ function BrandScraperContent() {
   const inputStyles =
     "block w-full rounded-lg border border-border px-3 py-2 shadow-sm transition-colors focus:border-gold focus:ring-1 focus:ring-gold min-h-[44px]";
 
+  // Defensive parsing of the result
+  const parsed = data?.result
+    ? brandTaxonomySchema.safeParse(data.result)
+    : null;
+  const hasValidResult =
+    (data?.status === "succeeded" || data?.status === "partial") &&
+    parsed?.success === true;
+  const hasUnparseableResult =
+    (data?.status === "succeeded" || data?.status === "partial") &&
+    data?.result &&
+    parsed?.success === false;
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       <h1 className="mb-2 text-2xl font-bold text-primary font-display">
@@ -196,20 +221,43 @@ function BrandScraperContent() {
             error={pollError?.message ?? null}
           />
 
-          {(data?.status === "succeeded" || data?.status === "partial") &&
-            data.result && (
-              <div className="mt-6">
-                <BrandResultsGallery
-                  result={data.result}
-                  brandJsonUrl={data.brand_json_url ?? undefined}
-                  assetsZipUrl={data.assets_zip_url ?? undefined}
-                />
-              </div>
-            )}
+          {/* Parsed result — render gallery */}
+          {hasValidResult && parsed.success && (
+            <div className="mt-6">
+              <BrandResultsGallery
+                result={parsed.data}
+                brandJsonUrl={data.brand_json_url ?? undefined}
+                assetsZipUrl={data.assets_zip_url ?? undefined}
+              />
+            </div>
+          )}
+
+          {/* Unparseable result — fallback with download link */}
+          {hasUnparseableResult && (
+            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
+              <p className="font-medium mb-2">
+                We extracted brand data but could not display it.
+              </p>
+              <p className="text-text-secondary mb-4">
+                The data format was unexpected. You can download the raw JSON to
+                inspect it manually.
+              </p>
+              {data.brand_json_url && (
+                <Button
+                  href={data.brand_json_url}
+                  variant="secondary"
+                  size="sm"
+                  download="brand.json"
+                >
+                  Download Brand JSON
+                </Button>
+              )}
+            </div>
+          )}
 
           {data?.status === "failed" && data.error && (
             <div className="mt-4 text-sm">
-              <p className="text-red-600">{data.error}</p>
+              <p className="text-red-600">{getErrorMessage(data.error)}</p>
               <p className="text-text-secondary mt-1">
                 Credits have been automatically refunded.
               </p>

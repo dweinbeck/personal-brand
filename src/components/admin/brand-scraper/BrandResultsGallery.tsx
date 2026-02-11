@@ -23,13 +23,13 @@ export function BrandResultsGallery({
       <h2 className="text-lg font-semibold text-text-primary">Results</h2>
       <div className="grid gap-6 sm:grid-cols-2">
         <Card>
-          <ColorPaletteCard colors={result.colors} />
+          <ColorPaletteCard palette={result.color} />
         </Card>
         <Card>
-          <TypographyCard fonts={result.fonts} />
+          <TypographyCard typography={result.typography} />
         </Card>
         <Card>
-          <LogoAssetsCard logos={result.logos} assets={result.assets} />
+          <LogoAssetsCard assets={result.assets} />
         </Card>
         <Card>
           <DownloadLinks

@@ -75,7 +75,9 @@ export function BrandScraperPage() {
 
           {/* Show error details when failed */}
           {data?.status === "failed" && data.error && (
-            <p className="mt-4 text-sm text-red-600">{data.error}</p>
+            <p className="mt-4 text-sm text-red-600">
+              {data.error.message ?? "Job failed"}
+            </p>
           )}
 
           {/* New scrape button when terminal */}

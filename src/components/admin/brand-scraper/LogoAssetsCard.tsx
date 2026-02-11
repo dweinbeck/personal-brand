@@ -4,15 +4,17 @@ import type { BrandTaxonomy } from "@/lib/brand-scraper/types";
 import { BrandConfidenceBadge } from "./BrandConfidenceBadge";
 
 type LogoAssetsCardProps = {
-  logos: BrandTaxonomy["logos"];
   assets: BrandTaxonomy["assets"];
 };
 
-export function LogoAssetsCard({ logos, assets }: LogoAssetsCardProps) {
-  const hasLogos = logos && logos.length > 0;
-  const hasAssets = assets && assets.length > 0;
+export function LogoAssetsCard({ assets }: LogoAssetsCardProps) {
+  const logos = assets?.logos ?? [];
+  const favicons = assets?.favicons ?? [];
+  const ogImages = assets?.og_images ?? [];
 
-  if (!hasLogos && !hasAssets) {
+  const hasAny = logos.length > 0 || favicons.length > 0 || ogImages.length > 0;
+
+  if (!hasAny) {
     return (
       <p className="text-sm text-text-tertiary">No logos or assets detected.</p>
     );
@@ -20,31 +22,31 @@ export function LogoAssetsCard({ logos, assets }: LogoAssetsCardProps) {
 
   return (
     <div>
-      {hasLogos && (
+      {logos.length > 0 && (
         <>
           <h3 className="text-sm font-semibold text-text-primary mb-3">
             Logos
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            {logos.map((logo, i) => (
+            {logos.map((entry, i) => (
               <div
-                key={logo.url}
+                key={entry.value.url}
                 className="flex flex-col items-center gap-2 rounded-lg border border-border p-3"
               >
                 {/* biome-ignore lint/performance/noImgElement: GCS signed URLs have dynamic hostnames incompatible with next/image */}
                 <img
-                  src={logo.url}
+                  src={entry.value.url}
                   loading="lazy"
                   alt={`Logo ${i + 1}`}
                   className="max-h-24 w-full object-contain"
                 />
                 <div className="flex items-center gap-2">
-                  {logo.format && (
+                  {entry.value.format && (
                     <span className="text-[10px] font-medium uppercase text-text-tertiary">
-                      {logo.format}
+                      {entry.value.format}
                     </span>
                   )}
-                  <BrandConfidenceBadge score={logo.confidence} />
+                  <BrandConfidenceBadge score={entry.confidence} />
                 </div>
               </div>
             ))}
@@ -52,32 +54,50 @@ export function LogoAssetsCard({ logos, assets }: LogoAssetsCardProps) {
         </>
       )}
 
-      {hasAssets && (
+      {favicons.length > 0 && (
         <>
           <h3 className="text-sm font-semibold text-text-primary mb-3 mt-4">
-            Assets
+            Favicons
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            {assets.map((asset, i) => (
+            {favicons.map((entry, i) => (
               <div
-                key={asset.url}
+                key={entry.value.url}
                 className="flex flex-col items-center gap-2 rounded-lg border border-border p-3"
               >
                 {/* biome-ignore lint/performance/noImgElement: GCS signed URLs have dynamic hostnames incompatible with next/image */}
                 <img
-                  src={asset.url}
+                  src={entry.value.url}
                   loading="lazy"
-                  alt={asset.type || `Asset ${i + 1}`}
+                  alt={`Favicon ${i + 1}`}
+                  className="max-h-16 w-full object-contain"
+                />
+                <BrandConfidenceBadge score={entry.confidence} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {ogImages.length > 0 && (
+        <>
+          <h3 className="text-sm font-semibold text-text-primary mb-3 mt-4">
+            OG Assets
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            {ogImages.map((entry, i) => (
+              <div
+                key={entry.value.url}
+                className="flex flex-col items-center gap-2 rounded-lg border border-border p-3"
+              >
+                {/* biome-ignore lint/performance/noImgElement: GCS signed URLs have dynamic hostnames incompatible with next/image */}
+                <img
+                  src={entry.value.url}
+                  loading="lazy"
+                  alt={`Open Graph asset ${i + 1}`}
                   className="max-h-24 w-full object-contain"
                 />
-                {asset.type && (
-                  <span className="text-xs text-text-secondary">
-                    {asset.type}
-                  </span>
-                )}
-                {asset.confidence != null && (
-                  <BrandConfidenceBadge score={asset.confidence} />
-                )}
+                <BrandConfidenceBadge score={entry.confidence} />
               </div>
             ))}
           </div>
