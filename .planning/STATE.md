@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.7 — Phase 29 in progress (plan 02 of 03 complete)
+**Current focus:** v1.7 — Phase 29 complete, Phase 30 next
 
 ## Current Position
 
-Phase: 29 of 30 (Brand Card + Progress UI)
-Plan: 02 of 03 complete
-Status: In progress — Plan 02 (brand card section components) complete
-Last activity: 2026-02-11 — Completed 29-02-PLAN.md
+Phase: 29 of 30 (Brand Card + Progress UI) -- COMPLETE
+Plan: 03 of 03 complete
+Status: Phase 29 complete
+Last activity: 2026-02-11 — Completed 29-03-PLAN.md
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [█████████░] 9/10 plans (2/4 phases complete)
+Progress: v1.0-v1.6 SHIPPED | v1.7: [██████████] 10/10 plans (3/4 phases complete)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
-- Total phases completed: 28
-- Total plans completed: 61
+- Total phases completed: 29
+- Total plans completed: 62
 - Timeline: Jan 18 → Feb 11, 2026 (25 days)
 
 ## Accumulated Context
@@ -61,6 +61,9 @@ Recent decisions affecting current work:
 - [29-02] BrandCardColors follows admin ColorPaletteCard clipboard pattern for consistency
 - [29-02] BrandCardDownloads creates temporary anchor for programmatic zip download
 - [29-02] BrandCardDescription finds first source==="google_fonts" entry for primary font
+- [29-03] BrandCard is pure composition (~52 lines) with zero business logic
+- [29-03] Progress panel gated on events.length > 0 to avoid empty panel flash
+- [29-03] BrandCard render requires token (non-null) for authenticated zip downloads
 
 ### Pending Todos
 
@@ -80,10 +83,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 29-02-PLAN.md
+Stopped at: Completed 29-03-PLAN.md (Phase 29 complete)
 Resume file: None
 
 ## Next Step
 
-Phase 29: Plan 03 (compose Brand Card + wire into page) — composes the 6 leaf components from Plan 02 into the full Brand Card and progress UI.
-Then Phase 30.
+Phase 30 (assets page + user history) — final phase of v1.7.
