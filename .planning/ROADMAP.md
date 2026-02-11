@@ -32,7 +32,11 @@
   6. Zod schemas on the main site parse real scraper service responses without validation errors
   7. UI components read from corrected nested taxonomy paths and render correctly
   8. When a scraper response contains unexpected data, a fallback message appears with a "Download Brand JSON" link
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 27-01-PLAN.md — Remove Projects routing, update navbar, clean sitemap and 404 page
+- [ ] 27-02-PLAN.md — Rebuild Home page with apps grid and Building Blocks CTA
+- [ ] 27-03-PLAN.md — Align Zod schemas with real scraper taxonomy and update gallery components
 
 ### Phase 28: Scraper Service Backend
 **Goal**: The scraper service tracks granular pipeline progress, stores each asset individually in GCS, generates zips on demand, and returns enriched job responses with events and asset manifests
@@ -89,7 +93,7 @@ Phases 27 and 28 operate on different repos and can execute concurrently with ze
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 27. Apps-first Home + Schema Alignment | 0/TBD | Not started | - |
+| 27. Apps-first Home + Schema Alignment | 0/3 | Planned | - |
 | 28. Scraper Service Backend | 0/TBD | Not started | - |
 | 29. Brand Card + Progress UI | 0/TBD | Not started | - |
 | 30. Assets Page + User History | 0/TBD | Not started | - |
