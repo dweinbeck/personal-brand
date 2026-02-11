@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 29 of 30 (Brand Card + Progress UI) -- COMPLETE
-Plan: 03 of 03 complete
-Status: Phase 29 complete
-Last activity: 2026-02-11 — Completed 29-03-PLAN.md
+Phase: 30 of 30 (Assets Page + User History)
+Plan: 01 of 03 complete
+Status: In progress
+Last activity: 2026-02-11 — Completed 30-01-PLAN.md
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [██████████] 10/10 plans (3/4 phases complete)
+Progress: v1.0-v1.6 SHIPPED | v1.7: [███████████░░] 11/13 plans (3/4 phases, 30 in progress)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 29
-- Total plans completed: 62
+- Total plans completed: 63
 - Timeline: Jan 18 → Feb 11, 2026 (25 days)
 
 ## Accumulated Context
@@ -64,6 +64,9 @@ Recent decisions affecting current work:
 - [29-03] BrandCard is pure composition (~52 lines) with zero business logic
 - [29-03] Progress panel gated on events.length > 0 to avoid empty panel flash
 - [29-03] BrandCard render requires token (non-null) for authenticated zip downloads
+- [30-01] Compound doc ID (uid_jobId) for idempotent history writes
+- [30-01] Fire-and-forget pattern for all history writes (non-blocking)
+- [30-01] ScrapeHistoryEntry omits uid field (server-internal only)
 
 ### Pending Todos
 
@@ -83,9 +86,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 29-03-PLAN.md (Phase 29 complete)
+Stopped at: Completed 30-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 30 (assets page + user history) — final phase of v1.7.
+Phase 30, Plan 02 (assets page UI) — then Plan 03 (history UI).
