@@ -1,22 +1,21 @@
 "use client";
 
-import { endOfWeek, format, startOfWeek } from "date-fns";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 import { envelopeFetch } from "@/lib/envelopes/api";
 import { useEnvelopes } from "@/lib/envelopes/hooks";
-import type { EnvelopeWithStatus, HomePageData } from "@/lib/envelopes/types";
+import type { EnvelopeWithStatus } from "@/lib/envelopes/types";
 import { CreateEnvelopeCard } from "./CreateEnvelopeCard";
 import { EnvelopeCard } from "./EnvelopeCard";
 import { EnvelopeCardGrid } from "./EnvelopeCardGrid";
 import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
-import { InlineTransactionForm } from "./InlineTransactionForm";
 import { type OverageContext, OverageModal } from "./OverageModal";
 import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsBanner } from "./SavingsBanner";
+import { TransactionForm } from "./TransactionForm";
 
 export function EnvelopesHomePage() {
   const { user } = useAuth();
@@ -26,23 +25,13 @@ export function EnvelopesHomePage() {
   const [isCreating, setIsCreating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAddingTransaction, setIsAddingTransaction] = useState(false);
   const [overageContext, setOverageContext] = useState<OverageContext | null>(
     null,
   );
 
   const isReadOnly = data?.billing?.mode === "readonly";
-
-  // Current week date constraints for inline transaction form
-  const now = new Date();
-  const currentWeekStart = format(
-    startOfWeek(now, { weekStartsOn: 0 }),
-    "yyyy-MM-dd",
-  );
-  const currentWeekEnd = format(
-    endOfWeek(now, { weekStartsOn: 0 }),
-    "yyyy-MM-dd",
-  );
 
   const getToken = useCallback(async () => {
     const token = await user?.getIdToken();
@@ -117,42 +106,7 @@ export function EnvelopesHomePage() {
     }
   }
 
-  async function handleReorder(envelopeId: string, direction: "up" | "down") {
-    if (isReadOnly) return;
-    if (!data) return;
-
-    const envelopes = [...data.envelopes];
-    const index = envelopes.findIndex((e) => e.id === envelopeId);
-    if (index === -1) return;
-
-    const swapIndex = direction === "up" ? index - 1 : index + 1;
-    if (swapIndex < 0 || swapIndex >= envelopes.length) return;
-
-    // Swap positions
-    [envelopes[index], envelopes[swapIndex]] = [
-      envelopes[swapIndex],
-      envelopes[index],
-    ];
-
-    const orderedIds = envelopes.map((e) => e.id);
-
-    // Optimistic update
-    const optimisticData: HomePageData = { ...data, envelopes };
-    await mutate(optimisticData, { revalidate: false });
-
-    try {
-      const token = await getToken();
-      await envelopeFetch("/api/envelopes/reorder", token, {
-        method: "PUT",
-        body: JSON.stringify({ orderedIds }),
-      });
-    } catch {
-      // Revert on error
-      await mutate();
-    }
-  }
-
-  async function handleInlineTransaction(txnData: {
+  async function handleAddTransaction(txnData: {
     envelopeId: string;
     amountCents: number;
     date: string;
@@ -195,7 +149,7 @@ export function EnvelopesHomePage() {
           return;
         }
       }
-      setExpandedId(null);
+      setIsAddingTransaction(false);
     } catch (err) {
       window.alert(
         err instanceof Error ? err.message : "Failed to add transaction.",
@@ -237,11 +191,23 @@ export function EnvelopesHomePage() {
   }
 
   // -- Data loaded --
-  const envelopes = data?.envelopes ?? [];
+  const envelopes = [...(data?.envelopes ?? [])].sort(
+    (a, b) => b.weeklyBudgetCents - a.weeklyBudgetCents,
+  );
   const onTrackCount = envelopes.filter(
     (e: EnvelopeWithStatus) => e.status === "On Track",
   ).length;
+  const totalSpentCents = envelopes.reduce((sum, e) => sum + e.spentCents, 0);
+  const totalRemainingCents = envelopes.reduce(
+    (sum, e) => sum + e.remainingCents,
+    0,
+  );
   const isEmpty = envelopes.length === 0 && !isCreating;
+
+  const envelopeOptions = envelopes.map((e) => ({
+    id: e.id,
+    title: e.title,
+  }));
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
@@ -249,6 +215,8 @@ export function EnvelopesHomePage() {
       <GreetingBanner
         onTrackCount={onTrackCount}
         totalCount={envelopes.length}
+        totalSpentCents={totalSpentCents}
+        totalRemainingCents={totalRemainingCents}
       />
 
       {data && data.cumulativeSavingsCents > 0 && (
@@ -260,6 +228,44 @@ export function EnvelopesHomePage() {
           <h2 className="font-display text-lg font-semibold text-primary">
             Week of {data.weekLabel}
           </h2>
+          {!isReadOnly && (
+            <Button
+              variant={isEditing ? "primary" : "secondary"}
+              size="sm"
+              onClick={() => {
+                setIsEditing(!isEditing);
+                setEditingId(null);
+                setDeletingId(null);
+              }}
+            >
+              {isEditing ? "Done Editing" : "Edit Cards"}
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Full-width Add Transaction button */}
+      {!isReadOnly && !isEditing && envelopes.length > 0 && (
+        <div className="mb-4">
+          {isAddingTransaction ? (
+            <Card variant="default">
+              <TransactionForm
+                envelopes={envelopeOptions}
+                onSubmit={handleAddTransaction}
+                onCancel={() => setIsAddingTransaction(false)}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          ) : (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsAddingTransaction(true)}
+              className="w-full"
+            >
+              Add Transaction
+            </Button>
+          )}
         </div>
       )}
 
@@ -272,13 +278,10 @@ export function EnvelopesHomePage() {
       )}
 
       <EnvelopeCardGrid>
-        {envelopes.map((env: EnvelopeWithStatus, i: number) => (
-          <div
-            key={env.id}
-            className={expandedId === env.id ? "col-span-full" : undefined}
-          >
+        {envelopes.map((env: EnvelopeWithStatus) => (
+          <div key={env.id}>
             {editingId === env.id ? (
-              <Card variant="default">
+              <Card variant="default" className="min-h-[180px]">
                 <EnvelopeForm
                   mode="edit"
                   initialValues={{
@@ -294,43 +297,20 @@ export function EnvelopesHomePage() {
             ) : (
               <EnvelopeCard
                 envelope={env}
-                isFirst={i === 0}
-                isLast={i === envelopes.length - 1}
+                isEditMode={isEditing}
                 isDeleting={deletingId === env.id}
-                onEdit={() => {
-                  setExpandedId(null);
-                  setEditingId(env.id);
-                }}
                 onDelete={() => setDeletingId(env.id)}
                 onConfirmDelete={() => handleDelete(env.id)}
                 onCancelDelete={() => setDeletingId(null)}
-                onMoveUp={() => handleReorder(env.id, "up")}
-                onMoveDown={() => handleReorder(env.id, "down")}
-                onAddTransaction={() => {
-                  if (isReadOnly) return;
-                  setEditingId(null);
-                  setDeletingId(null);
-                  setExpandedId(expandedId === env.id ? null : env.id);
-                }}
-              />
-            )}
-            {expandedId === env.id && editingId !== env.id && (
-              <InlineTransactionForm
-                envelopeId={env.id}
-                defaultDate={format(now, "yyyy-MM-dd")}
-                minDate={currentWeekStart}
-                maxDate={currentWeekEnd}
-                onSubmit={handleInlineTransaction}
-                onCancel={() => setExpandedId(null)}
-                isSubmitting={isSubmitting}
               />
             )}
           </div>
         ))}
 
         {!isReadOnly &&
+          isEditing &&
           (isCreating ? (
-            <Card variant="default">
+            <Card variant="default" className="min-h-[180px]">
               <EnvelopeForm
                 mode="create"
                 onSubmit={handleCreate}

@@ -38,23 +38,23 @@ export function TransactionList({
   return (
     <div>
       {/* Header row (desktop only) */}
-      <div className="hidden border-b border-border pb-2 sm:flex sm:items-center sm:gap-4">
-        <span className="min-w-[90px] text-xs font-medium uppercase text-text-tertiary">
+      <div className="hidden border-b border-border pb-2 sm:grid sm:grid-cols-6 sm:gap-2">
+        <span className="text-xs font-medium uppercase text-text-tertiary">
           Date
         </span>
-        <span className="min-w-[80px] text-xs font-medium uppercase text-text-tertiary">
+        <span className="text-xs font-medium uppercase text-text-tertiary">
           Amount
         </span>
-        <span className="min-w-[100px] text-xs font-medium uppercase text-text-tertiary">
+        <span className="text-xs font-medium uppercase text-text-tertiary">
           Envelope
         </span>
-        <span className="min-w-[100px] text-xs font-medium uppercase text-text-tertiary">
+        <span className="text-xs font-medium uppercase text-text-tertiary">
           Merchant
         </span>
-        <span className="flex-1 text-xs font-medium uppercase text-text-tertiary">
+        <span className="text-xs font-medium uppercase text-text-tertiary">
           Description
         </span>
-        <span className="ml-auto text-xs font-medium uppercase text-text-tertiary">
+        <span className="text-right text-xs font-medium uppercase text-text-tertiary">
           Actions
         </span>
       </div>

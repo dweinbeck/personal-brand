@@ -217,28 +217,13 @@ export function TransactionsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-primary font-display">
-        Transactions
-      </h1>
-
       {isReadOnly && <ReadOnlyBanner />}
 
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Header row: centered WeekSelector with Add Transaction on the right */}
+      <div className="relative mb-6 flex items-center justify-center">
         <WeekSelector weekStart={weekStart} onWeekChange={handleWeekChange} />
-      </div>
-
-      {!isReadOnly &&
-        (isCreating ? (
-          <Card variant="default" className="mb-6">
-            <TransactionForm
-              envelopes={envelopes}
-              onSubmit={handleCreate}
-              onCancel={() => setIsCreating(false)}
-              isSubmitting={isSubmitting}
-            />
-          </Card>
-        ) : (
-          <div className="mb-6">
+        {!isReadOnly && !isCreating && (
+          <div className="absolute right-0">
             <Button
               variant="primary"
               size="sm"
@@ -247,7 +232,19 @@ export function TransactionsPage() {
               Add Transaction
             </Button>
           </div>
-        ))}
+        )}
+      </div>
+
+      {!isReadOnly && isCreating && (
+        <Card variant="default" className="mb-6">
+          <TransactionForm
+            envelopes={envelopes}
+            onSubmit={handleCreate}
+            onCancel={() => setIsCreating(false)}
+            isSubmitting={isSubmitting}
+          />
+        </Card>
+      )}
 
       <TransactionList
         transactions={transactions}
