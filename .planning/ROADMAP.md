@@ -51,7 +51,12 @@ Plans:
   5. POST /jobs/:id/assets/zip creates a zip of all job assets in GCS and returns a signed download URL
   6. GET /jobs/:id response includes progress events and assets manifest with signed URLs
   7. brand_json_url continues working via signed URL (no regression)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 28-01-PLAN.md — Foundation: DB schema migration, types, PipelineContext.onEvent, GCS helpers
+- [ ] 28-02-PLAN.md — Wire progress event emission throughout pipeline and persist to DB
+- [ ] 28-03-PLAN.md — Individual asset uploads to GCS with manifest building
+- [ ] 28-04-PLAN.md — Enriched GET /jobs/:id response and POST zip endpoint
 
 ### Phase 29: Brand Card + Progress UI
 **Goal**: Users see live scrape progress and a polished Brand Card displaying the extracted brand identity when the job completes
@@ -94,7 +99,7 @@ Phases 27 and 28 operate on different repos and can execute concurrently with ze
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 27. Apps-first Home + Schema Alignment | 0/3 | Planned | - |
-| 28. Scraper Service Backend | 0/TBD | Not started | - |
+| 28. Scraper Service Backend | 0/4 | Planned | - |
 | 29. Brand Card + Progress UI | 0/TBD | Not started | - |
 | 30. Assets Page + User History | 0/TBD | Not started | - |
 
