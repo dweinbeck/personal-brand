@@ -85,7 +85,11 @@ Plans:
   3. Below the URL input on the Brand Scraper page, authenticated users see a history of previously scraped URLs with dates, sorted newest first
   4. Clicking "View Results" on a history entry opens the Brand Card for that job
   5. Scrape submissions persist a history record in Firestore keyed by uid containing jobId, siteUrl, createdAt, and status
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 30-01-PLAN.md — History backend: Firestore helpers, scrape route write, job status update, history API route
+- [ ] 30-02-PLAN.md — Assets page: dynamic route, AssetsPage client component, AssetGrid with previews and downloads
+- [ ] 30-03-PLAN.md — History UI: ScrapeHistory component, wire into page, query param support for View Results
 
 ## Progress
 
