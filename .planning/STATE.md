@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 27-28 of 30 (executing in parallel)
-Plan: 27-01 complete, 27-02 complete, 27-03 complete, 28-01 complete, 28-02 complete, 28-03 complete
-Status: In progress — Phase 27 complete (3/3 plans), Phase 28 in progress (3/4 plans)
-Last activity: 2026-02-11 — Completed 28-02-PLAN.md (Pipeline progress events)
+Plan: 27-01 complete, 27-02 complete, 27-03 complete, 28-01 complete, 28-02 complete, 28-03 complete, 28-04 complete
+Status: In progress — Phase 27 complete (3/3 plans), Phase 28 COMPLETE (4/4 plans)
+Last activity: 2026-02-11 — Completed 28-04-PLAN.md (Enriched job response + on-demand zip)
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [██████░░░░] 6/10 plans
+Progress: v1.0-v1.6 SHIPPED | v1.7: [███████░░░] 7/10 plans
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 26
-- Total plans completed: 51
+- Total plans completed: 52
 - Timeline: Jan 18 → Feb 10, 2026 (24 days)
 
 ## Accumulated Context
@@ -43,6 +43,10 @@ Recent decisions affecting current work:
 - [28-03] Assets downloaded to buffer (not disk) then uploaded individually to GCS
 - [28-03] No automatic zip on job completion; zip is on-demand (Plan 04)
 - [28-03] Manifest persisted to DB only when at least one asset uploaded
+- [28-04] Assets manifest API uses snake_case fields mapped from camelCase DB columns
+- [28-04] Individual asset signed URL failures non-fatal (returned without signed_url)
+- [28-04] Zip caching: existing zip gets fresh signed URL, deleted zip triggers recreation
+- [28-04] 409 Conflict for zip on non-terminal jobs or jobs with no assets
 - [27-03] Used .passthrough() on all Zod schemas for forward-compatibility with scraper service changes
 - [27-03] ExtractedField wrapper pattern: access value via entry.value.*, confidence via entry.confidence
 - [27-03] Defensive safeParse at UI layer (not just API proxy) with fallback download UI
@@ -68,11 +72,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 28-02-PLAN.md (Pipeline progress events)
+Stopped at: Completed 28-04-PLAN.md (Enriched job response + on-demand zip)
 Resume file: None
 
 ## Next Step
 
-Continue parallel execution:
-- Phase 27: COMPLETE (all 3 plans done: 27-01, 27-02, 27-03)
-- Phase 28: 28-01, 28-02, 28-03 complete. Next: 28-04 (on-demand zip endpoint)
+Phases 27 and 28 are both COMPLETE. Ready for:
+- Phase 29: Frontend integration (depends on both 27+28)
+- Phase 30: Integration tests (depends on 29)
