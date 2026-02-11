@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { BrandResultsGallery } from "@/components/admin/brand-scraper/BrandResultsGallery";
 import { JobStatusIndicator } from "@/components/admin/brand-scraper/JobStatusIndicator";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +12,8 @@ import {
   brandTaxonomySchema,
   type ScrapeJobSubmission,
 } from "@/lib/brand-scraper/types";
+import { BrandCard } from "./BrandCard";
+import { ScrapeProgressPanel } from "./ScrapeProgressPanel";
 
 const API_BASE = "/api/tools/brand-scraper";
 
@@ -136,6 +137,8 @@ function BrandScraperContent() {
   const hasValidResult =
     (data?.status === "succeeded" || data?.status === "partial") &&
     parsed?.success === true;
+  const events = data?.pipeline_meta?.events ?? [];
+
   const hasUnparseableResult =
     (data?.status === "succeeded" || data?.status === "partial") &&
     data?.result &&
@@ -221,13 +224,21 @@ function BrandScraperContent() {
             error={pollError?.message ?? null}
           />
 
-          {/* Parsed result — render gallery */}
-          {hasValidResult && parsed.success && (
+          {/* Live progress panel during active scraping */}
+          {jobId && !isTerminal && !isTimedOut && events.length > 0 && (
             <div className="mt-6">
-              <BrandResultsGallery
+              <ScrapeProgressPanel events={events} />
+            </div>
+          )}
+
+          {/* Parsed result — render Brand Card */}
+          {hasValidResult && parsed.success && token && (
+            <div className="mt-6">
+              <BrandCard
                 result={parsed.data}
                 brandJsonUrl={data.brand_json_url ?? undefined}
-                assetsZipUrl={data.assets_zip_url ?? undefined}
+                jobId={jobId}
+                token={token}
               />
             </div>
           )}
