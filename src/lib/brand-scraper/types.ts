@@ -180,6 +180,76 @@ export const brandTaxonomySchema = z
 
 export type BrandTaxonomy = z.infer<typeof brandTaxonomySchema>;
 
+// --- Pipeline meta & assets manifest schemas (Phase 28 enriched response) ---
+
+/**
+ * Individual progress event from pipeline_meta.events.
+ */
+export const progressEventSchema = z
+  .object({
+    type: z.string(),
+    timestamp: z.string(),
+    detail: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+export type ProgressEvent = z.infer<typeof progressEventSchema>;
+
+/**
+ * Pipeline execution metadata returned for enriched job responses.
+ */
+export const pipelineMetaSchema = z
+  .object({
+    stages: z
+      .array(
+        z
+          .object({
+            stage: z.string(),
+            status: z.string(),
+            duration_ms: z.number(),
+          })
+          .passthrough(),
+      )
+      .optional(),
+    pages_sampled: z.number().optional(),
+    duration_ms: z.number().optional(),
+    events: z.array(progressEventSchema).optional(),
+  })
+  .passthrough();
+
+export type PipelineMeta = z.infer<typeof pipelineMetaSchema>;
+
+/**
+ * Individual asset entry in the assets manifest (snake_case per Phase 28-04).
+ */
+export const assetManifestEntrySchema = z
+  .object({
+    category: z.string(),
+    filename: z.string(),
+    original_url: z.string(),
+    content_type: z.string(),
+    size_bytes: z.number(),
+    gcs_object_path: z.string(),
+    signed_url: z.string().optional(),
+  })
+  .passthrough();
+
+export type AssetManifestEntry = z.infer<typeof assetManifestEntrySchema>;
+
+/**
+ * Assets manifest envelope (snake_case per Phase 28-04).
+ */
+export const assetsManifestSchema = z
+  .object({
+    assets: z.array(assetManifestEntrySchema),
+    total_count: z.number(),
+    total_size_bytes: z.number(),
+    created_at: z.string(),
+  })
+  .passthrough();
+
+export type AssetsManifest = z.infer<typeof assetsManifestSchema>;
+
 // --- Job status schema ---
 
 /**
@@ -198,6 +268,8 @@ export type JobError = z.infer<typeof jobErrorSchema>;
 /**
  * Validates the Fastify GET /jobs/:id response (job status polling).
  * Uses .passthrough() to avoid breaking on unexpected extra fields.
+ * pipeline_meta and assets_manifest are nullish for backward compatibility
+ * with jobs created before Phase 28.
  */
 export const jobStatusSchema = z
   .object({
@@ -207,6 +279,8 @@ export const jobStatusSchema = z
     error: jobErrorSchema.nullish(),
     brand_json_url: z.string().nullish(),
     assets_zip_url: z.string().nullish(),
+    pipeline_meta: pipelineMetaSchema.nullish(),
+    assets_manifest: assetsManifestSchema.nullish(),
   })
   .passthrough();
 
