@@ -5,17 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.7 — Apps-first Home + Brand Scraper Overhaul
+**Current focus:** v1.7 — Phases 27+28 (parallelizable)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 27-30 defined (4 phases, first 2 parallelizable)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-10 — Milestone v1.7 started
+Status: Ready to plan phases 27+28 in parallel
+Last activity: 2026-02-10 — Roadmap created for v1.7 (4 phases, 39 requirements)
 
-Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 + v1.6 SHIPPED
-[████████████████████] 26/26 phases complete (7 milestones)
+Progress: v1.0-v1.6 SHIPPED | v1.7: [░░░░░░░░░░] 0/4 phases
 
 ## Performance Metrics
 
@@ -30,6 +29,12 @@ Progress: v1.0 + v1.1 + v1.2 + v1.3 + v1.4 + v1.5 + v1.6 SHIPPED
 ### Decisions
 
 Full decision log in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- Phases 27+28 parallelizable (different repos: main site vs scraper service)
+- Phase 29 depends on both 27+28 (schema alignment + backend APIs)
+- Phase 30 depends on 29
+- Cross-repo milestone: Phase 28 targets brand-scraper repo, all others target main site
 
 ### Pending Todos
 
@@ -37,7 +42,7 @@ None.
 
 ### Blockers/Concerns
 
-- Brand scraper schema mismatch — actual taxonomy shape differs from site Zod schemas (being fixed in v1.7)
+- Brand scraper schema mismatch — actual taxonomy shape differs from site Zod schemas (Phase 27 fixes this)
 
 ### Quick Tasks Completed
 
@@ -49,9 +54,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Defining v1.7 requirements
+Stopped at: Roadmap created for v1.7 milestone (4 phases)
 Resume file: None
 
 ## Next Step
 
-Define requirements, then `/gsd:plan-phase`
+Plan phases 27+28 in parallel:
+- `/gsd:plan-phase 27` — Apps-first Home + Schema Alignment (main site)
+- `/gsd:plan-phase 28` — Scraper Service Backend (brand-scraper repo)

@@ -109,51 +109,51 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | TBD | Pending |
-| NAV-02 | TBD | Pending |
-| NAV-03 | TBD | Pending |
-| NAV-04 | TBD | Pending |
-| HOME-01 | TBD | Pending |
-| HOME-02 | TBD | Pending |
-| HOME-03 | TBD | Pending |
-| HOME-04 | TBD | Pending |
-| HOME-05 | TBD | Pending |
-| HOME-06 | TBD | Pending |
-| HOME-07 | TBD | Pending |
-| SCHM-01 | TBD | Pending |
-| SCHM-02 | TBD | Pending |
-| SCHM-03 | TBD | Pending |
-| PROG-01 | TBD | Pending |
-| PROG-02 | TBD | Pending |
-| PROG-03 | TBD | Pending |
-| PROG-04 | TBD | Pending |
-| ASST-01 | TBD | Pending |
-| ASST-02 | TBD | Pending |
-| ASST-03 | TBD | Pending |
-| ASST-04 | TBD | Pending |
-| ASST-05 | TBD | Pending |
-| CARD-01 | TBD | Pending |
-| CARD-02 | TBD | Pending |
-| CARD-03 | TBD | Pending |
-| CARD-04 | TBD | Pending |
-| CARD-05 | TBD | Pending |
-| CARD-06 | TBD | Pending |
-| APAG-01 | TBD | Pending |
-| APAG-02 | TBD | Pending |
-| APAG-03 | TBD | Pending |
-| HIST-01 | TBD | Pending |
-| HIST-02 | TBD | Pending |
-| HIST-03 | TBD | Pending |
-| HIST-04 | TBD | Pending |
-| SAPI-01 | TBD | Pending |
-| SAPI-02 | TBD | Pending |
-| SAPI-03 | TBD | Pending |
+| NAV-01 | Phase 27 | Pending |
+| NAV-02 | Phase 27 | Pending |
+| NAV-03 | Phase 27 | Pending |
+| NAV-04 | Phase 27 | Pending |
+| HOME-01 | Phase 27 | Pending |
+| HOME-02 | Phase 27 | Pending |
+| HOME-03 | Phase 27 | Pending |
+| HOME-04 | Phase 27 | Pending |
+| HOME-05 | Phase 27 | Pending |
+| HOME-06 | Phase 27 | Pending |
+| HOME-07 | Phase 27 | Pending |
+| SCHM-01 | Phase 27 | Pending |
+| SCHM-02 | Phase 27 | Pending |
+| SCHM-03 | Phase 27 | Pending |
+| PROG-01 | Phase 28 | Pending |
+| PROG-02 | Phase 28 | Pending |
+| PROG-03 | Phase 28 | Pending |
+| PROG-04 | Phase 29 | Pending |
+| ASST-01 | Phase 28 | Pending |
+| ASST-02 | Phase 28 | Pending |
+| ASST-03 | Phase 28 | Pending |
+| ASST-04 | Phase 28 | Pending |
+| ASST-05 | Phase 29 | Pending |
+| CARD-01 | Phase 29 | Pending |
+| CARD-02 | Phase 29 | Pending |
+| CARD-03 | Phase 29 | Pending |
+| CARD-04 | Phase 29 | Pending |
+| CARD-05 | Phase 29 | Pending |
+| CARD-06 | Phase 29 | Pending |
+| APAG-01 | Phase 30 | Pending |
+| APAG-02 | Phase 30 | Pending |
+| APAG-03 | Phase 30 | Pending |
+| HIST-01 | Phase 30 | Pending |
+| HIST-02 | Phase 30 | Pending |
+| HIST-03 | Phase 30 | Pending |
+| HIST-04 | Phase 30 | Pending |
+| SAPI-01 | Phase 28 | Pending |
+| SAPI-02 | Phase 28 | Pending |
+| SAPI-03 | Phase 28 | Pending |
 
 **Coverage:**
 - v1.7 requirements: 39 total
-- Mapped to phases: 0
-- Unmapped: 39
+- Mapped to phases: 39
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-10 after initial definition*
+*Last updated: 2026-02-10 after roadmap merge (6 phases → 4 phases)*
