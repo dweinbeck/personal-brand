@@ -5,6 +5,7 @@ import {
   refundUsage,
 } from "@/lib/billing/firestore";
 import { submitScrapeJob } from "@/lib/brand-scraper/client";
+import { addHistoryEntry } from "@/lib/brand-scraper/history";
 import { scrapeRequestSchema } from "@/lib/brand-scraper/types";
 
 export async function POST(request: Request) {
@@ -62,6 +63,13 @@ export async function POST(request: Request) {
       usageId: debit.usageId,
       externalJobId: job.job_id,
     }).catch((err) => console.error("Failed to mark usage succeeded:", err));
+
+    // Persist scrape history entry (fire-and-forget)
+    addHistoryEntry({
+      uid: auth.uid,
+      jobId: job.job_id,
+      siteUrl: parsed.data.url,
+    }).catch((err) => console.error("Failed to write scrape history:", err));
 
     return Response.json({
       ...job,

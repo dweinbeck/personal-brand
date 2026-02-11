@@ -5,6 +5,7 @@ import {
   refundUsage,
 } from "@/lib/billing/firestore";
 import { getScrapeJobStatus } from "@/lib/brand-scraper/client";
+import { updateHistoryStatus } from "@/lib/brand-scraper/history";
 
 export async function GET(
   request: Request,
@@ -42,6 +43,19 @@ export async function GET(
         usageId: usage.id,
         externalJobId: id,
       }).catch((err) => console.error("Mark succeeded failed:", err));
+    }
+
+    // Update history status on terminal states (fire-and-forget)
+    if (
+      job.status === "succeeded" ||
+      job.status === "partial" ||
+      job.status === "failed"
+    ) {
+      updateHistoryStatus({
+        uid: auth.uid,
+        jobId: id,
+        status: job.status,
+      }).catch((err) => console.error("History status update failed:", err));
     }
 
     return Response.json({
