@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 27-28 of 30 (executing in parallel)
-Plan: 27-01 complete, 27-02 complete, 27-03 complete, 28-01 complete, 28-03 complete
-Status: In progress — Phase 27 complete (3/3 plans), Phase 28 in progress (2/4 plans, 28-02 may also be complete)
-Last activity: 2026-02-11 — Completed 28-03-PLAN.md (Individual asset uploads + manifest)
+Plan: 27-01 complete, 27-02 complete, 27-03 complete, 28-01 complete, 28-02 complete, 28-03 complete
+Status: In progress — Phase 27 complete (3/3 plans), Phase 28 in progress (3/4 plans)
+Last activity: 2026-02-11 — Completed 28-02-PLAN.md (Pipeline progress events)
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [█████░░░░░] 5/10 plans
+Progress: v1.0-v1.6 SHIPPED | v1.7: [██████░░░░] 6/10 plans
 
 ## Performance Metrics
 
@@ -37,6 +37,9 @@ Recent decisions affecting current work:
 - Cross-repo milestone: Phase 28 targets brand-scraper repo, all others target main site
 - [28-01] Assets uploaded individually to GCS, ZIP created on-demand (not buffered in memory)
 - [28-01] PipelineContext.onEvent callback is optional for backward compatibility
+- [28-02] Events persisted incrementally via jsonb_set SQL during processing (not only at end)
+- [28-02] Event persistence failures are non-fatal (logged, not thrown)
+- [28-02] Events capped at 200 entries to prevent JSONB bloat
 - [28-03] Assets downloaded to buffer (not disk) then uploaded individually to GCS
 - [28-03] No automatic zip on job completion; zip is on-demand (Plan 04)
 - [28-03] Manifest persisted to DB only when at least one asset uploaded
@@ -65,11 +68,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 28-03-PLAN.md (Individual asset uploads + manifest)
+Stopped at: Completed 28-02-PLAN.md (Pipeline progress events)
 Resume file: None
 
 ## Next Step
 
 Continue parallel execution:
 - Phase 27: COMPLETE (all 3 plans done: 27-01, 27-02, 27-03)
-- Phase 28: 28-01 and 28-03 complete. 28-02 likely complete (commits visible). Next: 28-04 (on-demand zip endpoint)
+- Phase 28: 28-01, 28-02, 28-03 complete. Next: 28-04 (on-demand zip endpoint)
