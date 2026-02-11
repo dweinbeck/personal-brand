@@ -10,7 +10,6 @@ import { ADMIN_EMAIL } from "@/lib/constants";
 const baseLinks = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
-  { name: "Projects", href: "/projects" },
   { name: "Building Blocks", href: "/building-blocks" },
   { name: "Custom GPTs", href: "/custom-gpts" },
   { name: "Apps", href: "/apps" },
