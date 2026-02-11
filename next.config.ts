@@ -21,12 +21,17 @@ const nextConfig: NextConfig = {
         destination: "/building-blocks/:slug",
         permanent: true,
       },
-      // Add future redirects here
-      // {
-      //   source: "/old-path",
-      //   destination: "/new-path",
-      //   permanent: true,
-      // },
+      // Projects removed — redirect to homepage
+      {
+        source: "/projects",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/projects/:slug",
+        destination: "/",
+        permanent: true,
+      },
     ];
   },
 };
