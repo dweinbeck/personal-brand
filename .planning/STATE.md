@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.7 — Phase 29 complete, Phase 30 next
+**Current focus:** v1.7 — Phase 30 in progress (2 of 3 plans complete)
 
 ## Current Position
 
 Phase: 30 of 30 (Assets Page + User History)
-Plan: 01 of 03 complete
+Plan: 02 of 03 complete
 Status: In progress
-Last activity: 2026-02-11 — Completed 30-01-PLAN.md
+Last activity: 2026-02-11 — Completed 30-02-PLAN.md
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [███████████░░] 11/13 plans (3/4 phases, 30 in progress)
+Progress: v1.0-v1.6 SHIPPED | v1.7: [████████████░] 12/13 plans (3/4 phases, 30 in progress)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 29
-- Total plans completed: 63
+- Total plans completed: 64
 - Timeline: Jan 18 → Feb 11, 2026 (25 days)
 
 ## Accumulated Context
@@ -67,6 +67,9 @@ Recent decisions affecting current work:
 - [30-01] Compound doc ID (uid_jobId) for idempotent history writes
 - [30-01] Fire-and-forget pattern for all history writes (non-blocking)
 - [30-01] ScrapeHistoryEntry omits uid field (server-internal only)
+- [30-02] Fresh token per zip download action (not cached mount token) to prevent expiry
+- [30-02] Single category skips section headers for cleaner layout
+- [30-02] Non-image file type label derived from content_type subtype with mapping table
 
 ### Pending Todos
 
@@ -86,9 +89,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 30-01-PLAN.md
+Stopped at: Completed 30-02-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 30, Plan 02 (assets page UI) — then Plan 03 (history UI).
+Phase 30, Plan 03 (history UI) — final plan of v1.7.
