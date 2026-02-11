@@ -1,5 +1,33 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.7 Apps-first Home + Brand Scraper Overhaul (Shipped: 2026-02-11)
+
+**Delivered:** Pivoted the Home page to showcase apps as primary content, removed the Projects section, and made Brand Scraper fully functional with real-time progress events, Brand Card UI, individual asset management, and user scrape history.
+
+**Phases completed:** 27-30 (13 plans total)
+
+**Key accomplishments:**
+
+- Rebuilt Home page around apps-first 3-wide grid, removed Projects section with permanent redirects
+- Scraper service pipeline progress events with incremental JSONB persistence and live progress UI
+- Individual GCS asset storage with on-demand zip generation, caching, and signed URL delivery
+- Brand Card UI with browser-tab chrome, logos, color palette swatches, and dynamic extracted font rendering
+- Assets page with category grouping, image previews, per-asset downloads, and bulk zip download
+- User scrape history with Firestore persistence, authenticated API, and View Results navigation
+
+**Stats:**
+
+- 83 files changed (+10,549 / -1,157 lines)
+- 4 phases, 13 plans
+- 1 day (Feb 10-11, 2026)
+- Cross-repo milestone (main site + brand-scraper Fastify service)
+
+**Git range:** `05b2f4a` → `2be1392`
+
+**What's next:** Real writing content, additional paid tools, further site polish
+
+---
+
 ## v1.6 Apps Hub Page (Shipped: 2026-02-10)
 
 **Delivered:** Added a public /apps page with a responsive 2-column card grid showcasing available tools (Brand Scraper live, Digital Envelopes coming soon), navigation integration, and sitemap coverage.

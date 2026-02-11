@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with project cards pulling live data from GitHub's API, individual project detail pages with README rendering, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, a billing/credits system with Stripe payments for paid tools, and production deployment on GCP Cloud Run.
+A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with an apps-first Home page showcasing published tools, a fully functional Brand Scraper with live progress tracking and Brand Card UI, individual asset management, user scrape history, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, a billing/credits system with Stripe payments for paid tools, and production deployment on GCP Cloud Run.
 
 ## Core Value
 
@@ -62,24 +62,23 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ AppCard component with topic badge, tech stack tags, dates, and conditional action button — v1.6
 - ✓ "Apps" navigation link with correct active state on /apps and /apps/* — v1.6
 - ✓ Sitemap includes /apps and /apps/brand-scraper — v1.6
+- ✓ Apps-first Home page with 3-wide grid replacing Projects section — v1.7
+- ✓ Updated navbar (Home, About, Building Blocks, Custom GPTs, Apps, Assistant, Contact + conditional Control Center) — v1.7
+- ✓ Building Blocks CTA section below apps grid on Home — v1.7
+- ✓ Projects pages removed with permanent redirects to / — v1.7
+- ✓ Zod schemas aligned with real scraper service taxonomy (ExtractedField wrapper, .passthrough()) — v1.7
+- ✓ Defensive safeParse with fallback UI and Download Brand JSON link — v1.7
+- ✓ Scraper service pipeline progress events with incremental JSONB persistence — v1.7
+- ✓ Live progress UI during scrape (pages scraped + files saved lists) — v1.7
+- ✓ Individual GCS asset storage with on-demand zip generation and caching — v1.7
+- ✓ Brand Card UI (browser-tab chrome, logos, color palette, extracted font, download buttons) — v1.7
+- ✓ Assets page with category grouping, image previews, and per-asset downloads — v1.7
+- ✓ User scrape history with Firestore persistence and View Results navigation — v1.7
+- ✓ Authenticated zip proxy route with 60s timeout — v1.7
 
 ### Active
 
-**v1.7 — Apps-first Home + Brand Scraper Overhaul:**
-
-- [ ] Remove Projects pages/routes with redirect to /
-- [ ] Navbar: Home, About, Building Blocks, Custom GPTs, Apps, Assistant, Contact + conditional Control Center
-- [ ] Home page: Apps grid section (3-wide, uniform cards, blue fill + gold border buttons)
-- [ ] Home page: Building Blocks CTA section below apps
-- [ ] Remove duplicative navigational Home sections
-- [ ] Fix taxonomy schema mismatch between scraper service and main site
-- [ ] Live progress UI during active scrape (pages scraped + files saved)
-- [ ] Individual GCS asset storage in scraper service (no auto-zip on completion)
-- [ ] On-demand zip generation endpoint in scraper service
-- [ ] Brand Card UI (single wide card with favicon tab, logos, palette, extracted font)
-- [ ] Assets page with previews and per-file downloads
-- [ ] User history for Brand Scraper (previously scraped URLs with View Results)
-- [ ] Defensive error handling for schema parsing failures
+(None — planning next milestone)
 
 ### Deferred
 
@@ -96,33 +95,24 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Video content — unnecessary complexity
 - Mobile app — web only
 - Google Analytics — can add later if needed
-- Tag filtering on projects page — not enough projects yet
+- Tag filtering on projects page — Projects section removed in v1.7; apps grid is primary
 - GitHub activity sparklines — adds API complexity for minimal value
 - RSS feed — defer until writing content exists
 - Dynamic per-page OG images — single branded image sufficient
 - Subscription / recurring billing — pre-paid credits model is intentional
 - Custom Stripe payment page (Elements) — Checkout redirect is PCI-compliant out of the box
-
-## Current Milestone: v1.7 Apps-first Home + Brand Scraper Overhaul
-
-**Goal:** Pivot Home page to showcase apps as the primary content, remove Projects section, and make Brand Scraper fully functional with real-time progress, proper taxonomy rendering, asset management, and user history.
-
-**Target features:**
-- Apps-first Home page with 3-wide grid replacing Projects section
-- Updated navbar with conditional Control Center visibility
-- Brand Scraper end-to-end fix (schema alignment, progress events, Brand Card, assets page, history)
-- Cross-repo changes (main site + brand-scraper Fastify service)
+- Brand scraper UI redesign beyond Brand Card + Assets — current UX is complete for v1.7
 
 ## Current State
 
-**Shipped:** v1.6 on 2026-02-10
+**Shipped:** v1.7 on 2026-02-11
 **Live at:** https://dan-weinbeck.com
 
-Complete personal brand site with live GitHub data, project detail pages, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), Apps hub page for tool discovery, and production deployment on GCP Cloud Run.
+Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~9,200 LOC TypeScript/TSX/CSS/MDX (estimated after v1.6 additions)
+- **Codebase:** ~18,600 LOC TypeScript/TSX/CSS/MDX (estimated after v1.7 — +9,392 net lines)
 - **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK + Auth, Stripe, react-markdown, Vitest
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
@@ -133,13 +123,14 @@ Complete personal brand site with live GitHub data, project detail pages, career
 - chatbot-assistant provides: GitHub webhook ingestion, Postgres FTS + trigram search, Cloud Tasks async indexing, Gemini 2.5 Flash-Lite, mechanical citation verification
 - Control center shipped in v1.4 with content editor and brand scraper admin tools
 - Brand scraper API (brand-scraper) is a separate Fastify/Cloud Run service with async job processing, Playwright extraction, and GCS storage
-- Brand scraper worker not processing jobs — BSINT-02 and E2E-06 will resolve when worker is deployed
+- Brand scraper v1.7: individual GCS asset uploads, on-demand zip, progress events, enriched API response with signed URLs
 - Billing system live: ledger-based Firestore credits (1 credit = 1 cent), 100 free on signup, 500 for $5 via Stripe Checkout
 - Firebase Auth (Google Sign-In) for public users with AuthGuard/AuthButton components
 - Stripe webhook at /api/billing/webhook — signature-verified, idempotent on event ID + session ID
 - Admin billing panel at /control-center/billing — user list, detail, adjust credits, refund usage, edit pricing
 - 4 tool pricing entries: brand_scraper (active, 50 credits), lesson_60s, bus_text, dave_ramsey (inactive)
 - Stripe secrets via GCP Secret Manager: stripe-secret-key (v4, live), stripe-webhook-secret (v3, live)
+- Brand Scraper user flow: Home → Apps → Brand Scraper → Auth → URL → Live progress → Brand Card → Assets → History
 
 ## Constraints
 
@@ -178,10 +169,14 @@ Complete personal brand site with live GitHub data, project detail pages, career
 | Firebase Auth for end users | Google Sign-In enables public tool access without building custom auth | ✓ Good — seamless sign-in experience |
 | Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | ✓ Good — PCI-compliant, zero payment UI code |
 | Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | ✓ Good — ready for activation |
-
 | Apps hub page for tool discovery | Visitors can browse available tools from a single page; matches existing card patterns | ✓ Good |
-| Remove Projects pages, pivot Home to apps-first | Projects section served its purpose; apps are the primary user-facing content now | — Pending |
-| Both-repo milestone (main site + scraper service) | Brand Scraper fixes require coordinated changes across service boundary | — Pending |
+| Remove Projects pages, pivot Home to apps-first | Projects section served its purpose; apps are the primary user-facing content now | ✓ Good — clean transition with 301 redirects |
+| Both-repo milestone (main site + scraper service) | Brand Scraper fixes require coordinated changes across service boundary | ✓ Good — parallel execution of independent phases |
+| ExtractedField wrapper with .passthrough() Zod schemas | Forward-compatible with scraper service taxonomy changes; won't break on new fields | ✓ Good — defensive without being brittle |
+| Individual GCS assets + on-demand zip | Memory-efficient, fast delivery of individual assets; zip only created when requested | ✓ Good — eliminates large buffer allocations |
+| Incremental JSONB event persistence | Events persisted during processing (not only at end); 200-entry cap prevents bloat | ✓ Good — accurate real-time progress |
+| Fire-and-forget Firestore history writes | Non-blocking scrape flow; history is supplementary, not critical path | ✓ Good — zero latency impact on scrape submissions |
+| Dynamic Google Font loading via CSS Font Loading API | Brand Card renders in extracted font; best-effort with system font fallback | ✓ Good — authentic brand rendering without blocking |
 
 ---
-*Last updated: 2026-02-10 after v1.7 milestone started*
+*Last updated: 2026-02-11 after v1.7 milestone*
