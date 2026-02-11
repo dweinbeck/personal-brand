@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 27-30 defined (4 phases, first 2 parallelizable)
-Plan: —
-Status: Ready to plan phases 27+28 in parallel
-Last activity: 2026-02-10 — Roadmap created for v1.7 (4 phases, 39 requirements)
+Phase: 28 of 30 (scraper-service-backend)
+Plan: 01 of 04 in phase 28
+Status: In progress (plan 28-01 complete)
+Last activity: 2026-02-10 — Completed 28-01-PLAN.md (foundation types and infra)
 
-Progress: v1.0-v1.6 SHIPPED | v1.7: [░░░░░░░░░░] 0/4 phases
+Progress: v1.0-v1.6 SHIPPED | v1.7: [██░░░░░░░░] 1/10 plans
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 7 (v1.0 through v1.6)
 - Total phases completed: 26
-- Total plans completed: 47
+- Total plans completed: 48
 - Timeline: Jan 18 → Feb 10, 2026 (24 days)
 
 ## Accumulated Context
@@ -35,6 +35,8 @@ Recent decisions affecting current work:
 - Phase 29 depends on both 27+28 (schema alignment + backend APIs)
 - Phase 30 depends on 29
 - Cross-repo milestone: Phase 28 targets brand-scraper repo, all others target main site
+- [28-01] Assets uploaded individually to GCS, ZIP created on-demand (not buffered in memory)
+- [28-01] PipelineContext.onEvent callback is optional for backward compatibility
 
 ### Pending Todos
 
@@ -54,11 +56,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Roadmap created for v1.7 milestone (4 phases)
+Stopped at: Completed 28-01-PLAN.md (foundation types and infra)
 Resume file: None
 
 ## Next Step
 
-Plan phases 27+28 in parallel:
-- `/gsd:plan-phase 27` — Apps-first Home + Schema Alignment (main site)
-- `/gsd:plan-phase 28` — Scraper Service Backend (brand-scraper repo)
+Continue phase 28 execution:
+- `/gsd:execute-phase 28-02` — Pipeline orchestrator with progress events
+- Phase 27 can execute in parallel (different repo)
