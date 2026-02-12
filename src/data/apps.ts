@@ -39,5 +39,18 @@ export function getApps(): AppListing[] {
       techStack: ["React", "Firebase", "Tailwind"],
       available: true,
     },
+    {
+      slug: "tasks",
+      title: "Task Manager",
+      tag: "Productivity",
+      subtitle: "Organize projects, tasks, and tags",
+      description:
+        "Full-featured task management with workspaces, projects, sections, tags, subtasks, effort scoring, and board views. Built with a standalone PostgreSQL backend.",
+      href: process.env.TASKS_APP_URL || "https://todoist-app.run.app",
+      launchedAt: "2026-02-12",
+      updatedAt: "2026-02-12",
+      techStack: ["Next.js", "PostgreSQL", "Prisma", "Firebase Auth"],
+      available: true,
+    },
   ];
 }
