@@ -57,11 +57,11 @@ Plans:
   3. User sees the sum of effort scores for incomplete tasks displayed on each section header
   4. User sees the sum of effort scores for incomplete tasks displayed on each project header
   5. Unit tests verify effort rollup computation handles null values, section sums, and project sums correctly
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 32-01: Schema change, effort picker UI, and task display
-- [ ] 32-02: Section and project rollup totals with unit tests
+- [ ] 32-01-PLAN.md -- Schema change, effort picker UI, and task display
+- [ ] 32-02-PLAN.md -- Section and project rollup totals with unit tests
 
 ### Phase 33: Multi-User + Auth
 **Goal**: Users can securely sign in and have their data fully isolated from other users
