@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phase 34 (Weekly Credit Gating) in progress
+**Current focus:** v1.8 Tasks App -- Phase 34 (Weekly Credit Gating) complete
 
 ## Current Position
 
-Phase: 34 of 35 (Weekly Credit Gating) -- in progress
-Plan: 1 of 3 in current phase (34-01 complete)
-Status: 34-01 complete -- billing API for tasks app weekly credit gating
-Last activity: 2026-02-12 -- Completed 34-01 billing API
+Phase: 34 of 35 (Weekly Credit Gating) -- complete
+Plan: 3 of 3 in current phase (all complete)
+Status: Phase 34 complete -- weekly credit gating with billing API, apps hub, and tests
+Last activity: 2026-02-12 -- Completed 34-03 apps hub entry and billing tests
 
-Progress: [######░░░░] 64% (7/11 plans)
+Progress: [#########░] 82% (9/11 plans)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 8 (v1.0 through v1.7)
 - Total phases completed: 33
-- Total plans completed: 84
+- Total plans completed: 86
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
-- Plans completed: 7
+- Plans completed: 9
 - Average duration: 4 min
-- Total execution time: 31 min
+- Total execution time: 35 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
@@ -38,6 +38,7 @@ Progress: [######░░░░] 64% (7/11 plans)
 | 33-multi-user-auth | 02 | 4 min | 2 | 10 |
 | 33-multi-user-auth | 03 | 6 min | 2 | 28 |
 | 34-weekly-credit-gating | 01 | 6 min | 2 | 4 |
+| 34-weekly-credit-gating | 03 | 4 min | 2 | 3 |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Recent:
 - Section/Project ownership via workspace chain (no direct userId column needed)
 - Mirror checkEnvelopeAccess pattern exactly for tasks billing (same free-week, paid-week, debit flow)
 - Inline types in tasks.ts rather than separate types file (simplicity for single-function module)
+- Tasks app is external link (not hosted on personal-brand), so no sitemap entry needed
+- Firestore mock pattern for billing tests: vi.mock at module level, dynamic import after mocks, reset in beforeEach
 
 ### Pending Todos
 
@@ -80,9 +83,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 34-01-PLAN.md (Billing API)
+Stopped at: Completed 34-03-PLAN.md (Apps Hub + Billing Tests)
 Resume file: None
 
 ## Next Step
 
-Continue Phase 34 -- execute 34-02-PLAN.md
+Phase 34 complete. Continue to Phase 35 or milestone wrap-up.
