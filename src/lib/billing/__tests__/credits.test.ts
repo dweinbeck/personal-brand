@@ -25,7 +25,7 @@ describe("Tool pricing seed", () => {
   });
 
   it("active tools are marked active", () => {
-    const activeKeys = ["brand_scraper", "dave_ramsey"];
+    const activeKeys = ["brand_scraper", "dave_ramsey", "tasks_app"];
     for (const key of activeKeys) {
       const tool = TOOL_PRICING_SEED.find((t) => t.toolKey === key);
       expect(tool).toBeDefined();
@@ -34,7 +34,7 @@ describe("Tool pricing seed", () => {
   });
 
   it("placeholder tools are inactive", () => {
-    const activeKeys = new Set(["brand_scraper", "dave_ramsey"]);
+    const activeKeys = new Set(["brand_scraper", "dave_ramsey", "tasks_app"]);
     const placeholders = TOOL_PRICING_SEED.filter(
       (t) => !activeKeys.has(t.toolKey),
     );
