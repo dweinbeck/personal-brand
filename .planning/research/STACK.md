@@ -1,312 +1,282 @@
 # Technology Stack
 
-**Project:** Personal Brand - Billing & Credits System (Validation + Deployment)
-**Researched:** 2026-02-09
+**Project:** v1.8 -- Tasks App Integration (Effort Scoring, Demo Mode, Help Tips, Weekly Credit Gating)
+**Researched:** 2026-02-11
 **Overall confidence:** HIGH
-**Mode:** Ecosystem (focused on stack gaps for deploying existing billing code)
+**Mode:** Ecosystem (focused on stack additions for new features across two repos)
 
 ## Executive Summary
 
-The billing system code (~3K LOC across 30+ files) is already written and uses only dependencies that are already installed. **No new npm packages are needed.** The stack gap is not missing libraries -- it is missing infrastructure configuration (Firestore indexes, GCP secrets, Stripe webhook endpoint, Firebase Auth domains) and local development tooling (Stripe CLI). For GCS signed URLs, the brand scraper v1.1 service generates them externally -- the Next.js app just passes them through. `firebase-admin` already bundles `@google-cloud/storage` if server-side signing is ever needed.
+The v1.8 milestone spans two repositories (todoist and personal-brand) and introduces four feature areas: effort scoring on tasks, a demo workspace mode, reusable help tip tooltips, and weekly credit gating for the Tasks app. The core finding is that **zero new npm packages are needed in either repo**. All four features can be built with existing dependencies plus native browser APIs (Popover API + CSS Anchor Positioning). The primary stack changes are Prisma schema additions in the todoist repo and a new Firestore collection + billing tool pricing entry in the personal-brand repo.
 
 ---
 
-## Current Stack (Already Installed -- No Changes Needed)
+## Repo 1: todoist (Task Management App)
 
-These dependencies are already in `package.json` and used by the billing code.
+### No New Dependencies Needed
 
-### Core Application
-| Technology | Installed Version | Latest | Purpose | Status |
-|------------|-------------------|--------|---------|--------|
-| next | 16.1.6 | 16.1.6 | App framework (App Router, RSC, API routes) | Current |
-| react / react-dom | 19.2.3 | 19.2.3 | UI framework | Current |
-| typescript | ^5 | 5.x | Type safety | Current |
-| tailwindcss | ^4 | 4.x | Styling | Current |
+All todoist features (effort scoring, demo workspace, help tips) are achievable with the existing stack.
 
-### Billing Dependencies (Already Installed)
-| Technology | Installed Version | Latest | Purpose | Status |
-|------------|-------------------|--------|---------|--------|
-| stripe | 20.3.1 | 20.3.1 | Checkout Sessions, webhook signature verification | Current |
-| firebase | 12.8.0 | 12.9.0 | Client SDK: Auth (Google Sign-In), `getIdToken()` | Minor behind (patch, not blocking) |
-| firebase-admin | 13.6.0 | 13.6.1 | Server SDK: `verifyIdToken()`, Firestore, Storage | Patch behind (not blocking) |
-| zod | 4.3.6 | 4.3.6 | Schema validation for API inputs | Current |
-| swr | 2.4.0 | 2.4.0 | Client-side polling for brand scraper job status | Current |
+| Existing Technology | Version (Installed) | Latest | v1.8 Role | Status |
+|---------------------|---------------------|--------|-----------|--------|
+| Next.js | 16.1.6 | 16.1.6 | App Router, Server Actions, RSC | Current |
+| React | 19.2.3 | 19.2.4 | UI (task form, tooltips, demo banner) | Patch behind (non-blocking) |
+| Prisma | 6.19.2 | 7.4.0 | Schema changes for `effort` field and `isDemo` flag | Major behind -- see note below |
+| Tailwind CSS | 4.1.18 | 4.1.18 | Styling for effort badges, help tips, demo banner | Current |
+| Zod | 4.3.6 | 4.3.6 | Schema validation for effort field in task forms | Current |
+| date-fns | 4.1.0 | 4.1.0 | Date formatting (unchanged) | Current |
+| Vitest | 3.2.4 | 3.2.4 | Tests for effort logic, demo workspace seed | Current |
+| Biome | 2.3.14 | 2.3.14 | Linting | Current |
 
-### Dev Tools (Already Installed)
-| Technology | Installed Version | Latest | Purpose | Status |
-|------------|-------------------|--------|---------|--------|
-| vitest | 3.2.4 | 4.0.18 | Test runner | Major behind (v4 is major bump; upgrade NOT recommended during billing validation) |
-| @biomejs/biome | 2.2.0 | 2.3.14 | Linting and formatting | Minor behind (optional bump, not blocking) |
+**Prisma 7.x Note:** Prisma 7.4.0 is available but is a major version bump. Do NOT upgrade during v1.8. Prisma 6.19.2 fully supports all schema changes needed (optional fields, boolean defaults, Int fields). The `prisma db push` workflow the todoist app uses makes schema iteration trivial -- no migration files to manage.
 
-**All versions verified via `npm view` and `npm list` on 2026-02-09.**
+**Confidence:** HIGH -- all versions verified via `npm list` and `npm view` on 2026-02-11.
 
----
+### Schema Additions (Prisma)
 
-## GCS Signed URLs: No New Dependency Needed
+The following changes to `prisma/schema.prisma` require zero new dependencies:
 
-### Key Finding
+#### Effort Scoring
 
-`firebase-admin@13.6.0` already bundles `@google-cloud/storage@7.18.0` as a transitive dependency. The `getSignedUrl()` method is available via `firebase-admin/storage`. Verified locally:
-
-```
-$ npm list @google-cloud/storage
-personal-brand@0.1.0
-  firebase-admin@13.6.0
-    @google-cloud/storage@7.18.0
-
-$ node -e "const admin = require('firebase-admin'); console.log(typeof admin.storage)"
-function
-
-$ node -e "const { Storage } = require('@google-cloud/storage'); const f = new Storage({projectId:'x'}).bucket('b').file('f'); console.log(typeof f.getSignedUrl)"
-function
-```
-
-### Brand Scraper v1.1: Pass-Through Pattern (Recommended)
-
-The brand scraper Fastify service generates signed GCS URLs for `brand_json_url` and `assets_zip_url`. These are already typed in `src/lib/brand-scraper/types.ts`:
-
-```typescript
-export const jobStatusSchema = z.object({
-  job_id: z.string(),
-  status: z.string(),
-  result: brandTaxonomySchema.optional(),
-  error: z.string().optional(),
-  brand_json_url: z.string().optional(),   // <-- GCS signed URL from scraper
-  assets_zip_url: z.string().optional(),   // <-- GCS signed URL from scraper
-}).passthrough();
-```
-
-The `DownloadLinks` component in `src/components/admin/brand-scraper/DownloadLinks.tsx` renders these as direct download links. The `UserBrandScraperPage` component already passes them through:
-
-```typescript
-<BrandResultsGallery
-  result={data.result}
-  brandJsonUrl={data.brand_json_url}
-  assetsZipUrl={data.assets_zip_url}
-/>
-```
-
-**No code changes needed for GCS URL handling.** The signed URLs flow from scraper service through the Next.js API proxy to the browser.
-
-### If Server-Side Signing Is Ever Needed
-
-Usage pattern (already available, no install required):
-
-```typescript
-import { getStorage } from "firebase-admin/storage";
-
-export async function generateSignedUrl(
-  bucketName: string,
-  filePath: string,
-  expiresInMinutes = 15,
-): Promise<string> {
-  const bucket = getStorage().bucket(bucketName);
-  const file = bucket.file(filePath);
-  const [url] = await file.getSignedUrl({
-    version: "v4",
-    action: "read",
-    expires: Date.now() + expiresInMinutes * 60 * 1000,
-  });
-  return url;
+```prisma
+model Task {
+  // ... existing fields ...
+  effort    Int?   // null = unscored, 1-5 scale (or Fibonacci: 1,2,3,5,8)
 }
 ```
 
-**Prerequisite for server-side signing:** The Cloud Run service account needs `roles/iam.serviceAccountTokenCreator` to self-sign. This is NOT currently granted and NOT needed for the pass-through pattern.
+**Why `Int?` instead of an enum:** An optional integer is simpler than a Prisma enum for a numeric scale. It avoids the enum migration pitfalls documented in Prisma issues (adding/removing enum values requires careful migration ordering on PostgreSQL). A nullable Int with Zod validation (`z.number().int().min(1).max(5).nullable().optional()`) gives the same type safety with less schema ceremony.
+
+**Why not a String field:** The effort value has inherent ordering (1 < 2 < 3). Storing as Int enables `ORDER BY effort` queries directly, and Zod validates the range at the application layer.
+
+#### Demo Workspace Flag
+
+```prisma
+model Workspace {
+  // ... existing fields ...
+  isDemo    Boolean  @default(false)
+}
+```
+
+**Why a boolean on Workspace, not a separate model:** The demo workspace is functionally identical to a regular workspace -- same projects, sections, tasks. The only difference is that mutations are blocked in the UI/server actions and a banner is displayed. A boolean flag is the simplest approach. The demo workspace's data is seeded via a Prisma seed script, not created through the UI.
+
+### Native Browser APIs (No Libraries)
+
+#### Help Tip Tooltips: Popover API + CSS Anchor Positioning
+
+**Use the native Popover API** (`popover` attribute) paired with **CSS Anchor Positioning** (`anchor-name`, `position-anchor`, `inset-area`) for contextual help tips. No tooltip library needed.
+
+| API | Baseline Status | Global Support | Source |
+|-----|----------------|----------------|--------|
+| Popover API | Widely Available (April 2025) | ~93% | [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) |
+| CSS Anchor Positioning | Newly Available (Jan 2026) | ~77% | [Can I Use](https://caniuse.com/css-anchor-positioning) |
+
+**Why native over a library (Radix, Floating UI, etc.):**
+1. The todoist app has zero UI library dependencies. Adding Radix or Floating UI for tooltips alone would be disproportionate.
+2. Both APIs are Baseline in all major browsers as of January 2026 (Chrome 125+, Firefox 147+, Safari 26+, Edge 125+).
+3. For the ~23% on older browsers, help tips are a progressive enhancement -- the app works without them.
+4. A single reusable `<HelpTip>` component (~30 lines) wrapping these APIs is trivial.
+
+**Implementation pattern:**
+```tsx
+// src/components/ui/help-tip.tsx
+function HelpTip({ id, content }: { id: string; content: string }) {
+  return (
+    <>
+      <button
+        type="button"
+        className="text-text-tertiary hover:text-gold"
+        style={{ anchorName: `--tip-${id}` } as React.CSSProperties}
+        popoverTarget={`tip-${id}`}
+        popoverTargetAction="toggle"
+      >?</button>
+      <div
+        id={`tip-${id}`}
+        popover="auto"
+        style={{
+          positionAnchor: `--tip-${id}`,
+          insetArea: "top",
+        } as React.CSSProperties}
+        className="rounded-lg border border-border bg-surface p-3 text-sm shadow-lg max-w-xs"
+      >{content}</div>
+    </>
+  );
+}
+```
+
+**Fallback strategy for older browsers:** The `popover` attribute degrades to `display: none` in unsupported browsers (the tip simply never shows). The `?` button remains visible but does nothing. This is acceptable for non-critical help text.
+
+**Confidence:** HIGH for Popover API, MEDIUM for CSS Anchor Positioning (newer, but 5 months in all major browsers).
 
 ---
 
-## What Actually Needs to Change (Infrastructure Gaps)
+## Repo 2: personal-brand (dan-weinbeck.com)
 
-### 1. Stripe CLI (Local Development Tool -- NOT Installed)
+### No New Dependencies Needed
 
-**What:** Stripe CLI creates a local tunnel to forward webhook events to `localhost:3000/api/billing/webhook`.
+The personal-brand site already has everything required for weekly credit gating and app listing.
 
-**Why needed:** The `checkout.session.completed` webhook in `src/app/api/billing/webhook/route.ts` cannot be tested without it. Stripe sends webhooks to a public URL -- the CLI creates a tunnel.
+| Existing Technology | Version (Installed) | v1.8 Role | Status |
+|---------------------|---------------------|-----------|--------|
+| Next.js | 16.1.6 | Apps page, API routes for billing check | Current |
+| Firebase Admin | 13.6.0 | Firestore for billing, `verifyIdToken` | Current |
+| Stripe | 20.3.1 | Already configured for credit purchases | Current |
+| Zod | 4.3.6 | Validation for billing API inputs | Current |
+| SWR | 2.4.0 | Client-side polling if needed for gating state | Current |
 
-**Install and usage:**
-```bash
-# macOS install
-brew install stripe/stripe-cli/stripe
+### Weekly Credit Gating: Billing System Extension
 
-# Authenticate (one-time)
-stripe login
+The existing billing system (Firestore ledger, `debitForToolUse`, `billing_tool_pricing`) already handles per-use credit charges. Weekly gating adds a **periodic (weekly) charge model** on top of the existing per-use model.
 
-# Forward webhooks during local testing
-stripe listen --forward-to localhost:3000/api/billing/webhook
-# Outputs: whsec_... → use as STRIPE_WEBHOOK_SECRET in .env.local
+**Approach: Firestore-only, no Stripe subscription.** Use the existing credit ledger to debit a fixed weekly amount. No Stripe Billing/subscriptions needed because:
+
+1. Users already buy credit packs via Stripe Checkout (one-time purchases).
+2. Weekly access fees are deducted from the credit balance, same as tool usage.
+3. Adding Stripe subscriptions for a $0.50/week access fee would add massive complexity (subscription lifecycle management, cancellations, proration, webhook handling for `invoice.paid`, etc.) for negligible benefit.
+
+**New Firestore collection:** `billing_tool_access` (or extend `billing_tool_usage` with a new `type` field)
+
+```typescript
+type ToolAccessGrant = {
+  uid: string;
+  toolKey: "tasks_app";         // matches billing_tool_pricing
+  grantedAt: Timestamp;         // start of access period
+  expiresAt: Timestamp;         // grantedAt + 7 days
+  creditsCharged: number;
+  ledgerEntryId: string;        // reference to the ledger debit
+};
 ```
 
-**Confidence:** HIGH -- standard Stripe local development workflow. Verified: `which stripe` returns "not found" on this machine.
+**Gating flow:**
+1. User navigates to `/apps/tasks` on personal-brand site.
+2. API route checks `billing_tool_access` for an active (non-expired) grant for `tasks_app`.
+3. If active grant exists: redirect to the todoist app URL (or render embedded).
+4. If no active grant: show pricing/purchase page. User clicks "Activate for X credits/week."
+5. Server action debits credits via existing `debitForToolUse` (or a new `debitForToolAccess`) and creates the access grant.
+6. Grant checked on each app load, not continuously.
 
-### 2. Firestore Composite Indexes (Missing)
-
-**What:** The billing code uses compound Firestore queries that require composite indexes.
-
-**Queries requiring indexes (from `src/lib/billing/firestore.ts`):**
-
-| Collection | Query Fields | Function | Line |
-|------------|-------------|----------|------|
-| `billing_tool_usage` | `uid` ASC + `createdAt` DESC | `getUserUsage()` | 481-486 |
-| `billing_tool_usage` | `uid` + `externalJobId` | `findUsageByExternalJobId()` | 537-543 |
-| `billing_purchases` | `uid` ASC + `createdAt` DESC | `getUserPurchases()` | 490-498 |
-
-**Current state:** `firebase.json` only references `firestore.rules`. There is no `firestore.indexes.json`. Without these indexes, queries will throw `FAILED_PRECONDITION` errors at runtime.
-
-**Fix:** Create `firestore.indexes.json` and deploy:
-```bash
-firebase deploy --only firestore:indexes --project <PROJECT_ID>
+**New tool pricing seed entry:**
+```typescript
+{
+  toolKey: "tasks_app",
+  label: "Tasks App (Weekly)",
+  active: true,
+  creditsPerUse: 25,              // 25 credits/week = $0.25/week
+  costToUsCentsEstimate: 0,       // no external API cost
+}
 ```
 
-**Confidence:** HIGH -- verified by reading all `.where()` + `.orderBy()` patterns in `firestore.ts`.
+**Confidence:** HIGH -- this extends the proven billing pattern with a time-based access check. No new infrastructure.
 
-### 3. GCP Secret Manager Entries (Must Exist Before First Deploy)
+### Apps Page Extension
 
-**What:** Two secrets must exist in GCP Secret Manager before the first billing-enabled deploy.
+The `src/data/apps.ts` file and `AppCard` component need a new entry for the Tasks app. The existing `AppListing` type and `AppCard` component handle this without changes -- just add a new entry to the `getApps()` array.
 
-**Already wired in `cloudbuild.yaml` line 39:**
-```yaml
---set-secrets=STRIPE_SECRET_KEY=stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest
-```
+The `href` field can point to either:
+- An internal page (`/apps/tasks`) that checks billing then redirects to the external todoist app URL
+- The todoist app directly (with billing check happening via a middleware or API call on the todoist side)
 
-**Secrets to create:**
-
-| Secret Name | Value Source | Command |
-|-------------|-------------|---------|
-| `stripe-secret-key` | Stripe Dashboard > Developers > API Keys > Secret key | `echo -n "sk_live_..." \| gcloud secrets create stripe-secret-key --data-file=-` |
-| `stripe-webhook-secret` | Stripe Dashboard > Developers > Webhooks > Signing secret | `echo -n "whsec_..." \| gcloud secrets create stripe-webhook-secret --data-file=-` |
-
-**The Cloud Run service account** (`cloudrun-site`) needs `roles/secretmanager.secretAccessor`. The `--set-secrets` flag in `gcloud run deploy` implicitly grants this if the deploying user has `secretmanager.versions.access` permission.
-
-**Confidence:** HIGH -- the wiring already exists in `cloudbuild.yaml`; only the secret values need to be created.
-
-### 4. Stripe Webhook Endpoint (Production)
-
-**What:** A webhook endpoint must be registered in the Stripe Dashboard pointing to the production URL.
-
-**Steps:**
-1. Stripe Dashboard > Developers > Webhooks > Add endpoint
-2. URL: `https://<cloud-run-url>/api/billing/webhook`
-3. Events to listen: `checkout.session.completed`
-4. Copy signing secret to GCP Secret Manager (see above)
-
-**Confidence:** HIGH -- webhook route code is complete in `src/app/api/billing/webhook/route.ts`.
-
-### 5. Firebase Auth Domain Configuration
-
-**What:** Firebase Auth requires authorized domains for Google Sign-In popup to work in production.
-
-**Steps:**
-1. Firebase Console > Authentication > Settings > Authorized domains
-2. Add: Cloud Run URL (e.g., `personal-brand-xxxxx-uc.a.run.app`)
-3. Add: custom domain if applicable
-4. Verify `_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` in Cloud Build trigger is set correctly (typically `<project-id>.firebaseapp.com`)
-
-**Already wired:** `cloudbuild.yaml` passes `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` as a build arg. `src/lib/firebase-client.ts` reads it. `src/context/AuthContext.tsx` initializes the auth listener. The plumbing is complete -- only the domain allowlist needs configuration.
-
-**Confidence:** HIGH.
-
-### 6. Cloud Run Service Account Roles
-
-**Currently granted (from `scripts/deploy.sh`):**
-
-| Role | Purpose | Status |
-|------|---------|--------|
-| `roles/datastore.user` | Firestore read/write for billing collections | Granted |
-
-**Implicitly granted via `--set-secrets`:**
-
-| Role | Purpose | Status |
-|------|---------|--------|
-| `roles/secretmanager.secretAccessor` | Read Stripe secrets at runtime | Auto-granted by `--set-secrets` |
-
-**NOT needed (for now):**
-
-| Role | Purpose | When Needed |
-|------|---------|-------------|
-| `roles/iam.serviceAccountTokenCreator` | Self-sign GCS URLs | Only if app generates its own signed URLs (brand scraper does this instead) |
-| `roles/storage.objectViewer` | Read GCS objects directly | Only if app reads GCS objects server-side (not needed for pass-through pattern) |
-
-**Confidence:** HIGH.
+**Recommended: Internal page pattern** (`/apps/tasks` on personal-brand). This keeps all billing logic in one codebase and avoids adding Firebase/billing dependencies to the todoist app.
 
 ---
 
-## Testing Stack Assessment
+## Cross-Repo Integration Pattern
 
-### Current Test Coverage
+### How the Two Apps Connect
 
-| File | Tests | What It Covers |
-|------|-------|----------------|
-| `src/lib/billing/__tests__/types.test.ts` | 11 | Zod schema validation (creditPackSchema, adminAdjustSchema, refundReasonSchema, pricingUpdateSchema) |
-| `src/lib/billing/__tests__/credits.test.ts` | 7 | Credit pack economics (1 credit = 1 cent), tool pricing invariants, idempotency key format |
+| Concern | Where It Lives | Why |
+|---------|---------------|-----|
+| Task management (CRUD, views, effort scoring) | todoist repo | Standalone app with its own database |
+| Billing, credits, access gating | personal-brand repo | Centralized billing system |
+| Demo workspace | todoist repo | Pre-seeded data, read-only UI mode |
+| Help tips | todoist repo | Task-specific contextual help |
+| App listing + purchase flow | personal-brand repo | Apps ecosystem entry point |
 
-**Total: 18 tests across 2 files.** All are pure unit tests with zero mocking -- they test schemas and constants only.
+### Integration Approach: Link-Based (Not Embedded)
 
-### What Tests Do NOT Cover
+The todoist app runs as a separate deployment. The personal-brand site links to it after verifying billing access. This is the same pattern as the Envelopes app (which has `href: "/envelopes"` as an internal route, not an external URL).
 
-- Firestore transaction logic (debitForToolUse, applyPurchaseFromStripe, refundUsage, etc.)
-- Stripe webhook signature verification
-- API route handlers (auth checks, error handling, response shapes)
-- Auth token verification flow (`verifyUser` / `verifyAdmin`)
-- UI component rendering
+**If the todoist app will be deployed separately** (its own Cloud Run service or Vercel deployment):
+- personal-brand's `/apps/tasks` page checks billing access
+- On success, redirects to the todoist app's URL with a signed token or session param
+- The todoist app verifies the token before serving content
 
-### Testing Strategy: Do NOT Add Testing Libraries
+**If the todoist app will be embedded as a route in personal-brand** (recommended for simplicity):
+- Copy/adapt todoist's pages into `src/app/apps/tasks/` in the personal-brand repo
+- Database connection (PostgreSQL + Prisma) added to personal-brand's server-side code
+- All billing + task management in one deploy
 
-**Rationale:** The billing code is ~500 LOC of Firestore transactions. Meaningfully unit-testing them requires either:
-1. A Firestore emulator (heavy, flaky, painful to set up in CI)
-2. Mocking the Firestore SDK (brittle, tests the mock not the code)
+**Recommendation: Decide integration architecture first.** This is the most impactful decision for v1.8. Embedding is simpler but adds PostgreSQL/Prisma as a dependency to personal-brand. Separate deployment is cleaner but requires cross-app auth.
 
-For a solo personal brand site, the cost/benefit favors:
-1. **Expand pure unit tests** -- more schema tests, edge cases, input validation
-2. **Manual E2E via Stripe CLI** -- sign in, buy credits, verify webhook, check balance
-3. **Smoke test API routes** -- verify 401 without auth, 400 with invalid body
+---
 
-| Library Considered | Why NOT |
-|--------------------|---------|
-| `@firebase/rules-unit-testing` | Tests Firestore security rules, not Admin SDK transaction logic |
-| Firebase Emulator Suite | Heavyweight for a personal brand site; requires Java runtime |
-| `stripe-mock` | The webhook handler is <60 LOC; test with Stripe CLI instead |
-| `msw` (Mock Service Worker) | API routes use server-side Firebase Admin SDK, not client fetch |
-| `@testing-library/react` | Billing UI is simple forms; manual testing is more cost-effective |
-| `supertest` / `next-test-api-route-handler` | Added complexity for testing route handlers that are thin wrappers |
+## Recommended Stack (Complete Summary)
 
-**Confidence:** MEDIUM -- this is an opinionated tradeoff. A team product would benefit from emulator-based tests.
+### Todoist Repo Changes
+
+| Change Type | What | Why |
+|-------------|------|-----|
+| Prisma schema | Add `effort Int?` to Task model | Effort scoring feature |
+| Prisma schema | Add `isDemo Boolean @default(false)` to Workspace model | Demo workspace identification |
+| Zod schema | Add `effort` to create/update task schemas | Validation for effort values |
+| New component | `src/components/ui/help-tip.tsx` | Reusable tooltip using native Popover API |
+| New component | `src/components/tasks/effort-badge.tsx` | Visual effort indicator on task cards |
+| New component | `src/components/workspace/demo-banner.tsx` | Read-only mode indicator |
+| Seed script | `prisma/seed.ts` | Populate demo workspace with sample data |
+| Service logic | Guard mutations for demo workspace | Prevent edits to demo data |
+
+### Personal-Brand Repo Changes
+
+| Change Type | What | Why |
+|-------------|------|-----|
+| Data file | Add tasks_app entry to `src/data/apps.ts` | App listing |
+| New page | `src/app/apps/tasks/page.tsx` | Billing-gated entry point |
+| Billing | Add `tasks_app` to `TOOL_PRICING_SEED` | Weekly pricing |
+| Billing | New `billing_tool_access` Firestore collection | Time-based access grants |
+| Billing logic | `debitForToolAccess()` function | Weekly credit debit with expiry |
+| API route | `/api/tools/tasks/access` | Check/create access grants |
 
 ---
 
 ## Alternatives Considered
 
-### GCS URL Handling
+### Effort Scoring Approach
 
 | Approach | Recommended | Why |
 |----------|-------------|-----|
-| Pass through signed URLs from brand scraper | **Yes** | Zero code changes. URLs already flow through `jobStatusSchema` to `DownloadLinks`. |
-| Proxy GCS downloads through Next.js API route | No | Adds latency, wastes Cloud Run bandwidth/memory. |
-| Add `@google-cloud/storage` as direct dependency | No | Already bundled inside `firebase-admin`. Adding directly risks version conflicts. |
-| Use public GCS URLs | No | Exposes bucket contents. Signed URLs expire and are scoped per-file. |
+| `Int?` field (1-5 scale) | **Yes** | Simple, sortable, no enum migration issues, Zod-validated |
+| Prisma `enum Effort { TRIVIAL SMALL MEDIUM LARGE HUGE }` | No | Enum migrations on PostgreSQL are fragile in Prisma; adding/removing values requires careful ordering |
+| String field with convention | No | No ordering, no type safety without extra parsing |
+| Fibonacci points (1,2,3,5,8,13) | No for MVP | Familiar to devs but confusing for non-technical users; can add as an alternative scale later |
 
-### Auth Pattern
-
-| Approach | Recommended | Why |
-|----------|-------------|-----|
-| Firebase Admin `verifyIdToken()` per-request | **Yes (current)** | Already implemented. Stateless, scales with Cloud Run. |
-| Session cookies | No | Adds complexity (cookie management, CSRF). Firebase ID tokens auto-refresh. |
-| NextAuth.js / Auth.js | No | Would require rewriting existing auth flow. Firebase Auth already works. |
-
-### Stripe Integration
+### Tooltip/Help Tip Library
 
 | Approach | Recommended | Why |
 |----------|-------------|-----|
-| Stripe Checkout (redirect) | **Yes (current)** | Low PCI scope. Stripe hosts payment form. Already implemented. |
-| Stripe Elements (embedded) | No for MVP | Higher PCI requirements. Not worth it for one credit pack. |
-| Stripe Payment Links | No | Cannot attach custom metadata (uid, email, credits). |
+| Native Popover API + CSS Anchor Positioning | **Yes** | Zero dependencies, Baseline in all major browsers since Jan 2026, progressive enhancement |
+| `@radix-ui/react-tooltip` | No | Would be the first Radix dependency; 18KB for tooltips alone; overkill for contextual help text |
+| `@floating-ui/react` | No | Powerful but complex (15KB); designed for complex positioning needs the app does not have |
+| `react-tooltip` | No | Adds a dependency for a feature that native APIs now handle |
+| CSS-only `:hover` pseudo-class | No | Not accessible (no keyboard/screen reader support); no mobile touch support |
 
-### Secrets Management
+### Weekly Billing Model
 
 | Approach | Recommended | Why |
 |----------|-------------|-----|
-| GCP Secret Manager via `--set-secrets` | **Yes (current)** | Already wired in `cloudbuild.yaml`. Secrets injected as env vars at runtime. |
-| Build-time env vars | No | Secrets would be baked into the Docker image. Security risk. |
-| External vault (HashiCorp Vault, etc.) | No | Overkill. GCP Secret Manager is native to Cloud Run. |
+| Credit debit + Firestore access grants | **Yes** | Uses existing billing infrastructure, zero new dependencies, simple time-check |
+| Stripe Subscription (weekly) | No | Massive complexity for $0.25/week; subscription lifecycle, cancellations, proration, additional webhooks |
+| Stripe Metered Billing | No | Designed for variable usage; weekly access is fixed-cost |
+| Free tier + premium features | No | Overcomplicates MVP; weekly credit model is simpler and already fits the billing system |
+| Per-use charges (charge per task created) | No | Unpredictable costs annoy users; weekly flat fee is predictable |
+
+### Demo Workspace Implementation
+
+| Approach | Recommended | Why |
+|----------|-------------|-----|
+| Boolean flag on Workspace + seed script | **Yes** | Minimal schema change; mutations guarded at service layer; seed script reproducible |
+| Separate "demo mode" with in-memory data | No | Would require duplicating all data access patterns; can't demonstrate real DB-backed features |
+| Hardcoded demo page with static data | No | Doesn't show actual app functionality; can't toggle views or expand tasks |
+| Read-only database user | No | PostgreSQL role-based access is infrastructure-level; too heavy for a UI feature |
 
 ---
 
@@ -314,91 +284,89 @@ For a solo personal brand site, the cost/benefit favors:
 
 | Technology | Why Not |
 |------------|---------|
-| `@google-cloud/storage` (direct) | Already bundled in `firebase-admin@13.6.0` as `@google-cloud/storage@7.18.0`. Adding directly risks version conflicts and bloats `package.json`. |
-| `next-auth` / `auth.js` | Firebase Auth is fully integrated (client + server). Switching would be a rewrite. |
-| `prisma` / `drizzle` / any ORM | Firestore is not SQL. Admin SDK with transactions is idiomatic Firestore. |
-| `bull` / `bullmq` | No job queuing needed in Next.js. Brand scraper runs on separate Fastify service. |
-| `stripe-event-types` | `stripe@20.3.1` already includes full TypeScript types for all event types. |
-| `firebase-functions` | Not using Firebase Functions. App runs on Cloud Run with Next.js API routes. |
-| React testing library | Billing UI is a balance display + Stripe redirect button. Manual E2E suffices. |
-| `vitest@4.x` upgrade | Major version bump during billing validation adds risk with no benefit. Defer. |
+| `@radix-ui/react-tooltip` or `@radix-ui/react-popover` | Native Popover API + CSS Anchor Positioning covers the use case. Zero-dependency approach. |
+| `@floating-ui/react` or `@floating-ui/dom` | Same as above. Over-engineered for simple contextual tips. |
+| `react-tooltip` | Same as above. |
+| Stripe Billing (subscriptions) | Weekly credit debit is simpler and uses existing infrastructure. |
+| `@stripe/stripe-js` (client SDK) | Not needed; existing Stripe Checkout redirect pattern handles purchases. |
+| `next-auth` or `auth.js` | Both apps already have auth solutions (Firebase Auth in personal-brand, no auth needed in todoist standalone). |
+| `prisma@7.x` upgrade | Major version bump during feature work adds unnecessary risk. |
+| `vitest@4.x` upgrade | Same reasoning. |
+| Firebase SDK in todoist repo | Keep billing in personal-brand. Todoist should remain a standalone PostgreSQL app. |
+| `cron` or `node-cron` | Weekly expiry checked on access, not via scheduled jobs. No cron needed. |
+| `ioredis` or `upstash/redis` | Access grant checks hit Firestore (single document read). Not a performance bottleneck. |
+| `@tailwindcss/forms` | The todoist app already has custom form styling that matches its design system. |
 
 ---
 
 ## Installation Commands
 
-### npm: Nothing to Install
-
-All billing dependencies are already in `package.json`:
+### Todoist Repo
 
 ```bash
-# Verify deps are installed
+# No packages to install. Schema changes only.
+cd /Users/dweinbeck/Documents/todoist
+
+# After schema changes, push to database
+npx prisma db push
+
+# Regenerate Prisma client
+npx prisma generate
+
+# Run seed script (after creating prisma/seed.ts)
+npx prisma db seed
+```
+
+### Personal-Brand Repo
+
+```bash
+# No packages to install. Code changes only.
+cd /Users/dweinbeck/Documents/personal-brand
+
+# Verify existing deps are installed
 npm ci
 
-# Run existing billing tests
-npm test
-
-# Lint billing code
-npm run lint
-
-# Build (includes TypeScript type checking)
-npm run build
-```
-
-### Local Development Tools (One-Time Setup)
-
-```bash
-# Stripe CLI -- required for webhook testing
-brew install stripe/stripe-cli/stripe
-stripe login
-
-# Firebase CLI -- required for deploying Firestore indexes
-npm install -g firebase-tools
-firebase login
-```
-
-### Production Infrastructure Setup (One-Time)
-
-```bash
-# Create Stripe secrets in GCP Secret Manager
-echo -n "sk_live_..." | gcloud secrets create stripe-secret-key --data-file=- --project=<PROJECT_ID>
-echo -n "whsec_..." | gcloud secrets create stripe-webhook-secret --data-file=- --project=<PROJECT_ID>
-
-# Deploy Firestore composite indexes (after creating firestore.indexes.json)
-firebase deploy --only firestore:indexes --project <PROJECT_ID>
+# Run quality gates after changes
+npm run lint && npm run build && npm test
 ```
 
 ---
 
-## Environment Variables (Complete Inventory)
-
-### Already Configured in `cloudbuild.yaml`
-
-| Variable | Type | Source | Billing Role |
-|----------|------|--------|-------------|
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Build arg | Cloud Build substitution | Client-side Firebase Auth init |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Build arg | Cloud Build substitution | Google Sign-In popup domain |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Build arg | Cloud Build substitution | Client-side Firebase init |
-| `FIREBASE_PROJECT_ID` | Runtime env | Cloud Build substitution | Admin SDK ADC project binding |
-| `STRIPE_SECRET_KEY` | Runtime secret | GCP Secret Manager | Stripe API calls (checkout, construct event) |
-| `STRIPE_WEBHOOK_SECRET` | Runtime secret | GCP Secret Manager | Webhook signature verification |
-| `BRAND_SCRAPER_API_URL` | Runtime env | Cloud Build substitution | Proxy requests to brand scraper Fastify service |
+## Environment Variables
 
 ### No New Environment Variables Needed
 
-The existing set covers all billing functionality. No additions to `cloudbuild.yaml`, `.env.local.example`, or `Dockerfile` are needed for the billing system.
+**Todoist repo:** Uses `DATABASE_URL` (already configured). No new env vars for effort, demo, or help tips.
+
+**Personal-brand repo:** All billing env vars already configured (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, Firebase credentials). The weekly access gating uses the same Firestore connection.
+
+**If the todoist app is deployed separately and needs cross-app auth:**
+- `TASKS_APP_URL` in personal-brand (URL to redirect to after billing check)
+- `BILLING_API_URL` in todoist (URL to verify access grants)
+- `TASKS_APP_SIGNING_SECRET` in both repos (shared secret for signed tokens)
+
+These are only needed if the apps run as separate deployments. If embedded, no new env vars.
 
 ---
 
 ## Sources
 
 ### Verified Locally (HIGH confidence)
-- **Package versions:** All verified via `npm view <package> version` and `npm list` on 2026-02-09
-- **GCS signed URL capability:** Verified that `firebase-admin@13.6.0` bundles `@google-cloud/storage@7.18.0` with `getSignedUrl()` method available
-- **Stripe secret wiring:** Verified in `cloudbuild.yaml` line 39: `--set-secrets=...STRIPE_SECRET_KEY=stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest`
-- **Firebase Auth config flow:** Verified in `src/lib/firebase-client.ts` (reads `NEXT_PUBLIC_*` env vars), `src/context/AuthContext.tsx` (initializes auth listener), `cloudbuild.yaml` (passes build args)
-- **Firestore query patterns:** All `.where()` + `.orderBy()` patterns analyzed from `src/lib/billing/firestore.ts`
-- **Existing test coverage:** Analyzed both test files in `src/lib/billing/__tests__/`
-- **Stripe CLI absence:** Verified via `which stripe` returning "not found"
-- **Missing Firestore indexes:** Verified `firebase.json` has no index configuration
-- **Billing code inventory:** Read all 30+ billing-related source files to confirm dependency usage
+- **Package versions:** All verified via `npm list --depth=0` in both repos and `npm view <pkg> version` on 2026-02-11
+- **Prisma schema:** Read `prisma/schema.prisma` -- confirmed no existing `effort` or `isDemo` fields
+- **Billing system:** Read `src/lib/billing/firestore.ts`, `types.ts`, `tools.ts` -- confirmed debit pattern and tool pricing structure
+- **App listing:** Read `src/data/apps.ts` and `src/components/apps/AppCard.tsx` -- confirmed listing pattern
+- **No migrations directory:** Confirmed todoist uses `prisma db push` (no `prisma/migrations/` directory)
+
+### Official Documentation (HIGH confidence)
+- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) -- Baseline Widely Available April 2025
+- [MDN CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning) -- Baseline Newly Available January 2026
+- [Can I Use: CSS Anchor Positioning](https://caniuse.com/css-anchor-positioning) -- ~77% global support (all major browsers since Jan 2026)
+- [Can I Use: Popover](https://caniuse.com/?search=popover) -- ~93% global support
+- [Prisma Schema Reference](https://www.prisma.io/docs/orm/reference/prisma-schema-reference) -- Optional fields, Boolean defaults
+- [Prisma Enum Migration Issues](https://github.com/prisma/prisma/issues/24292) -- Known PostgreSQL enum migration pitfalls
+
+### Web Search (MEDIUM confidence)
+- [Stripe Billing Credits Documentation](https://docs.stripe.com/billing/subscriptions/usage-based/billing-credits) -- Confirmed metered billing requires subscriptions; our credit debit approach avoids this
+- [Frontend Masters: Popover API for Tooltips](https://frontendmasters.com/blog/using-the-popover-api-for-html-tooltips/) -- Practical implementation patterns
+- [web.dev: Popover API Baseline](https://web.dev/blog/popover-api) -- Baseline announcement and browser compat

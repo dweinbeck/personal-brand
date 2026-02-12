@@ -1,178 +1,275 @@
 # Project Research Summary
 
-**Project:** dan-weinbeck.com -- Billing/Credits System Validation & Deployment (v1.5)
-**Domain:** Stripe billing + Firebase Auth deployment on GCP Cloud Run
-**Researched:** 2026-02-09
+**Project:** v1.8 -- Tasks App Integration (Effort Scoring, Demo Mode, Help Tips, Weekly Credit Gating)
+**Domain:** Multi-repo integration (todoist + personal-brand) with billing, authentication, and feature additions
+**Researched:** 2026-02-11
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Milestone v1.5 is a **configuration and deployment milestone, not a coding milestone**. The billing/credits system (~3K LOC across 30+ files) is fully implemented but uncommitted. It spans a ledger-based credits system (Firestore transactions, Stripe Checkout, webhook processing, idempotent debit/refund), Firebase Auth (Google Sign-In with `verifyUser()`/`verifyAdmin()` guards), a user-facing billing page, a brand-scraper-with-billing flow, and a full admin panel for user/credit/pricing management. All npm dependencies are already installed and current. No new packages are needed. No new code needs to be written. The work is: commit the code, configure infrastructure, deploy, and validate end-to-end.
+This milestone integrates a standalone Todoist-style task manager (separate PostgreSQL/Prisma repo) with the personal-brand site's billing ecosystem (Firestore/Firebase). The integration follows proven patterns from the existing envelopes app: weekly credit gating with graceful degradation to read-only mode, Firebase Auth for identity, and a billing API that enforces server-side access checks. The key finding is that **zero new dependencies are needed** in either repo — all four features (effort scoring, demo workspace, help tips, weekly gating) can be built with existing stack elements plus native browser APIs.
 
-The recommended approach is a strict sequence: (1) validate the code locally (build, lint, test), (2) configure all infrastructure (GCP Secret Manager secrets, IAM bindings, Firebase Auth domains, Firestore indexes, Stripe webhook endpoint, tool pricing seed data), (3) deploy to Cloud Run, and (4) run manual E2E smoke tests across all critical flows (signup, purchase, tool usage, failure refund, admin panel). The infrastructure dependencies form a serial chain -- Firebase Auth must work before Stripe can be tested, Stripe secrets must exist before checkout works, and tool pricing must be seeded before debit works. Skipping or misordering any step results in cryptic runtime failures.
+The critical architectural decision is to keep the two apps as separate deployments rather than embedding one in the other. Different databases (PostgreSQL vs Firestore), different mutation patterns (server actions vs API routes), and independent deployment cadences make separation the clean choice. Personal-brand provides billing and authentication as HTTP APIs; todoist consumes them via fetch calls with Firebase ID tokens.
 
-The top risks are all infrastructure configuration errors, not code bugs: deploying Stripe test keys to production (payments appear to work but no money is collected), forgetting to register the Stripe webhook endpoint (users pay but credits are never granted), and missing IAM bindings on the Cloud Run service account for Secret Manager (service crashes on startup). Each of these has been identified with specific verification commands in the research. The existing code already handles the hard parts correctly -- the webhook has dual idempotency, the debit flow has transactional safety with auto-refund, and the admin routes use `verifyAdmin()`. The risk is purely in the deployment plumbing.
+The main risks are multi-user migration pitfalls (adding userId to a single-user schema without backfilling), missing userId filters in queries (IDOR vulnerabilities), and cross-database billing/data consistency. All are mitigated by following established patterns from the envelopes app and Prisma migration best practices.
 
 ## Key Findings
 
-### Stack Assessment
+### Recommended Stack
 
-See full details: [STACK.md](STACK.md)
+**No new packages needed.** Both repos have everything required for v1.8.
 
-**No new npm dependencies needed.** Every package used by the billing code is already installed: `stripe@20.3.1`, `firebase@12.8.0`, `firebase-admin@13.6.0`, `zod@4.3.6`, `swr@2.4.0`. All are at or near latest versions.
+**Todoist repo changes:**
+- Prisma schema additions: `effort Int?` on Task, `isDemo Boolean` on Workspace
+- Native Popover API + CSS Anchor Positioning for help tips (baseline in all major browsers as of Jan 2026)
+- Client-side demo workspace with in-memory static data (no DB writes)
+- Firebase Auth client SDK (same project as personal-brand) for user identity
 
-- **GCS signed URLs require no new package:** `firebase-admin@13.6.0` bundles `@google-cloud/storage@7.18.0` as a transitive dependency. The brand scraper service generates signed URLs externally and passes them through -- the Next.js app just renders them as download links. Zero code changes needed.
-- **Stripe CLI is the only new local tool:** Required for webhook testing (`stripe listen --forward-to localhost:3000/api/billing/webhook`). Install with `brew install stripe/stripe-cli/stripe`.
-- **Do not upgrade Vitest to v4 during this milestone.** Major version bump adds risk with no benefit to billing validation.
+**Personal-brand repo changes:**
+- New billing API route (`/api/tasks/billing/access`) reusing existing `checkEnvelopeAccess()` pattern
+- New tool pricing entry (`tasks_app: 25 credits/week`)
+- Apps hub entry linking to deployed todoist URL
 
-### Feature Landscape
+**Critical version note:** Prisma 7.x is available but is a major bump. Stay on Prisma 6.19.2 during v1.8 — it fully supports all schema changes and the app uses `prisma db push` (no complex migrations).
 
-See full details: [FEATURES-billing-validation.md](FEATURES-billing-validation.md)
+**Native API choice:** Help tips use Popover API + CSS Anchor Positioning instead of Radix/Floating UI libraries. Both APIs achieved Baseline status in Jan 2026 (77-93% browser support). For the ~20% on older browsers, help tips are progressive enhancement — the app works without them. This avoids adding the first UI library dependency to a project that has built everything with vanilla components.
 
-**Must have -- code validation (Priority 1):**
-- V-1 through V-3: Build passes, lint passes, all 41 tests pass -- the first gate before anything else
-- D-1 through D-8: All infrastructure prerequisites (Stripe secrets, webhook, Firebase Auth domains, Firestore indexes, security rules, tool pricing seed, service account permissions)
+### Expected Features
 
-**Must have -- E2E smoke tests (Priority 2):**
-- V-4 through V-9: Manual smoke tests covering signup (100 free credits), Stripe purchase ($5 for 500 credits), tool usage (50 credit debit), failure refund, admin panel, and insufficient-credits UX
+**Must have (table stakes):**
 
-**Must validate -- brand scraper signed URL integration (Priority 3):**
-- S-1 through S-4: GCS signed URL passthrough is already fully wired; just needs end-to-end verification with a real scrape
+**From effort scoring:**
+- Optional integer effort field (1-13, Fibonacci subset) on tasks
+- UI selector for setting effort (small popover with discrete values)
+- Section rollup (sum of incomplete tasks' effort)
+- Project rollup (sum across all sections)
 
-**Defer to future milestones:**
-- Customer portal, multiple credit packs, balance notifications, user usage history, automated E2E tests, rate limiting, revenue dashboard -- none are needed for launch
+**From demo workspace:**
+- Pre-populated demo data (30-60 tasks across 3-5 realistic projects, showcasing effort scores and all views)
+- Client-side only demo (no DB writes, no persistence, no auth)
+- Clear "DEMO" banner explaining data is temporary with CTA to sign up
 
-**Explicitly never build:**
-- Subscriptions, embedded payment form, webhook retry queue, credit expiration, multi-currency, client-side balance caching, Stripe monetary refunds from admin panel
+**From help tips:**
+- Reusable HelpTip component (gold "?" icon, navy tooltip on hover/focus)
+- Content catalog mapping tip IDs to text (centralized for easy updates)
+- Accessibility requirements: ARIA tooltip role, keyboard/focus support, mobile tap-to-toggle
 
-### Architecture
+**From billing integration:**
+- Server-side billing check on every write operation (check Firestore `tasks_billing/{uid}` for active week)
+- First week free, then 25 credits/week (configurable via `billing_tool_pricing`)
+- Read-only mode enforcement (server-side 402 on mutations, client-side disabled UI)
+- ReadOnlyBanner matching envelopes pattern (amber, persistent, "buy credits" CTA)
+- Apps hub entry for discoverability
 
-See full details: [ARCHITECTURE-billing-deploy.md](ARCHITECTURE-billing-deploy.md)
+**Should have (competitive):**
+- Effort badges in board view cards with column totals (polish, helps with Kanban capacity planning)
+- Animated tooltip entry (subtle fade + scale, feels polished)
+- Credit balance display in app header (proactive low-balance warning)
 
-The architecture is fully implemented. No code files need modification. The milestone is 100% infrastructure configuration.
+**Defer (v2+):**
+- Effort distribution visualization (bar chart across sections) — nice-to-have, no user demand yet
+- "Keep demo data on payment" option — migration complexity, edge cases
+- Guided tour over demo data — requires step management, highlight overlays
+- Billing history for users — admin panel covers this, defer until user base grows
 
-**Seven integration points, all requiring zero code changes:**
-1. **GCP Secret Manager** -- `cloudbuild.yaml` already references `stripe-secret-key:latest` and `stripe-webhook-secret:latest` via `--set-secrets`. The secrets just need to be created and IAM granted.
-2. **Firebase Auth** -- Client SDK config is already baked into Docker images via Cloud Build substitution variables. The custom domain needs to be added to Firebase Console's authorized domains list.
-3. **Stripe Webhook** -- Handler at `/api/billing/webhook` is complete with raw body reading, signature verification, and dual idempotency. The endpoint just needs to be registered in Stripe Dashboard.
-4. **Brand Scraper URL** -- `BRAND_SCRAPER_API_URL` is already wired in `cloudbuild.yaml`. Just needs the actual URL set in the Cloud Build trigger.
-5. **GCS Signed URLs** -- Already flow from Fastify service through API proxy to download buttons. No changes needed.
-6. **Firestore Indexes** -- Three composite indexes required for billing queries. Must be created before admin panel queries will work.
-7. **Checkout URL derivation** -- Uses `request.url` origin, which automatically picks up the custom domain. No changes needed.
+### Architecture Approach
+
+**Two-repo integration pattern:** Todoist remains a separate deployment. Personal-brand links to it from the apps hub. Shared concerns (billing, auth) are handled via HTTP APIs with Firebase ID tokens.
+
+**Major components:**
+
+1. **Billing API (personal-brand)** — New route at `/api/tasks/billing/access` verifies Firebase token, checks Firestore `tasks_billing/{uid}` collection for active paid week, returns `readwrite | readonly`. Mirrors `checkEnvelopeAccess()` pattern exactly.
+
+2. **Task CRUD with billing gates (todoist)** — All mutating server actions check billing status before proceeding. Billing check calls personal-brand API, caches result in React context, disables write UI when readonly. Server-side enforcement prevents API bypass.
+
+3. **Demo workspace (todoist)** — Dedicated `/tasks/demo` route renders from hardcoded static fixtures. No auth, no DB, no billing. All mutations are no-ops with toast feedback. DemoBanner with sign-up CTA.
+
+4. **Help tips (todoist)** — Lightweight `<HelpTip>` component using native Popover API. Content stored in `help-tips.ts` catalog. Dismissal state in localStorage (per-user, no server state).
+
+5. **Effort scoring (todoist)** — Pure Prisma schema change (`effort Int?` on Task) + UI selector + rollup display. Rollups computed on-the-fly with indexed queries (or denormalized counters if performance requires).
+
+**Data flow:** User authenticates with Firebase on personal-brand → clicks "Task Manager" in apps hub → redirects to todoist.dan-weinbeck.com → todoist loads, gets Firebase ID token from client SDK → server actions call personal-brand `/api/tasks/billing/access` with token → billing check returns mode → UI shows ReadOnlyBanner or enables write operations.
+
+**Cross-database consistency strategy:** Use weekly gating (charge once per week, cache result) NOT per-operation billing. This decouples the Firestore billing transaction from PostgreSQL data writes. Billing check is a read of cached state (`paidWeeks` map in Firestore), not a debit transaction during task creation. Avoids distributed transaction problem.
 
 ### Critical Pitfalls
 
-See full details: [PITFALLS.md](PITFALLS.md)
+1. **Missing userId backfill on Prisma migration** — Adding `userId String` to Task/Project models fails if the column is `NOT NULL` and existing data has no userId. Must use `--create-only` to hand-edit migration SQL: add column as nullable, backfill with sentinel value, make NOT NULL, add index. Otherwise: orphaned rows or migration failure.
 
-1. **Stripe test keys in production (P1)** -- Keys in Secret Manager must start with `sk_live_`, not `sk_test_`. The code works identically with both, so there is no runtime error to catch the mistake. Verify with `gcloud secrets versions access latest --secret=stripe-secret-key | head -c 10`.
+2. **Cross-database billing creates distributed transaction risk** — Firestore billing + PostgreSQL data = no shared transaction. Solution: weekly gating pattern (charge once, gate all week). Do NOT charge per operation. If billing check passes but Postgres write fails, no money was charged (because check was a read, not a debit). If you invent per-operation billing, you need compensation (refund on failure).
 
-2. **Webhook endpoint not registered (P2)** -- The webhook is the ONLY mechanism for granting credits after purchase. There is no polling fallback. If the endpoint is not registered in Stripe Dashboard, users pay but credits are never granted. No visible error to the user.
+3. **Missing userId filter in ANY query leaks data** — Todoist was single-user. Every existing query like `prisma.task.findMany({ where: { projectId } })` is a data leak in multi-user mode. Must audit every query and add `userId` filter. Use Prisma middleware/extension to enforce this or PostgreSQL RLS. Integration tests: create data for User A and User B, verify queries never cross-contaminate.
 
-3. **Cloud Run SA missing Secret Manager IAM (P3)** -- The `setup-cicd.sh` script grants `secretmanager.secretAccessor` to the Cloud Build SA but NOT to the Cloud Run SA. Both need it. Without it, the service either fails to deploy or starts with empty Stripe env vars.
+4. **Free week timing uses server UTC, not user timezone** — `startOfWeek(new Date())` runs in UTC. A user in UTC-8 signing up at 10 PM Saturday local is actually Sunday UTC — new week starts immediately, "free week" is < 1 day. Solution: document UTC behavior (same as envelopes), or upgrade to generous 7-day trial (from first access timestamp, not week boundary).
 
-4. **Firebase Auth domain not authorized (P4)** -- `dan-weinbeck.com` must be added to Firebase Console authorized domains. Without it, Google Sign-In fails with `auth/unauthorized-domain`, blocking all billing features.
-
-5. **Webhook body parsing fragility (P5)** -- The current code correctly reads raw body via `request.text()`. If any future middleware reads the body first, signature verification breaks permanently. Document this constraint and never add body-reading middleware on the webhook path.
+5. **Demo data contamination if using DB** — If demo workspace writes to PostgreSQL with a magic userId like `demo`, it pollutes analytics, confuses billing, and risks collision. Solution: client-side only demo (in-memory state, no API calls). If server-side demo is needed, use separate PostgreSQL schema with `@@schema` directive.
 
 ## Implications for Roadmap
 
-Based on the strict dependency chain in the infrastructure and the serial nature of the validation flow, the research suggests **4 phases**.
+Based on research, suggested phase structure:
 
-### Phase 1: Code Validation & Commit
+### Phase 1: Help Tip Component
+**Rationale:** Zero dependencies on other features. Small, self-contained deliverable. Needed by all other features for contextual help. Establishes the accessible tooltip pattern early.
 
-**Rationale:** The ~3K LOC billing code has never been build-checked, linted, or committed as a unit. This must happen first because all subsequent phases depend on working code. Local-only, no external dependencies.
-**Delivers:** Clean build, clean lint, 41 passing tests, all billing code committed to master
-**Addresses:** V-1 (build), V-2 (lint), V-3 (tests)
-**Avoids:** Deploying code that does not compile (the most basic failure mode)
-**Key tasks:** `npm run build`, `npm run lint`, `npm run test`, fix any issues, `git add` + `git commit` all billing/auth files
-**Estimated scope:** Small. Fix lint issues (likely unused imports, missing `type` keywords), verify client/server boundaries, commit.
+**Delivers:** Reusable `<HelpTip>` component with native Popover API, content catalog, localStorage dismissal tracking.
 
-### Phase 2: Infrastructure Configuration
+**Addresses:** TS-8, TS-9 from FEATURES.md (Help Tip Component, Content Catalog)
 
-**Rationale:** All infrastructure must be configured before deployment. The dependency chain is: Stripe secrets must exist before webhook can be configured, Firebase Auth must be configured before sign-in works, Firestore indexes must exist before admin queries work, and tool pricing must be seeded before debit works. This is a serial chain of GCP/Firebase/Stripe console operations.
-**Delivers:** Complete infrastructure ready for deployment -- all secrets, IAM bindings, webhook endpoint, Firebase Auth domains, Firestore indexes, and seed data in place
-**Addresses:** D-1 (Stripe secrets), D-2 (webhook registration), D-3 (live vs test keys), D-4 (Firebase Auth domains), D-5 (Firestore indexes), D-6 (Firestore security rules), D-7 (tool pricing seed), D-8 (service account permissions)
-**Avoids:** P1 (test keys in prod), P2 (webhook not registered), P3 (IAM missing), P4 (domain not authorized), P14 (pricing not seeded)
-**Key tasks:** (1) Create Stripe secrets in Secret Manager, (2) Grant IAM to Cloud Run SA, (3) Register Stripe webhook endpoint, (4) Add custom domain to Firebase Auth authorized domains, (5) Create Firestore composite indexes, (6) Seed tool pricing data, (7) Verify Cloud Build trigger substitution variables
-**Estimated scope:** Medium. All manual console/CLI operations, no code changes.
+**Avoids:** Pitfall 7 (accessibility failures) by building ARIA-compliant component from the start. Pitfall 13 (tooltip overflow) mitigated with max-width constraint and viewport-aware positioning.
 
-### Phase 3: Deploy & Smoke Test (Test Mode)
+**Complexity:** Low (~100 lines, 2 files)
 
-**Rationale:** Deploy with Stripe test keys first to validate the full flow end-to-end without real money. Test mode is identical to live mode in behavior -- it uses test cards (`4242 4242 4242 4242`) and test webhooks. This catches all integration issues before any real payment is processed.
-**Delivers:** Working billing system on production Cloud Run, validated with Stripe test payments
-**Addresses:** V-4 (signup flow), V-5 (purchase flow), V-6 (tool usage), V-7 (failure refund), V-8 (admin panel), V-9 (insufficient credits UX), S-1 through S-4 (signed URL integration)
-**Avoids:** P7 (checkout redirect origin mismatch -- test on production domain), P10 (cold start webhook timeout -- monitor delivery), P16 (success page before credits granted -- verify timing)
-**Key tasks:** (1) Deploy via Cloud Build or `scripts/deploy.sh`, (2) Test sign-in on custom domain, (3) Test full purchase flow with test card, (4) Test brand scraper debit/refund, (5) Test admin panel, (6) Verify Firestore documents, (7) Check Stripe Dashboard webhook delivery logs
-**Estimated scope:** Medium. One deployment plus thorough manual testing.
+**Research needed:** NO — native APIs are well-documented, pattern is standard.
 
-### Phase 4: Go Live (Switch to Live Keys)
+---
 
-**Rationale:** After full validation in test mode, switch to live Stripe keys and make a real $5 purchase to verify the complete production flow. This is a small, focused phase -- just swap secret values and redeploy.
-**Delivers:** Live billing system accepting real payments
-**Addresses:** D-3 (live vs test keys verified)
-**Avoids:** P1 (test keys in production -- the entire point of this phase)
-**Key tasks:** (1) Update `stripe-secret-key` to `sk_live_*` in Secret Manager, (2) Create production webhook endpoint in Stripe Dashboard, (3) Update `stripe-webhook-secret` in Secret Manager, (4) Redeploy or restart Cloud Run, (5) Make a real $5 purchase, (6) Verify charge in Stripe live Dashboard, (7) Verify credits granted
-**Estimated scope:** Small. Secret swap, redeploy, one real purchase test.
+### Phase 2: Effort Scoring
+**Rationale:** Core data model change + UI. Must be done before demo data (demo tasks should showcase effort scoring). Establishes Prisma migration pattern for multi-user userId addition (Pitfall 1).
+
+**Delivers:** `effort Int?` field on Task, EffortPicker UI component, rollup display on sections/projects, effort badges in task cards.
+
+**Addresses:** TS-1, TS-2, TS-3, TS-4 (Effort Field, Selector UI, Section Rollup, Project Rollup)
+
+**Avoids:** Pitfall 6 (expensive rollups) by designing indexed queries or denormalized counters. Pitfall 8 (mutable completed effort) by locking effort on completion or snapshotting at completion time. Pitfall 12 (default value issues) by using NULL default and excluding unscored tasks from rollups.
+
+**Complexity:** Low-Medium (~300 lines, 4-6 files: schema, selector, rollup logic, display)
+
+**Research needed:** NO — Fibonacci estimation is well-documented, Prisma optional Int field is trivial, rollup patterns are standard SQL.
+
+---
+
+### Phase 3: Multi-User Migration + Auth Setup
+**Rationale:** Must be done before billing integration (billing requires userId). Adds Firebase Auth to todoist and migrates single-user schema to multi-user. This is the riskiest phase due to Pitfall 1 and Pitfall 3.
+
+**Delivers:** Firebase Auth client SDK in todoist, AuthContext + AuthGuard, userId columns on all relevant models with backfill migration, userId filters in all queries.
+
+**Addresses:** Cross-repo auth foundation (required for billing API calls)
+
+**Avoids:** Pitfall 1 (userId migration) with custom migration SQL. Pitfall 3 (missing filters) with Prisma middleware or comprehensive query audit. Pitfall 9 (auth token forwarding) by using Firebase Admin SDK in personal-brand API routes to verify tokens.
+
+**Complexity:** HIGH (touches every query in todoist, schema migration with backfill, auth setup)
+
+**Research needed:** MINIMAL — pattern exists in personal-brand's `src/lib/auth/user.ts`, copy and adapt.
+
+---
+
+### Phase 4: Weekly Credit Gating
+**Rationale:** Depends on auth (Phase 3). Must be done before demo workspace (demo is the pre-payment onboarding experience). Follows proven envelopes pattern exactly.
+
+**Delivers:** Billing API route in personal-brand (`/api/tasks/billing/access`), `checkTasksAccess()` function, billing integration in todoist server actions, ReadOnlyBanner, Apps hub entry.
+
+**Addresses:** TS-10, TS-11, TS-12, TS-13, TS-14 (Billing Access Check, Read-Only Enforcement, Banners, Apps Hub)
+
+**Avoids:** Pitfall 2 (distributed transaction) by using weekly gating, not per-operation billing. Pitfall 10 (client-only gating) with server-side checks in all mutating endpoints. Pitfall 14 (idempotency collision) with unique `tasks_week_` prefix.
+
+**Complexity:** Medium (~400 lines, 5-8 files in todoist + 3 files in personal-brand)
+
+**Research needed:** NO — direct copy of envelopes billing pattern from `src/lib/envelopes/billing.ts`.
+
+---
+
+### Phase 5: Demo Workspace
+**Rationale:** Depends on effort scoring (demo tasks need effort values) and billing (demo is the try-before-you-buy flow). Content design quality determines UX quality.
+
+**Delivers:** `/tasks/demo` route with static fixtures, DemoBanner, demo layout provider, 30-60 realistic tasks across 3-5 projects with effort scores.
+
+**Addresses:** TS-5, TS-6, TS-7 (Demo Data Seed, Demo Lifecycle, Demo Banner)
+
+**Avoids:** Pitfall 5 (data contamination) by using client-side only demo. Pitfall 11 (unclear persistence) with persistent "DEMO" banner and clear sign-up messaging.
+
+**Complexity:** Medium (~500 lines, mostly seed data content design)
+
+**Research needed:** NO — static data seed pattern is trivial. Content design is creative work, not research.
+
+---
 
 ### Phase Ordering Rationale
 
-- **Phase 1 first:** Code must compile before it can be deployed. Committing first also enables git-based rollback for subsequent phases.
-- **Phase 2 before 3:** Infrastructure must exist before deployment. A deployment without secrets will crash. A deployment without Firebase Auth domains will block sign-in. A deployment without Firestore indexes will break admin queries.
-- **Phase 3 before 4:** Test mode validation catches integration bugs without financial consequences. Every issue found in test mode would be worse in live mode.
-- **Phase 4 last:** The only change is secret values. This is the smallest phase with the highest consequence, so it comes last when everything else is verified.
+- **Phase 1 first:** Help tips have zero dependencies. Small win, establishes accessible component pattern.
+- **Phase 2 before Phase 3:** Effort scoring is todoist-only, no cross-repo coordination. Get it working in single-user mode first, then add multi-user.
+- **Phase 3 before Phase 4:** Billing requires auth (Firebase ID tokens). Multi-user schema migration must complete before billing integration starts.
+- **Phase 4 before Phase 5:** Demo workspace is the pre-payment UX. Users see demo, then billing gate. Order matters for user flow.
+- **Phase 5 last:** Depends on everything (effort, auth, billing). Showcases the complete feature set.
 
 ### Research Flags
 
-**Phases likely needing deeper research during planning:**
-- **Phase 2 (Infrastructure Configuration):** The IAM binding requirements for Cloud Run SA vs Cloud Build SA need careful verification. The `setup-cicd.sh` script does not handle Stripe secrets. A phase research spike should verify the exact `gcloud` commands needed and whether the existing SA already has project-wide `secretmanager.secretAccessor`.
+**Phases needing deeper research during planning:**
+- **Phase 3 (Multi-User Migration):** Query audit is manual, time-consuming. May discover edge cases (nested includes, aggregate queries) that need custom solutions. Budget extra time for comprehensive testing.
 
-**Phases with standard patterns (skip deep research):**
-- **Phase 1 (Code Validation):** Standard `npm run build && npm run lint && npm run test`. Well-understood.
-- **Phase 3 (Deploy & Smoke Test):** Standard Cloud Build deployment + manual testing. The deployment pipeline is already proven for the existing site.
-- **Phase 4 (Go Live):** Secret swap + redeploy. Trivial.
+**Phases with standard patterns (skip research-phase):**
+- **Phase 1 (Help Tips):** Native APIs documented, ARIA patterns established.
+- **Phase 2 (Effort Scoring):** Prisma optional field, Fibonacci estimation patterns well-understood.
+- **Phase 4 (Billing):** Direct copy of envelopes pattern, fully vetted.
+- **Phase 5 (Demo):** Static data, client-side only, zero novelty.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All dependencies verified via `npm list` and `npm view` on 2026-02-09. No new packages needed. Versions current. |
-| Features | HIGH | Feature landscape derived from direct analysis of all 30+ billing source files. Table stakes are infrastructure config tasks, not code features. Clear priority ordering. |
-| Architecture | HIGH | All 7 integration points verified by reading `cloudbuild.yaml`, `deploy.sh`, and every billing source file. Zero code changes needed -- pure configuration. |
-| Pitfalls | HIGH | 6 critical + 6 moderate + 4 minor pitfalls identified with prevention strategies and detection commands. Key finding: IAM gap in `setup-cicd.sh` confirmed by direct code reading. |
+| Stack | HIGH | All package versions verified via `npm list`, no new deps needed, native APIs baseline in all major browsers |
+| Features | HIGH | Effort scoring matches Linear/ClickUp patterns (official docs), billing mirrors envelopes (codebase analysis), demo workspace follows SaaS onboarding best practices (multiple sources) |
+| Architecture | HIGH | Direct codebase analysis of both repos, proven envelopes integration pattern, Firebase Auth pattern already in use |
+| Pitfalls | HIGH | Verified via existing codebase patterns (envelopes billing, Prisma schema, auth), Prisma migration pitfalls documented officially, IDOR/userId filter issues are OWASP Top 10 |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-1. **Cloud Build trigger substitution variables:** Whether `_NEXT_PUBLIC_FIREBASE_API_KEY`, `_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `_NEXT_PUBLIC_FIREBASE_PROJECT_ID`, and `_BRAND_SCRAPER_API_URL` are currently populated with real values cannot be verified from the codebase. If any are empty, the corresponding features will fail silently at runtime. Verify in GCP Console during Phase 2.
+**Effort rollup performance at scale:** Research assumes < 1000 active tasks per user (personal/small-team tool). If actual usage exceeds this, denormalized counters or materialized views may be needed. Monitor query performance in production, add indexes proactively.
 
-2. **Brand scraper service-to-service auth:** The brand scraper client uses plain `fetch()` without an Authorization header. If the brand scraper Cloud Run service requires IAM auth (not `--allow-unauthenticated`), a minor code change is needed in `client.ts` to add an ID token header. Determine during Phase 2 based on the brand scraper's deployment configuration.
+**UTC week boundary UX:** Existing envelopes app has the same UTC-based week calculation. No user complaints yet (low user count). For tasks app, document the UTC behavior initially. If users complain about short free weeks or unexpected charges, upgrade to generous 7-day trial (from first access timestamp) or accept timezone header from client.
 
-3. **Signed URL TTL:** Assumed 1 hour based on project context. If the brand scraper uses a shorter TTL, download links could expire before users click them. Confirm during Phase 3 smoke testing. Acceptable risk for MVP either way.
+**Prisma connection pooling on Cloud Run:** The singleton Prisma Client pattern prevents connection exhaustion in dev/low-traffic scenarios. Under heavy load, may need PgBouncer or Prisma Accelerate. Monitor `pg_stat_activity` connection count post-launch.
 
-4. **Existing SA secret access:** The Cloud Run SA may already have project-wide `secretmanager.secretAccessor` from the existing `github-token` and `todoist-api-token` setup. Verify with `gcloud secrets get-iam-policy stripe-secret-key` during Phase 2 before adding redundant bindings.
+**Demo workspace content quality:** Research identifies the pattern (client-side seed data) but content design (which projects, which tasks, how to showcase effort scoring) is creative work. Allocate time for content iteration based on user feedback during testing.
 
 ## Sources
 
-### Primary (HIGH confidence -- direct codebase analysis)
-- All 30+ billing source files in `src/lib/billing/`, `src/lib/auth/`, `src/app/api/billing/`, `src/app/api/tools/`, `src/app/api/admin/billing/`, `src/components/billing/`, `src/components/tools/`, `src/components/auth/`
-- `cloudbuild.yaml` -- Stripe secrets wiring (line 39), env vars (line 38), min-instances (line 35)
-- `scripts/deploy.sh` -- Service account setup, IAM roles
-- `scripts/setup-cicd.sh` -- Secret Manager IAM bindings (Cloud Build SA only, NOT Cloud Run SA)
-- `firebase.json` -- No index configuration present
-- `firestore.rules` -- Deny-all rules confirmed
-- `.env.local.example` -- All required env vars documented
-- `docs/DEPLOYMENT.md` -- Stripe setup steps documented
-- Package versions verified via `npm list` and `npm view` on 2026-02-09
+### Primary (HIGH confidence)
 
-### Secondary (MEDIUM confidence -- training data, well-established patterns)
-- Stripe test/live mode key architecture and webhook retry behavior
-- GCP Secret Manager IAM model and Cloud Run `--set-secrets` requirements
-- Firebase Auth authorized domain configuration
-- GCS signed URL expiry behavior
-- Firestore composite index requirements and transaction retry behavior
-- Cloud Run cold start behavior with `min-instances=0`
+**Codebase analysis:**
+- `/Users/dweinbeck/Documents/personal-brand/src/lib/envelopes/billing.ts` — weekly gating pattern, free week logic, idempotency keys
+- `/Users/dweinbeck/Documents/personal-brand/src/lib/billing/firestore.ts` — debitForToolUse, refundUsage, Firestore transactions
+- `/Users/dweinbeck/Documents/personal-brand/src/lib/auth/user.ts` — verifyUser(), Firebase token verification
+- `/Users/dweinbeck/Documents/personal-brand/src/app/api/envelopes/route.ts` — server-side billing check, 402 on readonly
+- `/Users/dweinbeck/Documents/personal-brand/src/components/envelopes/ReadOnlyBanner.tsx` — client-side readonly UX
+- `/Users/dweinbeck/Documents/todoist/prisma/schema.prisma` — existing data model, no userId columns, no effort field
+- `/Users/dweinbeck/Documents/todoist/src/actions/task.ts` — server actions pattern, no auth checks
+- Package versions verified via `npm list --depth=0` on 2026-02-11
+
+**Official documentation:**
+- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — Baseline Widely Available April 2025, 93% support
+- [MDN CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning) — Baseline Newly Available Jan 2026, 77% support
+- [Prisma Schema Reference](https://www.prisma.io/docs/orm/reference/prisma-schema-reference) — optional fields, Boolean defaults, Int fields
+- [Prisma Migration Customization](https://www.prisma.io/docs/orm/prisma-migrate/workflows/customizing-migrations) — `--create-only` flag, hand-editing migration SQL
+- [MDN ARIA Tooltip Role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/tooltip_role) — complete accessibility requirements
+
+### Secondary (MEDIUM-HIGH confidence)
+
+**Industry patterns:**
+- [Linear Estimates Documentation](https://linear.app/docs/estimates) — Fibonacci/exponential/linear scales, per-issue estimation
+- [ClickUp Sprint Points](https://help.clickup.com/hc/en-us/articles/6303883602327-Use-Sprint-Points) — aggregate rollups, sprint capacity planning
+- [Azure DevOps Rollup](https://learn.microsoft.com/en-us/azure/devops/reference/xml/support-rollup-of-work-and-other-fields) — parent-child effort aggregation
+- [Inclusive Components: Tooltips](https://inclusive-components.design/tooltips-toggletips/) — accessible tooltip patterns
+- [Lago: Timezone Billing Challenges](https://www.getlago.com/blog/time-zone-nightmares) — UTC week boundary edge cases
+- [Prisma Serverless Guide](https://www.prisma.io/docs/guides/multiple-databases) — singleton pattern, connection pooling
+
+**SaaS patterns:**
+- SaaS onboarding best practices (Insaim, Sales-Hacking blogs) — demo workspace, first perceived value < 2 minutes
+- Tooltip best practices (UserPilot, LogRocket, SetProduct blogs) — 1-2 sentences, 60-130 chars, active voice
+- Freemium pricing models (Stripe resources, Monetizely guides) — credit-based vs subscription, weekly gating
+
+### Tertiary (LOW confidence, needs validation)
+
+**Web search results (cross-validated with multiple sources):**
+- Fibonacci agile estimation rationale (ProductPlan, Mountain Goat Software, Atlassian) — discourages false precision, industry standard
+- SaaS sandbox environments (Reprise blog) — demo data isolation best practices
+- PostgreSQL RLS with Prisma (Medium article) — row-level security as alternative to application-layer userId filters
+- Denormalization tradeoffs (Medium article) — performance vs consistency
 
 ---
-*Research completed: 2026-02-09*
-*Ready for roadmap: yes*
+
+**Research completed:** 2026-02-11
+**Ready for roadmap:** Yes
+
+**Next step:** Use this summary to create `.planning/ROADMAP.md` with detailed phase plans based on the 5-phase structure above. Each phase should reference specific features from FEATURES.md and pitfalls from PITFALLS.md to avoid.

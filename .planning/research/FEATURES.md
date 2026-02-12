@@ -1,534 +1,304 @@
-# Feature Landscape: Control Center Content Editor + Brand Scraper UI
+# Feature Landscape: Tasks App Integration (v1.8)
 
-**Domain:** Admin tooling -- MDX content editor and async job dashboard for brand analysis
-**Researched:** 2026-02-08
-**Overall confidence:** HIGH (well-established CMS and dashboard patterns; direct codebase analysis of existing components, metadata shape, and design tokens)
-
----
-
-## Current State Summary
-
-The personal-brand site has two relevant existing systems:
-
-1. **Building Blocks content system** -- MDX files in `src/content/building-blocks/` with `export const metadata` containing `{ title, description, publishedAt, tags }`. Files are discovered at build time by `src/lib/tutorials.ts` using `fs.readdirSync`. Content is rendered via `@next/mdx` with `remark-gfm` and `rehype-pretty-code`. The `ArticleTabs` component already demonstrates tab-based content switching (manual vs fast track).
-
-2. **Control Center** -- Admin area at `/control-center/` protected by `AdminGuard` (Firebase Auth email check). Currently shows GitHub repos grid and Todoist project kanban. Uses `force-dynamic` rendering. The layout wraps all children in `AdminGuard`.
-
-The two new features fit naturally as new sections within the Control Center:
-- **Building Blocks Editor** -- form-guided MDX content creation with live preview
-- **Brand Scraper UI** -- URL submission, async job monitoring, and brand data gallery
+**Domain:** Task management app integration with personal-brand site ecosystem (effort scoring, demo workspace, help tips, weekly credit gating)
+**Researched:** 2026-02-11
+**Overall confidence:** HIGH (well-established patterns across Linear/ClickUp/Asana for effort scoring; existing billing pattern in envelopes app for credit gating; standard tooltip/onboarding UX patterns)
 
 ---
 
-## Feature 1: Building Blocks Content Editor
+## Context
+
+The Todoist-style task management app already has core CRUD: workspaces, projects, sections, tasks, subtasks, tags, list/board/today/completed views, search, and manual ordering. This research covers four new feature areas needed to integrate it into the personal-brand site as a paid app:
+
+1. **Effort scoring** -- optional per-task complexity/effort field with rollups
+2. **Demo workspace** -- pre-populated sample data for try-before-you-pay onboarding
+3. **HelpTip component** -- contextual help tooltips throughout the UI
+4. **Weekly credit gating** -- billing integration with read-only degradation
+
+---
+
+## Feature 1: Effort Scoring
 
 ### Overview
 
-A form-guided content editor that produces MDX files matching the existing `export const metadata` + markdown body format. This is NOT a full CMS -- it is a single-user admin tool for one author (Dan) to create Building Blocks tutorials without manually writing metadata boilerplate.
+An optional numeric effort field per task, using a modified Fibonacci scale (1-13), with computed rollups at the section and project level. This is the pattern used by Linear, ClickUp, Jira, and Azure DevOps for sprint planning and workload estimation.
+
+**Industry standard:** Linear offers four scales (Exponential, Fibonacci, Linear, T-shirt). ClickUp calls them "Sprint Points." Jira calls them "Story Points." All use the same core pattern: an optional integer field on each issue with aggregate rollups to parent containers.
+
+**Recommendation:** Use a simple Fibonacci-subset scale (1, 2, 3, 5, 8, 13) because it matches the most common agile estimation convention and the project spec already calls for integers 1-13. The Fibonacci spacing naturally discourages false precision -- the jump from 8 to 13 forces users to think "is this really that much bigger?" rather than quibbling between 9, 10, 11.
 
 ---
 
 ### Table Stakes
 
-Features that must exist for the editor to be useful. Without these, it would be faster to just write MDX files directly.
+Features that must exist for effort scoring to be useful. Without these, effort is just a decoration.
 
-#### TS-1: Metadata Form Fields
+#### TS-1: Effort Field on Tasks
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Structured form fields for all metadata properties: title, description, publishedAt, tags |
-| **Why Expected** | The entire point of a form-guided editor is separating metadata from content. Every CMS -- Contentful, Sanity, DatoCMS, Decap -- presents structured fields for metadata and a separate content area |
+| **Feature** | Optional integer effort field on each task, values 1/2/3/5/8/13 |
+| **Why Expected** | The core data model. Without it, nothing else works. Linear, ClickUp, and Jira all store effort as a nullable integer on the issue/task entity |
 | **Complexity** | Low |
-| **Dependencies** | Must match `TutorialMeta` interface in `src/lib/tutorials.ts` |
+| **Dependencies** | Task data model in todoist app |
 
-**Required fields:**
-
-| Field | Type | Validation | Notes |
-|-------|------|------------|-------|
-| Title | Text input | Required, max 100 chars | Used for `metadata.title` and as seed for slug generation |
-| Description | Textarea | Required, max 300 chars | Used for `metadata.description` and meta tags |
-| Published Date | Date input | Required, defaults to today | ISO format (`YYYY-MM-DD`) matching existing `publishedAt` |
-| Tags | Multi-select or comma-separated input | At least 1, max 5 | Existing tags include: Git, GitHub, DevOps, Workflow, Tooling, Beginner. Allow custom tags |
-
-**Confidence:** HIGH -- directly mirrors the `TutorialMeta` interface already in the codebase.
-
-#### TS-2: Slug Generation and Validation
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Auto-generate URL slug from title, with manual override and uniqueness validation |
-| **Why Expected** | Every CMS auto-generates slugs from titles. Contentful, Sanity, and DatoCMS all have slug fields that auto-populate from the title field. Manual editing is expected for SEO tuning |
-| **Complexity** | Low-Medium |
-| **Dependencies** | Needs to check against existing files in `src/content/building-blocks/` |
-
-**Slug rules:**
-1. Auto-generate from title on blur/change (only if slug has not been manually edited)
-2. Lowercase, replace spaces with hyphens, strip non-alphanumeric except hyphens
-3. Collapse consecutive hyphens, trim leading/trailing hyphens
-4. Min 3 characters, max 100 characters
-5. Validate uniqueness against existing `.mdx` files in the content directory
-6. Display the resulting URL preview: `/building-blocks/{slug}`
-
-**Implementation:** Use a simple `slugify()` utility function. Uniqueness check requires a server action or API route that reads the content directory. The slug becomes the filename: `{slug}.mdx`.
-
-**Confidence:** HIGH -- slug generation is a well-established pattern with clear rules.
-
-#### TS-3: Markdown Content Area
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | A textarea for writing the markdown body of the tutorial |
-| **Why Expected** | The core editing experience. Without this, the editor only produces metadata |
-| **Complexity** | Low (plain textarea) to Medium (enhanced editor) |
-| **Dependencies** | None |
-
-**Recommended approach: Enhanced textarea, NOT a WYSIWYG editor.**
-
-Rationale for plain textarea over MDXEditor or react-md-editor:
-- MDXEditor ships at 851 kB gzipped -- enormous for a single-user admin tool
-- The content is MDX with code blocks, which WYSIWYG editors handle poorly
-- Dan is a developer comfortable with markdown syntax
-- The existing content (`setting-up-a-repo.mdx`, `custom-gpt.mdx`) uses standard markdown features: headings, code blocks, lists, links, bold/italic
-- A plain textarea with a toolbar for common insertions (heading, bold, code block, link) is the right tradeoff
-
-**Toolbar quick-insert buttons:**
-- `## Heading` -- insert heading prefix
-- `**bold**` -- wrap selection
-- `` `code` `` -- wrap selection in inline code
-- ```` ```bash ... ``` ```` -- insert fenced code block template
-- `[text](url)` -- insert link template
-- `- item` -- insert list item
-
-**Confidence:** HIGH -- plain textarea with toolbar is the standard pattern for developer-facing markdown editors. The overhead of WYSIWYG is not justified for a single user.
-
-#### TS-4: Live Preview (Tab Toggle)
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Toggle between "Edit" and "Preview" views to see rendered markdown |
-| **Why Expected** | Users expect to see how their content will look before saving. Every markdown editor -- GitHub, VS Code, Notion -- provides preview. The site already has a tab toggle pattern in `ArticleTabs.tsx` |
-| **Complexity** | Medium |
-| **Dependencies** | Markdown rendering library |
-
-**Recommended approach: Tab toggle (not split view).**
-
-Rationale:
-- The site already has a tab toggle component (`ArticleTabs`) that switches between two content views. This establishes the pattern.
-- Split view requires responsive handling (stacking on mobile) and doubles the visible content area, which fights the admin layout.
-- Tab toggle is simpler to build and matches the existing site patterns.
-- For a single-user tool, the slight friction of switching tabs is acceptable.
-
-**Preview rendering:**
-- Use `react-markdown` with `remark-gfm` for GFM support (tables, strikethrough, task lists)
-- Apply the same `prose prose-neutral max-w-none` classes used on the actual tutorial pages
-- This ensures the preview matches the published output exactly
-- Code block syntax highlighting can use `rehype-highlight` (lightweight) rather than `rehype-pretty-code` (build-time only) for client-side rendering
-
-**Tab states:**
-- "Edit" tab: metadata form + markdown textarea (default)
-- "Preview" tab: rendered metadata header (title, description, date, tags) + rendered markdown body
-- The preview should replicate the actual tutorial page layout from `src/app/building-blocks/[slug]/page.tsx`
-
-**Confidence:** HIGH -- tab toggle is already an established pattern in this codebase.
-
-#### TS-5: Save (Write to Filesystem)
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Save the editor content as an MDX file to `src/content/building-blocks/` |
-| **Why Expected** | The entire purpose of the editor. Without save, it is a preview tool |
-| **Complexity** | Medium |
-| **Dependencies** | Server action or API route with filesystem write access |
-
-**File format to produce:**
-
-```mdx
-export const metadata = {
-  title: "The Title",
-  description: "The description",
-  publishedAt: "2026-02-08",
-  tags: ["Tag1", "Tag2"],
-};
-
-[markdown body content here]
+**Data model addition:**
+```typescript
+// Add to Task type
+effort: number | null; // null = unset, valid values: 1, 2, 3, 5, 8, 13
 ```
 
-This exactly matches the existing format in `setting-up-a-repo.mdx` and `custom-gpt.mdx`.
+**Validation:** Accept only values in the set `[1, 2, 3, 5, 8, 13]` or `null`. Reject other integers. This is a whitelist, not a range.
 
-**Implementation:**
-- Server action that receives `{ slug, title, description, publishedAt, tags, body }`
-- Constructs the MDX string with `export const metadata` block + body
-- Writes to `src/content/building-blocks/{slug}.mdx` using `fs.writeFileSync`
-- Returns success/error status
-- On Cloud Run (production), the filesystem is read-only. This feature works in local development. For production, it would need an alternative persistence layer (Git commit via API, or Firestore draft storage). Flag this as a known limitation.
+**API behavior:**
+- Create task: `effort` defaults to `null` (unset)
+- Update task: accept `effort` field, validate against whitelist
+- Existing tasks: no migration needed -- `null` means unset, which is the correct default
 
-**Confidence:** HIGH for format. MEDIUM for production deployment -- filesystem writes on Cloud Run require careful handling (see PITFALLS).
+**Confidence:** HIGH -- this is the standard pattern across all task management tools researched.
 
-#### TS-6: Unsaved Changes Protection
+#### TS-2: Effort Selector UI
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Warn user before navigating away with unsaved changes |
-| **Why Expected** | Standard form behavior. Losing work to an accidental navigation is unacceptable in any editor |
+| **Feature** | UI control for setting effort on a task |
+| **Why Expected** | Users need a way to set the value. Every tool with effort scoring provides an inline selector |
 | **Complexity** | Low |
-| **Dependencies** | None |
+| **Dependencies** | TS-1 |
 
-**Implementation:**
-- Track "dirty" state: form fields or textarea content have changed since last save
-- Use `beforeunload` event listener (covers browser back, close tab, external navigation)
-- For Next.js App Router internal navigation: use the `onBeforeRouteChange` pattern or a simple `window.confirm` in a navigation interceptor
-- Reset dirty state after successful save
+**UI pattern options evaluated:**
 
-**Confidence:** HIGH -- `beforeunload` is the standard browser API for this. React Hook Form's `isDirty` is the standard React approach, but a simple manual state comparison works fine for a single form.
+| Pattern | Used By | Pros | Cons |
+|---------|---------|------|------|
+| Dropdown/select | ClickUp | Familiar, compact | Extra click to open |
+| Inline button row | Linear (keyboard shortcut Shift+E) | Fast, visible options | Takes horizontal space |
+| Badge that opens popover | Jira | Compact when collapsed | Extra click |
+
+**Recommendation:** Small clickable badge that opens a compact popover with the 6 values (1, 2, 3, 5, 8, 13) arranged horizontally. When no effort is set, show a subtle "+" or blank space. When set, show the number in a small badge (styled like the existing tag badges). This matches the compact UI of a Todoist-style app where tasks are dense rows.
+
+**Placement:**
+- **Task detail view:** Dedicated field in the task properties area (alongside due date, tags, etc.)
+- **List view:** Optional column or inline badge next to the task title
+- **Board view:** Small badge on the card (bottom-right corner, similar to how tags appear)
+
+**Confidence:** HIGH -- popover with discrete values is the standard pattern.
+
+#### TS-3: Section Effort Rollup
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Show total effort points for all tasks within a section |
+| **Why Expected** | The primary purpose of effort scoring is workload visibility. ClickUp shows rollup sprint points on lists. Azure DevOps rolls up effort to parent work items. Without rollups, effort is just metadata with no analytical value |
+| **Complexity** | Low-Medium |
+| **Dependencies** | TS-1 |
+
+**Computation:**
+- Sum all non-null `effort` values for incomplete tasks in the section
+- Display as "X pts" next to the section header
+- Exclude completed tasks from the rollup (completed work is done, not remaining effort)
+- If all tasks have null effort, show nothing (not "0 pts" -- that implies everything was estimated at zero)
+
+**Display pattern:**
+```
+Section Name (3 tasks)                    21 pts
+├── Task A                                  5
+├── Task B                                  8
+└── Task C                                  8
+```
+
+**Confidence:** HIGH -- sum rollup is the universal pattern (ClickUp, Azure DevOps, Zoho Projects all use it).
+
+#### TS-4: Project Effort Rollup
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Show total effort points across all sections in a project |
+| **Why Expected** | Same rationale as TS-3 but at the project level. Project managers need to see total workload. Linear shows estimates on projects and cycles |
+| **Complexity** | Low |
+| **Dependencies** | TS-1, TS-3 |
+
+**Computation:**
+- Sum all section rollups (equivalent to summing all non-null effort values across all incomplete tasks in the project)
+- Display in the project header or summary area
+- Format: "X pts total" or "X effort points"
+
+**Additional stat (recommended):** Show "X of Y tasks estimated" to highlight estimation coverage. If 3 of 10 tasks have effort, the rollup is incomplete and the user should know.
+
+**Confidence:** HIGH -- direct extension of TS-3.
 
 ---
 
 ### Differentiators
 
-Features that make the editor feel polished beyond the minimum viable product. Not expected, but valued.
+Features that add polish beyond minimum effort scoring functionality.
 
-#### D-1: Edit Existing Tutorials
+#### D-1: Effort Distribution Visualization
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Load an existing MDX file into the editor for modification |
-| **Why Expected** | Not expected in MVP, but critical for the editor to be useful long-term. Without edit, you can only create new tutorials -- fixing typos requires manual file editing |
+| **Feature** | Visual bar or mini-chart showing effort distribution across sections |
+| **Value** | Helps identify overloaded sections at a glance. Useful for rebalancing work |
 | **Complexity** | Medium |
-| **Value** | HIGH -- transforms the editor from "create only" to "manage" |
 
-**Implementation:**
-- Tutorial list page within Control Center showing all existing tutorials
-- Click to load: parse the MDX file to extract metadata and body
-- The existing `extractMetadataFromSource()` in `tutorials.ts` already has regex parsing for the metadata block -- reuse this
-- Body extraction: split on the closing `};` of the metadata export, take everything after
-- Save overwrites the existing file (same slug)
+**Simplest version:** Horizontal stacked bar in the project header where each segment represents a section's share of total effort, colored distinctly. No charting library needed -- CSS flexbox with percentage widths.
 
-**Confidence:** HIGH -- the parsing infrastructure already exists.
+**Confidence:** MEDIUM -- useful but not essential for first implementation.
 
-#### D-2: Fast Companion File Support
+#### D-2: Effort in Board View Cards
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Create and manage the `_slug-fast.mdx` companion files that the existing `ArticleTabs` component renders |
-| **Why Expected** | Not expected, but the site already supports this dual-content pattern. Two existing tutorials have fast companions (`_setting-up-a-repo-fast.mdx`, `_custom-gpt-fast.mdx`) |
-| **Complexity** | Low (if base editor works) |
-| **Value** | Medium -- keeps the dual-tab content pattern maintainable |
-
-**Implementation:**
-- Toggle/checkbox in the editor: "Include fast track version"
-- When enabled, show a second markdown textarea for the fast companion content
-- Save produces both `{slug}.mdx` and `_{slug}-fast.mdx`
-
-**Confidence:** HIGH -- straightforward extension of the base editor.
-
-#### D-3: Character/Word Count
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Display word count and estimated reading time below the textarea |
-| **Why Expected** | Nice to have. The tutorial detail page already calculates reading time with `calculateReadingTime()` in the `[slug]/page.tsx`. Showing this in the editor gives immediate feedback |
+| **Feature** | Show effort points on Kanban board cards with column totals |
+| **Value** | Board view is a primary view in the todoist app. Column totals help with capacity planning (common in sprint boards) |
 | **Complexity** | Low |
-| **Value** | Low-Medium |
 
-**Implementation:** Count words in the textarea content, divide by 200 (matching the existing formula), display as "~N min read (M words)".
+**Implementation:** Add effort badge to card component. Show column total in the column header next to the task count.
 
-**Confidence:** HIGH -- trivial calculation.
-
-#### D-4: Draft Status / Publish Toggle
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Save content as "draft" (not visible on the public site) vs "published" |
-| **Why Expected** | Standard CMS workflow. Allows work-in-progress content without publishing |
-| **Complexity** | Medium |
-| **Value** | Medium |
-
-**Implementation options:**
-- **Simple approach:** Add a `draft: boolean` field to `TutorialMeta`. The `getAllTutorials()` function filters out drafts. The editor shows a "Publish" vs "Save Draft" button. This requires modifying `TutorialMeta` and `tutorials.ts` -- minor but touches the public content system.
-- **Alternative:** Use filename convention -- prefix draft files with `_draft-`. The existing file discovery already skips files starting with `_`.
-
-**Recommendation:** Use the `_draft-` filename prefix for MVP. It requires zero changes to the existing content system and leverages the existing skip-underscore behavior in `tutorials.ts`. The editor shows a "Save as Draft" vs "Publish" choice.
-
-**Confidence:** HIGH -- the underscore-prefix convention is already in place.
+**Confidence:** HIGH -- standard Kanban board pattern (Jira, Linear both do this).
 
 ---
 
 ### Anti-Features
 
-Features to deliberately NOT build for the content editor.
-
-#### AF-1: WYSIWYG / Rich Text Editing (MDXEditor)
+#### AF-1: T-shirt Sizing / Multiple Scales
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Full WYSIWYG editing with MDXEditor or similar | 851 kB gzipped bundle for a single-user admin tool. WYSIWYG editors struggle with code blocks and MDX syntax. The user is a developer comfortable with markdown | Plain textarea with toolbar quick-insert buttons (TS-3). Faster to build, smaller bundle, better for code-heavy content |
+| Supporting multiple effort scales (T-shirt, linear, exponential) like Linear does | Over-engineered for a personal/small-team tool. Multiple scales require settings UI, scale conversion logic, and per-workspace configuration. Linear does it because they serve thousands of teams with different preferences | Ship one scale (Fibonacci subset 1-13). If there is ever demand for alternatives, add later. One scale means zero configuration |
 
-#### AF-2: Image Upload / Media Manager
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|---------------------|
-| Drag-and-drop image upload with media library | Requires object storage (GCS bucket), upload API, image optimization pipeline. The existing tutorials have zero images -- they are text and code only. Massive complexity for unused functionality | Reference external images via markdown URL syntax `![alt](url)` if ever needed. Images can be placed in `/public/` manually |
-
-#### AF-3: Collaborative Editing / Multi-User
+#### AF-2: Planning Poker / Collaborative Estimation
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Real-time collaboration, edit locking, version conflict resolution | Single user (Dan). No other editors. Adding collaboration adds WebSocket infrastructure, OT/CRDT algorithms, user presence UI | Single-user editor with simple save. No locking needed |
+| Multi-user estimation with voting rounds, convergence detection, reveal mechanics | This is a team ceremony feature. The todoist app is a personal/small-team tool. Planning poker requires real-time collaboration infrastructure (WebSockets), multi-user sessions, and a facilitation UX | Direct assignment: the task creator or assignee picks the effort value. No ceremony |
 
-#### AF-4: Revision History / Version Control in UI
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|---------------------|
-| In-app revision history showing previous versions of each tutorial | Files are in a Git repo. Git IS the revision history. Building a secondary versioning system duplicates existing functionality | Use Git for version history. If a diff view is needed later, shell out to `git log` / `git diff` |
-
-#### AF-5: Content Scheduling (Future Publish Date)
+#### AF-3: Velocity Tracking / Burn-down Charts
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Schedule content to publish at a future date/time | Requires a cron job or scheduled function to "flip" content from draft to published. Static site builds happen on deploy, not on a schedule. Over-engineered for a personal blog | Use the draft mechanism (D-4). When ready to publish, change to published and redeploy |
-
-#### AF-6: SEO Analysis / Readability Scoring
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|---------------------|
-| Inline SEO suggestions (keyword density, readability grade, meta description length warnings) | This is a developer tutorial site, not a marketing blog. SEO tooling adds complexity and visual noise without matching the use case | Write good content. The description field has a character limit. That is sufficient |
+| Historical velocity charts, sprint burn-down, completion rate trends | Requires time-series data collection (when tasks were completed, effort over time), chart rendering, and sprint/iteration concepts that don't exist in the todoist app | Show current rollup totals only (TS-3, TS-4). Historical tracking is a V2+ feature that requires sprint/iteration concepts first |
 
 ---
 
-## Feature 2: Brand Scraper UI
+## Feature 2: Demo Workspace
 
 ### Overview
 
-A dashboard within the Control Center for submitting URLs to the brand scraper API, monitoring async job progress, and browsing extracted brand data (colors, fonts, logos, design tokens). The scraper API is external -- it returns a `BrandTaxonomy` JSON with confidence scores on each extracted element.
+A pre-populated workspace with 30-60 realistic tasks across 3-5 projects that new users see before enabling credits. The purpose is to let users experience the app's features (filtering, board view, effort scoring, search) with real-feeling data before committing to payment.
+
+**Industry patterns:**
+- TalentLMS creates a demo sandbox pre-filled with demo users, courses, and data with all external communications turned off
+- Google Analytics shows a sample dashboard during setup with a "Generate dummy data" option
+- Many SaaS products show "Start with a template" options during onboarding
+
+**Key insight from research:** The ideal SaaS onboarding flow should deliver first perceived value in under 2 minutes. An empty task manager with no data provides zero value -- users cannot evaluate filtering, board layout, or search without content to interact with.
 
 ---
 
 ### Table Stakes
 
-Features that must exist for the brand scraper UI to be functional.
-
-#### TS-7: URL Submission Form
+#### TS-5: Demo Data Seed
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Input field to submit one or more URLs for brand analysis |
-| **Why Expected** | The entry point for the entire feature. Without URL submission, nothing happens |
-| **Complexity** | Low |
-| **Dependencies** | Brand scraper API endpoint |
+| **Feature** | A static JSON/TypeScript seed file containing 30-60 realistic tasks across 3-5 projects with sections, tags, subtasks, and effort scores |
+| **Why Expected** | The raw data that powers the demo. Without a well-crafted seed, the demo feels fake and teaches nothing about the app |
+| **Complexity** | Medium (content design, not code) |
+| **Dependencies** | None |
 
-**Form fields:**
+**Recommended demo projects (3-5):**
 
-| Field | Type | Validation | Notes |
-|-------|------|------------|-------|
-| URL | Text input | Required, valid URL format (starts with `http://` or `https://`) | Primary input |
-| Label/Name | Text input | Optional | A friendly name for the brand (e.g., "Stripe") for the gallery card title |
+| Project | Theme | Tasks | Why This Theme |
+|---------|-------|-------|----------------|
+| Website Redesign | Web development | 12-15 | Relatable to the target audience (developers), has clear sections (Design, Frontend, Backend, QA) |
+| Q1 Marketing Launch | Marketing/planning | 10-12 | Shows cross-functional use, different task types (write copy, design assets, schedule posts) |
+| Apartment Move | Personal/life | 8-10 | Demonstrates personal use case, relatable to everyone |
+| App MVP | Product development | 10-15 | Shows technical project management with effort scoring |
 
-**Submission behavior:**
-- Validate URL format client-side
-- POST to the scraper API
-- API returns a job ID immediately (async pattern)
-- Transition to job monitoring view (TS-8)
-- Disable submit button during request to prevent duplicates
+**Data requirements per task:**
+- Title (realistic, specific -- "Set up CI/CD pipeline" not "Task 1")
+- Project and section assignment
+- Some with subtasks (2-3 subtasks each, on ~30% of tasks)
+- Some with tags (mix of 2-4 tags)
+- Some with effort scores (mix -- ~60% estimated, ~40% null to show the "unestimated" state)
+- Some marked complete (~20%) to show completed view
+- Due dates spanning past, today, and future to populate the Today view
 
-**Confidence:** HIGH -- standard form submission pattern.
+**Confidence:** HIGH -- seed data is a well-understood pattern. The content design is the hard part, not the code.
 
-#### TS-8: Job Status Monitoring
+#### TS-6: Demo Workspace Lifecycle
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Poll the scraper API for job status and display progress |
-| **Why Expected** | The scraper is async (queued -> processing -> succeeded/partial/failed). Users need to know what is happening. Without status feedback, the UI appears broken during the 10-60 second processing time |
+| **Feature** | The demo workspace is visible before credits are enabled, read-only or limited-write, and replaced/supplemented by real workspaces after payment |
+| **Why Expected** | Users need a clear transition from "trying" to "using." Without lifecycle management, demo data pollutes real workspaces |
 | **Complexity** | Medium |
-| **Dependencies** | API polling mechanism |
+| **Dependencies** | TS-5, billing integration |
 
-**Status transitions and display:**
+**Lifecycle options evaluated:**
 
-| Status | Visual Treatment | User Action |
-|--------|-----------------|-------------|
-| `queued` | Pulsing dot + "Queued..." text | Wait |
-| `processing` | Spinner/animated bar + "Analyzing..." text | Wait |
-| `succeeded` | Green check + "Complete" | View results |
-| `partial` | Amber warning + "Partial results" | View results (with caveat) |
-| `failed` | Red X + error message | Retry option |
+| Approach | Pros | Cons |
+|----------|------|------|
+| Static read-only demo (no persistence) | Zero cleanup, simple | Users cannot try editing, limits evaluation |
+| Persisted demo workspace, deleted on first real use | Users can try everything | Deletion timing is complex, risk of data loss confusion |
+| Persisted demo workspace, kept alongside real data with a "Demo" badge | No confusion about deletion | Clutters the workspace list |
+| **Client-side only demo (recommended)** | No server state, instant load, no cleanup | Cannot test API-dependent features |
 
-**Polling implementation:**
-- Use a `useEffect` + `setInterval` pattern with cleanup on unmount
-- Poll every 2-3 seconds while status is `queued` or `processing`
-- Stop polling when status reaches a terminal state (`succeeded`, `partial`, `failed`)
-- Use `useRef` for the interval ID and callback to avoid stale closure issues
-- Alternative: TanStack Query with `refetchInterval` that conditionally stops -- cleaner API but adds a dependency. For a single polling use case, the manual approach is sufficient.
+**Recommendation:** Client-side only demo workspace loaded from static seed data, with a prominent banner explaining it is demo data and a CTA to "Enable credits to create your own workspace." The demo workspace appears in the sidebar with a "Demo" label. All CRUD operations work in-memory during the session but are not persisted. This approach:
+1. Requires zero server-side changes
+2. Has no cleanup/migration complexity
+3. Loads instantly (no API call)
+4. Lets users try all UI interactions (drag, edit, complete)
+5. Clearly separates from real data
 
-**Confidence:** HIGH -- polling is a well-established pattern. The 2-3 second interval balances responsiveness with API load.
+**Confidence:** HIGH -- client-side demo is the simplest approach that still provides full interactivity.
 
-#### TS-9: Brand Data Gallery (Results View)
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Display extracted brand data in an organized, visual gallery |
-| **Why Expected** | The whole point of the scraper. Raw JSON is not useful. Brand data is inherently visual (colors, fonts, logos) and must be displayed visually |
-| **Complexity** | High (many sub-components) |
-| **Dependencies** | Successful job completion, BrandTaxonomy JSON structure |
-
-**Gallery sections (in display order):**
-
-**1. Color Palette Section**
-
-| Element | Display |
-|---------|---------|
-| Swatches | Rectangular color blocks in a grid (4-6 per row) |
-| Each swatch shows | The color fill, hex code below, role label (primary/secondary/accent/background/text) |
-| Hex/RGB toggle | Small toggle to switch between hex and RGB display |
-| Confidence per color | Small dot or bar on the swatch (green/amber/red) |
-| Copy hex on click | Click a swatch to copy hex to clipboard (toast feedback) |
-
-**2. Typography Section**
-
-| Element | Display |
-|---------|---------|
-| Font family cards | Card per font with: family name rendered in that font (via Google Fonts embed or fallback), weight, usage (heading/body), source (Google Fonts/custom) |
-| Font specimen | Show "The quick brown fox" or similar specimen text in the detected font |
-| Google Fonts link | If source is `google_fonts`, link to the Google Fonts page |
-
-**3. Logo & Favicon Section**
-
-| Element | Display |
-|---------|---------|
-| Image grid | Thumbnail grid of downloaded logos and favicons |
-| Each card shows | Image preview, format (SVG/PNG), dimensions if available |
-| Download individual | Download button per asset |
-| Formats indicated | Badge showing SVG/PNG/ICO |
-
-**4. Design Tokens Section**
-
-| Element | Display |
-|---------|---------|
-| Token table | Grouped by category: color tokens, spacing, typography, shadows |
-| Each row shows | CSS property name, value, a visual preview (color swatch for colors, length for spacing) |
-| Copy token | Copy button per row |
-
-**5. Identity Section**
-
-| Element | Display |
-|---------|---------|
-| Tagline | Display the detected tagline |
-| Industry guess | Badge showing detected industry |
-
-**Confidence:** HIGH for the overall structure. The BrandTaxonomy JSON structure directly maps to these sections. The visual patterns (color swatches, font specimens, image grids) are well-established in design system documentation tools like Storybook, Figma, and Brand.dev.
-
-#### TS-10: Confidence Indicators
+#### TS-7: Demo Banner / CTA
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Display confidence scores for extracted brand elements |
-| **Why Expected** | The API provides confidence (0-1) and `needs_review` flags on each element. Hiding this would be dishonest -- some extractions are uncertain. Users need to know which data to trust and which to manually verify |
+| **Feature** | A persistent banner in demo mode explaining the state and linking to credit purchase |
+| **Why Expected** | Users must understand they are in demo mode. Without clear signaling, they may think the app is broken (data they add disappears) or already paid for |
 | **Complexity** | Low |
-| **Dependencies** | TS-9 gallery components |
+| **Dependencies** | TS-6 |
 
-**Visualization pattern (tiered color + text):**
+**Banner content:**
+```
+[Demo Mode] You're exploring with sample data. Purchase credits to create your own workspace.
+[Buy Credits] [Dismiss]
+```
 
-| Confidence Range | Color | Label | Tailwind Class |
-|------------------|-------|-------|---------------|
-| 0.85 - 1.0 | Sage (green) | "High" | `text-sage bg-sage/10` (uses existing `--color-sage`) |
-| 0.60 - 0.84 | Amber/gold | "Medium" | `text-amber bg-amber/10` (uses existing `--color-amber`) |
-| 0.00 - 0.59 | Muted gray | "Low" | `text-text-tertiary bg-text-tertiary/10` |
+**Design:** Match the existing ReadOnlyBanner from the envelopes app (amber border, amber background, amber text). Use the same visual language for consistency across apps.
 
-Additional indicators:
-- `needs_review: true` -- show a small "Review" badge alongside the confidence level
-- Evidence array -- tooltips or expandable section showing what evidence the scraper used
+**Placement:** Top of the main content area, above tasks. Sticky or dismissible (dismissible is better UX -- once the user understands they are in demo mode, the banner is noise).
 
-**Implementation:** A reusable `<ConfidenceBadge score={0.85} needsReview={false} />` component. Note that the existing codebase already has a `ConfidenceBadge` component for the AI assistant (confidence: "low" | "medium" | "high"). The brand scraper uses numeric 0-1 scores instead. Either extend the existing component to accept both formats, or create a separate `<BrandConfidenceBadge>` to avoid coupling.
-
-**Confidence:** HIGH -- the site already has the color tokens for this three-tier system (`--color-sage`, `--color-amber`, `--color-muted`).
-
-#### TS-11: Download Links
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Download buttons for `brand.json` and `assets.zip` |
-| **Why Expected** | The API returns signed GCS URLs for downloadable artifacts. Users expect to be able to download the complete brand data and assets |
-| **Complexity** | Low |
-| **Dependencies** | Signed URLs from API response |
-
-**Display pattern:**
-- Two prominent download buttons in a card/section at the top or bottom of the results view
-- `brand.json` -- "Download Brand Data (JSON)" with file icon
-- `assets.zip` -- "Download Assets (ZIP)" with archive icon
-- Buttons use `<a href={signedUrl} download>` for direct browser download
-- Show file size if available
-- Note that signed URLs expire (typically 1 hour) -- show a timestamp or "Link expires in X minutes" if feasible
-
-**Confidence:** HIGH -- `<a download>` with signed URLs is the standard pattern.
+**Confidence:** HIGH -- directly reuse the existing ReadOnlyBanner pattern from envelopes.
 
 ---
 
 ### Differentiators
 
-Features that elevate the brand scraper UI beyond basic functionality.
-
-#### D-5: Brand Gallery / History View
+#### D-3: "Start Fresh" vs "Keep Demo Data" Choice
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | A gallery of all previously scraped brands, displayed as cards |
-| **Why Expected** | Not required for single-use, but if the scraper is used more than once, users need to browse past results without re-scraping |
+| **Feature** | After purchasing credits, ask if user wants to start with an empty workspace or import the demo data as their own |
+| **Value** | Some users will have customized the demo data during exploration. Importing it saves rework |
 | **Complexity** | Medium |
-| **Value** | HIGH -- transforms the tool from single-use to a brand reference library |
 
-**Card layout per brand:**
+**Recommendation:** Defer to post-MVP. The MVP should start fresh after payment. Importing demo data adds a migration step and edge cases (what if they already have data?).
 
-| Element | Position |
-|---------|----------|
-| Brand name / URL | Card title |
-| Primary color palette (3-5 swatches) | Below title, small inline swatches |
-| Primary font | Font name in that font |
-| Logo thumbnail | Top-right corner |
-| Scrape date | Bottom of card, muted text |
-| Overall confidence | Badge (uses same tiered system as TS-10) |
-| Status | Badge if partial/failed |
+**Confidence:** HIGH that this should be deferred.
 
-**Storage:** Requires persisting job results. Options:
-- Firestore (already integrated) -- store BrandTaxonomy JSON per job
-- localStorage -- simpler but lost on device change
-- **Recommendation:** Firestore, since the project already uses it and the data is small (a few KB per brand)
-
-**Confidence:** MEDIUM -- depends on persistence layer decision.
-
-#### D-6: Color Contrast Matrix
+#### D-4: Guided Tour Over Demo Data
 
 | Aspect | Detail |
 |--------|--------|
-| **Feature** | Show WCAG contrast ratios between extracted colors |
-| **Why Expected** | Not expected, but valuable for anyone using the brand data for design work. Shows which color combinations are accessible |
-| **Complexity** | Medium |
-| **Value** | Medium -- useful for design validation, adds a "wow" factor |
-
-**Implementation:** A matrix grid showing foreground vs background color pairs with their contrast ratio and WCAG AA/AAA pass/fail badges. Libraries like `wcag-contrast-ratio` or a simple relative luminance calculation can compute this.
-
-**Confidence:** HIGH for the pattern (EightShapes Contrast Grid is the gold standard). MEDIUM for prioritization -- this is a nice-to-have.
-
-#### D-7: Re-Scrape / Refresh
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Button to re-scrape a previously analyzed URL |
-| **Why Expected** | Brands update their sites. A re-scrape button saves the user from re-entering the URL |
-| **Complexity** | Low |
-| **Value** | Low-Medium |
-
-**Implementation:** A "Re-analyze" button on the results page that submits the same URL as a new job.
-
-**Confidence:** HIGH -- trivial to implement.
-
-#### D-8: Side-by-Side Brand Comparison
-
-| Aspect | Detail |
-|--------|--------|
-| **Feature** | Select two brands and compare their palettes, fonts, and tokens side by side |
-| **Why Expected** | Not expected. Would be impressive but is a niche use case |
+| **Feature** | Step-by-step tooltip tour pointing out key features while browsing demo data |
+| **Value** | Combines demo data with guided discovery. More effective than either alone |
 | **Complexity** | High |
-| **Value** | Low |
 
-**Recommendation:** Defer. This is a V2+ feature. The gallery view (D-5) provides enough browsing capability for now.
+**Recommendation:** Defer. HelpTips (Feature 3) provide static contextual help. A sequential tour requires step management, highlight overlays, and scroll-to-element behavior. Build this only if user feedback indicates the demo + HelpTips are insufficient.
 
 **Confidence:** HIGH that this should be deferred.
 
@@ -536,186 +306,498 @@ Features that elevate the brand scraper UI beyond basic functionality.
 
 ### Anti-Features
 
-Features to deliberately NOT build for the brand scraper UI.
-
-#### AF-7: Real-Time Scraping with WebSocket/SSE
+#### AF-4: Server-Persisted Demo Data Per User
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Stream scraping progress events in real time via WebSocket or SSE | The backend API uses a simple polling model (submit job, poll status). Adding streaming requires WebSocket infrastructure, connection management, and reconnection logic. The scraping takes 10-60 seconds -- polling every 2-3 seconds is perfectly adequate | Poll with `setInterval` at 2-3 second intervals (TS-8). Simple, reliable, matches the API design |
+| Creating actual Firestore documents for each new user's demo workspace | Creates real data that must be cleaned up. Adds storage costs. Complicates the "is this demo or real?" distinction. Requires a migration/deletion flow | Client-side only demo (TS-6). Zero server cost, zero cleanup, instant |
 
-#### AF-8: Manual Brand Data Editing
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|---------------------|
-| Allow users to manually edit/correct extracted brand data (change a hex value, rename a font) | Adds form state management for every field in the BrandTaxonomy, validation logic, and a save/persist mechanism. The scraper output is a snapshot, not a living document | Display results as read-only. If corrections are needed, the user can download the JSON, edit manually, and keep their own copy. The scraper is a starting point, not a design system manager |
-
-#### AF-9: Automated Brand Monitoring / Change Detection
+#### AF-5: Multiple Demo Templates
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Periodically re-scrape URLs and alert on brand changes | Requires a scheduler (Cloud Scheduler, cron), diff logic, notification system (email, push), and persistent storage of historical results. This is a full SaaS feature, not an admin tool | Use the manual re-scrape button (D-7) when needed. This is a personal tool, not a monitoring service |
+| "Choose your demo: Developer, Marketer, Student, Personal" with different seed data per persona | Multiplies content creation effort by 4x. The target audience for this personal-brand site is narrow enough that one well-crafted demo serves everyone | One demo seed file with a mix of project types (TS-5) |
 
-#### AF-10: Export to Design Tool Formats (Figma, Sketch, Adobe XD)
+---
+
+## Feature 3: HelpTip Component
+
+### Overview
+
+A reusable tooltip component that appears as a small gold circle with a navy "?" mark. On hover (desktop) or tap (mobile), it displays a brief contextual help message. Used throughout the todoist app to explain features like effort scoring, board view, and keyboard shortcuts.
+
+**Industry patterns:**
+- Tooltips should be 1-2 sentences max, with a header of 60 characters max and body of 130 characters max
+- Tooltips should be the exception, not the rule -- each one creates friction
+- Must be keyboard-accessible and screen-reader compatible (ARIA tooltip role)
+- Placement should not block the element being described
+
+---
+
+### Table Stakes
+
+#### TS-8: HelpTip Component
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | A reusable `<HelpTip text="..." />` component rendering a "?" icon that shows a tooltip on hover/focus |
+| **Why Expected** | The core building block. Every occurrence of contextual help in the app uses this component |
+| **Complexity** | Low-Medium |
+| **Dependencies** | None |
+
+**Visual design (from spec):**
+- Trigger: 16-20px gold (#C8A55A) circle with navy (#063970) "?" centered
+- Tooltip: Navy background, white text, rounded corners, 8px padding
+- Arrow/caret pointing to the trigger element
+- Max width: 240px
+- Font: Inter, 13px
+
+**Behavior:**
+- Desktop: Show on hover (mouseenter), hide on mouseleave. Also show on focus for keyboard users.
+- Mobile: Show on tap, hide on tap-outside or second tap.
+- Delay: 200ms hover delay before showing (prevents flicker on accidental hover).
+- Dismiss: Hide on Escape key press.
+- Positioning: Auto-position above/below/left/right based on available viewport space.
+
+**Accessibility requirements:**
+- Trigger button has `aria-describedby` pointing to the tooltip element
+- Tooltip element has `role="tooltip"`
+- Trigger is a `<button>` (not a `<span>`) so it is focusable and announced by screen readers
+- Tooltip text is accessible to screen readers via the aria relationship
+
+**Implementation approach:**
+
+| Option | Size | Pros | Cons |
+|--------|------|------|------|
+| CSS-only (`::after` pseudo-element) | 0 KB | No JS, smallest | No auto-positioning, no delay, no keyboard support, poor accessibility |
+| Custom React component with Floating UI | ~5-10 KB | Full control, lightweight, auto-positioning | Must build from scratch |
+| Radix Tooltip primitive | ~3 KB | Accessible by default, tested, positioning handled | Adds dependency |
+
+**Recommendation:** Build a custom lightweight component using CSS positioning with a simple above/below preference. The tooltip content is short (1-2 sentences), the trigger is always an inline element next to a label, and the positioning needs are simple. Avoid adding Radix or Floating UI as dependencies for this single use case -- the existing codebase has no headless UI library and adding one for tooltips alone is overkill.
+
+If positioning proves problematic (tooltip clipped by viewport edges), upgrade to Floating UI later. Start simple.
+
+**Confidence:** HIGH for the component design. MEDIUM for the CSS-only positioning approach -- may need Floating UI if edge cases arise.
+
+#### TS-9: HelpTip Content Catalog
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | A centralized content file mapping placement IDs to tooltip text |
+| **Why Expected** | Decoupling content from component placement makes it easy to update text without editing component files. Standard i18n/content pattern |
+| **Complexity** | Low |
+| **Dependencies** | TS-8 |
+
+**Structure:**
+```typescript
+// src/data/help-tips.ts
+export const helpTips = {
+  "effort-field": "Estimate task complexity using Fibonacci points (1-13). Higher = more effort.",
+  "board-view": "Drag tasks between sections to reorganize. Each column is a section.",
+  "today-view": "Shows tasks due today or overdue. Complete them to clear your day.",
+  "demo-mode": "This is sample data. Purchase credits to create your own workspace.",
+  "search": "Search by task title, tag, or project name.",
+  // ...
+} as const;
+```
+
+**Usage:**
+```tsx
+<label>Effort <HelpTip text={helpTips["effort-field"]} /></label>
+```
+
+**Content guidelines (from research):**
+- Max 2 sentences per tooltip
+- Header: 60 chars max (optional -- most tooltips won't need a header)
+- Body: 130 chars max
+- Active voice, present tense
+- Start with a verb when describing an action: "Drag tasks..." / "Estimate complexity..."
+- Never repeat the label text the tooltip is attached to
+
+**Confidence:** HIGH -- standard content management pattern.
+
+---
+
+### Differentiators
+
+#### D-5: Animated Entry
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Subtle fade-in + scale animation when tooltip appears |
+| **Value** | Feels polished, draws attention without being jarring |
+| **Complexity** | Low |
+
+**Implementation:** CSS transition: `opacity 0 -> 1` and `transform: scale(0.95) -> scale(1)` over 150ms. No animation library needed.
+
+**Confidence:** HIGH -- trivial CSS addition.
+
+#### D-6: "Learn More" Link in Tooltips
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Optional link at the bottom of a tooltip pointing to documentation or a longer explanation |
+| **Value** | For complex features, a tooltip is too short. A "Learn more" link bridges to full documentation |
+| **Complexity** | Low |
+
+**Recommendation:** Defer. The app's features are simple enough that 1-2 sentence tooltips suffice. No documentation site exists to link to.
+
+**Confidence:** HIGH that this should be deferred.
+
+---
+
+### Anti-Features
+
+#### AF-6: Interactive/Rich Tooltips
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Export brand data as Figma tokens, Sketch palette, or Adobe swatch files | Each design tool has its own format specification. Supporting multiple export formats is a significant development effort for minimal personal use | Provide `brand.json` download (TS-11). JSON is universal and can be manually imported or converted with existing tools |
+| Tooltips with images, videos, multi-step content, or form elements inside | Tooltips should be quick glances. Rich content belongs in modals, popovers, or documentation pages. Interactive tooltips trap focus and create accessibility nightmares | Keep tooltips text-only, max 2 sentences. Use the existing Modal component for anything requiring more content |
 
-#### AF-11: Public Brand Gallery / Sharing
+#### AF-7: Dismissable "First-Time" Tips (Coachmarks)
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|---------------------|
-| Make scraped brand data publicly viewable or shareable via link | The brand scraper is an admin tool behind `AdminGuard`. Making results public raises legal/trademark concerns (displaying other companies' brand assets) and requires a separate public-facing view layer | Keep everything behind AdminGuard. Download and share artifacts manually if needed |
+| One-time tips that appear on first visit and are dismissed permanently (stored in localStorage or DB) | Requires per-user state tracking, dismissal persistence, and "have they seen this?" checks on every render. Adds complexity for a small-scope app | Static HelpTips that are always available. Users who know the feature ignore the "?" icon. Users who need help hover over it. No state management needed |
+
+#### AF-8: Tooltip Analytics / A/B Testing
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Tracking which tooltips users hover over, click-through rates, or A/B testing different text | Over-instrumented for a personal-brand app. No product team analyzing tooltip engagement | Write good tooltip text once. Iterate based on personal use |
+
+---
+
+## Feature 4: Weekly Credit Gating
+
+### Overview
+
+Integrate the todoist app with the personal-brand site's existing billing/credits system. Users get their first week free, then pay 100 credits/week (configurable via `billing_tool_pricing` collection). When unpaid, the app degrades to read-only mode.
+
+**This is NOT a new pattern.** The envelopes app already implements this exact flow in `src/lib/envelopes/billing.ts`. The todoist app should replicate the same pattern with a different tool key.
+
+---
+
+### Table Stakes
+
+#### TS-10: Billing Access Check (Server-Side)
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Server-side function that checks if a user has paid for the current week, charges if not, and returns readwrite/readonly status |
+| **Why Expected** | The billing gate. Without this, the app is either always free or always blocked |
+| **Complexity** | Low (copy and adapt from envelopes) |
+| **Dependencies** | Existing billing system (`debitForToolUse`), Firebase Auth |
+
+**Implementation:** Clone `checkEnvelopeAccess()` from `src/lib/envelopes/billing.ts` with these changes:
+
+| Parameter | Envelopes | Todoist |
+|-----------|-----------|---------|
+| Tool key | `dave_ramsey` | `todoist` (new entry in `billing_tool_pricing`) |
+| Billing collection | `envelope_billing` | `todoist_billing` |
+| Idempotency prefix | `envelope_week_` | `todoist_week_` |
+
+The logic is identical:
+1. Get-or-create billing doc in transaction
+2. First week free (compare `firstAccessWeekStart` to current week)
+3. Already paid this week? Return readwrite
+4. Attempt `debitForToolUse()` -- success = readwrite, 402 = readonly
+5. Record paid week in billing doc
+
+**Firestore seed data needed:**
+```json
+// billing_tool_pricing/todoist
+{
+  "toolKey": "todoist",
+  "displayName": "Tasks",
+  "creditCost": 100,
+  "active": true,
+  "description": "Weekly access to task management"
+}
+```
+
+**Confidence:** HIGH -- exact replication of a proven, tested pattern.
+
+#### TS-11: Read-Only Mode Enforcement
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | When billing returns `readonly`, disable all write operations while preserving read access |
+| **Why Expected** | The graceful degradation UX. Users should still see their data but cannot modify it. This is the same pattern as envelopes' ReadOnlyBanner |
+| **Complexity** | Medium |
+| **Dependencies** | TS-10, all CRUD endpoints/UI |
+
+**Server-side enforcement (non-negotiable):**
+- Every mutating API endpoint (POST, PUT, PATCH, DELETE for tasks, projects, sections) must check billing status
+- If `readonly`, return 403 with `{ error: "Weekly access expired. Purchase credits to continue editing." }`
+- Read endpoints (GET) always work regardless of billing status
+
+**Client-side UX (recommended approach):**
+- Pass billing status from API responses to the UI (same pattern as envelopes: include `billing: { mode, reason }` in GET responses)
+- When `readonly`:
+  - Disable all "Add" buttons (new task, new project, new section)
+  - Disable task editing (effort, title, completion toggle, drag-and-drop reorder)
+  - Disable delete buttons
+  - Show ReadOnlyBanner (TS-12)
+  - Tasks and projects remain visible and navigable
+  - Search still works
+  - Board and list views still render
+
+**What NOT to disable in read-only:**
+- View switching (list/board/today/completed)
+- Search and filtering
+- Navigation between projects
+- Collapsing/expanding sections (visual-only, no state change)
+
+**Confidence:** HIGH -- envelopes app has proven this pattern works.
+
+#### TS-12: Read-Only Banner
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Persistent banner at the top of the app when in read-only mode |
+| **Why Expected** | Users must understand WHY editing is disabled. Without explanation, disabled buttons appear broken |
+| **Complexity** | Low |
+| **Dependencies** | TS-10, TS-11 |
+
+**Reuse the envelopes ReadOnlyBanner pattern:**
+```
+[Read-Only Mode]
+Your free week has ended. Purchase credits to continue managing tasks.
+[Buy Credits ->]
+```
+
+**Design:** Match `src/components/envelopes/ReadOnlyBanner.tsx` -- amber border, amber-50 bg, amber-800 text, link to `/billing`. Adapt the text for the tasks context.
+
+**Confidence:** HIGH -- direct component reuse/adaptation.
+
+#### TS-13: First Week Free Banner
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Banner during the free trial week indicating the user has free access |
+| **Why Expected** | Users should know they are on a free week so they are not surprised by the charge next week. The envelopes billing already returns `reason: "free_week"` which can drive this |
+| **Complexity** | Low |
+| **Dependencies** | TS-10 |
+
+**Banner content:**
+```
+[Free Week] You have free access this week. After this week, task management costs 100 credits/week.
+[Buy Credits] [Learn About Credits]
+```
+
+**Design:** Use a softer variant -- blue or green tint instead of amber (amber signals a problem; free week is a positive state).
+
+**Confidence:** HIGH -- simple conditional banner based on billing response.
+
+#### TS-14: Apps Hub Integration
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Add the todoist app to the Apps hub page at `/apps` and create a route for it |
+| **Why Expected** | Every app on the personal-brand site appears in the Apps hub. Without this, users cannot discover the task management tool |
+| **Complexity** | Low |
+| **Dependencies** | Existing apps data source (`src/data/apps.ts`) |
+
+**Implementation:**
+- Add entry to `getApps()` in `src/data/apps.ts`:
+```typescript
+{
+  slug: "tasks",
+  title: "Tasks",
+  tag: "Productivity",
+  subtitle: "Todoist-style task management with effort scoring",
+  description: "Manage projects, tasks, and subtasks with board and list views. Track effort with Fibonacci points. First week free.",
+  href: "/apps/tasks",
+  launchedAt: "2026-02-11",
+  updatedAt: "2026-02-11",
+  techStack: ["React", "Firebase", "Tailwind"],
+  available: true,
+}
+```
+
+- Create route at `/apps/tasks` that either embeds the todoist app or links to it
+- Add sitemap entry
+
+**Cross-repo decision:** The todoist app is a separate repo. Integration options:
+1. **Embed as a subroute** -- copy/build todoist into the personal-brand Next.js app under `/apps/tasks/`
+2. **Link to external URL** -- todoist runs on its own domain/port, apps page links out
+3. **Iframe embed** -- mount the todoist app in an iframe within the personal-brand shell
+
+**Recommendation:** Option 1 (embed as subroute) is the cleanest user experience but requires the todoist code to be compatible with the personal-brand Next.js app structure. This is an architecture decision that should be confirmed before implementation.
+
+**Confidence:** MEDIUM -- the integration approach depends on how the two repos will be combined.
+
+---
+
+### Differentiators
+
+#### D-7: Credit Balance Display in App Header
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Show current credit balance in the todoist app header |
+| **Value** | Users can see when they are running low and proactively buy credits before losing access |
+| **Complexity** | Low |
+
+**Implementation:** API endpoint already exists (`/api/billing/me` returns balance). Show "X credits" in the header with a warning color when below the weekly cost (100 credits).
+
+**Confidence:** HIGH -- the API already exists.
+
+#### D-8: Billing History / Usage Tracking
+
+| Aspect | Detail |
+|--------|--------|
+| **Feature** | Show when each week was charged and how many credits were deducted |
+| **Value** | Transparency about billing. Users can verify they were not double-charged |
+| **Complexity** | Low-Medium |
+
+**Recommendation:** Defer to post-MVP. The admin billing panel already provides this visibility. User-facing billing history is a nice-to-have.
+
+**Confidence:** HIGH that this should be deferred.
+
+---
+
+### Anti-Features
+
+#### AF-9: Per-Task Billing
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Charging credits per task created instead of weekly flat rate | Creates anxiety about creating tasks ("is this one worth a credit?"). Discourages the natural task management behavior of breaking work into small tasks. Violates the principle that productivity tools should never penalize detailed planning | Weekly flat rate (TS-10). Unlimited tasks within the paid week. Zero friction for task creation |
+
+#### AF-10: Feature-Tiered Access
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Free tier with basic tasks, paid tier adds effort scoring / board view / tags | Complicates the UI with "upgrade to use this feature" gates on individual features. The app is simple enough that partial access would feel broken | All-or-nothing access: free first week with full features, then weekly credit charge for full access, then read-only. No partial feature gating |
+
+#### AF-11: Monthly Subscription Instead of Weekly Credits
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|---------------------|
+| Monthly Stripe subscription replacing the credit-based model | The personal-brand site already has a working credit-based billing system with Stripe Checkout. Adding subscription management (Stripe Billing, cancellation flows, proration, failed payment retries) is a major new infrastructure investment | Use the existing credit system with weekly debit (TS-10). Consistent with brand scraper and envelopes billing |
 
 ---
 
 ## Feature Dependencies
 
 ```
-CONTENT EDITOR DEPENDENCY CHAIN:
+EFFORT SCORING CHAIN:
+  Task data model update (TS-1)
+    |
+    +---> Effort Selector UI (TS-2)
+    |
+    +---> Section Rollup (TS-3)
+    |       |
+    |       +---> Project Rollup (TS-4)
+    |
+    +---> [D-1] Distribution Visualization
+    +---> [D-2] Board View Effort Badges
 
-Server Action: write MDX file (TS-5)
-  |
-  v
-Metadata Form (TS-1) + Slug Generation (TS-2)
-  |
-  +---> Markdown Textarea (TS-3)
-  |       |
-  |       +---> Live Preview Tab (TS-4)
-  |               |
-  |               +---> react-markdown rendering
-  |
-  +---> Unsaved Changes Protection (TS-6)
-  |
-  +---> [D-1] Edit Existing (loads file into form)
-  |
-  +---> [D-2] Fast Companion (second textarea)
+DEMO WORKSPACE CHAIN:
+  Demo Data Seed (TS-5)
+    |
+    +---> Demo Workspace Lifecycle (TS-6)
+    |       |
+    |       +---> Demo Banner/CTA (TS-7)
+    |
+    +---> [D-3] Keep Demo Data (requires TS-6 + billing)
 
-BRAND SCRAPER DEPENDENCY CHAIN:
+HELP TIP CHAIN:
+  HelpTip Component (TS-8)
+    |
+    +---> Content Catalog (TS-9)
+    |
+    +---> [D-5] Animated Entry
+    +---> [D-6] Learn More Links
 
-URL Submission Form (TS-7)
-  |
-  v
-Job Status Polling (TS-8)
-  |
-  v
-Brand Data Gallery (TS-9)
-  |
-  +---> Color Palette Section
-  |       +---> Confidence Badges (TS-10)
-  |
-  +---> Typography Section
-  |       +---> Confidence Badges (TS-10)
-  |
-  +---> Logo/Favicon Section
-  |       +---> Confidence Badges (TS-10)
-  |
-  +---> Design Tokens Section
-  |       +---> Confidence Badges (TS-10)
-  |
-  +---> Identity Section
-  |
-  +---> Download Links (TS-11)
+BILLING CHAIN:
+  Billing Access Check (TS-10) -- depends on existing billing system
+    |
+    +---> Read-Only Enforcement (TS-11)
+    |       |
+    |       +---> Read-Only Banner (TS-12)
+    |
+    +---> Free Week Banner (TS-13)
+    |
+    +---> Apps Hub Integration (TS-14)
+    |
+    +---> [D-7] Credit Balance Display
 
-INDEPENDENT:
-  [D-5] Brand Gallery (requires Firestore persistence layer)
-  [D-6] Contrast Matrix (depends on TS-9 color data only)
-
-SHARED DEPENDENCY:
-  Both features depend on Control Center layout (already exists)
-  Both features depend on AdminGuard (already exists)
+CROSS-FEATURE DEPENDENCIES:
+  Demo Workspace (TS-6) should show effort scores on demo tasks -> depends on TS-1
+  Demo Banner (TS-7) uses HelpTip styling conventions -> soft dependency on TS-8
+  Effort HelpTip content (TS-9) requires effort field to exist -> depends on TS-1
+  Read-Only mode (TS-11) must disable effort editing -> depends on TS-2
 ```
 
 ---
 
 ## MVP Recommendation
 
-### Content Editor MVP
+### Build Order (recommended phase sequence)
 
-Build in this order:
+**Phase 1: HelpTip Component** (TS-8, TS-9)
+- Zero dependencies on other features
+- Small, self-contained deliverable
+- Needed by all other features for contextual help
+- Complexity: Low
+- Estimated scope: 2 files, ~100 lines
 
-**Must ship (table stakes):**
-1. Metadata form fields matching TutorialMeta (TS-1) -- the foundation
-2. Slug generation and validation (TS-2) -- needed for file naming
-3. Markdown textarea with toolbar (TS-3) -- the editing surface
-4. Live preview tab (TS-4) -- visual verification before save
-5. Save to filesystem via server action (TS-5) -- the whole point
-6. Unsaved changes warning (TS-6) -- data loss prevention
+**Phase 2: Effort Scoring** (TS-1, TS-2, TS-3, TS-4)
+- Core data model change + UI
+- Must be done before demo data (demo tasks should have effort scores)
+- Complexity: Low-Medium
+- Estimated scope: 4-6 files, ~300 lines (data model + selector + rollup display)
 
-**Should ship (low-effort, high value):**
-7. Word count / reading time (D-3) -- trivial addition
-8. Draft support via filename prefix (D-4) -- leverages existing convention
+**Phase 3: Weekly Credit Gating** (TS-10, TS-11, TS-12, TS-13, TS-14)
+- Depends on the billing system existing (it does)
+- Must be done before demo workspace (demo exists to preview before paying)
+- Complexity: Medium
+- Estimated scope: 5-8 files, ~400 lines (billing logic + read-only enforcement + banners + apps integration)
 
-**Defer to post-MVP:**
-- Edit existing tutorials (D-1) -- important but can use manual file editing for now
-- Fast companion support (D-2) -- edge case, existing companions were created manually
-- WYSIWYG editing (AF-1) -- wrong tool for the job
-- Image upload (AF-2) -- no images in existing content
+**Phase 4: Demo Workspace** (TS-5, TS-6, TS-7)
+- Depends on effort scoring (demo tasks need effort values)
+- Depends on billing (demo is the pre-payment experience)
+- Complexity: Medium (mostly content design)
+- Estimated scope: 3-5 files, ~500 lines (seed data is the bulk)
 
-### Brand Scraper UI MVP
+### Defer
 
-Build in this order:
-
-**Must ship (table stakes):**
-1. URL submission form (TS-7) -- entry point
-2. Job status polling (TS-8) -- progress feedback
-3. Brand data gallery with all sections (TS-9) -- the payoff
-4. Confidence indicators (TS-10) -- data quality transparency
-5. Download links (TS-11) -- get the artifacts
-
-**Should ship (high value):**
-6. Brand gallery / history (D-5) -- makes the tool reusable
-
-**Defer to post-MVP:**
-- Contrast matrix (D-6) -- nice to have, not essential
-- Re-scrape (D-7) -- can re-enter URL manually
-- Side-by-side comparison (D-8) -- niche use case
+| Feature | Reason | When to Revisit |
+|---------|--------|-----------------|
+| D-1: Effort distribution visualization | Nice-to-have, no user demand yet | After effort scoring has been used for 2+ weeks |
+| D-3: Keep demo data on payment | Edge case, adds migration complexity | If users complain about losing demo customizations |
+| D-4: Guided tour | HelpTips provide basic guidance first | If onboarding metrics show low activation |
+| D-7: Credit balance in header | Low urgency, admin panel shows this | When more than one user is active |
+| D-8: Billing history for users | Admin panel covers this | When user base grows |
+| AF-1 through AF-11 | Explicitly rejected features | Only if core assumptions change |
 
 ---
 
-## New Components to Build
+## Complexity Summary
 
-### Content Editor
+| Feature Area | Table Stakes Count | Total Complexity | Key Risk |
+|--------------|-------------------|------------------|----------|
+| Effort Scoring | 4 (TS-1 to TS-4) | Low-Medium | Data model change touches many views |
+| Demo Workspace | 3 (TS-5 to TS-7) | Medium | Content design quality determines UX quality |
+| HelpTip Component | 2 (TS-8 to TS-9) | Low | Positioning edge cases on small viewports |
+| Weekly Credit Gating | 5 (TS-10 to TS-14) | Medium | Cross-repo integration approach is TBD |
 
-| Component | Type | Purpose | Estimated Size |
-|-----------|------|---------|---------------|
-| `EditorPage` | Client Component | Page at `/control-center/building-blocks/new` | ~50 lines (orchestrator) |
-| `MetadataForm` | Client Component | Title, description, date, tags, slug fields | ~120 lines |
-| `MarkdownEditor` | Client Component | Textarea with toolbar + word count | ~100 lines |
-| `EditorPreview` | Client Component | Rendered markdown preview tab | ~60 lines |
-| `EditorTabs` | Client Component | Edit/Preview tab toggle | ~40 lines |
-| `slugify` | Utility | Title to URL slug conversion | ~15 lines |
-| `saveTutorial` | Server Action | Write MDX file to filesystem | ~40 lines |
-
-### Brand Scraper UI
-
-| Component | Type | Purpose | Estimated Size |
-|-----------|------|---------|---------------|
-| `BrandScraperPage` | Client Component | Page at `/control-center/brands` | ~80 lines (orchestrator) |
-| `UrlSubmitForm` | Client Component | URL input + submit button | ~60 lines |
-| `JobStatusCard` | Client Component | Polling status display with progress | ~80 lines |
-| `BrandGallery` | Client Component | Results container with section tabs | ~60 lines |
-| `ColorPalette` | Client Component | Color swatches grid with copy-to-clipboard | ~100 lines |
-| `TypographySection` | Client Component | Font family cards with specimens | ~80 lines |
-| `LogoGrid` | Client Component | Logo/favicon thumbnail grid | ~60 lines |
-| `DesignTokenTable` | Client Component | CSS token table with visual previews | ~80 lines |
-| `IdentitySection` | Client Component | Tagline + industry display | ~30 lines |
-| `BrandConfidenceBadge` | Client Component | Numeric confidence to color-coded badge | ~30 lines |
-| `DownloadLinks` | Client Component | brand.json + assets.zip download buttons | ~40 lines |
-| `useJobPolling` | Hook | Custom hook for poll-until-complete | ~40 lines |
+**Total table stakes features:** 14
+**Overall complexity:** Medium (most patterns are proven in the existing codebase)
 
 ---
 
 ## Sources
 
-- Existing codebase analysis: `src/lib/tutorials.ts`, `src/content/building-blocks/*.mdx`, `src/components/building-blocks/ArticleTabs.tsx`, `src/app/building-blocks/[slug]/page.tsx`, `src/app/control-center/page.tsx`, `src/components/admin/AdminGuard.tsx`, `src/app/globals.css` (HIGH confidence -- direct file inspection)
-- CMS form field patterns: [Sanity field validation best practices](https://www.sanity.io/answers/best-practice-validation-for-different-types-of-fields-slugs-titles-etc), [DatoCMS slug permalinks](https://www.datocms.com/docs/content-modelling/slug-permalinks) (MEDIUM confidence)
-- Slug generation rules: [URL Slug Guide 2025](https://seoservicecare.com/url-slug-guide/), [JavaScript regex URL slug validation](https://www.ditig.com/javascript-regex-url-slug-validation) (HIGH confidence -- well-established web standards)
-- Markdown editor approaches: [5 Best Markdown Editors for React](https://strapi.io/blog/top-5-markdown-editors-for-react), [MDXEditor](https://mdxeditor.dev/) (HIGH confidence -- evaluated and rejected for bundle size)
-- Live preview patterns: [UI Patterns - Live Preview](https://ui-patterns.com/patterns/LivePreview), [Smashing Magazine - Visual Editing](https://www.smashingmagazine.com/2023/06/visual-editing-headless-cms/) (HIGH confidence)
-- Unsaved changes protection: [Next.js + React Hook Form beforeunload](https://dev.to/juanmtorrijos/how-to-add-the-changes-you-made-may-not-be-saved-warning-to-a-nextjs-app-with-react-hook-form-3ibh) (HIGH confidence)
-- Async polling patterns: [Polling in React](https://dev.to/tangoindiamango/polling-in-react-3h8a), [TanStack Query refetchInterval](https://github.com/tannerlinsley/react-query/discussions/713) (HIGH confidence)
-- Confidence visualization: [Agentic Design - Confidence Visualization Patterns](https://agentic-design.ai/patterns/ui-ux-patterns/confidence-visualization-patterns), [AI UX Design Guide](https://www.aiuxdesign.guide/patterns/confidence-visualization) (HIGH confidence)
-- Brand data display: [Brand.dev Styleguide API](https://docs.brand.dev/api-reference/screenshot-styleguide/extract-design-system-and-styleguide-from-website) (MEDIUM confidence -- reference implementation)
-- Color accessibility tools: [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/), [InclusiveColors](https://www.inclusivecolors.com/) (HIGH confidence -- pattern reference for D-6)
+- Linear Estimates documentation: [Estimates -- Linear Docs](https://linear.app/docs/estimates) (HIGH confidence -- official docs, verified via WebFetch)
+- ClickUp Sprint Points: [Use Sprint Points -- ClickUp Help](https://help.clickup.com/hc/en-us/articles/6303883602327-Use-Sprint-Points) (MEDIUM confidence -- WebSearch result)
+- Azure DevOps rollup: [Support rollup of work and other fields](https://learn.microsoft.com/en-us/azure/devops/reference/xml/support-rollup-of-work-and-other-fields) (HIGH confidence -- official Microsoft docs)
+- Fibonacci estimation: [Fibonacci Agile Estimation -- ProductPlan](https://www.productplan.com/glossary/fibonacci-agile-estimation/), [Why the Fibonacci Sequence Works -- Mountain Goat Software](https://www.mountaingoatsoftware.com/blog/why-the-fibonacci-sequence-works-well-for-estimating), [Fibonacci Story Points -- Atlassian](https://www.atlassian.com/agile/project-management/fibonacci-story-points) (HIGH confidence -- multiple authoritative sources)
+- SaaS onboarding demo patterns: [SaaS Onboarding Best Practices 2025 -- Insaim](https://www.insaim.design/blog/saas-onboarding-best-practices-for-2025-examples), [SaaS Onboarding 2026 -- Sales-Hacking](https://www.sales-hacking.com/en/post/best-practices-onboarding-saas) (MEDIUM confidence -- WebSearch)
+- Tooltip best practices: [Tooltip Best Practices -- UserPilot](https://userpilot.com/blog/tooltip-best-practices/), [Designing Better Tooltips -- LogRocket](https://blog.logrocket.com/ux-design/designing-better-tooltips-improved-ux/), [Tooltip Design -- SetProduct](https://www.setproduct.com/blog/tooltip-ui-design) (HIGH confidence -- multiple sources agree)
+- Tooltip accessibility: [ARIA tooltip role -- MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/tooltip_role), [React Aria Tooltip](https://react-spectrum.adobe.com/react-aria/Tooltip.html), [Accessible Tooltips -- ustwo](https://engineering.ustwo.com/articles/creating-an-accessible-tooltip/) (HIGH confidence -- official specs)
+- Freemium/credit gating: [Freemium Pricing -- Stripe](https://stripe.com/resources/more/freemium-pricing-explained), [SaaS Pricing Models 2025-2026 -- Monetizely](https://www.getmonetizely.com/blogs/complete-guide-to-saas-pricing-models-for-2025-2026) (MEDIUM confidence)
+- Existing codebase: `src/lib/envelopes/billing.ts`, `src/components/envelopes/ReadOnlyBanner.tsx`, `src/lib/envelopes/types.ts`, `src/data/apps.ts`, `src/components/ui/Button.tsx`, `src/components/ui/Modal.tsx`, `src/lib/billing/firestore.ts` (HIGH confidence -- direct file inspection)
