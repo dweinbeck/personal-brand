@@ -91,12 +91,12 @@ Plans:
   3. When credits are insufficient, user sees all data but cannot create, edit, or delete anything -- a ReadOnlyBanner with "Buy Credits" CTA is shown
   4. Server returns 402 on all mutation endpoints when user is in read-only mode (client-side bypass is impossible)
   5. Tasks app appears on the /apps page with correct metadata and links to the deployed todoist URL
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 34-01: Billing API route and tool pricing entry (personal-brand)
-- [ ] 34-02: Billing integration in todoist server actions and ReadOnlyBanner
-- [ ] 34-03: Apps hub entry, sitemap, and billing unit tests
+- [ ] 34-01-PLAN.md -- checkTasksAccess function, billing API route, and tasks_app tool pricing entry
+- [ ] 34-02-PLAN.md -- Billing guards on all 17 todoist mutation actions, ReadOnlyBanner, FreeWeekBanner, and BillingProvider
+- [ ] 34-03-PLAN.md -- Apps hub entry and billing unit tests (access logic + tool pricing)
 
 ### Phase 35: Demo Workspace
 **Goal**: Visitors can explore a realistic pre-populated workspace before signing up, showcasing the full feature set
