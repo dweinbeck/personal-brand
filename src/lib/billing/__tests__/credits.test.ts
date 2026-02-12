@@ -55,6 +55,14 @@ describe("Tool pricing seed", () => {
     }
   });
 
+  it("tasks_app is priced at 100 credits (weekly)", () => {
+    const tasks = TOOL_PRICING_SEED.find((t) => t.toolKey === "tasks_app");
+    expect(tasks).toBeDefined();
+    expect(tasks?.active).toBe(true);
+    expect(tasks?.creditsPerUse).toBe(100);
+    expect(tasks?.costToUsCentsEstimate).toBe(0);
+  });
+
   it("brand_scraper revenue exceeds estimated cost (positive margin)", () => {
     const scraper = TOOL_PRICING_SEED.find(
       (t) => t.toolKey === "brand_scraper",
