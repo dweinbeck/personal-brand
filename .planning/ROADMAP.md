@@ -10,11 +10,11 @@
 - v1.5 Billing & Credits System (Phases 22-25) -- shipped 2026-02-10
 - v1.6 Apps Hub Page (Phase 26) -- shipped 2026-02-10
 - v1.7 Apps-first Home + Brand Scraper Overhaul (Phases 27-30) -- shipped 2026-02-11
-- **v1.8 Tasks App** (Phases 31-35) -- in progress
+- **v1.8 Tasks App** (Phases 31-35) -- shipped 2026-02-12
 
 ## Phases
 
-### v1.8 Tasks App (In Progress)
+### v1.8 Tasks App (Complete)
 
 **Milestone Goal:** Integrate the standalone todoist app into the personal-brand Apps ecosystem with weekly credit gating, and add effort scoring, demo workspace, and help tips to the todoist app itself.
 
@@ -26,7 +26,7 @@
 - [x] **Phase 32: Effort Scoring** - Optional effort scores on tasks with section and project rollup totals ✓ 2026-02-11
 - [x] **Phase 33: Multi-User + Auth** - Firebase Auth integration and userId scoping across all data models ✓ 2026-02-12
 - [x] **Phase 34: Weekly Credit Gating** - Billing API, server-enforced read-only mode, apps hub entry, and billing tests ✓ 2026-02-12
-- [ ] **Phase 35: Demo Workspace** - Pre-populated read-only demo showcasing the full feature set
+- [x] **Phase 35: Demo Workspace** - Pre-populated read-only demo showcasing the full feature set ✓ 2026-02-12
 
 ## Phase Details
 
@@ -111,8 +111,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 35-01-PLAN.md -- Demo seed data (~40 tasks), /demo route structure, DemoProvider context, DemoSidebar, and DemoProjectView
-- [ ] 35-02-PLAN.md -- DemoBanner with sign-up CTA, mutation lockout in TaskCard/SubtaskList/SectionHeader, "Try Demo" link on AuthGuard
+- [x] 35-01-PLAN.md -- Demo seed data (~40 tasks), /demo route structure, DemoProvider context, DemoSidebar, and DemoProjectView ✓
+- [x] 35-02-PLAN.md -- DemoBanner with sign-up CTA, mutation lockout in TaskCard/SubtaskList/SectionHeader, "Try Demo" link on AuthGuard ✓
 
 ## Progress
 
@@ -128,4 +128,4 @@ Plans:
 | 32. Effort Scoring | v1.8 | 2/2 | ✓ Complete | 2026-02-11 |
 | 33. Multi-User + Auth | v1.8 | 3/3 | ✓ Complete | 2026-02-12 |
 | 34. Weekly Credit Gating | v1.8 | 3/3 | ✓ Complete | 2026-02-12 |
-| 35. Demo Workspace | v1.8 | 0/2 | Not started | - |
+| 35. Demo Workspace | v1.8 | 2/2 | ✓ Complete | 2026-02-12 |

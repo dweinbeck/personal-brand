@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phase 35 (Demo Workspace) complete
+**Current focus:** v1.8 Tasks App -- MILESTONE COMPLETE (all 5 phases shipped)
 
 ## Current Position
 
@@ -19,8 +19,8 @@ Progress: [##########] 100% (12/12 plans)
 ## Performance Metrics
 
 **Cumulative:**
-- Total milestones shipped: 8 (v1.0 through v1.7)
-- Total phases completed: 34
+- Total milestones shipped: 9 (v1.0 through v1.8)
+- Total phases completed: 35
 - Total plans completed: 91
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
@@ -98,4 +98,4 @@ Resume file: None
 
 ## Next Step
 
-Phase 35 (Demo Workspace) complete. All v1.8 plans executed. Ready for deployment.
+v1.8 Tasks App milestone complete. All 5 phases (31-35), 12 plans executed. Ready for `/gsd:complete-milestone`.
