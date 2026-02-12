@@ -24,7 +24,7 @@
 
 - [x] **Phase 31: Help Tips** - Reusable accessible tooltip component with centralized content catalog ✓ 2026-02-11
 - [x] **Phase 32: Effort Scoring** - Optional effort scores on tasks with section and project rollup totals ✓ 2026-02-11
-- [ ] **Phase 33: Multi-User + Auth** - Firebase Auth integration and userId scoping across all data models
+- [x] **Phase 33: Multi-User + Auth** - Firebase Auth integration and userId scoping across all data models ✓ 2026-02-12
 - [ ] **Phase 34: Weekly Credit Gating** - Billing API, server-enforced read-only mode, apps hub entry, and billing tests
 - [ ] **Phase 35: Demo Workspace** - Pre-populated read-only demo showcasing the full feature set
 
@@ -76,9 +76,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 33-01-PLAN.md -- Firebase Auth setup, AuthContext with cookie sync, and sign-in UI
-- [ ] 33-02-PLAN.md -- Schema migration (userId columns on Workspace/Task/Tag, backfill, indexes)
-- [ ] 33-03-PLAN.md -- Query audit and userId enforcement across all services, actions, and pages
+- [x] 33-01-PLAN.md -- Firebase Auth setup, AuthContext with cookie sync, and sign-in UI ✓
+- [x] 33-02-PLAN.md -- Schema migration (userId columns on Workspace/Task/Tag, backfill, indexes) ✓
+- [x] 33-03-PLAN.md -- Query audit and userId enforcement across all services, actions, and pages ✓
 
 ### Phase 34: Weekly Credit Gating
 **Goal**: Tasks app access is gated by weekly credits with graceful degradation to read-only mode
@@ -126,6 +126,6 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 31. Help Tips | v1.8 | 1/1 | ✓ Complete | 2026-02-11 |
 | 32. Effort Scoring | v1.8 | 2/2 | ✓ Complete | 2026-02-11 |
-| 33. Multi-User + Auth | v1.8 | 0/3 | Not started | - |
+| 33. Multi-User + Auth | v1.8 | 3/3 | ✓ Complete | 2026-02-12 |
 | 34. Weekly Credit Gating | v1.8 | 0/3 | Not started | - |
 | 35. Demo Workspace | v1.8 | 0/2 | Not started | - |
