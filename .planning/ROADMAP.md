@@ -22,8 +22,8 @@
 - `todoist` at `/Users/dweinbeck/Documents/todoist` -- standalone Next.js app with PostgreSQL/Prisma
 - `personal-brand` at `/Users/dweinbeck/Documents/personal-brand` -- main site with Firebase/Firestore billing
 
-- [ ] **Phase 31: Help Tips** - Reusable accessible tooltip component with centralized content catalog
-- [ ] **Phase 32: Effort Scoring** - Optional effort scores on tasks with section and project rollup totals
+- [x] **Phase 31: Help Tips** - Reusable accessible tooltip component with centralized content catalog ✓ 2026-02-11
+- [x] **Phase 32: Effort Scoring** - Optional effort scores on tasks with section and project rollup totals ✓ 2026-02-11
 - [ ] **Phase 33: Multi-User + Auth** - Firebase Auth integration and userId scoping across all data models
 - [ ] **Phase 34: Weekly Credit Gating** - Billing API, server-enforced read-only mode, apps hub entry, and billing tests
 - [ ] **Phase 35: Demo Workspace** - Pre-populated read-only demo showcasing the full feature set
@@ -44,7 +44,7 @@
 **Plans:** 1 plan
 
 Plans:
-- [ ] 31-01-PLAN.md -- HelpTip component, tip catalog, positioning hook, and wiring into 6 UI locations
+- [x] 31-01-PLAN.md -- HelpTip component, tip catalog, positioning hook, and wiring into 6 UI locations ✓
 
 ### Phase 32: Effort Scoring
 **Goal**: Users can estimate task complexity with effort scores and see aggregate effort across sections and projects
@@ -60,8 +60,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 32-01-PLAN.md -- Schema change, effort picker UI, and task display
-- [ ] 32-02-PLAN.md -- Section and project rollup totals with unit tests
+- [x] 32-01-PLAN.md -- Schema change, effort picker UI, and task display ✓
+- [x] 32-02-PLAN.md -- Section and project rollup totals with unit tests ✓
 
 ### Phase 33: Multi-User + Auth
 **Goal**: Users can securely sign in and have their data fully isolated from other users
@@ -124,8 +124,8 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 31. Help Tips | v1.8 | 0/1 | Not started | - |
-| 32. Effort Scoring | v1.8 | 0/2 | Not started | - |
+| 31. Help Tips | v1.8 | 1/1 | ✓ Complete | 2026-02-11 |
+| 32. Effort Scoring | v1.8 | 2/2 | ✓ Complete | 2026-02-11 |
 | 33. Multi-User + Auth | v1.8 | 0/3 | Not started | - |
 | 34. Weekly Credit Gating | v1.8 | 0/3 | Not started | - |
 | 35. Demo Workspace | v1.8 | 0/2 | Not started | - |
