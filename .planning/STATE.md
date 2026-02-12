@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phase 33 (Multi-User + Auth) complete
+**Current focus:** v1.8 Tasks App -- Phase 34 (Weekly Credit Gating) in progress
 
 ## Current Position
 
-Phase: 33 of 35 (Multi-User + Auth) -- complete
-Plan: 3 of 3 in current phase (Phase 33 complete)
-Status: Phase 33 complete -- full userId enforcement on all services, actions, pages, and components
-Last activity: 2026-02-12 -- Completed 33-03 query audit
+Phase: 34 of 35 (Weekly Credit Gating) -- in progress
+Plan: 1 of 3 in current phase (34-01 complete)
+Status: 34-01 complete -- billing API for tasks app weekly credit gating
+Last activity: 2026-02-12 -- Completed 34-01 billing API
 
-Progress: [######░░░░] 55% (6/11 plans)
+Progress: [######░░░░] 64% (7/11 plans)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 8 (v1.0 through v1.7)
 - Total phases completed: 33
-- Total plans completed: 83
+- Total plans completed: 84
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
-- Plans completed: 6
+- Plans completed: 7
 - Average duration: 4 min
-- Total execution time: 25 min
+- Total execution time: 31 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
@@ -37,6 +37,7 @@ Progress: [######░░░░] 55% (6/11 plans)
 | 33-multi-user-auth | 01 | 4 min | 2 | 7 |
 | 33-multi-user-auth | 02 | 4 min | 2 | 10 |
 | 33-multi-user-auth | 03 | 6 min | 2 | 28 |
+| 34-weekly-credit-gating | 01 | 6 min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -58,6 +59,8 @@ Recent:
 - Server actions accept idToken as first param (explicit client-to-server token flow, not cookie-based)
 - getProject strips workspace from return to avoid leaking ownership structure
 - Section/Project ownership via workspace chain (no direct userId column needed)
+- Mirror checkEnvelopeAccess pattern exactly for tasks billing (same free-week, paid-week, debit flow)
+- Inline types in tasks.ts rather than separate types file (simplicity for single-function module)
 
 ### Pending Todos
 
@@ -77,9 +80,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 33-03-PLAN.md (Query Audit)
+Stopped at: Completed 34-01-PLAN.md (Billing API)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 34 -- `/gsd:execute-phase 34`
+Continue Phase 34 -- execute 34-02-PLAN.md
