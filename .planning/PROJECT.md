@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with an apps-first Home page showcasing published tools, a fully functional Brand Scraper with live progress tracking and Brand Card UI, individual asset management, user scrape history, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, a billing/credits system with Stripe payments for paid tools, and production deployment on GCP Cloud Run.
+A clean, minimal personal website for Dan Weinbeck — a self-taught AI developer, analytics professional, and data scientist. The site gives visitors a fast understanding of who Dan is and what he's built, with an apps-first Home page showcasing published tools, a fully functional Brand Scraper with live progress tracking and Brand Card UI, individual asset management, user scrape history, a Tasks App with effort scoring and demo workspace integrated via weekly credit gating, a tutorials section, an About page with career accomplishments and company logos, an AI assistant powered by an external FastAPI RAG backend with citation and confidence UI, a working contact form backed by Firestore, a billing/credits system with Stripe payments for paid tools, and production deployment on GCP Cloud Run.
 
 ## Core Value
 
@@ -75,21 +75,17 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Assets page with category grouping, image previews, and per-asset downloads — v1.7
 - ✓ User scrape history with Firestore persistence and View Results navigation — v1.7
 - ✓ Authenticated zip proxy route with 60s timeout — v1.7
+- ✓ Accessible HelpTip tooltip component with centralized content catalog and viewport-aware positioning — v1.8
+- ✓ Fibonacci effort scoring (1-13) on tasks with section and project rollup totals — v1.8
+- ✓ Firebase Auth integration in todoist app with complete userId scoping across all data — v1.8
+- ✓ Cross-service weekly credit gating (100 credits/week, first week free, server-enforced read-only) — v1.8
+- ✓ Tasks app listed on /apps hub with link to deployed todoist service — v1.8
+- ✓ Client-side demo workspace with ~40 realistic tasks and sign-up CTA — v1.8
+- ✓ Billing access check and effort rollup unit tests — v1.8
 
 ### Active
 
-## Current Milestone: v1.8 Tasks App
-
-**Goal:** Integrate the standalone todoist app into the personal-brand site's Apps ecosystem with weekly credit gating, and add effort scoring, demo workspace, and help tips to the todoist app itself.
-
-**Target features:**
-- Tasks app listed on /apps with link to deployed todoist service
-- Weekly credit gating (100 credits/week, first week free, read-only when unpaid) — matching envelopes pattern
-- Demo workspace with realistic pre-populated data shown before enabling
-- Effort score per task with section/project rollup totals
-- Reusable HelpTip component with gold "?" hover tooltips
-- Server-enforced billing (402 on write when read-only)
-- Billing tests for key gating behavior
+(None — all current requirements shipped. Define new requirements with `/gsd:new-milestone`.)
 
 ### Deferred
 
@@ -97,6 +93,12 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Writing page displays real articles (replaces lorem ipsum)
 - Optimized logo assets (SVG preferred, PNG fallback)
 - Additional paid tools: 60-Second Lesson, Bus Text (pricing entries exist, tools inactive)
+- Effort distribution visualization (bar chart across sections)
+- Effort badges in board view cards with column totals
+- Demo workspace data preservation after sign-up
+- Guided demo tour
+- Credit balance display in todoist app header
+- Billing history for tasks app charges
 
 ### Out of Scope
 
@@ -114,18 +116,23 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Subscription / recurring billing — pre-paid credits model is intentional
 - Custom Stripe payment page (Elements) — Checkout redirect is PCI-compliant out of the box
 - Brand scraper UI redesign beyond Brand Card + Assets — current UX is complete for v1.7
+- Per-task billing — discourages natural task creation; weekly flat rate is better UX
+- Feature-tiered access — app is simple enough that partial access feels broken
+- Embedding todoist as pages in personal-brand — different databases and mutation patterns
+- Real-time WebSocket updates for tasks — single-user app, page revalidation sufficient
+- Drag-and-drop task reordering — v2+ enhancement
 
 ## Current State
 
-**Shipped:** v1.7 on 2026-02-11
+**Shipped:** v1.8 on 2026-02-12
 **Live at:** https://dan-weinbeck.com
-**In progress:** v1.8 Tasks App
+**In progress:** Planning next milestone
 
-Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
+Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App integrated via weekly credit gating with effort scoring and demo workspace, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~18,600 LOC TypeScript/TSX/CSS/MDX (estimated after v1.7 — +9,392 net lines)
+- **Codebase:** ~26,400 LOC TypeScript/TSX/CSS/MDX (estimated after v1.8 — +7,800 net lines from personal-brand repo)
 - **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK + Auth, Stripe, react-markdown, Vitest
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
@@ -136,16 +143,14 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 - chatbot-assistant provides: GitHub webhook ingestion, Postgres FTS + trigram search, Cloud Tasks async indexing, Gemini 2.5 Flash-Lite, mechanical citation verification
 - Control center shipped in v1.4 with content editor and brand scraper admin tools
 - Brand scraper API (brand-scraper) is a separate Fastify/Cloud Run service with async job processing, Playwright extraction, and GCS storage
-- Brand scraper v1.7: individual GCS asset uploads, on-demand zip, progress events, enriched API response with signed URLs
+- Brand scraper v1.7: individual GCS assets, on-demand zip, progress events, enriched API response with signed URLs
 - Billing system live: ledger-based Firestore credits (1 credit = 1 cent), 100 free on signup, 500 for $5 via Stripe Checkout
 - Firebase Auth (Google Sign-In) for public users with AuthGuard/AuthButton components
 - Stripe webhook at /api/billing/webhook — signature-verified, idempotent on event ID + session ID
 - Admin billing panel at /control-center/billing — user list, detail, adjust credits, refund usage, edit pricing
-- 4 tool pricing entries: brand_scraper (active, 50 credits), lesson_60s, bus_text, dave_ramsey (inactive)
-- Todoist app is a separate Next.js app at ~/Documents/todoist — PostgreSQL/Prisma, standalone deploy, v1.0 shipped 2026-02-10
-- Todoist features: workspaces, projects, sections, tasks, subtasks, tags, list/board views, today/completed/search views
+- 5 tool pricing entries: brand_scraper (active, 50 credits), tasks_app (active, 100 credits/week), lesson_60s, bus_text, dave_ramsey (inactive)
+- Todoist app: separate Next.js app (PostgreSQL/Prisma), standalone deploy, effort scoring, help tips, multi-user auth, demo workspace, weekly credit gating via personal-brand billing API
 - Stripe secrets via GCP Secret Manager: stripe-secret-key (v4, live), stripe-webhook-secret (v3, live)
-- Brand Scraper user flow: Home → Apps → Brand Scraper → Auth → URL → Live progress → Brand Card → Assets → History
 
 ## Constraints
 
@@ -172,28 +177,32 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | react-markdown for README rendering | Lightweight, supports GFM via remark-gfm plugin | ✓ Good |
 | SVG logos for accomplishment cards | Scalable, small file size, renders cleanly at 32x32px | ✓ Good |
 | Max 6 featured projects on homepage | Keeps homepage focused and performant | ✓ Good |
-| Chatbot deferred to later milestone | Get the UI foundation right first, then layer on AI features | ✓ Good — integrated in v1.3 |
-| Proxy to FastAPI (not direct CORS) | Cloud Run IAM incompatible with browser preflight; proxy eliminates CORS entirely | ✓ Good — simpler than original CORS plan |
-| Remove all old assistant server code | Clean break, FastAPI backend replaces everything | ✓ Good — 32 files, ~875 lines removed |
-| Control center deferred to future milestone | v1 is public-facing site; personal tools come later | ✓ Good — building in v1.4 |
+| Proxy to FastAPI (not direct CORS) | Cloud Run IAM incompatible with browser preflight; proxy eliminates CORS entirely | ✓ Good |
+| Remove all old assistant server code | Clean break, FastAPI backend replaces everything | ✓ Good |
 | Direct filesystem MDX writes for editor | Simple, git-native; rebuild required to publish — acceptable for single-user admin tool | ✓ Good |
 | Proxy brand-scraper API through Next.js route | Same pattern as chatbot proxy; keeps API URL server-side, avoids CORS | ✓ Good |
 | AdminGuard for Control Center auth | Existing pattern sufficient for personal admin tools; no new auth system needed | ✓ Good |
-| Brand Scraper as cleanly separated component | Well-organized code with clear boundaries, but no special packaging — extractable later if needed | ✓ Good |
-| Ledger-based Firestore credits | Transaction-safe, idempotent, audit trail for all balance mutations | ✓ Good — live with real payments |
-| Firebase Auth for end users | Google Sign-In enables public tool access without building custom auth | ✓ Good — seamless sign-in experience |
-| Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | ✓ Good — PCI-compliant, zero payment UI code |
-| Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for future milestones | ✓ Good — ready for activation |
-| Apps hub page for tool discovery | Visitors can browse available tools from a single page; matches existing card patterns | ✓ Good |
-| Remove Projects pages, pivot Home to apps-first | Projects section served its purpose; apps are the primary user-facing content now | ✓ Good — clean transition with 301 redirects |
-| Both-repo milestone (main site + scraper service) | Brand Scraper fixes require coordinated changes across service boundary | ✓ Good — parallel execution of independent phases |
-| ExtractedField wrapper with .passthrough() Zod schemas | Forward-compatible with scraper service taxonomy changes; won't break on new fields | ✓ Good — defensive without being brittle |
-| Individual GCS assets + on-demand zip | Memory-efficient, fast delivery of individual assets; zip only created when requested | ✓ Good — eliminates large buffer allocations |
-| Incremental JSONB event persistence | Events persisted during processing (not only at end); 200-entry cap prevents bloat | ✓ Good — accurate real-time progress |
-| Fire-and-forget Firestore history writes | Non-blocking scrape flow; history is supplementary, not critical path | ✓ Good — zero latency impact on scrape submissions |
-| Dynamic Google Font loading via CSS Font Loading API | Brand Card renders in extracted font; best-effort with system font fallback | ✓ Good — authentic brand rendering without blocking |
-
-| Tasks app as separate standalone service | Same multi-repo pattern as brand-scraper; todoist keeps Postgres/Prisma, personal-brand handles billing integration | — Pending |
+| Brand Scraper as cleanly separated component | Well-organized code with clear boundaries, extractable later if needed | ✓ Good |
+| Ledger-based Firestore credits | Transaction-safe, idempotent, audit trail for all balance mutations | ✓ Good |
+| Firebase Auth for end users | Google Sign-In enables public tool access without building custom auth | ✓ Good |
+| Stripe Checkout (not embedded) | Simplest integration, hosted payment page, webhook for fulfillment | ✓ Good |
+| Keep inactive tool pricing entries | Real tools planned (60-Second Lesson, Bus Text, Dave Ramsey App); entries ready for activation | ✓ Good |
+| Apps hub page for tool discovery | Visitors browse available tools from a single page; matches existing card patterns | ✓ Good |
+| Remove Projects pages, pivot Home to apps-first | Projects served their purpose; apps are the primary user-facing content | ✓ Good |
+| ExtractedField wrapper with .passthrough() Zod schemas | Forward-compatible with scraper service taxonomy changes | ✓ Good |
+| Individual GCS assets + on-demand zip | Memory-efficient, fast delivery; zip only created when requested | ✓ Good |
+| Incremental JSONB event persistence | Events persisted during processing; 200-entry cap prevents bloat | ✓ Good |
+| Fire-and-forget Firestore history writes | Non-blocking scrape flow; history is supplementary | ✓ Good |
+| Dynamic Google Font loading via CSS Font Loading API | Brand Card renders in extracted font; best-effort with system fallback | ✓ Good |
+| Tasks app as separate standalone service | Same multi-repo pattern as brand-scraper; todoist keeps Postgres/Prisma, personal-brand handles billing | ✓ Good — clean service boundary |
+| Toggletip interaction for HelpTip | Click pins tooltip, hover opens with delay; centralized catalog for content | ✓ Good — accessible and maintainable |
+| Nullable Int for effort field | null = unscored (not 0); distinguishes unscored from scored in rollups | ✓ Good — clean semantics |
+| onIdTokenChanged for auth cookie sync | Automatic refresh on token rotation; __session cookie name matches Cloud Run convention | ✓ Good — seamless token lifecycle |
+| Server actions accept idToken as first param | Explicit client-to-server token flow; verifyUser() on every mutation | ✓ Good — secure by design |
+| Section/Project ownership via workspace chain | No direct userId column needed; ownership verified through workspace hierarchy | ✓ Good — normalized schema |
+| Mirror checkEnvelopeAccess pattern for tasks billing | Same free-week → paid-week → debit flow; proven pattern from brand scraper | ✓ Good — consistent billing UX |
+| Read-only demo components (not shared mutation components) | Demo route is fully client-side with zero server dependencies | ✓ Good — clean isolation |
+| useDemoMode() defaults to false | Guards are no-ops outside /demo tree; zero impact on production /tasks routes | ✓ Good — safe by default |
 
 ---
-*Last updated: 2026-02-11 after v1.8 milestone start*
+*Last updated: 2026-02-12 after v1.8 milestone*

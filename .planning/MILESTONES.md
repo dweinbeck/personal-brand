@@ -1,5 +1,33 @@
 # Project Milestones: dan-weinbeck.com
 
+## v1.8 Tasks App (Shipped: 2026-02-12)
+
+**Delivered:** Integrated the standalone todoist app into the personal-brand Apps ecosystem with weekly credit gating (100 credits/week, first week free, server-enforced read-only degradation), and added effort scoring, multi-user auth, demo workspace, and help tips to the todoist app itself.
+
+**Phases completed:** 31-35 (11 plans total)
+
+**Key accomplishments:**
+
+- Accessible gold tooltip HelpTip component with centralized content catalog, viewport-aware positioning, and keyboard/screen reader support
+- Fibonacci effort scoring (1-13) on tasks with section and project rollup totals, 9 unit tests
+- Firebase Auth integration with complete userId scoping across 28 service functions and token-verified server actions
+- Cross-service weekly credit gating with billing API, server-enforced 402 on mutations, ReadOnlyBanner with "Buy Credits" CTA
+- Client-side demo workspace with ~40 realistic tasks, persistent banner with sign-up CTA, and mutation lockout
+- Tasks app listed on /apps hub with correct metadata and link to deployed service
+
+**Stats:**
+
+- 40 files changed (+7,785 / -52 lines) in personal-brand repo
+- 5 phases, 11 plans, 30 commits
+- 2 days (Feb 11-12, 2026)
+- Cross-repo milestone (personal-brand + todoist)
+
+**Git range:** `4a8c9e8` → `56b81b4`
+
+**What's next:** Real writing content, additional paid tools, further site polish
+
+---
+
 ## v1.7 Apps-first Home + Brand Scraper Overhaul (Shipped: 2026-02-11)
 
 **Delivered:** Pivoted the Home page to showcase apps as primary content, removed the Projects section, and made Brand Scraper fully functional with real-time progress events, Brand Card UI, individual asset management, and user scrape history.
@@ -220,3 +248,13 @@
 **What's next:** UI design refresh and new feature development (v1.1+)
 
 ---
+
+## v1.8 Tasks App (Shipped: 2026-02-12)
+
+**Phases completed:** 34 phases, 66 plans, 8 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
