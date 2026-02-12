@@ -41,10 +41,10 @@
   3. Screen reader announces tooltip content via ARIA tooltip role when tip is triggered
   4. Help tips on mobile respond to tap (toggle open/close) and stay within the viewport
   5. All help tip text lives in a single catalog file (not scattered across components)
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 31-01: HelpTip component, content catalog, and accessibility compliance
+- [ ] 31-01-PLAN.md -- HelpTip component, tip catalog, positioning hook, and wiring into 6 UI locations
 
 ### Phase 32: Effort Scoring
 **Goal**: Users can estimate task complexity with effort scores and see aggregate effort across sections and projects
