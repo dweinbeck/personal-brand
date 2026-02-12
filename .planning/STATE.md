@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phase 35 (Demo Workspace) in progress
+**Current focus:** v1.8 Tasks App -- Phase 35 (Demo Workspace) complete
 
 ## Current Position
 
-Phase: 35 of 35 (Demo Workspace) -- in progress
-Plan: 1 of 2 in current phase (35-01 complete)
-Status: Phase 35 plan 01 complete -- demo workspace foundation with seed data, routes, and views
-Last activity: 2026-02-12 -- Completed 35-01 demo workspace foundation
+Phase: 35 of 35 (Demo Workspace) -- complete
+Plan: 2 of 2 in current phase (35-02 complete)
+Status: Phase 35 complete -- demo workspace with banner, mutation guards, and Try Demo link
+Last activity: 2026-02-12 -- Completed 35-02 demo banner and mutation guards
 
-Progress: [##########] 100% (11/11 plans) -- pending Plan 02
+Progress: [##########] 100% (12/12 plans)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 8 (v1.0 through v1.7)
 - Total phases completed: 34
-- Total plans completed: 90
+- Total plans completed: 91
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
-- Plans completed: 11
+- Plans completed: 12
 - Average duration: 4 min
-- Total execution time: 43 min
+- Total execution time: 46 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
@@ -41,6 +41,7 @@ Progress: [##########] 100% (11/11 plans) -- pending Plan 02
 | 34-weekly-credit-gating | 02 | 4 min | 2 | 10 |
 | 34-weekly-credit-gating | 03 | 4 min | 2 | 3 |
 | 35-demo-workspace | 01 | 4 min | 2 | 8 |
+| 35-demo-workspace | 02 | 3 min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ Recent:
 - Read-only demo components (DemoTaskCard, DemoSectionHeader, DemoBoardView) instead of importing existing mutation components
 - Demo route isolation: /demo/ tree is fully client-side with zero server dependencies
 - Deterministic demo-prefixed IDs for URL routing stability
+- useDemoMode() defaults to false so guards are no-ops outside /demo (zero impact on /tasks)
+- Hide mutation buttons entirely in demo (not just disable) for cleaner read-only UX
+- SectionHeader renders span instead of button in demo mode to prevent click-to-edit
 
 ### Pending Todos
 
@@ -89,9 +93,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 35-01-PLAN.md -- demo workspace foundation
+Stopped at: Completed 35-02-PLAN.md -- demo banner, mutation guards, Try Demo link
 Resume file: None
 
 ## Next Step
 
-Execute Phase 35 Plan 02 -- `/gsd:execute-phase 35`
+Phase 35 (Demo Workspace) complete. All v1.8 plans executed. Ready for deployment.
