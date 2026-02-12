@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phase 31 Help Tips
+**Current focus:** v1.8 Tasks App -- Phase 32 Effort Scoring
 
 ## Current Position
 
-Phase: 31 of 35 (Help Tips)
-Plan: 0 of 1 in current phase
-Status: Ready to plan
-Last activity: 2026-02-11 -- Roadmap created for v1.8 Tasks App (5 phases, 31 requirements)
+Phase: 32 of 35 (Effort Scoring)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-11 -- Completed 32-01 (effort field end-to-end)
 
-Progress: [░░░░░░░░░░] 0% (0/11 plans)
+Progress: [#░░░░░░░░░] 9% (1/11 plans)
 
 ## Performance Metrics
 
@@ -25,9 +25,13 @@ Progress: [░░░░░░░░░░] 0% (0/11 plans)
 - Timeline: Jan 18 -> Feb 11, 2026 (25 days)
 
 **v1.8 Velocity:**
-- Plans completed: 0
-- Average duration: --
-- Total execution time: 0 hours
+- Plans completed: 1
+- Average duration: 4 min
+- Total execution time: 4 min
+
+| Phase | Plan | Duration | Tasks | Files |
+|-------|------|----------|-------|-------|
+| 32-effort-scoring | 01 | 4 min | 2 | 7 |
 
 ## Accumulated Context
 
@@ -37,6 +41,8 @@ Full decision log in PROJECT.md Key Decisions table.
 
 Recent:
 - Tasks app as separate standalone service (same multi-repo pattern as brand-scraper)
+- Effort field is nullable Int (null = unscored, not 0) to distinguish unscored from scored tasks
+- EFFORT_VALUES defined inline per component; Plan 02 will extract shared constant
 
 ### Pending Todos
 
@@ -57,9 +63,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Roadmap created for v1.8 Tasks App
+Stopped at: Completed 32-01-PLAN.md (effort field end-to-end)
 Resume file: None
 
 ## Next Step
 
-Plan Phase 31 (Help Tips) -- `/gsd:plan-phase 31`
+Execute Plan 02 of Phase 32 (Effort Scoring rollup aggregation) -- `/gsd:execute-phase 32-effort-scoring`
