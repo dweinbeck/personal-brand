@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phase 34 (Weekly Credit Gating) complete
+**Current focus:** v1.8 Tasks App -- Phase 35 (Demo Workspace) in progress
 
 ## Current Position
 
-Phase: 34 of 35 (Weekly Credit Gating) -- complete
-Plan: 3 of 3 in current phase (all complete)
-Status: Phase 34 complete -- weekly credit gating with billing API, apps hub, and tests
-Last activity: 2026-02-12 -- Completed 34-03 apps hub entry and billing tests
+Phase: 35 of 35 (Demo Workspace) -- in progress
+Plan: 1 of 2 in current phase (35-01 complete)
+Status: Phase 35 plan 01 complete -- demo workspace foundation with seed data, routes, and views
+Last activity: 2026-02-12 -- Completed 35-01 demo workspace foundation
 
-Progress: [#########░] 91% (10/11 plans)
+Progress: [##########] 100% (11/11 plans) -- pending Plan 02
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 8 (v1.0 through v1.7)
 - Total phases completed: 34
-- Total plans completed: 89
+- Total plans completed: 90
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
-- Plans completed: 10
+- Plans completed: 11
 - Average duration: 4 min
-- Total execution time: 39 min
+- Total execution time: 43 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
@@ -40,6 +40,7 @@ Progress: [#########░] 91% (10/11 plans)
 | 34-weekly-credit-gating | 01 | 6 min | 2 | 4 |
 | 34-weekly-credit-gating | 02 | 4 min | 2 | 10 |
 | 34-weekly-credit-gating | 03 | 4 min | 2 | 3 |
+| 35-demo-workspace | 01 | 4 min | 2 | 8 |
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Recent:
 - Tasks app is external link (not hosted on personal-brand), so no sitemap entry needed
 - Billing check gracefully degrades to readwrite on fetch error or missing BILLING_API_URL
 - Firestore mock pattern for billing tests: vi.mock at module level, dynamic import after mocks, reset in beforeEach
+- Read-only demo components (DemoTaskCard, DemoSectionHeader, DemoBoardView) instead of importing existing mutation components
+- Demo route isolation: /demo/ tree is fully client-side with zero server dependencies
+- Deterministic demo-prefixed IDs for URL routing stability
 
 ### Pending Todos
 
@@ -85,9 +89,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed Phase 34 (Weekly Credit Gating) -- all 3 plans, verification passed
+Stopped at: Completed 35-01-PLAN.md -- demo workspace foundation
 Resume file: None
 
 ## Next Step
 
-Plan Phase 35 -- `/gsd:plan-phase 35`
+Execute Phase 35 Plan 02 -- `/gsd:execute-phase 35`
