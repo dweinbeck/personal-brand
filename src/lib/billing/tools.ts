@@ -31,6 +31,13 @@ export const TOOL_PRICING_SEED = [
     creditsPerUse: 100,
     costToUsCentsEstimate: 0,
   },
+  {
+    toolKey: "tasks_app",
+    label: "Task Manager (Weekly)",
+    active: true,
+    creditsPerUse: 100,
+    costToUsCentsEstimate: 0,
+  },
 ] as const;
 
 /**
