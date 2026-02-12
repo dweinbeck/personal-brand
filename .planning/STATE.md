@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App — defining requirements
+**Current focus:** v1.8 Tasks App -- Phase 31 Help Tips
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-11 — Milestone v1.8 started
+Phase: 31 of 35 (Help Tips)
+Plan: 0 of 1 in current phase
+Status: Ready to plan
+Last activity: 2026-02-11 -- Roadmap created for v1.8 Tasks App (5 phases, 31 requirements)
 
-Progress: v1.0-v1.7 SHIPPED | v1.8 in progress
+Progress: [░░░░░░░░░░] 0% (0/11 plans)
 
 ## Performance Metrics
 
@@ -22,7 +22,12 @@ Progress: v1.0-v1.7 SHIPPED | v1.8 in progress
 - Total milestones shipped: 8 (v1.0 through v1.7)
 - Total phases completed: 30
 - Total plans completed: 78
-- Timeline: Jan 18 → Feb 11, 2026 (25 days)
+- Timeline: Jan 18 -> Feb 11, 2026 (25 days)
+
+**v1.8 Velocity:**
+- Plans completed: 0
+- Average duration: --
+- Total execution time: 0 hours
 
 ## Accumulated Context
 
@@ -30,13 +35,17 @@ Progress: v1.0-v1.7 SHIPPED | v1.8 in progress
 
 Full decision log in PROJECT.md Key Decisions table.
 
+Recent:
+- Tasks app as separate standalone service (same multi-repo pattern as brand-scraper)
+
 ### Pending Todos
 
 None.
 
 ### Blockers/Concerns
 
-None.
+- Phase 33 (Multi-User + Auth) is highest risk: adding userId to every model and auditing every query
+- Two-repo coordination in Phase 34: billing API in personal-brand, integration in todoist
 
 ### Quick Tasks Completed
 
@@ -48,9 +57,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Defining v1.8 requirements
+Stopped at: Roadmap created for v1.8 Tasks App
 Resume file: None
 
 ## Next Step
 
-Define requirements and create roadmap for v1.8 Tasks App.
+Plan Phase 31 (Help Tips) -- `/gsd:plan-phase 31`

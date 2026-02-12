@@ -99,43 +99,43 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TIPS-01 | — | Pending |
-| TIPS-02 | — | Pending |
-| TIPS-03 | — | Pending |
-| TIPS-04 | — | Pending |
-| EFFORT-01 | — | Pending |
-| EFFORT-02 | — | Pending |
-| EFFORT-03 | — | Pending |
-| EFFORT-04 | — | Pending |
-| EFFORT-05 | — | Pending |
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| AUTH-04 | — | Pending |
-| BILL-01 | — | Pending |
-| BILL-02 | — | Pending |
-| BILL-03 | — | Pending |
-| BILL-04 | — | Pending |
-| BILL-05 | — | Pending |
-| BILL-06 | — | Pending |
-| BILL-07 | — | Pending |
-| BILL-08 | — | Pending |
-| APPS-01 | — | Pending |
-| APPS-02 | — | Pending |
-| APPS-03 | — | Pending |
-| DEMO-01 | — | Pending |
-| DEMO-02 | — | Pending |
-| DEMO-03 | — | Pending |
-| DEMO-04 | — | Pending |
-| DEMO-05 | — | Pending |
-| TEST-01 | — | Pending |
-| TEST-02 | — | Pending |
+| TIPS-01 | Phase 31 | Pending |
+| TIPS-02 | Phase 31 | Pending |
+| TIPS-03 | Phase 31 | Pending |
+| TIPS-04 | Phase 31 | Pending |
+| EFFORT-01 | Phase 32 | Pending |
+| EFFORT-02 | Phase 32 | Pending |
+| EFFORT-03 | Phase 32 | Pending |
+| EFFORT-04 | Phase 32 | Pending |
+| EFFORT-05 | Phase 32 | Pending |
+| AUTH-01 | Phase 33 | Pending |
+| AUTH-02 | Phase 33 | Pending |
+| AUTH-03 | Phase 33 | Pending |
+| AUTH-04 | Phase 33 | Pending |
+| BILL-01 | Phase 34 | Pending |
+| BILL-02 | Phase 34 | Pending |
+| BILL-03 | Phase 34 | Pending |
+| BILL-04 | Phase 34 | Pending |
+| BILL-05 | Phase 34 | Pending |
+| BILL-06 | Phase 34 | Pending |
+| BILL-07 | Phase 34 | Pending |
+| BILL-08 | Phase 34 | Pending |
+| APPS-01 | Phase 34 | Pending |
+| APPS-02 | Phase 34 | Pending |
+| APPS-03 | Phase 34 | Pending |
+| TEST-01 | Phase 34 | Pending |
+| DEMO-01 | Phase 35 | Pending |
+| DEMO-02 | Phase 35 | Pending |
+| DEMO-03 | Phase 35 | Pending |
+| DEMO-04 | Phase 35 | Pending |
+| DEMO-05 | Phase 35 | Pending |
+| TEST-02 | Phase 32 | Pending |
 
 **Coverage:**
 - v1.8 requirements: 31 total
-- Mapped to phases: 0
-- Unmapped: 31
+- Mapped to phases: 31
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-11*
-*Last updated: 2026-02-11 after initial definition*
+*Last updated: 2026-02-11 after roadmap creation*
