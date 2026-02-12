@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.8 Tasks App -- Phases 31+32 verified complete, ready for Phase 33
+**Current focus:** v1.8 Tasks App -- Phase 33 (Multi-User + Auth) in progress, Plan 01 complete
 
 ## Current Position
 
-Phase: 33 of 35 (Multi-User + Auth) -- next up
-Plan: 0 of 3 in current phase (not yet planned)
-Status: Phases 31 (Help Tips) + 32 (Effort Scoring) verified complete
-Last activity: 2026-02-11 -- Verified both Phase 31 (7/7 must-haves) and Phase 32 (12/12 must-haves)
+Phase: 33 of 35 (Multi-User + Auth) -- in progress
+Plan: 1 of 3 in current phase (Plan 01 complete)
+Status: Plan 01 (Auth Foundation) complete -- Firebase Auth, AuthContext, AuthGuard wired in todoist repo
+Last activity: 2026-02-11 -- Completed 33-01 auth foundation
 
-Progress: [###░░░░░░░] 27% (3/11 plans)
+Progress: [####░░░░░░] 36% (4/11 plans)
 
 ## Performance Metrics
 
@@ -25,15 +25,16 @@ Progress: [###░░░░░░░] 27% (3/11 plans)
 - Timeline: Jan 18 -> Feb 11, 2026 (25 days)
 
 **v1.8 Velocity:**
-- Plans completed: 3
+- Plans completed: 4
 - Average duration: 4 min
-- Total execution time: 11 min
+- Total execution time: 15 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 31-help-tips | 01 | 4 min | 2 | 9 |
 | 32-effort-scoring | 01 | 4 min | 2 | 7 |
 | 32-effort-scoring | 02 | 3 min | 2 | 7 |
+| 33-multi-user-auth | 01 | 4 min | 2 | 7 |
 
 ## Accumulated Context
 
@@ -47,6 +48,9 @@ Recent:
 - Effort field is nullable Int (null = unscored, not 0) to distinguish unscored from scored tasks
 - EFFORT_VALUES extracted to src/lib/effort.ts as shared constant with EffortValue type
 - computeEffortSum is a pure function; caller responsible for excluding subtasks to avoid double-counting
+- Use onIdTokenChanged (not onAuthStateChanged) for automatic cookie refresh on token rotation
+- Cookie name __session matches Cloud Run convention for single-cookie passthrough
+- Server-side auth.ts uses server-only package to prevent client import
 
 ### Pending Todos
 
@@ -67,9 +71,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Verified Phases 31+32 complete (19/19 must-haves passed)
+Stopped at: Completed 33-01-PLAN.md (Auth Foundation)
 Resume file: None
 
 ## Next Step
 
-Plan Phase 33 (Multi-User + Auth) -- `/gsd:plan-phase 33`
+Execute Plan 02 of Phase 33 (Multi-User + Auth) -- `/gsd:execute-phase 33`
