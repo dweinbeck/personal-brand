@@ -108,19 +108,19 @@ Plans:
   2. Demo workspace runs entirely client-side with zero database writes or API calls
   3. A persistent "DEMO" banner is visible at all times explaining that data is temporary, with a CTA to sign up
   4. All mutation UI elements (create, edit, delete buttons) are disabled or show feedback in demo mode -- no silent failures
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 35-01: Demo data fixtures, route, and layout provider
-- [ ] 35-02: Demo banner, mutation lockout, and sign-up CTA
+- [ ] 35-01-PLAN.md -- Demo seed data (~40 tasks), /demo route structure, DemoProvider context, DemoSidebar, and DemoProjectView
+- [ ] 35-02-PLAN.md -- DemoBanner with sign-up CTA, mutation lockout in TaskCard/SubtaskList/SectionHeader, "Try Demo" link on AuthGuard
 
 ## Progress
 
 **Execution Order:**
-- Wave 1: 31 + 32 (parallel — both todoist-only, independent)
-- Wave 2: 33 (sequential — riskiest phase, needs focus)
-- Wave 3: 34 (sequential — cross-repo billing)
-- Wave 4: 35 (sequential — depends on all prior)
+- Wave 1: 31 + 32 (parallel -- both todoist-only, independent)
+- Wave 2: 33 (sequential -- riskiest phase, needs focus)
+- Wave 3: 34 (sequential -- cross-repo billing)
+- Wave 4: 35 (sequential -- depends on all prior)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
