@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Planning next milestone
+**Current focus:** v1.8 Tasks App — defining requirements
 
 ## Current Position
 
-Phase: 30 of 30 complete
-Plan: All complete
-Status: Milestone v1.7 shipped
-Last activity: 2026-02-11 — v1.7 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-11 — Milestone v1.8 started
 
-Progress: v1.0-v1.7 SHIPPED | Next milestone: TBD
+Progress: v1.0-v1.7 SHIPPED | v1.8 in progress
 
 ## Performance Metrics
 
@@ -48,9 +48,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: v1.7 milestone archived
+Stopped at: Defining v1.8 requirements
 Resume file: None
 
 ## Next Step
 
-Start next milestone with `/gsd:new-milestone` (fresh context window recommended).
+Define requirements and create roadmap for v1.8 Tasks App.

@@ -78,18 +78,30 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-(None — planning next milestone)
+## Current Milestone: v1.8 Tasks App
+
+**Goal:** Integrate the standalone todoist app into the personal-brand site's Apps ecosystem with weekly credit gating, and add effort scoring, demo workspace, and help tips to the todoist app itself.
+
+**Target features:**
+- Tasks app listed on /apps with link to deployed todoist service
+- Weekly credit gating (100 credits/week, first week free, read-only when unpaid) — matching envelopes pattern
+- Demo workspace with realistic pre-populated data shown before enabling
+- Effort score per task with section/project rollup totals
+- Reusable HelpTip component with gold "?" hover tooltips
+- Server-enforced billing (402 on write when read-only)
+- Billing tests for key gating behavior
 
 ### Deferred
 
 - Real article content with MDX authoring pipeline
 - Writing page displays real articles (replaces lorem ipsum)
 - Optimized logo assets (SVG preferred, PNG fallback)
-- Additional paid tools: 60-Second Lesson, Bus Text, Dave Ramsey App (pricing entries exist, tools inactive)
+- Additional paid tools: 60-Second Lesson, Bus Text (pricing entries exist, tools inactive)
 
 ### Out of Scope
 
-- Todoist integration / control center — partially delivered v1.4 (editor + brand scraper)
+- Todoist parity (filters, labels, NLP dates, reminders, collaboration) — not needed for personal productivity tool
+- Stripe subscriptions for tasks — pre-paid credits model is intentional
 - OAuth / magic link login — Firebase Auth (Google Sign-In) covers user auth needs
 - Real-time chat — not relevant for personal site
 - Video content — unnecessary complexity
@@ -107,6 +119,7 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 **Shipped:** v1.7 on 2026-02-11
 **Live at:** https://dan-weinbeck.com
+**In progress:** v1.8 Tasks App
 
 Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
@@ -129,6 +142,8 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 - Stripe webhook at /api/billing/webhook — signature-verified, idempotent on event ID + session ID
 - Admin billing panel at /control-center/billing — user list, detail, adjust credits, refund usage, edit pricing
 - 4 tool pricing entries: brand_scraper (active, 50 credits), lesson_60s, bus_text, dave_ramsey (inactive)
+- Todoist app is a separate Next.js app at ~/Documents/todoist — PostgreSQL/Prisma, standalone deploy, v1.0 shipped 2026-02-10
+- Todoist features: workspaces, projects, sections, tasks, subtasks, tags, list/board views, today/completed/search views
 - Stripe secrets via GCP Secret Manager: stripe-secret-key (v4, live), stripe-webhook-secret (v3, live)
 - Brand Scraper user flow: Home → Apps → Brand Scraper → Auth → URL → Live progress → Brand Card → Assets → History
 
@@ -178,5 +193,7 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | Fire-and-forget Firestore history writes | Non-blocking scrape flow; history is supplementary, not critical path | ✓ Good — zero latency impact on scrape submissions |
 | Dynamic Google Font loading via CSS Font Loading API | Brand Card renders in extracted font; best-effort with system font fallback | ✓ Good — authentic brand rendering without blocking |
 
+| Tasks app as separate standalone service | Same multi-repo pattern as brand-scraper; todoist keeps Postgres/Prisma, personal-brand handles billing integration | — Pending |
+
 ---
-*Last updated: 2026-02-11 after v1.7 milestone*
+*Last updated: 2026-02-11 after v1.8 milestone start*
