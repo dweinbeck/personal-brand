@@ -25,7 +25,7 @@
 - [x] **Phase 31: Help Tips** - Reusable accessible tooltip component with centralized content catalog ✓ 2026-02-11
 - [x] **Phase 32: Effort Scoring** - Optional effort scores on tasks with section and project rollup totals ✓ 2026-02-11
 - [x] **Phase 33: Multi-User + Auth** - Firebase Auth integration and userId scoping across all data models ✓ 2026-02-12
-- [ ] **Phase 34: Weekly Credit Gating** - Billing API, server-enforced read-only mode, apps hub entry, and billing tests
+- [x] **Phase 34: Weekly Credit Gating** - Billing API, server-enforced read-only mode, apps hub entry, and billing tests ✓ 2026-02-12
 - [ ] **Phase 35: Demo Workspace** - Pre-populated read-only demo showcasing the full feature set
 
 ## Phase Details
@@ -94,9 +94,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 34-01-PLAN.md -- checkTasksAccess function, billing API route, and tasks_app tool pricing entry
-- [ ] 34-02-PLAN.md -- Billing guards on all 17 todoist mutation actions, ReadOnlyBanner, FreeWeekBanner, and BillingProvider
-- [ ] 34-03-PLAN.md -- Apps hub entry and billing unit tests (access logic + tool pricing)
+- [x] 34-01-PLAN.md -- checkTasksAccess function, billing API route, and tasks_app tool pricing entry ✓
+- [x] 34-02-PLAN.md -- Billing guards on all 17 todoist mutation actions, ReadOnlyBanner, FreeWeekBanner, and BillingProvider ✓
+- [x] 34-03-PLAN.md -- Apps hub entry and billing unit tests (access logic + tool pricing) ✓
 
 ### Phase 35: Demo Workspace
 **Goal**: Visitors can explore a realistic pre-populated workspace before signing up, showcasing the full feature set
@@ -127,5 +127,5 @@ Plans:
 | 31. Help Tips | v1.8 | 1/1 | ✓ Complete | 2026-02-11 |
 | 32. Effort Scoring | v1.8 | 2/2 | ✓ Complete | 2026-02-11 |
 | 33. Multi-User + Auth | v1.8 | 3/3 | ✓ Complete | 2026-02-12 |
-| 34. Weekly Credit Gating | v1.8 | 0/3 | Not started | - |
+| 34. Weekly Credit Gating | v1.8 | 3/3 | ✓ Complete | 2026-02-12 |
 | 35. Demo Workspace | v1.8 | 0/2 | Not started | - |
