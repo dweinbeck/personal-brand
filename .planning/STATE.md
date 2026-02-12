@@ -14,7 +14,7 @@ Plan: 1 of 2 in current phase
 Status: Executing
 Last activity: 2026-02-11 -- Completed 32-01 (effort field end-to-end)
 
-Progress: [#░░░░░░░░░] 9% (1/11 plans)
+Progress: [##░░░░░░░░] 18% (2/11 plans)
 
 ## Performance Metrics
 
@@ -25,12 +25,13 @@ Progress: [#░░░░░░░░░] 9% (1/11 plans)
 - Timeline: Jan 18 -> Feb 11, 2026 (25 days)
 
 **v1.8 Velocity:**
-- Plans completed: 1
+- Plans completed: 2
 - Average duration: 4 min
-- Total execution time: 4 min
+- Total execution time: 8 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
+| 31-help-tips | 01 | 4 min | 2 | 9 |
 | 32-effort-scoring | 01 | 4 min | 2 | 7 |
 
 ## Accumulated Context
@@ -41,6 +42,7 @@ Full decision log in PROJECT.md Key Decisions table.
 
 Recent:
 - Tasks app as separate standalone service (same multi-repo pattern as brand-scraper)
+- Toggletip interaction model for help tips: click pins, hover opens with delay, centralized catalog pattern
 - Effort field is nullable Int (null = unscored, not 0) to distinguish unscored from scored tasks
 - EFFORT_VALUES defined inline per component; Plan 02 will extract shared constant
 
