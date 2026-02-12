@@ -73,12 +73,12 @@ Plans:
   2. User sees only their own workspaces, projects, sections, tasks, subtasks, and tags after signing in
   3. Server derives userId exclusively from verified Firebase token -- no client-provided userId is accepted
   4. All Prisma queries include userId filter -- creating data as User A and querying as User B returns nothing
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 33-01: Firebase Auth setup, AuthContext, and sign-in UI
-- [ ] 33-02: Schema migration (userId columns, backfill, indexes)
-- [ ] 33-03: Query audit and userId enforcement across all server actions
+- [ ] 33-01-PLAN.md -- Firebase Auth setup, AuthContext with cookie sync, and sign-in UI
+- [ ] 33-02-PLAN.md -- Schema migration (userId columns on Workspace/Task/Tag, backfill, indexes)
+- [ ] 33-03-PLAN.md -- Query audit and userId enforcement across all services, actions, and pages
 
 ### Phase 34: Weekly Credit Gating
 **Goal**: Tasks app access is gated by weekly credits with graceful degradation to read-only mode
