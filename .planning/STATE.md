@@ -14,20 +14,20 @@ Plan: 3 of 3 in current phase (all complete)
 Status: Phase 34 complete -- weekly credit gating with billing API, apps hub, and tests
 Last activity: 2026-02-12 -- Completed 34-03 apps hub entry and billing tests
 
-Progress: [#########░] 82% (9/11 plans)
+Progress: [#########░] 91% (10/11 plans)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 8 (v1.0 through v1.7)
 - Total phases completed: 33
-- Total plans completed: 86
+- Total plans completed: 87
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
-- Plans completed: 9
+- Plans completed: 10
 - Average duration: 4 min
-- Total execution time: 35 min
+- Total execution time: 39 min
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
@@ -38,6 +38,7 @@ Progress: [#########░] 82% (9/11 plans)
 | 33-multi-user-auth | 02 | 4 min | 2 | 10 |
 | 33-multi-user-auth | 03 | 6 min | 2 | 28 |
 | 34-weekly-credit-gating | 01 | 6 min | 2 | 4 |
+| 34-weekly-credit-gating | 02 | 4 min | 2 | 10 |
 | 34-weekly-credit-gating | 03 | 4 min | 2 | 3 |
 
 ## Accumulated Context
@@ -63,6 +64,7 @@ Recent:
 - Mirror checkEnvelopeAccess pattern exactly for tasks billing (same free-week, paid-week, debit flow)
 - Inline types in tasks.ts rather than separate types file (simplicity for single-function module)
 - Tasks app is external link (not hosted on personal-brand), so no sitemap entry needed
+- Billing check gracefully degrades to readwrite on fetch error or missing BILLING_API_URL
 - Firestore mock pattern for billing tests: vi.mock at module level, dynamic import after mocks, reset in beforeEach
 
 ### Pending Todos
@@ -83,7 +85,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed 34-03-PLAN.md (Apps Hub + Billing Tests)
+Stopped at: Completed 34-02-PLAN.md (Billing Guards + UI in todoist repo)
 Resume file: None
 
 ## Next Step
