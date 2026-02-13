@@ -7,8 +7,8 @@ export function AccomplishmentCard({
 }: {
   accomplishment: Accomplishment;
 }) {
-  const visibleSkills = accomplishment.skills.slice(0, 4);
-  const remainingCount = accomplishment.skills.length - 4;
+  const visibleSkills = accomplishment.tags.slice(0, 4);
+  const remainingCount = accomplishment.tags.length - 4;
 
   return (
     <Link
@@ -38,7 +38,7 @@ export function AccomplishmentCard({
 
       {/* Description */}
       <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3">
-        {accomplishment.description}
+        {accomplishment.setup}
       </p>
 
       {/* Skills tags (max 4 visible) */}

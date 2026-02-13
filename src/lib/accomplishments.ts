@@ -8,12 +8,11 @@ export interface Accomplishment {
   company: string;
   location?: string;
   companyLogo?: string | null;
-  description: string;
-  skills: string[];
+  tags: string[];
   setup?: string;
   workCompleted?: string;
   results?: string;
-  skillsUnlocked?: string[];
+  skillsExercised?: string[];
 }
 
 export function getAccomplishments(): Accomplishment[] {

@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   return {
     title: `${accomplishment.title} | About`,
-    description: accomplishment.description,
+    description: accomplishment.setup,
   };
 }
 
@@ -78,7 +78,7 @@ export default async function AccomplishmentDetailPage({ params }: PageProps) {
 
         {/* All skills as tags */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {accomplishment.skills.map((skill) => (
+          {accomplishment.tags.map((skill) => (
             <span
               key={skill}
               className="inline-block rounded-full bg-gold-light px-2.5 py-0.5 text-xs font-medium text-text-primary"
@@ -124,14 +124,14 @@ export default async function AccomplishmentDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {accomplishment.skillsUnlocked &&
-          accomplishment.skillsUnlocked.length > 0 && (
+        {accomplishment.skillsExercised &&
+          accomplishment.skillsExercised.length > 0 && (
             <section>
               <h2 className="text-xl font-semibold text-text-primary mb-3">
-                Skills Unlocked
+                Skills Exercised
               </h2>
               <div className="flex flex-wrap gap-2">
-                {accomplishment.skillsUnlocked.map((skill) => (
+                {accomplishment.skillsExercised.map((skill) => (
                   <span
                     key={skill}
                     className="inline-block rounded-full bg-gold-light px-3 py-1 text-sm font-medium text-text-primary"
