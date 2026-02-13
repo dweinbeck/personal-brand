@@ -1,205 +1,362 @@
 [
   {
-    "slug": "3m-marketing-analytics-leader",
-    "title": "Built Marketing Analytics Team from Scratch",
-    "role": "Global Marketing Analytics Leader",
-    "years": "2021 - 2023",
-    "company": "3M Corporation",
-    "location": "St. Paul, MN",
-    "companyLogo": "/images/logos/3m.svg",
-    "description": "Stood up analytics team within newly formed Marketing Center, growing from 5 to 11 employees. Designed and managed buildout of marketing performance reporting products through Microsoft Power Platform for a $13B/year business unit.",
-    "skills": [
-      "Team Leadership",
-      "Power Platform",
-      "PowerBI",
-      "Scrum",
-      "Strategic Planning"
+    "slug": "transparent-search-brand-health-leading-indicators",
+    "title": "Quantified Search-Based Leading Indicators of Brand Health Across 7 Markets",
+    "role": "Director, Data & Analytics",
+    "years": "Mar 2025 - Present",
+    "company": "Transparent Partners",
+    "location": "Chicago, IL",
+    "companyLogo": "/images/logos/transparent-partners.svg",
+    "tags": [
+      "Marketing Analytics",
+      "Time Series",
+      "Regression Modeling",
+      "Competitive Benchmarking",
+      "Executive Storytelling"
     ],
-    "setup": "3M's Safety & Industrial Business Group needed centralized marketing analytics capabilities after organizational restructuring. The Marketing Center was newly formed with no established analytics function, requiring a ground-up approach to team building, process development, and technology implementation.",
-    "workCompleted": "Created comprehensive team roles and responsibilities charter with skills assessments for each position. Implemented scrum workflow to manage analytics requests and project delivery. Designed and deployed marketing performance reporting using Microsoft Power Platform including PowerBI dashboards and PowerAutomate workflows. Created 3-year strategic plan for team expansion and technology investments. Assisted marketing tech stack optimization including Salesforce.com, Adobe Analytics, and Tealium integration.",
-    "results": "Grew team from 5 to 11 employees through strategic hiring and role definition. Delivered innovative segment reports reaching enterprise-wide demand generation reporting. Established repeatable processes for analytics request intake and delivery. Successfully integrated marketing technology stack for unified reporting across platforms.",
-    "skillsUnlocked": [
-      "Team Leadership",
-      "Power Platform",
-      "PowerBI",
-      "Scrum",
-      "Strategic Planning",
-      "Salesforce.com",
-      "Adobe Analytics",
-      "Tealium",
-      "Enterprise Reporting"
+    "setup": "Brand marketers needed a higher-frequency way to monitor meaningful brand movement during high-spend campaigns. Survey-based brand trackers updated slowly (and often had low sample sizes), limiting the ability to make in-market adjustments. Data availability also introduced constraints: only ~3 years of history, staggered time series due to lags, and markets with quarterly or missing survey waves. Seasonality and trends required transformations to produce interpretable relationships.",
+    "workCompleted": "Prepared and transformed daily search datasets for the brand and nine key competitors across seven global markets. Tested leading/lagging relationships using correlation analysis with multiple lags in both directions. Built and tuned multiple regression models to identify the most valuable search signals while accounting for seasonality/trend effects. Visualized and documented findings through an executive slide deck and a detailed R Markdown data story, including code delivery to enable long-term integration into existing internal models.",
+    "results": "Enabled a weekly review of meaningful brand-health movement (versus monthly or quarterly survey cycles) and introduced a practical leading indicator that marketers could use to adjust campaigns while in-market to improve spend efficiency. Established a predictive relationship among search, brand-health surveys, and commercial outcomes, allowing brand health to be used as an intermediate variable in marketing mix models—supporting more actionable understanding of drivers of both brand movement and sales.",
+    "skillsExercised": [
+      "Lag Analysis",
+      "Time-Series Signal Engineering",
+      "Model Tuning",
+      "Cross-Market Analytics",
+      "R Markdown Data Storytelling",
+      "Executive-Level Communication"
     ]
   },
   {
-    "slug": "3m-product-owner-analytics",
-    "title": "Rebuilt Analytics Post-SAP Transition",
-    "role": "Product Owner, Analytics",
-    "years": "2019 - 2020",
+    "slug": "transparent-customer-marketing-data-architecture-salesforce-data360",
+    "title": "Designed Customer Marketing Data Architecture and Roadmap for a Salesforce Data 360 Evaluation",
+    "role": "Director, Data & Analytics",
+    "years": "Mar 2025 - Present",
+    "company": "Transparent Partners",
+    "location": "Chicago, IL",
+    "companyLogo": "/images/logos/transparent-partners.svg",
+    "tags": [
+      "Data Architecture",
+      "Marketing Technology",
+      "Salesforce",
+      "Change Management",
+      "Marketing Strategy"
+    ],
+    "setup": "A $55B healthcare brand needed a coherent customer marketing data foundation to support evaluation of Salesforce Data 360 versus alternatives within its existing MarTech stack. Requirements, source systems, and measurement needs were fragmented across teams, creating ambiguity about what data was needed, how it should flow, and what work had to happen before implementation.",
+    "workCompleted": "Led the architecture design process by conducting 18 stakeholder discovery sessions and translating needs into user stories, use cases, and functional/tactical requirements. Used those requirements to evaluate options including investment in a customer data platform versus improved integrations with the current technology stack. Assessed costs, benefits, and change-management considerations, then produced a recommended two-year roadmap covering foundational people/process/data work and implementation-focused technology activities.",
+    "results": "Delivered a future-state architecture and implementation roadmap that clarified requirements, dependencies, and sequencing for the Salesforce Data 360 decision—accelerating cross-team alignment on the activities and investments needed, how data should flow, and what decisions had to be resolved prior to implementation.",
+    "skillsExercised": [
+      "Stakeholder Discovery & Synthesis",
+      "Target-State Data Architecture Design",
+      "MarTech Option Evaluation",
+      "Roadmapping",
+      "Business Case Development",
+      "Change-Management Planning"
+    ]
+  },
+  {
+    "slug": "3m-marketing-analytics-function",
+    "title": "Established Marketing Analytics Function for a New Global Marketing Center",
+    "role": "Global Marketing Analytics Leader, Safety & Industrial Business Group",
+    "years": "Jan 2021 - Jul 2023",
     "company": "3M Corporation",
     "location": "St. Paul, MN",
     "companyLogo": "/images/logos/3m.svg",
-    "description": "Led rebuilding of 65+ analytics products following major SAP ERP Go-Live. Managed stakeholder relationships across 1200+ users while implementing Agile/Scrum methodologies and establishing data governance frameworks.",
-    "skills": [
-      "Agile/Scrum",
-      "Product Ownership",
-      "SAP",
-      "Data Governance",
-      "Report Development"
+    "tags": [
+      "Leadership",
+      "Org Design",
+      "Strategy",
+      "Agile",
+      "Marketing Operations",
+      "Data Engineering"
     ],
-    "setup": "3M's US business unit underwent a major SAP ERP implementation, rendering existing analytics and reporting infrastructure obsolete. Over 65 reports serving 1200+ stakeholders needed to be rebuilt from scratch with new data sources, logic, and delivery mechanisms.",
-    "workCompleted": "Adopted Agile/Scrum methodology to prioritize and manage report development backlog. Partnered with IT and business stakeholders to translate requirements into technical specifications. Established data governance frameworks to ensure consistency and accuracy across rebuilt reports. Managed cross-functional teams to deliver reports on compressed timelines while maintaining quality standards.",
-    "results": "Successfully rebuilt all 65+ critical analytics products within aggressive post-Go-Live timelines. Maintained stakeholder satisfaction across 1200+ users during transition period. Established data governance practices that improved report accuracy and reduced maintenance burden. Created reusable templates and patterns that accelerated future report development.",
-    "skillsUnlocked": [
-      "Agile/Scrum",
-      "Product Ownership",
-      "SAP",
-      "Data Governance",
-      "Report Development",
+    "setup": "3M formed a new Marketing Center during an organizational restructuring, but the Safety & Industrial Business Group did not yet have a centralized marketing analytics function or clear processes for prioritizing and delivering analytics work.",
+    "workCompleted": "Defined team roles, responsibilities, and focus areas, including skills assessments and an organizational focus map. Implemented a Scrum-based workflow to manage requests and maintain a consistent cadence with global marketing operations leaders. Established cleaner foundational datasets and built value-added data flows that automated dashboard outputs into business-ready PowerPoint materials to support marketers with faster insights.",
+    "results": "Scaled the team from 5 to 11 through deliberate role definition and hiring. Established repeatable ways of working that improved clarity on priorities and increased confidence in analytics delivery across the marketing organization, supporting the work of 1,000+ marketers with more timely BI and insight delivery.",
+    "skillsExercised": [
+      "Strategic Org Design",
+      "Scrum Workflows",
       "Stakeholder Management",
-      "Change Management"
+      "Operating Model Design",
+      "Work Intake & Prioritization"
     ]
   },
   {
-    "slug": "3m-data-science-manager",
-    "title": "Deployed Enterprise Sales Software",
-    "role": "Data Science Team Manager",
-    "years": "2016 - 2018",
+    "slug": "3m-power-platform-performance-reporting",
+    "title": "Delivered Power Platform Performance Reporting for a $13B Business Unit",
+    "role": "Global Marketing Analytics Leader, Safety & Industrial Business Group",
+    "years": "Jan 2021 - Jul 2023",
     "company": "3M Corporation",
     "location": "St. Paul, MN",
     "companyLogo": "/images/logos/3m.svg",
-    "description": "Managed team of 9 direct reports delivering advanced analytics and data science solutions. Deployed sales software across 400+ employees and built customer segmentation models analyzing 400K+ customer records.",
-    "skills": [
-      "Team Management",
-      "R",
-      "Customer Segmentation",
-      "Sales Software",
-      "Statistical Modeling"
+    "tags": [
+      "Power BI",
+      "Power Platform",
+      "Analytics Product Delivery",
+      "Requirements Translation",
+      "Data Storytelling"
     ],
-    "setup": "The Consumer Business Group needed to modernize its sales approach with data-driven tools and insights. Sales teams lacked systematic methods for prioritizing customer outreach, and marketing needed better segmentation for targeted campaigns.",
-    "workCompleted": "Managed team of 9 data scientists and analysts delivering analytics solutions. Designed and deployed R Shiny-based sales software providing actionable insights to 400+ field sales employees. Built customer segmentation models using statistical techniques on 400K+ customer records. Created product recommendation algorithms to guide cross-sell and upsell opportunities.",
-    "results": "Deployed sales software adopted by 400+ employees across the sales organization. Delivered customer segmentation powering targeted marketing campaigns with improved conversion rates. Established data science practices and code standards that improved team efficiency and output quality.",
-    "skillsUnlocked": [
-      "Team Management",
-      "R",
-      "R Shiny",
-      "Customer Segmentation",
-      "Sales Software",
-      "Statistical Modeling",
-      "Product Recommendations",
-      "People Leadership"
+    "setup": "Marketing leadership needed consistent, scalable visibility into performance, but reporting was fragmented across teams and tools, limiting adoption and slowing decision-making.",
+    "workCompleted": "Led the end-to-end delivery of marketing performance reporting products built on Microsoft Power Platform. Partnered with stakeholders to translate needs into scalable reporting designs, guided the team through development and rollout, and incorporated automation where appropriate to reduce manual effort and improve reliability.",
+    "results": "Delivered performance reporting products that improved the accessibility and usability of marketing insights across the business group and reduced reliance on manual reporting steps.",
+    "skillsExercised": [
+      "Power BI",
+      "Power Platform",
+      "Analytics Product Management",
+      "Automation Mindset",
+      "Executive Reporting"
     ]
   },
   {
-    "slug": "darden-finance-intern",
-    "title": "Analyzed 130M Transaction Rows",
-    "role": "Finance Intern - Advanced Analytics",
-    "years": "Summer 2015",
+    "slug": "3m-analytics-strategy-demandgen-martech",
+    "title": "Set Multi-Year Analytics Direction and Improved Demand-Generation Measurement",
+    "role": "Global Marketing Analytics Leader, Safety & Industrial Business Group",
+    "years": "Jan 2021 - Jul 2023",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Strategic Planning",
+      "Roadmapping",
+      "Marketing Measurement",
+      "MarTech",
+      "Executive Communication"
+    ],
+    "setup": "As the analytics capability matured, leadership needed a clear multi-year plan to guide investments and a stronger measurement foundation across marketing platforms to support consistent demand-generation reporting.",
+    "workCompleted": "Authored a three-year strategic plan and roadmap for team expansion, technology/data investments, and planned initiatives. Delivered segment reports and represented the business group in enterprise demand-generation reporting efforts. Supported marketing technology optimization across Salesforce.com, Adobe Analytics, and Tealium to improve consistency of measurement inputs.",
+    "results": "Aligned stakeholders on a clear multi-year direction for the analytics function while improving the quality and consistency of demand-generation insights and reporting inputs across key marketing platforms.",
+    "skillsExercised": [
+      "Strategy & Roadmapping",
+      "Enterprise Reporting Influence",
+      "Marketing Measurement",
+      "MarTech Enablement",
+      "Executive Alignment"
+    ]
+  },
+  {
+    "slug": "3m-sap-reporting-recovery",
+    "title": "Re-Established U.S. Reporting After SAP Go-Live for 1,200+ Stakeholders",
+    "role": "Product Owner, Safety & Industrial Business Group Analytics",
+    "years": "Jan 2019 - Dec 2020",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Product Ownership",
+      "SAP",
+      "Stakeholder Management",
+      "Requirements Definition",
+      "Delivery Management"
+    ],
+    "setup": "A major SAP ERP implementation disrupted existing reporting and created urgent demand for re-established analytics. Stakeholders needed continuity and clarity while data sources, logic, and delivery mechanisms changed.",
+    "workCompleted": "Owned the reporting rebuild effort by coordinating with stakeholders and technical teams to translate needs into executable requirements. Managed prioritization across diverse user groups and ensured delivery sequencing addressed the most business-critical reporting first.",
+    "results": "Restored reporting coverage to 1,200+ stakeholders across the U.S. organization after the SAP transition and reduced disruption during the post-go-live period through clearer prioritization and delivery visibility.",
+    "skillsExercised": [
+      "ERP Transition Support",
+      "Cross-Functional Product Ownership",
+      "High-Stakes Stakeholder Management",
+      "Backlog Prioritization"
+    ]
+  },
+  {
+    "slug": "3m-report-inventory-governance",
+    "title": "Created a Report Inventory and Governance Baseline for 200+ Assets",
+    "role": "Product Owner, Safety & Industrial Business Group Analytics",
+    "years": "Jan 2019 - Dec 2020",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Data Governance",
+      "Documentation",
+      "Process Design",
+      "Analytics Operations",
+      "Quality Control"
+    ],
+    "setup": "Reporting sprawl made it difficult to understand what existed, who used it, and which assets were redundant or risky—especially after system changes introduced new data definitions and dependencies.",
+    "workCompleted": "Built a detailed report inventory to document the reporting landscape (200+ assets), including purpose and ownership considerations. Used the inventory as a foundation for consistent definitions, decision-making about what to keep or retire, and improved coordination across the analytics team.",
+    "results": "Improved visibility into the reporting footprint and created a practical foundation for governance and standardization, enabling more disciplined maintenance decisions and reducing the risk of unmanaged, duplicative reporting.",
+    "skillsExercised": [
+      "Analytics Governance",
+      "Operational Documentation",
+      "Standardization Foundations",
+      "Risk Reduction"
+    ]
+  },
+  {
+    "slug": "3m-reporting-standardization-agile",
+    "title": "Standardized Reporting Delivery and Reduced Maintenance Through Consolidation",
+    "role": "Product Owner, Safety & Industrial Business Group Analytics",
+    "years": "Jan 2019 - Dec 2020",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Agile/Scrum",
+      "People Leadership",
+      "Change Management",
+      "Operational Efficiency",
+      "Stakeholder Alignment"
+    ],
+    "setup": "After SAP go-live and a company reorganization, the analytics team needed a dependable way to prioritize work, deliver consistently, and simplify a reporting landscape that had become costly to maintain.",
+    "workCompleted": "Implemented Agile methodology using Scrum workflow to manage intake, backlog prioritization, and sprint delivery. Co-developed the strategic plan for the Data Intelligence function within Customer Operations. Led consolidation and standardization by aligning stakeholders on common definitions and migrating users to streamlined outputs. Managed 5–12 direct reports across report design, software development, data science, and interns.",
+    "results": "Reduced the reporting footprint by 65+ reports, improving maintainability and lowering database load. Increased transparency and predictability of delivery through a consistent Agile operating rhythm across the team.",
+    "skillsExercised": [
+      "Scrum Implementation",
+      "Org & Team Leadership (5–12 directs)",
+      "Report Rationalization",
+      "Operational Excellence",
+      "Change Adoption"
+    ]
+  },
+  {
+    "slug": "3m-sales-software-deployment",
+    "title": "Deployed Data-Driven Sales Software to 400+ Users",
+    "role": "Data Science Team Manager, Industrial Business Group",
+    "years": "Jan 2016 - Dec 2018",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Analytics Product Delivery",
+      "R Shiny",
+      "User Adoption",
+      "Sales Enablement",
+      "Team Management"
+    ],
+    "setup": "Sales teams needed practical tools that translated analytics into day-to-day actions. Without an adopted workflow, insights remained disconnected from frontline execution.",
+    "workCompleted": "Led a team of nine (statisticians, software developers, data scientists, interns) and oversaw development and deployment of sales software built for field use. Focused on usability, scalability, and adoption by partnering with stakeholders and iterating based on feedback.",
+    "results": "Achieved adoption across 400+ employees, enabling more consistent sales decision-making and improving efficiency across multiple selling activities.",
+    "skillsExercised": [
+      "Product Delivery at Scale",
+      "R Shiny Applications",
+      "Adoption & Enablement",
+      "Sales Analytics Leadership",
+      "People Management"
+    ]
+  },
+  {
+    "slug": "3m-customer-segmentation-400k",
+    "title": "Segmented 400K Customers Using 3.5 Years of POS Data",
+    "role": "Data Science Team Manager, Industrial Business Group",
+    "years": "Jan 2016 - Dec 2018",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Customer Segmentation",
+      "Statistical Methods",
+      "R",
+      "Data Engineering",
+      "Sales Strategy"
+    ],
+    "setup": "Sales teams lacked a consistent way to understand and prioritize accounts based on behavior. Marketing and sales needed practical segmentation that field reps could apply without heavy interpretation.",
+    "workCompleted": "Led development of customer segmentation by preparing multi-year POS data, applying statistical methods to cluster and label behaviors, and translating segments into field-friendly classifications. Partnered with sales leaders to ensure the output mapped to real-world selling motions.",
+    "results": "Delivered a segmentation and labeling approach covering 400,000+ customers that improved how reps classified accounts and supported more targeted outreach and planning.",
+    "skillsExercised": [
+      "Segmentation & Labeling",
+      "Behavioral Analytics Translation",
+      "Field-Ready Insight Design",
+      "Advanced R Analytics"
+    ]
+  },
+  {
+    "slug": "3m-recommendation-lost-sales-engine",
+    "title": "Co-Developed Recommendation and Lost-Sales Analytics to Support Growth and Retention",
+    "role": "Data Science Team Manager, Industrial Business Group",
+    "years": "Jan 2016 - Dec 2018",
+    "company": "3M Corporation",
+    "location": "St. Paul, MN",
+    "companyLogo": "/images/logos/3m.svg",
+    "tags": [
+      "Recommendation Systems",
+      "Customer Analytics",
+      "Cross-Sell/Upsell",
+      "Retention Analytics",
+      "Team Leadership"
+    ],
+    "setup": "The organization needed scalable ways to identify cross-sell/upsell opportunities and to spot early signals of account erosion, so sales teams could intervene with relevant actions.",
+    "workCompleted": "Partnered with cross-functional stakeholders to define the opportunity model and supported the buildout of recommendation and lost-sales analytics. Focused on outputs that were understandable to the field and could be embedded into existing sales workflows.",
+    "results": "Delivered analytics that supported increased sales within current accounts and helped reduce churn among eroding customers by making opportunities and risks more visible.",
+    "skillsExercised": [
+      "Opportunity Modeling",
+      "Retention Signal Thinking",
+      "Insight-to-Action Design",
+      "Cross-Functional Analytics Delivery"
+    ]
+  },
+  {
+    "slug": "darden-130m-transactions-segmentation",
+    "title": "Analyzed 130M Transactions to Guide Targeted Marketing Campaigns",
+    "role": "Finance Intern, Advanced Analytics",
+    "years": "Jun 2015 - Aug 2015",
     "company": "Darden Restaurants",
     "location": "Orlando, FL",
     "companyLogo": "/images/logos/darden.svg",
-    "description": "Built customer segmentation models analyzing 130 million transaction rows to power targeted marketing campaigns. Developed SQL queries and R models to identify high-value customer segments for Olive Garden and LongHorn Steakhouse brands.",
-    "skills": [
+    "tags": [
       "SQL",
       "R",
       "Tableau",
-      "Customer Segmentation",
-      "Marketing Analytics"
+      "Customer Analytics",
+      "Marketing Strategy"
     ],
-    "setup": "Darden Restaurants, parent company of Olive Garden and LongHorn Steakhouse, wanted to leverage its massive transaction data to better understand customer behavior and improve marketing effectiveness. The analytics team needed to process and analyze 130 million rows of transaction data.",
-    "workCompleted": "Developed complex SQL queries to extract and transform transaction data for analysis. Built customer segmentation models in R identifying distinct behavioral clusters. Created Tableau dashboards visualizing customer segments and their characteristics. Collaborated with marketing teams to translate analytical insights into campaign strategies.",
-    "results": "Delivered customer segmentation models that powered targeted marketing campaigns. Identified high-value customer segments with actionable characteristics for marketing targeting. Created reusable analytical frameworks that continued to generate insights after internship concluded.",
-    "skillsUnlocked": [
-      "SQL",
-      "R",
-      "Tableau",
-      "Customer Segmentation",
-      "Marketing Analytics",
-      "Big Data Analysis",
-      "Restaurant Industry"
+    "setup": "Marketing teams wanted to use large-scale transaction data to understand customer behavior and identify segments most likely to respond to specific outreach strategies.",
+    "workCompleted": "Queried and transformed transaction data, built segmentation and profitability bins, and profiled segments with behavioral and demographic context. Synthesized insights into recommendations for two campaign approaches: lapsed-customer reactivation and daypart/sales-area diversification.",
+    "results": "Produced a segmentation framework and campaign recommendations grounded in 130M transactions, strengthening targeting decisions and creating reusable analysis patterns for the team.",
+    "skillsExercised": [
+      "Large-Scale SQL Analysis",
+      "Segmentation in R",
+      "Dashboarding in Tableau",
+      "Campaign Targeting Analytics"
     ]
   },
   {
-    "slug": "disney-forecasting-intern",
-    "title": "Modernized WDW Reporting Infrastructure",
-    "role": "Forecasting Intern - Revenue Management",
-    "years": "2014",
-    "company": "Walt Disney World",
-    "location": "Orlando, FL",
+    "slug": "disney-tableau-reporting-modernization",
+    "title": "Modernized Revenue Management Reporting from Excel to Tableau",
+    "role": "Forecasting Intern, Revenue Management & Analytics",
+    "years": "Jun 2014 - Dec 2014",
+    "company": "The Walt Disney Company (Walt Disney World Themeparks)",
+    "location": "Lake Buena Vista, FL",
     "companyLogo": "/images/logos/disney.svg",
-    "description": "Converted legacy Excel-based reporting to interactive Tableau dashboards for the Revenue Management team. Developed market report dashboards and supported Walt Disney World attendance forecasting initiatives.",
-    "skills": [
-      "SAS",
+    "tags": [
       "Tableau",
-      "Excel",
-      "Forecasting",
-      "Dashboard Development"
-    ],
-    "setup": "Walt Disney World's Revenue Management team relied on manual Excel-based processes for critical reporting and forecasting. These processes were time-consuming, error-prone, and limited the team's ability to explore data and identify insights.",
-    "workCompleted": "Converted manual Excel reporting processes to automated Tableau dashboards. Developed market report dashboards providing real-time visibility into key performance metrics. Supported attendance forecasting initiatives using SAS statistical modeling. Created documentation and training materials to enable team adoption of new tools.",
-    "results": "Delivered Tableau dashboards that reduced reporting time from hours to minutes. Improved data accuracy by eliminating manual data entry and transformation steps. Enabled self-service analytics allowing team members to explore data independently. Contributed forecasting support that improved attendance prediction accuracy.",
-    "skillsUnlocked": [
       "SAS",
-      "Tableau",
-      "Excel",
-      "Forecasting",
-      "Dashboard Development",
       "Process Automation",
-      "Theme Park Industry"
+      "Dashboard Design",
+      "Forecasting Support"
+    ],
+    "setup": "Critical reporting and forecasting workflows relied on manual Excel processes that were time-consuming and limited leaders’ ability to explore data quickly and consistently.",
+    "workCompleted": "Converted recurring Excel reporting into Tableau dashboards published on the department server. Built an interactive market report dashboard for directors using SAS and Tableau. Supported attendance planning work (Annual Operating Plan) and contributed to daily/weekly reporting to evaluate attendance versus forecasts.",
+    "results": "Improved reporting efficiency and accessibility by shifting manual Excel reporting to self-service Tableau dashboards, giving leaders faster visibility into key market and attendance metrics.",
+    "skillsExercised": [
+      "Tableau Publishing & Adoption",
+      "SAS-to-Visualization Workflow",
+      "Reporting Automation",
+      "Forecasting Operations"
     ]
   },
   {
-    "slug": "iowa-mba-analytics",
-    "title": "MBA with Analytics Specialization",
+    "slug": "mba-analytics-specialization",
+    "title": "Completed MBA with Analytics Specialization and Quantitative Distinction",
     "role": "Graduate Student",
-    "years": "2013 - 2015",
+    "years": "Aug 2013 - Dec 2015",
     "company": "University of Iowa Tippie School of Business",
     "location": "Iowa City, IA",
     "companyLogo": "/images/logos/iowa.svg",
-    "description": "Earned MBA with specialization in Analytics, graduating with 3.81 GPA. Achieved GMAT score of 760 (99th percentile). Served as Graduate Assistant while completing rigorous coursework in statistics, marketing analytics, and data science.",
-    "skills": [
-      "Analytics",
-      "Marketing Analytics",
+    "tags": [
       "Statistics",
-      "Academic Research"
-    ],
-    "setup": "After several years in industry, pursued an MBA to formalize business knowledge and develop deeper analytical capabilities. The University of Iowa's Tippie School offered a specialized analytics track that combined business fundamentals with advanced quantitative methods.",
-    "workCompleted": "Completed comprehensive MBA curriculum with specialization in Analytics. Coursework included advanced statistics, marketing analytics, financial modeling, and strategic management. Served as Graduate Assistant supporting faculty research and teaching. Collaborated on team projects applying analytical methods to real business problems.",
-    "results": "Graduated with 3.81 GPA demonstrating academic excellence. GMAT score of 760 (99th percentile) reflected strong quantitative and verbal abilities. Gained deep foundation in analytical methods that informed subsequent career progression. Built network of professionals in analytics and business leadership.",
-    "skillsUnlocked": [
-      "Analytics",
       "Marketing Analytics",
-      "Statistics",
-      "Academic Research",
-      "Financial Modeling",
-      "Strategic Management",
-      "Business Communication"
-    ]
-  },
-  {
-    "slug": "tufts-ba-spanish",
-    "title": "Bachelor of Arts in Spanish",
-    "role": "Undergraduate Student",
-    "years": "2002 - 2006",
-    "company": "Tufts University",
-    "location": "Medford, MA",
-    "companyLogo": "/images/logos/tufts.svg",
-    "description": "Earned BA in Spanish from Tufts University, achieving bilingual fluency in English and Spanish. Liberal arts education provided strong foundation in critical thinking, communication, and cross-cultural understanding.",
-    "skills": [
-      "Spanish Language",
-      "Communication",
-      "Critical Thinking",
-      "Cross-Cultural Understanding"
+      "Business Strategy",
+      "Academic Research Support",
+      "Communication"
     ],
-    "setup": "Pursued undergraduate education at Tufts University with a focus on Spanish language and literature. The rigorous liberal arts curriculum emphasized analytical thinking, clear communication, and exposure to diverse perspectives.",
-    "workCompleted": "Completed Spanish major curriculum including advanced language, literature, and culture courses. Developed bilingual fluency through immersive coursework and study. Engaged with diverse liberal arts curriculum spanning humanities, social sciences, and natural sciences. Participated in campus activities and organizations.",
-    "results": "Achieved bilingual fluency in English and Spanish, a skill that has enhanced professional communication throughout career. Developed strong written and verbal communication abilities through rigorous humanities coursework. Built foundation in critical thinking that supports analytical problem-solving in professional contexts.",
-    "skillsUnlocked": [
-      "Spanish Language",
-      "Communication",
-      "Critical Thinking",
-      "Cross-Cultural Understanding",
-      "Liberal Arts Foundation",
-      "Written Communication"
+    "setup": "Pursued graduate education to deepen quantitative rigor and pair it with business fundamentals, creating a platform for leading analytics teams and translating insights into decisions.",
+    "workCompleted": "Completed MBA coursework with an analytics focus and served as a Graduate Assistant supporting faculty and program needs, strengthening both analytical discipline and communication under time constraints.",
+    "results": "Graduated with a 3.81 GPA and a 760 GMAT score (99th percentile), reinforcing quantitative strength and business breadth that supported subsequent leadership roles in analytics and data science.",
+    "skillsExercised": [
+      "Advanced Analytical Rigor",
+      "Business Fundamentals",
+      "Structured Problem Solving",
+      "Executive-Ready Communication"
     ]
   }
 ]
