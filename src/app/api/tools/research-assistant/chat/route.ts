@@ -5,9 +5,15 @@ import {
   finalizeResearchBilling,
 } from "@/lib/research-assistant/billing";
 import { createRequestLogger } from "@/lib/research-assistant/logger";
-import { createParallelStream } from "@/lib/research-assistant/streaming-controller";
-import type { ResearchTier } from "@/lib/research-assistant/types";
-import { logResearchUsage } from "@/lib/research-assistant/usage-logger";
+import type {
+  BillingAction,
+  ResearchTier,
+} from "@/lib/research-assistant/types";
+import {
+  handleFollowUpAction,
+  handlePromptAction,
+  handleReconsiderAction,
+} from "./route-handlers";
 
 // ── Runtime config ──────────────────────────────────────────────
 // Node.js runtime required for firebase-admin (no Edge Runtime).
@@ -18,10 +24,28 @@ export const dynamic = "force-dynamic";
 
 // ── Request validation ──────────────────────────────────────────
 
-const chatRequestSchema = z.object({
-  prompt: z.string().min(1, "Prompt is required").max(10000),
-  tier: z.enum(["standard", "expert"]),
-});
+const chatRequestSchema = z
+  .object({
+    prompt: z.string().max(10000),
+    tier: z.enum(["standard", "expert"]),
+    action: z.enum(["prompt", "follow-up", "reconsider"]).default("prompt"),
+    conversationId: z.string().optional(),
+  })
+  .refine((data) => data.action === "prompt" || data.conversationId, {
+    message: "conversationId required for follow-up and reconsider actions",
+  })
+  .refine((data) => data.action === "reconsider" || data.prompt.length > 0, {
+    message: "Prompt is required",
+  });
+
+// ── SSE response headers ────────────────────────────────────────
+
+const SSE_HEADERS = {
+  "Content-Type": "text/event-stream",
+  "Cache-Control": "no-cache, no-transform",
+  Connection: "keep-alive",
+  "X-Accel-Buffering": "no",
+} as const;
 
 // ── POST handler ────────────────────────────────────────────────
 
@@ -48,17 +72,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const { prompt, tier } = parsed.data;
+  const { prompt, tier, action, conversationId } = parsed.data;
   const startTime = Date.now();
 
   // Log prompt submission (no PII: no email, no prompt content)
   logger.info("Research prompt submitted", {
     userId: auth.uid,
     tier,
+    action,
     promptLength: prompt.length,
+    ...(conversationId ? { conversationId } : {}),
   });
 
   // 3. Credit deduction (two-phase: PENDING now, finalize after stream)
+  const billingAction = action as BillingAction;
   const idempotencyKey = crypto.randomUUID();
   let usageId: string;
 
@@ -66,7 +93,7 @@ export async function POST(request: Request) {
     const debit = await debitForResearchAction({
       userId: auth.uid,
       email: auth.email,
-      action: "prompt",
+      action: billingAction,
       tier: tier as ResearchTier,
       idempotencyKey,
     });
@@ -87,6 +114,7 @@ export async function POST(request: Request) {
     logger.error("Billing debit failed", {
       userId: auth.uid,
       tier,
+      action,
       errorMessage: error instanceof Error ? error.message : String(error),
     });
     return Response.json(
@@ -95,53 +123,78 @@ export async function POST(request: Request) {
     );
   }
 
-  // 4. Create parallel SSE stream with billing finalization callback
-  const readable = createParallelStream(tier as ResearchTier, prompt, {
-    onComplete: (status) => {
-      const latencyMs = Date.now() - startTime;
+  // 4. Build handler context
+  const ctx = {
+    userId: auth.uid,
+    email: auth.email,
+    prompt,
+    tier: tier as ResearchTier,
+    action: billingAction,
+    conversationId,
+    usageId,
+    startTime,
+    logger,
+  };
 
-      logger.info("Research streaming completed", {
-        userId: auth.uid,
-        tier,
-        status,
-        latencyMs,
-      });
+  // 5. Dispatch to action-specific handler
+  try {
+    let result: ReadableStream<Uint8Array> | Response;
 
-      // Write usage log to Firestore (fire-and-forget, never throws)
-      logResearchUsage({
-        userId: auth.uid,
-        tier: tier as ResearchTier,
-        action: "prompt",
-        promptLength: prompt.length,
-        geminiLatencyMs: latencyMs, // Per-model latency will be refined in Phase 3
-        openaiLatencyMs: latencyMs, // Using overall latency as approximation for now
-        geminiTokens: null, // Token data not available here yet
-        openaiTokens: null,
-        geminiStatus: status === "success" ? "success" : "error",
-        openaiStatus: status === "success" ? "success" : "error",
-        creditsCharged: 0, // Will be filled with actual credits in future
-      });
+    switch (action) {
+      case "prompt":
+        result = await handlePromptAction(ctx);
+        break;
+      case "follow-up":
+        result = await handleFollowUpAction({
+          ...ctx,
+          conversationId: conversationId as string,
+        });
+        break;
+      case "reconsider":
+        result = await handleReconsiderAction({
+          ...ctx,
+          conversationId: conversationId as string,
+        });
+        break;
+    }
 
+    // If a handler returned a Response (e.g., 403/400), pass it through
+    if (result instanceof Response) {
+      // Refund credits since the action could not be performed
       finalizeResearchBilling({
         usageId,
-        status: status === "success" ? "SUCCESS" : "FAILED",
+        status: "FAILED",
       }).catch((err) =>
-        logger.error("Billing finalization failed", {
+        logger.error("Billing refund failed after handler error", {
           userId: auth.uid,
           usageId,
           errorMessage: err instanceof Error ? err.message : String(err),
         }),
       );
-    },
-  });
+      return result;
+    }
 
-  // 5. Return SSE response immediately (non-blocking)
-  return new Response(readable, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
-  });
+    // 6. Return SSE response immediately (non-blocking)
+    return new Response(result, { headers: SSE_HEADERS });
+  } catch (error) {
+    logger.error("Handler execution failed", {
+      userId: auth.uid,
+      action,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+
+    // Refund credits on unexpected handler failure
+    finalizeResearchBilling({
+      usageId,
+      status: "FAILED",
+    }).catch((err) =>
+      logger.error("Billing refund failed after handler crash", {
+        userId: auth.uid,
+        usageId,
+        errorMessage: err instanceof Error ? err.message : String(err),
+      }),
+    );
+
+    return Response.json({ error: "Internal server error." }, { status: 500 });
+  }
 }
