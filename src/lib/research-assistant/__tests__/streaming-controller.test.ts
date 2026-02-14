@@ -299,19 +299,15 @@ describe("streaming-controller", () => {
       expect(typeof heartbeats[0].data.ts).toBe("number");
     });
 
-    it("does not send heartbeat events after streams complete", async () => {
-      vi.useFakeTimers();
+    it("does not send heartbeat events for fast-completing streams", async () => {
       mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(["a"]) as never,
         openai: createMockStreamResult(["b"]) as never,
       });
       const readable = createParallelStream("standard", "test");
       const events = await readSSEStream(readable);
-      await flushMicrotasks();
-      const heartbeatsBefore = events.filter((e) => e.event === "heartbeat");
-      await vi.advanceTimersByTimeAsync(30_000);
-      await flushMicrotasks();
-      expect(heartbeatsBefore.length).toBe(0);
+      const heartbeats = events.filter((e) => e.event === "heartbeat");
+      expect(heartbeats.length).toBe(0);
     });
   });
 
