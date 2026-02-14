@@ -6,7 +6,7 @@
 
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
-import type { LanguageModel } from "ai";
+import type { LanguageModel, ModelMessage } from "ai";
 import { streamText } from "ai";
 
 import { TIER_CONFIGS } from "./config";
@@ -144,6 +144,78 @@ export async function createTierStreams(
     createModelStreamWithRetry(googleModel, prompt, abortSignal),
     createModelStreamWithRetry(openaiModel, prompt, abortSignal),
   ]);
+
+  return { gemini, openai: openaiStream };
+}
+
+// ── Messages-based streaming (Phase 3) ──────────────────────────
+
+/**
+ * Creates a streaming text result using a messages array for multi-turn conversations.
+ * Same as createModelStream but accepts messages instead of a single prompt string.
+ */
+export function createModelStreamWithMessages(
+  config: ModelConfig,
+  options: {
+    system?: string;
+    messages: ModelMessage[];
+    maxOutputTokens?: number;
+    abortSignal?: AbortSignal;
+  },
+): ModelStreamResult {
+  const model = createProvider(config);
+  return streamText({
+    model,
+    system: options.system,
+    messages: options.messages,
+    maxOutputTokens: options.maxOutputTokens,
+    abortSignal: options.abortSignal,
+  });
+}
+
+/**
+ * Creates parallel streaming results for both models using messages arrays.
+ * Each model can receive DIFFERENT messages (critical for Reconsider flow
+ * where each model sees the OTHER's response as peer context).
+ */
+export async function createTierStreamsWithMessages(
+  tier: ResearchTier,
+  options: {
+    system?: string;
+    geminiMessages: ModelMessage[];
+    openaiMessages: ModelMessage[];
+    maxOutputTokens?: number;
+    abortSignal?: AbortSignal;
+  },
+): Promise<TierStreams> {
+  const config = TIER_CONFIGS[tier];
+
+  const googleModel = config.models.find(
+    (m): m is ModelConfig & { provider: "google" } => m.provider === "google",
+  );
+  const openaiModel = config.models.find(
+    (m): m is ModelConfig & { provider: "openai" } => m.provider === "openai",
+  );
+
+  if (!googleModel || !openaiModel) {
+    throw new Error(
+      `Tier "${tier}" must have exactly one Google and one OpenAI model.`,
+    );
+  }
+
+  const gemini = createModelStreamWithMessages(googleModel, {
+    system: options.system,
+    messages: options.geminiMessages,
+    maxOutputTokens: options.maxOutputTokens,
+    abortSignal: options.abortSignal,
+  });
+
+  const openaiStream = createModelStreamWithMessages(openaiModel, {
+    system: options.system,
+    messages: options.openaiMessages,
+    maxOutputTokens: options.maxOutputTokens,
+    abortSignal: options.abortSignal,
+  });
 
   return { gemini, openai: openaiStream };
 }
