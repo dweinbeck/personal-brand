@@ -7,6 +7,26 @@ import {
 
 const BRAND_SCRAPER_API_URL = process.env.BRAND_SCRAPER_API_URL;
 
+/**
+ * Fetches a GCP identity token for server-to-server authentication.
+ * Uses the metadata server on Cloud Run, returns null locally.
+ */
+async function getIdentityToken(
+  audience: string,
+): Promise<string | null> {
+  const metadataUrl = `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${encodeURIComponent(audience)}`;
+  try {
+    const res = await fetch(metadataUrl, {
+      headers: { "Metadata-Flavor": "Google" },
+      signal: AbortSignal.timeout(2_000),
+    });
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+
 export class BrandScraperError extends Error {
   constructor(
     message: string,
@@ -49,11 +69,17 @@ export async function submitScrapeJob(
     throw new BrandScraperError("BRAND_SCRAPER_API_URL not configured", 503);
   }
 
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const idToken = await getIdentityToken(BRAND_SCRAPER_API_URL);
+  if (idToken) {
+    headers.Authorization = `Bearer ${idToken}`;
+  }
+
   let res: Response;
   try {
     res = await fetch(`${BRAND_SCRAPER_API_URL}/scrape`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ site_url: url }),
       signal: AbortSignal.timeout(30_000),
     });
@@ -97,9 +123,16 @@ export async function getScrapeJobStatus(jobId: string): Promise<JobStatus> {
     throw new BrandScraperError("BRAND_SCRAPER_API_URL not configured", 503);
   }
 
+  const headers: Record<string, string> = {};
+  const idToken = await getIdentityToken(BRAND_SCRAPER_API_URL);
+  if (idToken) {
+    headers.Authorization = `Bearer ${idToken}`;
+  }
+
   let res: Response;
   try {
     res = await fetch(`${BRAND_SCRAPER_API_URL}/jobs/${jobId}`, {
+      headers,
       signal: AbortSignal.timeout(10_000),
     });
   } catch (err) {

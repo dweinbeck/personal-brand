@@ -4,6 +4,7 @@ import {
 } from "@/lib/schemas/fastapi";
 
 const CHATBOT_API_URL = process.env.CHATBOT_API_URL;
+const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY;
 
 export class FastApiError extends Error {
   constructor(
@@ -25,7 +26,10 @@ export async function askFastApi(question: string): Promise<FastApiResponse> {
   try {
     res = await fetch(`${CHATBOT_API_URL}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(CHATBOT_API_KEY && { "X-API-Key": CHATBOT_API_KEY }),
+      },
       body: JSON.stringify({ question }),
       signal: AbortSignal.timeout(15_000),
     });
