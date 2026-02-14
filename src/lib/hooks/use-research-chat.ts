@@ -35,6 +35,10 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
         case SSE_EVENTS.GEMINI:
           setState((prev) => ({
             ...prev,
+            overallStatus:
+              prev.overallStatus === "connecting"
+                ? "streaming"
+                : prev.overallStatus,
             gemini: {
               ...prev.gemini,
               text: prev.gemini.text + (data.text as string),
@@ -46,6 +50,10 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
         case SSE_EVENTS.OPENAI:
           setState((prev) => ({
             ...prev,
+            overallStatus:
+              prev.overallStatus === "connecting"
+                ? "streaming"
+                : prev.overallStatus,
             openai: {
               ...prev.openai,
               text: prev.openai.text + (data.text as string),
@@ -98,6 +106,10 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
           }));
           break;
 
+        case SSE_EVENTS.HEARTBEAT:
+          // Silently consume heartbeat keep-alive events — no state change
+          break;
+
         case SSE_EVENTS.COMPLETE:
           setState((prev) => ({
             ...prev,
@@ -126,11 +138,11 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      // Reset state
+      // Reset state — start in "connecting" until first text chunk arrives
       setState({
-        gemini: { ...INITIAL_MODEL_RESPONSE },
-        openai: { ...INITIAL_MODEL_RESPONSE },
-        overallStatus: "streaming",
+        gemini: { ...INITIAL_MODEL_RESPONSE, status: "connecting" },
+        openai: { ...INITIAL_MODEL_RESPONSE, status: "connecting" },
+        overallStatus: "connecting",
       });
 
       let idToken: string;
@@ -241,7 +253,8 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
     [getIdToken, processSSEEvent],
   );
 
-  const isStreaming: boolean = state.overallStatus === "streaming";
+  const isStreaming: boolean =
+    state.overallStatus === "connecting" || state.overallStatus === "streaming";
 
   return {
     state,
