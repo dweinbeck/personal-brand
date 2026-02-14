@@ -2,18 +2,19 @@
 
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import { getModelDisplayNames } from "@/lib/research-assistant/config";
 import type {
   ModelResponse,
-  ResearchChatState,
+  ResearchTier,
 } from "@/lib/research-assistant/types";
 import { CopyButton } from "./CopyButton";
 
 // ── Props ──────────────────────────────────────────────────────
 
-interface ResponseDisplayProps {
-  state: ResearchChatState;
-  geminiDisplayName: string;
-  openaiDisplayName: string;
+interface ReconsiderDisplayProps {
+  geminiResponse: ModelResponse;
+  openaiResponse: ModelResponse;
+  tier: ResearchTier;
 }
 
 // ── Status indicator ───────────────────────────────────────────
@@ -67,9 +68,9 @@ function StatusBadge({ status }: { status: ModelResponse["status"] }) {
   }
 }
 
-// ── Model panel ────────────────────────────────────────────────
+// ── Reconsider panel ──────────────────────────────────────────
 
-function ModelPanel({
+function ReconsiderPanel({
   response,
   displayName,
 }: {
@@ -79,7 +80,6 @@ function ModelPanel({
   const textRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom as new text arrives during streaming.
-  // textLength is an intentional trigger dep so the effect fires on each chunk.
   const textLength = response.text.length;
   // biome-ignore lint/correctness/useExhaustiveDependencies: textLength is a trigger dependency for auto-scroll
   useEffect(() => {
@@ -89,17 +89,20 @@ function ModelPanel({
   }, [textLength, response.status]);
 
   return (
-    <article className="flex flex-col rounded-lg border border-border overflow-hidden">
+    <article className="flex flex-col rounded-lg border border-border overflow-hidden border-l-4 border-l-gold">
       {/* Header */}
       <header className="flex items-center justify-between bg-primary px-4 py-2.5">
-        <h3 className="text-sm font-medium text-white">{displayName}</h3>
+        <h3 className="text-sm font-medium text-white">
+          {displayName}{" "}
+          <span className="text-gold opacity-80">&mdash; Reconsidered</span>
+        </h3>
         <StatusBadge status={response.status} />
       </header>
 
       {/* Body */}
       <section
         ref={textRef}
-        className="flex-1 overflow-y-auto p-4 min-h-[150px] max-h-[300px] sm:min-h-[200px] sm:max-h-[500px]"
+        className="flex-1 overflow-y-auto p-4 min-h-[150px] max-h-[300px] sm:min-h-[200px] sm:max-h-[500px] bg-gold/[0.02]"
         aria-live="polite"
         aria-busy={response.status === "streaming"}
       >
@@ -109,7 +112,7 @@ function ModelPanel({
           </div>
         ) : response.status === "idle" ? (
           <p className="text-sm text-text-tertiary italic">
-            Waiting for response...
+            Waiting for reconsidered response...
           </p>
         ) : null}
 
@@ -122,14 +125,14 @@ function ModelPanel({
       </section>
 
       {/* Footer — copy button + token usage */}
-      {(response.text || response.status === "complete") && (
+      {(response.text ||
+        (response.status === "complete" && response.usage)) && (
         <footer className="flex items-center justify-between border-t border-border px-4 py-2">
           {response.text && <CopyButton text={response.text} />}
-          {response.status === "complete" && (
+          {response.status === "complete" && response.usage && (
             <span className="text-xs text-text-tertiary">
-              {response.usage
-                ? `Tokens: ${response.usage.promptTokens.toLocaleString()} in / ${response.usage.completionTokens.toLocaleString()} out`
-                : "Usage data unavailable"}
+              Tokens: {response.usage.promptTokens.toLocaleString()} in /{" "}
+              {response.usage.completionTokens.toLocaleString()} out
             </span>
           )}
         </footer>
@@ -140,32 +143,28 @@ function ModelPanel({
 
 // ── Main component ─────────────────────────────────────────────
 
-export function ResponseDisplay({
-  state,
-  geminiDisplayName,
-  openaiDisplayName,
-}: ResponseDisplayProps) {
+export function ReconsiderDisplay({
+  geminiResponse,
+  openaiResponse,
+  tier,
+}: ReconsiderDisplayProps) {
+  // Return null when both responses are idle with no content
   const hasContent =
-    state.gemini.text.length > 0 ||
-    state.openai.text.length > 0 ||
-    state.overallStatus === "streaming" ||
-    state.overallStatus === "connecting";
+    geminiResponse.text.length > 0 ||
+    openaiResponse.text.length > 0 ||
+    geminiResponse.status !== "idle" ||
+    openaiResponse.status !== "idle";
 
-  // Empty state — no panels shown
-  if (state.overallStatus === "idle" && !hasContent) {
-    return (
-      <div className="flex items-center justify-center rounded-lg border border-dashed border-border py-16 px-4">
-        <p className="text-sm text-text-tertiary text-center">
-          Submit a prompt above to compare models side-by-side
-        </p>
-      </div>
-    );
+  if (!hasContent) {
+    return null;
   }
+
+  const [geminiName, openaiName] = getModelDisplayNames(tier);
 
   return (
     <div className={clsx("grid gap-4", "grid-cols-1 md:grid-cols-2")}>
-      <ModelPanel response={state.gemini} displayName={geminiDisplayName} />
-      <ModelPanel response={state.openai} displayName={openaiDisplayName} />
+      <ReconsiderPanel response={geminiResponse} displayName={geminiName} />
+      <ReconsiderPanel response={openaiResponse} displayName={openaiName} />
     </div>
   );
 }

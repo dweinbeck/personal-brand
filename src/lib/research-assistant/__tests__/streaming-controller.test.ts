@@ -130,9 +130,15 @@ describe("streaming-controller", () => {
         gemini: createMockStreamResult(["Hello", " World"]) as never,
         openai: createMockStreamResult(["Hi", " there"]) as never,
       });
-      const events = await readSSEStream(createParallelStream("standard", "test"));
-      const geminiTexts = events.filter((e) => e.event === "gemini").map((e) => e.data.text);
-      const openaiTexts = events.filter((e) => e.event === "openai").map((e) => e.data.text);
+      const events = await readSSEStream(
+        createParallelStream("standard", "test"),
+      );
+      const geminiTexts = events
+        .filter((e) => e.event === "gemini")
+        .map((e) => e.data.text);
+      const openaiTexts = events
+        .filter((e) => e.event === "openai")
+        .map((e) => e.data.text);
       expect(geminiTexts).toEqual(["Hello", " World"]);
       expect(openaiTexts).toEqual(["Hi", " there"]);
     });
@@ -142,7 +148,9 @@ describe("streaming-controller", () => {
         gemini: createMockStreamResult(["a"]) as never,
         openai: createMockStreamResult(["b"]) as never,
       });
-      const events = await readSSEStream(createParallelStream("standard", "test"));
+      const events = await readSSEStream(
+        createParallelStream("standard", "test"),
+      );
       const eventTypes = events.map((e) => e.event);
       expect(eventTypes).toContain("gemini-done");
       expect(eventTypes).toContain("openai-done");
@@ -154,7 +162,9 @@ describe("streaming-controller", () => {
         gemini: createMockStreamResult(["a"]) as never,
         openai: createMockStreamResult(["b"]) as never,
       });
-      const events = await readSSEStream(createParallelStream("standard", "test"));
+      const events = await readSSEStream(
+        createParallelStream("standard", "test"),
+      );
       const geminiDone = events.find((e) => e.event === "gemini-done");
       expect(geminiDone).toBeDefined();
       expect(geminiDone?.data.usage).toEqual({
@@ -166,16 +176,25 @@ describe("streaming-controller", () => {
 
     it("one model error does not break the other (NFR-2.1)", async () => {
       mockCreateTierStreams.mockResolvedValue({
-        gemini: createMockStreamResult(["partial"], "Gemini API rate limit exceeded") as never,
+        gemini: createMockStreamResult(
+          ["partial"],
+          "Gemini API rate limit exceeded",
+        ) as never,
         openai: createMockStreamResult(["Full", " response"]) as never,
       });
-      const events = await readSSEStream(createParallelStream("standard", "test"));
+      const events = await readSSEStream(
+        createParallelStream("standard", "test"),
+      );
       const geminiError = events.find((e) => e.event === "gemini-error");
       expect(geminiError).toBeDefined();
       expect(geminiError?.data.message).toBe("Gemini API rate limit exceeded");
-      const geminiTexts = events.filter((e) => e.event === "gemini").map((e) => e.data.text);
+      const geminiTexts = events
+        .filter((e) => e.event === "gemini")
+        .map((e) => e.data.text);
       expect(geminiTexts).toEqual(["partial"]);
-      const openaiTexts = events.filter((e) => e.event === "openai").map((e) => e.data.text);
+      const openaiTexts = events
+        .filter((e) => e.event === "openai")
+        .map((e) => e.data.text);
       expect(openaiTexts).toEqual(["Full", " response"]);
       expect(events.some((e) => e.event === "openai-done")).toBe(true);
       expect(events.some((e) => e.event === "openai-error")).toBe(false);
@@ -187,7 +206,9 @@ describe("streaming-controller", () => {
         gemini: createMockStreamResult([], "Gemini failed") as never,
         openai: createMockStreamResult([], "OpenAI failed") as never,
       });
-      const events = await readSSEStream(createParallelStream("standard", "test"));
+      const events = await readSSEStream(
+        createParallelStream("standard", "test"),
+      );
       expect(events.some((e) => e.event === "gemini-error")).toBe(true);
       expect(events.some((e) => e.event === "openai-error")).toBe(true);
       expect(events[events.length - 1].event).toBe("complete");
@@ -224,7 +245,11 @@ describe("streaming-controller", () => {
         openai: createMockStreamResult([]) as never,
       });
       await readSSEStream(createParallelStream("expert", "my query"));
-      expect(mockCreateTierStreams).toHaveBeenCalledWith("expert", "my query", expect.any(AbortSignal));
+      expect(mockCreateTierStreams).toHaveBeenCalledWith(
+        "expert",
+        "my query",
+        expect.any(AbortSignal),
+      );
     });
 
     it("passes combined AbortSignal (user + timeout) to createTierStreams", async () => {
@@ -233,7 +258,11 @@ describe("streaming-controller", () => {
         openai: createMockStreamResult([]) as never,
       });
       const controller = new AbortController();
-      await readSSEStream(createParallelStream("standard", "test", { abortSignal: controller.signal }));
+      await readSSEStream(
+        createParallelStream("standard", "test", {
+          abortSignal: controller.signal,
+        }),
+      );
       const passedSignal = mockCreateTierStreams.mock.calls[0][2];
       expect(passedSignal).toBeInstanceOf(AbortSignal);
       expect(passedSignal).not.toBe(controller.signal);
@@ -259,13 +288,17 @@ describe("streaming-controller", () => {
     it("sends heartbeat events during streaming", async () => {
       vi.useFakeTimers();
       mockCreateTierStreams.mockResolvedValue({
-        gemini: createSlowMockStreamResult(["Hello", " World"], 10_000) as never,
+        gemini: createSlowMockStreamResult(
+          ["Hello", " World"],
+          10_000,
+        ) as never,
         openai: createSlowMockStreamResult(["Hi", " there"], 10_000) as never,
       });
       const readable = createParallelStream("standard", "test");
       const reader = readable.getReader();
       const decoder = new TextDecoder();
-      const events: Array<{ event: string; data: Record<string, unknown> }> = [];
+      const events: Array<{ event: string; data: Record<string, unknown> }> =
+        [];
       let streamDone = false;
       while (!streamDone) {
         await vi.advanceTimersByTimeAsync(5_000);
@@ -335,7 +368,9 @@ describe("streaming-controller", () => {
     });
 
     it("onComplete receives failed when createTierStreams rejects", async () => {
-      mockCreateTierStreams.mockRejectedValue(new Error("All retries exhausted"));
+      mockCreateTierStreams.mockRejectedValue(
+        new Error("All retries exhausted"),
+      );
       const onComplete = vi.fn();
       const readable = createParallelStream("standard", "test", { onComplete });
       const events = await readSSEStream(readable);

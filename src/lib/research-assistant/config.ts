@@ -77,6 +77,15 @@ export const SSE_EVENTS = {
   COMPLETE: "complete",
   ERROR: "error",
   HEARTBEAT: "heartbeat",
+  // Phase 3: Reconsider events
+  GEMINI_RECONSIDER: "gemini-reconsider",
+  OPENAI_RECONSIDER: "openai-reconsider",
+  GEMINI_RECONSIDER_DONE: "gemini-reconsider-done",
+  OPENAI_RECONSIDER_DONE: "openai-reconsider-done",
+  GEMINI_RECONSIDER_ERROR: "gemini-reconsider-error",
+  OPENAI_RECONSIDER_ERROR: "openai-reconsider-error",
+  // Phase 3: Conversation ID event
+  CONVERSATION_ID: "conversation-id",
 } as const;
 
 // ── Helper functions ────────────────────────────────────────────
@@ -99,3 +108,26 @@ export function getModelDisplayNames(tier: ResearchTier): [string, string] {
   const config = TIER_CONFIGS[tier];
   return [config.models[0].displayName, config.models[1].displayName];
 }
+
+// ── Phase 3: Reconsider prompt template ─────────────────────────
+
+export const SYSTEM_PROMPT =
+  "You are a research assistant. Provide thorough, evidence-based answers with clear reasoning. When citing information, note the source or basis for your claims.";
+
+export const RECONSIDER_PROMPT_TEMPLATE = (
+  peerModelName: string,
+  peerResponse: string,
+): string =>
+  [
+    `Another AI model (${peerModelName}) was given the same prompt and responded differently:`,
+    "",
+    "---",
+    peerResponse,
+    "---",
+    "",
+    "Please reconsider your response in light of this alternative perspective:",
+    "1. What key points of agreement do you see?",
+    "2. Where do you disagree, and why?",
+    "3. Has this alternative perspective revealed anything you missed or got wrong?",
+    "4. Provide your revised response, incorporating any valuable insights from the other model.",
+  ].join("\n");

@@ -11,9 +11,22 @@
 // - The `complete` event fires only after BOTH models finish
 // - Writer is closed exactly once, after all processing
 
-import { HEARTBEAT_INTERVAL_MS, SSE_EVENTS, STREAM_TIMEOUTS } from "./config";
-import { createTierStreams, type ModelStreamResult } from "./model-client";
-import type { ResearchTier } from "./types";
+import type { ModelMessage } from "ai";
+import {
+  getModelDisplayNames,
+  HEARTBEAT_INTERVAL_MS,
+  RECONSIDER_PROMPT_TEMPLATE,
+  SSE_EVENTS,
+  STREAM_TIMEOUTS,
+  SYSTEM_PROMPT,
+} from "./config";
+import {
+  createTierStreams,
+  createTierStreamsWithMessages,
+  type ModelStreamResult,
+} from "./model-client";
+import { checkTokenBudget } from "./token-budget";
+import type { MessageDoc, MessageRole, ResearchTier } from "./types";
 
 // ── SSE formatting ──────────────────────────────────────────────
 
@@ -150,4 +163,344 @@ export function createParallelStream(
   })();
 
   return readable;
+}
+
+// ── Phase 3: Message conversion helpers ─────────────────────────
+
+/**
+ * Converts stored MessageDoc[] to AI SDK ModelMessage[] for a specific model.
+ * Filters to only include user messages + the target model's assistant responses.
+ */
+function buildConversationMessages(
+  messages: MessageDoc[],
+  targetModel: "gemini" | "openai",
+): ModelMessage[] {
+  const targetRoles: MessageRole[] = [
+    targetModel,
+    `${targetModel}-reconsider` as MessageRole,
+  ];
+
+  return messages
+    .filter((m) => m.role === "user" || targetRoles.includes(m.role))
+    .map((m) => ({
+      role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",
+      content: m.content,
+    }));
+}
+
+/**
+ * Builds the message array for a reconsider request.
+ * Structure: original prompt → own response → peer context prompt.
+ */
+function buildReconsiderMessages(
+  originalPrompt: string,
+  thisModelResponse: string,
+  peerModelResponse: string,
+  peerModelName: string,
+): ModelMessage[] {
+  return [
+    { role: "user" as const, content: originalPrompt },
+    { role: "assistant" as const, content: thisModelResponse },
+    {
+      role: "user" as const,
+      content: RECONSIDER_PROMPT_TEMPLATE(peerModelName, peerModelResponse),
+    },
+  ];
+}
+
+// ── Phase 3: Follow-up stream ───────────────────────────────────
+
+/**
+ * Creates a multiplexed SSE stream for follow-up questions.
+ * Builds per-model conversation history and appends the new follow-up prompt.
+ * Uses standard SSE event names since follow-up responses display in the same panels.
+ */
+export function createFollowUpStream(options: {
+  tier: ResearchTier;
+  messages: MessageDoc[];
+  followUpPrompt: string;
+  abortSignal?: AbortSignal;
+  onComplete?: (results: { geminiText: string; openaiText: string }) => void;
+}): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder();
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+  const writer = writable.getWriter();
+
+  const geminiMessages = buildConversationMessages(options.messages, "gemini");
+  geminiMessages.push({ role: "user", content: options.followUpPrompt });
+
+  const openaiMessages = buildConversationMessages(options.messages, "openai");
+  openaiMessages.push({ role: "user", content: options.followUpPrompt });
+
+  // Pre-flight token budget check
+  const gemBudget = checkTokenBudget(geminiMessages, options.tier);
+  const oaBudget = checkTokenBudget(openaiMessages, options.tier);
+
+  if (!gemBudget.withinBudget || !oaBudget.withinBudget) {
+    (async () => {
+      await writer.write(
+        encoder.encode(
+          formatSSEEvent(SSE_EVENTS.ERROR, {
+            message:
+              "Conversation is too long — token budget exceeded. Start a new conversation.",
+          }),
+        ),
+      );
+      await writer.close();
+    })();
+    return readable;
+  }
+
+  const timeoutSignal = AbortSignal.timeout(STREAM_TIMEOUTS[options.tier]);
+  const combinedSignal = options.abortSignal
+    ? AbortSignal.any([options.abortSignal, timeoutSignal])
+    : timeoutSignal;
+
+  const heartbeatInterval = setInterval(async () => {
+    try {
+      await writer.write(
+        encoder.encode(
+          formatSSEEvent(SSE_EVENTS.HEARTBEAT, { ts: Date.now() }),
+        ),
+      );
+    } catch {
+      clearInterval(heartbeatInterval);
+    }
+  }, HEARTBEAT_INTERVAL_MS);
+
+  combinedSignal.addEventListener(
+    "abort",
+    () => clearInterval(heartbeatInterval),
+    { once: true },
+  );
+
+  (async () => {
+    try {
+      const { gemini: geminiResult, openai: openaiResult } =
+        await createTierStreamsWithMessages(options.tier, {
+          system: SYSTEM_PROMPT,
+          geminiMessages,
+          openaiMessages,
+          abortSignal: combinedSignal,
+        });
+
+      let geminiText = "";
+      let openaiText = "";
+
+      await Promise.all([
+        pipeModelStreamCollecting(
+          geminiResult,
+          SSE_EVENTS.GEMINI,
+          writer,
+          encoder,
+          (t) => {
+            geminiText += t;
+          },
+        ),
+        pipeModelStreamCollecting(
+          openaiResult,
+          SSE_EVENTS.OPENAI,
+          writer,
+          encoder,
+          (t) => {
+            openaiText += t;
+          },
+        ),
+      ]);
+
+      clearInterval(heartbeatInterval);
+      await writer.write(
+        encoder.encode(formatSSEEvent(SSE_EVENTS.COMPLETE, {})),
+      );
+      await writer.close();
+      options.onComplete?.({ geminiText, openaiText });
+    } catch (error) {
+      clearInterval(heartbeatInterval);
+      try {
+        await writer.write(
+          encoder.encode(
+            formatSSEEvent(SSE_EVENTS.ERROR, { message: String(error) }),
+          ),
+        );
+        await writer.close();
+      } catch {
+        // Writer may already be closed
+      }
+    }
+  })();
+
+  return readable;
+}
+
+// ── Phase 3: Reconsider stream ──────────────────────────────────
+
+/**
+ * Creates a multiplexed SSE stream for the Reconsider flow.
+ * Each model sees the other's response and provides a revised answer.
+ * Uses reconsider-specific SSE event names for client-side routing.
+ */
+export function createReconsiderStream(options: {
+  tier: ResearchTier;
+  originalPrompt: string;
+  geminiResponse: string;
+  openaiResponse: string;
+  abortSignal?: AbortSignal;
+  onComplete?: (results: { geminiText: string; openaiText: string }) => void;
+}): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder();
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+  const writer = writable.getWriter();
+
+  const [geminiName, openaiName] = getModelDisplayNames(options.tier);
+
+  // Gemini sees OpenAI's response as peer context
+  const geminiMessages = buildReconsiderMessages(
+    options.originalPrompt,
+    options.geminiResponse,
+    options.openaiResponse,
+    openaiName,
+  );
+
+  // OpenAI sees Gemini's response as peer context
+  const openaiMessages = buildReconsiderMessages(
+    options.originalPrompt,
+    options.openaiResponse,
+    options.geminiResponse,
+    geminiName,
+  );
+
+  // Pre-flight token budget check on both message arrays
+  const gemBudget = checkTokenBudget(geminiMessages, options.tier);
+  const oaBudget = checkTokenBudget(openaiMessages, options.tier);
+
+  if (!gemBudget.withinBudget || !oaBudget.withinBudget) {
+    (async () => {
+      await writer.write(
+        encoder.encode(
+          formatSSEEvent(SSE_EVENTS.ERROR, {
+            message:
+              "Responses are too long for reconsider — token budget exceeded.",
+          }),
+        ),
+      );
+      await writer.close();
+    })();
+    return readable;
+  }
+
+  const timeoutSignal = AbortSignal.timeout(STREAM_TIMEOUTS[options.tier]);
+  const combinedSignal = options.abortSignal
+    ? AbortSignal.any([options.abortSignal, timeoutSignal])
+    : timeoutSignal;
+
+  const heartbeatInterval = setInterval(async () => {
+    try {
+      await writer.write(
+        encoder.encode(
+          formatSSEEvent(SSE_EVENTS.HEARTBEAT, { ts: Date.now() }),
+        ),
+      );
+    } catch {
+      clearInterval(heartbeatInterval);
+    }
+  }, HEARTBEAT_INTERVAL_MS);
+
+  combinedSignal.addEventListener(
+    "abort",
+    () => clearInterval(heartbeatInterval),
+    { once: true },
+  );
+
+  (async () => {
+    try {
+      const { gemini: geminiResult, openai: openaiResult } =
+        await createTierStreamsWithMessages(options.tier, {
+          system: SYSTEM_PROMPT,
+          geminiMessages,
+          openaiMessages,
+          abortSignal: combinedSignal,
+        });
+
+      let geminiText = "";
+      let openaiText = "";
+
+      await Promise.all([
+        pipeModelStreamCollecting(
+          geminiResult,
+          SSE_EVENTS.GEMINI_RECONSIDER,
+          writer,
+          encoder,
+          (t) => {
+            geminiText += t;
+          },
+        ),
+        pipeModelStreamCollecting(
+          openaiResult,
+          SSE_EVENTS.OPENAI_RECONSIDER,
+          writer,
+          encoder,
+          (t) => {
+            openaiText += t;
+          },
+        ),
+      ]);
+
+      clearInterval(heartbeatInterval);
+      await writer.write(
+        encoder.encode(formatSSEEvent(SSE_EVENTS.COMPLETE, {})),
+      );
+      await writer.close();
+      options.onComplete?.({ geminiText, openaiText });
+    } catch (error) {
+      clearInterval(heartbeatInterval);
+      try {
+        await writer.write(
+          encoder.encode(
+            formatSSEEvent(SSE_EVENTS.ERROR, { message: String(error) }),
+          ),
+        );
+        await writer.close();
+      } catch {
+        // Writer may already be closed
+      }
+    }
+  })();
+
+  return readable;
+}
+
+// ── Text-collecting pipeModelStream variant ─────────────────────
+
+/**
+ * Like pipeModelStream but also collects text via onChunk callback.
+ * Used by follow-up and reconsider to capture model output for persistence.
+ */
+async function pipeModelStreamCollecting(
+  result: ModelStreamResult,
+  providerEventName: string,
+  writer: WritableStreamDefaultWriter<Uint8Array>,
+  encoder: TextEncoder,
+  onChunk: (text: string) => void,
+): Promise<void> {
+  try {
+    for await (const chunk of result.textStream) {
+      onChunk(chunk);
+      await writer.write(
+        encoder.encode(formatSSEEvent(providerEventName, { text: chunk })),
+      );
+    }
+
+    const usage = await result.usage;
+    await writer.write(
+      encoder.encode(formatSSEEvent(`${providerEventName}-done`, { usage })),
+    );
+  } catch (error) {
+    await writer.write(
+      encoder.encode(
+        formatSSEEvent(`${providerEventName}-error`, {
+          message: error instanceof Error ? error.message : String(error),
+        }),
+      ),
+    );
+  }
 }

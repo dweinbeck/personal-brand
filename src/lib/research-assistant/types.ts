@@ -2,6 +2,8 @@
 // Pure type definitions — no runtime code. Every other research-assistant
 // module imports from here.
 
+import type { Timestamp } from "firebase-admin/firestore";
+
 // ── Tier types ──────────────────────────────────────────────────
 
 export type ResearchTier = "standard" | "expert";
@@ -91,7 +93,12 @@ export type BillingTransaction = {
 
 // ── Stream state types (for client hook) ────────────────────────
 
-export type StreamStatus = "idle" | "connecting" | "streaming" | "complete" | "error";
+export type StreamStatus =
+  | "idle"
+  | "connecting"
+  | "streaming"
+  | "complete"
+  | "error";
 
 export type ModelResponse = {
   text: string;
@@ -104,4 +111,47 @@ export type ResearchChatState = {
   gemini: ModelResponse;
   openai: ModelResponse;
   overallStatus: StreamStatus;
+};
+
+// ── Conversation types (Phase 3) ────────────────────────────────
+
+export type MessageRole =
+  | "user"
+  | "gemini"
+  | "openai"
+  | "gemini-reconsider"
+  | "openai-reconsider";
+
+export type ConversationDoc = {
+  userId: string;
+  tier: ResearchTier;
+  title: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  messageCount: number;
+  totalCreditsSpent: number;
+  status: "active" | "archived";
+};
+
+export type MessageDoc = {
+  role: MessageRole;
+  content: string;
+  createdAt: Timestamp;
+  turnNumber: number;
+  action: BillingAction;
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+  creditsCharged?: number;
+};
+
+export type ConversationSummary = {
+  id: string;
+  title: string;
+  tier: ResearchTier;
+  messageCount: number;
+  totalCreditsSpent: number;
+  updatedAt: string;
 };

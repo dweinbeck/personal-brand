@@ -40,5 +40,15 @@ export function getApps(): AppListing[] {
       href: process.env.TASKS_APP_URL || "https://tasks.dan-weinbeck.com",
       techStack: ["Next.js", "PostgreSQL", "Prisma", "Firebase Auth"],
     },
+    {
+      slug: "research-assistant",
+      title: "Research Assistant",
+      tag: "AI",
+      subtitle: "Compare AI models side-by-side in real time",
+      description:
+        "Send a prompt to two AI models simultaneously and see their responses stream side-by-side. Choose between Standard and Expert tiers for different model combinations.",
+      href: "/tools/research-assistant",
+      techStack: ["AI SDK", "Gemini", "GPT-5.2", "Firebase"],
+    },
   ];
 }

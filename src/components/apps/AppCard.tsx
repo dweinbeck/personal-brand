@@ -5,6 +5,8 @@ import type { AppListing } from "@/data/apps";
 const tagColors: Record<string, string> = {
   Branding: "bg-gold-light text-gold-hover border-gold",
   Finance: "bg-primary/10 text-primary border-primary/40",
+  AI: "bg-purple-100 text-purple-700 border-purple-300",
+  Productivity: "bg-emerald-100 text-emerald-700 border-emerald-300",
 };
 
 function getTagColor(tag: string): string {

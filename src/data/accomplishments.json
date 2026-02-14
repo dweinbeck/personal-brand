@@ -292,13 +292,7 @@
     "company": "Darden Restaurants",
     "location": "Orlando, FL",
     "companyLogo": "/images/logos/darden.svg",
-    "tags": [
-      "SQL",
-      "R",
-      "Tableau",
-      "Customer Analytics",
-      "Marketing Strategy"
-    ],
+    "tags": ["SQL", "R", "Tableau", "Customer Analytics", "Marketing Strategy"],
     "setup": "Marketing teams wanted to use large-scale transaction data to understand customer behavior and identify segments most likely to respond to specific outreach strategies.",
     "workCompleted": "Queried and transformed transaction data, built segmentation and profitability bins, and profiled segments with behavioral and demographic context. Synthesized insights into recommendations for two campaign approaches: lapsed-customer reactivation and daypart/sales-area diversification.",
     "results": "Produced a segmentation framework and campaign recommendations grounded in 130M transactions, strengthening targeting decisions and creating reusable analysis patterns for the team.",
