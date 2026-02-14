@@ -122,14 +122,14 @@ function ModelPanel({
       </section>
 
       {/* Footer — copy button + token usage */}
-      {(response.text ||
-        (response.status === "complete" && response.usage)) && (
+      {(response.text || response.status === "complete") && (
         <footer className="flex items-center justify-between border-t border-border px-4 py-2">
           {response.text && <CopyButton text={response.text} />}
-          {response.status === "complete" && response.usage && (
+          {response.status === "complete" && (
             <span className="text-xs text-text-tertiary">
-              Tokens: {response.usage.promptTokens.toLocaleString()} in /{" "}
-              {response.usage.completionTokens.toLocaleString()} out
+              {response.usage
+                ? `Tokens: ${response.usage.promptTokens.toLocaleString()} in / ${response.usage.completionTokens.toLocaleString()} out`
+                : "Usage data unavailable"}
             </span>
           )}
         </footer>

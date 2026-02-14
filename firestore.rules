@@ -1,8 +1,40 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Default deny all
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // billing_users: user can read their own billing document
+    match /billing_users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // ledger subcollection: user can read their own ledger entries
+      match /ledger/{entryId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // billing_tool_pricing: any authenticated user can read pricing
+    match /billing_tool_pricing/{toolKey} {
+      allow read: if request.auth != null;
+    }
+
+    // research_conversations: user can read their own conversations, create with their own userId
+    match /research_conversations/{convId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+
+      // messages subcollection: authenticated users can read (parent auth checked in app code)
+      match /messages/{msgId} {
+        allow read: if request.auth != null;
+      }
+    }
+
+    // research_usage_logs: user can read their own usage logs
+    match /research_usage_logs/{logId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }
 }
