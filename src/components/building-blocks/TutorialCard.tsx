@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Card } from "@/components/ui/Card";
+import { CardButtonLabel } from "@/components/ui/CardButtonLabel";
 import type { Tutorial } from "@/lib/tutorials";
 
 interface TutorialCardProps {
@@ -20,9 +21,10 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
   const primaryTag = tutorial.metadata.tags[0];
 
   return (
-    <Link
+    <Card
+      variant="clickable"
       href={`/building-blocks/${tutorial.slug}`}
-      className="flex h-full flex-col rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-1 group cursor-pointer block"
+      className="group flex h-full flex-col p-8"
     >
       {/* Topic badge */}
       {primaryTag && (
@@ -55,9 +57,9 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         </div>
       )}
 
-      <span className="mt-5 inline-block text-sm font-medium text-gold group-hover:text-gold-hover transition-colors duration-200">
-        Read Tutorial &rarr;
-      </span>
-    </Link>
+      <div className="mt-auto pt-5">
+        <CardButtonLabel>Read Tutorial</CardButtonLabel>
+      </div>
+    </Card>
   );
 }

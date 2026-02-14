@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { CardButtonLabel } from "@/components/ui/CardButtonLabel";
 import type { AppListing } from "@/data/apps";
 
 const tagColors: Record<string, string> = {
@@ -10,26 +11,17 @@ function getTagColor(tag: string): string {
   return tagColors[tag] ?? "bg-primary/10 text-primary border-primary/40";
 }
 
-function formatDate(iso: string): string {
-  if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 interface AppCardProps {
   app: AppListing;
 }
 
 export function AppCard({ app }: AppCardProps) {
-  const launched = formatDate(app.launchedAt);
-  const updated = formatDate(app.updatedAt);
-  const hasDates = launched || updated;
-
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-border bg-surface p-8 shadow-[var(--shadow-card)]">
+    <Card
+      variant="clickable"
+      href={app.href}
+      className="group flex h-full flex-col p-8"
+    >
       {/* Topic badge */}
       <span
         className={`self-start px-2.5 py-0.5 text-xs font-medium rounded-full border mb-3 ${getTagColor(app.tag)}`}
@@ -37,7 +29,7 @@ export function AppCard({ app }: AppCardProps) {
         {app.tag}
       </span>
 
-      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-text-primary">
+      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-text-primary group-hover:text-gold transition-colors duration-200">
         {app.title}
       </h3>
 
@@ -59,27 +51,9 @@ export function AppCard({ app }: AppCardProps) {
         ))}
       </div>
 
-      {/* Dates */}
-      {hasDates && (
-        <p className="mt-4 text-xs text-text-tertiary">
-          {launched && <span>Launched {launched}</span>}
-          {launched && updated && <span> &middot; </span>}
-          {updated && <span>Updated {updated}</span>}
-        </p>
-      )}
-
-      {/* Action button */}
-      <div className="mt-5">
-        {app.available ? (
-          <Button variant="secondary" size="sm" href={app.href}>
-            Enter App
-          </Button>
-        ) : (
-          <Button variant="secondary" size="sm" disabled>
-            Coming Soon
-          </Button>
-        )}
+      <div className="mt-auto pt-5">
+        <CardButtonLabel>Enter App</CardButtonLabel>
       </div>
-    </div>
+    </Card>
   );
 }

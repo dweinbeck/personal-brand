@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Card } from "@/components/ui/Card";
+import { CardButtonLabel } from "@/components/ui/CardButtonLabel";
 import { getCustomGpts } from "@/lib/custom-gpts";
 
 export const metadata: Metadata = {
@@ -23,12 +24,12 @@ export default function CustomGptsPage() {
             key={gpt.slug}
             variant="clickable"
             href={gpt.url}
-            className="group"
+            className="group flex h-full flex-col p-8"
           >
             <h3 className="text-lg font-bold text-text-primary group-hover:text-gold transition-colors duration-200">
               {gpt.name}
             </h3>
-            <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3">
+            <p className="mt-3 flex-1 text-sm text-text-secondary leading-relaxed line-clamp-3">
               {gpt.description}
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
@@ -41,9 +42,9 @@ export default function CustomGptsPage() {
                 </span>
               ))}
             </div>
-            <span className="mt-5 inline-block text-sm font-medium text-gold group-hover:text-gold-hover transition-colors duration-200">
-              Open GPT &rarr;
-            </span>
+            <div className="mt-auto pt-5">
+              <CardButtonLabel>Open GPT</CardButtonLabel>
+            </div>
           </Card>
         ))}
       </div>
