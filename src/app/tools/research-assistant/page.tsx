@@ -6,6 +6,11 @@ export const metadata = {
     "Compare responses from two AI models side-by-side in real time.",
 };
 
-export default function Page() {
-  return <ResearchAssistantPage />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }>;
+}) {
+  const { id } = await searchParams;
+  return <ResearchAssistantPage initialConversationId={id} />;
 }

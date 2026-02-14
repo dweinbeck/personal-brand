@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
@@ -10,6 +11,10 @@ import type {
   ResearchTier,
 } from "@/lib/research-assistant/types";
 import { ChatInterface } from "./ChatInterface";
+import { ConversationHistory } from "./ConversationHistory";
+import { FollowUpInput } from "./FollowUpInput";
+import { ReconsiderButton } from "./ReconsiderButton";
+import { ReconsiderDisplay } from "./ReconsiderDisplay";
 import { ResponseDisplay } from "./ResponseDisplay";
 
 // ── Session history (in-memory only, clears on refresh) ──────
@@ -26,7 +31,11 @@ interface SessionEntry {
 
 // ── Inner content (rendered inside AuthGuard) ───────────────────
 
-function ResearchAssistantContent() {
+function ResearchAssistantContent({
+  initialConversationId,
+}: {
+  initialConversationId?: string;
+}) {
   const { user } = useAuth();
 
   // AuthGuard guarantees user is non-null here.
@@ -36,12 +45,34 @@ function ResearchAssistantContent() {
     return user.getIdToken();
   }, [user]);
 
-  const { state, sendMessage, isStreaming } = useResearchChat(getIdToken);
+  const {
+    state,
+    sendMessage,
+    isStreaming,
+    sendFollowUp,
+    sendReconsider,
+    conversationId,
+    reconsiderState,
+    isReconsiderStreaming,
+    canReconsider,
+    loadConversation,
+  } = useResearchChat(getIdToken);
 
   // Track the current tier for display name derivation.
   // ChatInterface manages its own tier state and passes it via onSubmit.
   // We mirror it here so ResponseDisplay always shows the correct model names.
   const [currentTier, setCurrentTier] = useState<ResearchTier>("standard");
+
+  // Mobile sidebar toggle
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Load initial conversation from URL if provided
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only run once on mount
+  useEffect(() => {
+    if (initialConversationId) {
+      loadConversation(initialConversationId);
+    }
+  }, []);
 
   // ── Session history ──────────────────────────────────────────
   const [sessionHistory, setSessionHistory] = useState<SessionEntry[]>([]);
@@ -75,68 +106,193 @@ function ResearchAssistantContent() {
       lastPromptRef.current = prompt;
       setCurrentTier(tier);
       sendMessage(prompt, tier);
+      // Close mobile sidebar when starting a new conversation
+      setSidebarOpen(false);
     },
     [sendMessage],
+  );
+
+  const handleNewConversation = useCallback(() => {
+    loadConversation("");
+    setSidebarOpen(false);
+  }, [loadConversation]);
+
+  const handleSelectConversation = useCallback(
+    (id: string) => {
+      loadConversation(id);
+      setSidebarOpen(false);
+    },
+    [loadConversation],
   );
 
   const [geminiDisplayName, openaiDisplayName] =
     getModelDisplayNames(currentTier);
 
+  // Show/hide logic for Phase 3 components
+  const showReconsiderButton = canReconsider;
+  const showReconsiderDisplay =
+    reconsiderState.gemini.text.length > 0 ||
+    reconsiderState.openai.text.length > 0 ||
+    reconsiderState.overallStatus !== "idle";
+  const showFollowUp = state.overallStatus === "complete";
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <h1 className="mb-2 text-2xl font-bold text-primary font-display">
-          Research Assistant
-        </h1>
-        <p className="text-text-secondary text-sm">
-          Compare responses from two AI models side-by-side.
-        </p>
-      </header>
-
-      <div className="space-y-6">
-        <ChatInterface onSubmit={handleSubmit} isStreaming={isStreaming} />
-
-        <ResponseDisplay
-          state={state}
-          geminiDisplayName={geminiDisplayName}
-          openaiDisplayName={openaiDisplayName}
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-30 bg-black/30 lg:hidden cursor-default"
+          onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setSidebarOpen(false);
+          }}
+          tabIndex={-1}
+          aria-label="Close sidebar"
         />
+      )}
 
-        {/* Session history — previous prompts/responses (newest first) */}
-        {sessionHistory.length > 0 && (
-          <section className="space-y-6">
-            <h2 className="text-sm font-medium text-text-secondary border-b border-border pb-2">
-              Previous in this session
-            </h2>
-            {sessionHistory.map((entry) => (
-              <div key={entry.id} className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-text-tertiary">
-                  <span className="font-medium text-text-secondary">
-                    {entry.prompt.slice(0, 100)}
-                    {entry.prompt.length > 100 ? "..." : ""}
-                  </span>
-                  <span className="uppercase tracking-wide">{entry.tier}</span>
-                </div>
-                <ResponseDisplay
-                  state={entry.state}
-                  geminiDisplayName={entry.geminiDisplayName}
-                  openaiDisplayName={entry.openaiDisplayName}
-                />
-              </div>
-            ))}
-          </section>
+      {/* Sidebar */}
+      <aside
+        className={clsx(
+          "z-40 flex-shrink-0 overflow-hidden transition-all duration-300",
+          // Mobile: off-canvas drawer
+          "fixed inset-y-0 left-0 lg:relative lg:inset-auto",
+          sidebarOpen
+            ? "w-[280px] translate-x-0"
+            : "w-0 -translate-x-full lg:w-[250px] lg:translate-x-0",
         )}
-      </div>
+      >
+        <ConversationHistory
+          onSelectConversation={handleSelectConversation}
+          onNewConversation={handleNewConversation}
+          currentConversationId={conversationId}
+          getIdToken={getIdToken}
+          refreshTrigger={conversationId}
+        />
+      </aside>
+
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+          <header className="mb-8 flex items-center gap-3">
+            {/* Mobile hamburger toggle */}
+            <button
+              type="button"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              className={clsx(
+                "inline-flex items-center justify-center rounded-md p-2 lg:hidden",
+                "border border-border text-text-secondary",
+                "hover:bg-[rgba(27,42,74,0.04)] hover:text-text-primary",
+                "transition-colors duration-150",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
+              )}
+              aria-label="Toggle conversation history"
+            >
+              <svg
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            <div>
+              <h1 className="mb-2 text-2xl font-bold text-primary font-display">
+                Research Assistant
+              </h1>
+              <p className="text-text-secondary text-sm">
+                Compare responses from two AI models side-by-side.
+              </p>
+            </div>
+          </header>
+
+          <div className="space-y-6">
+            <ChatInterface onSubmit={handleSubmit} isStreaming={isStreaming} />
+
+            <ResponseDisplay
+              state={state}
+              geminiDisplayName={geminiDisplayName}
+              openaiDisplayName={openaiDisplayName}
+            />
+
+            {/* Reconsider button — visible when both initial responses are complete */}
+            {showReconsiderButton && (
+              <ReconsiderButton
+                onReconsider={sendReconsider}
+                disabled={!canReconsider}
+                isReconsiderStreaming={isReconsiderStreaming}
+                tier={currentTier}
+              />
+            )}
+
+            {/* Reconsider display — visible when reconsider has content */}
+            {showReconsiderDisplay && (
+              <ReconsiderDisplay
+                geminiResponse={reconsiderState.gemini}
+                openaiResponse={reconsiderState.openai}
+                tier={currentTier}
+              />
+            )}
+
+            {/* Follow-up input — visible when initial responses are complete */}
+            {showFollowUp && (
+              <FollowUpInput
+                onSendFollowUp={sendFollowUp}
+                disabled={isStreaming || isReconsiderStreaming}
+                tier={currentTier}
+              />
+            )}
+
+            {/* Session history — previous prompts/responses (newest first) */}
+            {sessionHistory.length > 0 && (
+              <section className="space-y-6">
+                <h2 className="text-sm font-medium text-text-secondary border-b border-border pb-2">
+                  Previous in this session
+                </h2>
+                {sessionHistory.map((entry) => (
+                  <div key={entry.id} className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-text-tertiary">
+                      <span className="font-medium text-text-secondary">
+                        {entry.prompt.slice(0, 100)}
+                        {entry.prompt.length > 100 ? "..." : ""}
+                      </span>
+                      <span className="uppercase tracking-wide">
+                        {entry.tier}
+                      </span>
+                    </div>
+                    <ResponseDisplay
+                      state={entry.state}
+                      geminiDisplayName={entry.geminiDisplayName}
+                      openaiDisplayName={entry.openaiDisplayName}
+                    />
+                  </div>
+                ))}
+              </section>
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
 
 // ── Exported page component with auth guard ─────────────────────
 
-export function ResearchAssistantPage() {
+export function ResearchAssistantPage({
+  initialConversationId,
+}: {
+  initialConversationId?: string;
+}) {
   return (
     <AuthGuard>
-      <ResearchAssistantContent />
+      <ResearchAssistantContent initialConversationId={initialConversationId} />
     </AuthGuard>
   );
 }
