@@ -285,11 +285,11 @@ describe("streaming-controller", () => {
       expect(mockCreateTierStreams).toHaveBeenCalledWith(
         "expert",
         "my query",
-        undefined,
+        expect.any(AbortSignal),
       );
     });
 
-    it("passes abortSignal to createTierStreams", () => {
+    it("passes combined AbortSignal (user + timeout) to createTierStreams", () => {
       mockCreateTierStreams.mockReturnValue({
         gemini: createMockStreamResult([]) as never,
         openai: createMockStreamResult([]) as never,
@@ -300,11 +300,23 @@ describe("streaming-controller", () => {
         abortSignal: controller.signal,
       });
 
-      expect(mockCreateTierStreams).toHaveBeenCalledWith(
-        "standard",
-        "test",
-        controller.signal,
-      );
+      // Combined signal is passed, not the raw user signal
+      const passedSignal = mockCreateTierStreams.mock.calls[0][2];
+      expect(passedSignal).toBeInstanceOf(AbortSignal);
+      expect(passedSignal).not.toBe(controller.signal);
+    });
+
+    it("uses timeout-only signal when no user abortSignal provided", () => {
+      mockCreateTierStreams.mockReturnValue({
+        gemini: createMockStreamResult([]) as never,
+        openai: createMockStreamResult([]) as never,
+      });
+
+      createParallelStream("standard", "test");
+
+      const passedSignal = mockCreateTierStreams.mock.calls[0][2];
+      expect(passedSignal).toBeInstanceOf(AbortSignal);
+      expect(passedSignal).not.toBeUndefined();
     });
   });
 });

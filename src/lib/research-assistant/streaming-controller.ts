@@ -11,7 +11,7 @@
 // - The `complete` event fires only after BOTH models finish
 // - Writer is closed exactly once, after all processing
 
-import { SSE_EVENTS } from "./config";
+import { HEARTBEAT_INTERVAL_MS, SSE_EVENTS, STREAM_TIMEOUTS } from "./config";
 import { createTierStreams, type ModelStreamResult } from "./model-client";
 import type { ResearchTier } from "./types";
 
@@ -87,11 +87,37 @@ export function createParallelStream(
   const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
   const writer = writable.getWriter();
 
-  // Start both model streams in parallel
+  // Combine user abort signal with per-tier timeout
+  const timeoutSignal = AbortSignal.timeout(STREAM_TIMEOUTS[tier]);
+  const combinedSignal = options?.abortSignal
+    ? AbortSignal.any([options.abortSignal, timeoutSignal])
+    : timeoutSignal;
+
+  // Start both model streams in parallel with combined signal
   const { gemini: geminiResult, openai: openaiResult } = createTierStreams(
     tier,
     prompt,
-    options?.abortSignal,
+    combinedSignal,
+  );
+
+  // Heartbeat — keeps SSE connection alive through proxies/load balancers
+  const heartbeatInterval = setInterval(async () => {
+    try {
+      await writer.write(
+        encoder.encode(
+          formatSSEEvent(SSE_EVENTS.HEARTBEAT, { ts: Date.now() }),
+        ),
+      );
+    } catch {
+      clearInterval(heartbeatInterval);
+    }
+  }, HEARTBEAT_INTERVAL_MS);
+
+  // Clean up heartbeat on abort
+  combinedSignal.addEventListener(
+    "abort",
+    () => clearInterval(heartbeatInterval),
+    { once: true },
   );
 
   // Fire and forget — stream processing is async
@@ -100,6 +126,7 @@ export function createParallelStream(
     pipeModelStream(openaiResult, SSE_EVENTS.OPENAI, writer, encoder),
   ])
     .then(async () => {
+      clearInterval(heartbeatInterval);
       await writer.write(
         encoder.encode(formatSSEEvent(SSE_EVENTS.COMPLETE, {})),
       );
@@ -107,6 +134,7 @@ export function createParallelStream(
       options?.onComplete?.("success");
     })
     .catch(async (error) => {
+      clearInterval(heartbeatInterval);
       // Safety net — should not happen due to per-stream try/catch
       try {
         await writer.write(
