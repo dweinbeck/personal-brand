@@ -4,11 +4,7 @@
 // No AI SDK imports here; the ModelClient (Plan 02) uses these IDs
 // to construct provider instances.
 
-import type {
-  BillingAction,
-  ResearchTier,
-  TierConfig,
-} from "./types";
+import type { BillingAction, ResearchTier, TierConfig } from "./types";
 
 // ── Tier configurations ─────────────────────────────────────────
 
@@ -88,9 +84,7 @@ export function getCreditCost(
 }
 
 /** Returns the display names of both models for a tier (for UI labels). */
-export function getModelDisplayNames(
-  tier: ResearchTier,
-): [string, string] {
+export function getModelDisplayNames(tier: ResearchTier): [string, string] {
   const config = TIER_CONFIGS[tier];
   return [config.models[0].displayName, config.models[1].displayName];
 }
