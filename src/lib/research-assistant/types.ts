@@ -32,7 +32,8 @@ export type SSEEventType =
   | "gemini-error"
   | "openai-error"
   | "complete"
-  | "error";
+  | "error"
+  | "heartbeat";
 
 export type StreamTextEvent = {
   text: string;
@@ -90,7 +91,7 @@ export type BillingTransaction = {
 
 // ── Stream state types (for client hook) ────────────────────────
 
-export type StreamStatus = "idle" | "streaming" | "complete" | "error";
+export type StreamStatus = "idle" | "connecting" | "streaming" | "complete" | "error";
 
 export type ModelResponse = {
   text: string;

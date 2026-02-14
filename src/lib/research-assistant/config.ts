@@ -54,6 +54,16 @@ export const CREDIT_COSTS: Record<
   "follow-up": { standard: 5, expert: 10 },
 };
 
+// ── Streaming resilience constants ──────────────────────────────
+// Per-tier timeout for AbortSignal.timeout() and heartbeat interval.
+
+export const STREAM_TIMEOUTS: Record<ResearchTier, number> = {
+  standard: 60_000,
+  expert: 120_000,
+};
+
+export const HEARTBEAT_INTERVAL_MS = 15_000;
+
 // ── SSE event name constants ────────────────────────────────────
 // Used by both server and client to avoid magic strings.
 
@@ -66,6 +76,7 @@ export const SSE_EVENTS = {
   OPENAI_ERROR: "openai-error",
   COMPLETE: "complete",
   ERROR: "error",
+  HEARTBEAT: "heartbeat",
 } as const;
 
 // ── Helper functions ────────────────────────────────────────────
