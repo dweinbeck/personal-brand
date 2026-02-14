@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { type FormEvent, type KeyboardEvent, useRef, useState } from "react";
 import type { ResearchTier } from "@/lib/research-assistant/types";
+import { CreditBalanceDisplay } from "./CreditBalanceDisplay";
 
 // ── Props ──────────────────────────────────────────────────────
 
@@ -100,39 +101,42 @@ export function ChatInterface({
         )}
       </div>
 
-      {/* Tier toggle + submit — stacked on mobile, side-by-side on sm+ */}
+      {/* Tier toggle + balance + submit — stacked on mobile, side-by-side on sm+ */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {/* Tier toggle — full width on mobile */}
-        <div className="flex items-center gap-1 rounded-lg bg-[rgba(27,42,74,0.04)] p-1 w-full sm:w-fit">
-          {TIER_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              disabled={isStreaming || disabled}
-              onClick={() => setTier(option.value)}
-              className={clsx(
-                "flex-1 sm:flex-none",
-                "relative rounded-md px-4 py-2 text-sm font-medium transition-all duration-200",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                tier === option.value
-                  ? option.value === "expert"
-                    ? "bg-[#8B1E3F] text-white shadow-sm"
-                    : "bg-primary text-white shadow-sm"
-                  : "text-text-secondary hover:text-text-primary",
-              )}
-            >
-              {option.label}
-              <span
+        {/* Tier toggle + credit balance — full width on mobile */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <div className="flex items-center gap-1 rounded-lg bg-[rgba(27,42,74,0.04)] p-1 w-full sm:w-fit">
+            {TIER_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                disabled={isStreaming || disabled}
+                onClick={() => setTier(option.value)}
                 className={clsx(
-                  "ml-1.5 text-xs",
-                  tier === option.value ? "opacity-80" : "text-text-tertiary",
+                  "flex-1 sm:flex-none",
+                  "relative rounded-md px-4 py-2 text-sm font-medium transition-all duration-200",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  tier === option.value
+                    ? option.value === "expert"
+                      ? "bg-[#8B1E3F] text-white shadow-sm"
+                      : "bg-primary text-white shadow-sm"
+                    : "text-text-secondary hover:text-text-primary",
                 )}
               >
-                ({option.credits} cr)
-              </span>
-            </button>
-          ))}
+                {option.label}
+                <span
+                  className={clsx(
+                    "ml-1.5 text-xs",
+                    tier === option.value ? "opacity-80" : "text-text-tertiary",
+                  )}
+                >
+                  ({option.credits} cr)
+                </span>
+              </button>
+            ))}
+          </div>
+          <CreditBalanceDisplay />
         </div>
 
         {/* Submit + hint */}
