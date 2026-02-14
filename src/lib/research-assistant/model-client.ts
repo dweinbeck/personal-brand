@@ -4,10 +4,10 @@
 // API keys are read from environment variables automatically by the
 // AI SDK providers — never referenced in code.
 
-import { streamText } from "ai";
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
+import { streamText } from "ai";
 
 import { TIER_CONFIGS } from "./config";
 import type { ModelConfig, ResearchTier } from "./types";

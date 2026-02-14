@@ -48,9 +48,7 @@ async function pipeModelStream(
     // Stream finished successfully — send usage data
     const usage = await result.usage;
     await writer.write(
-      encoder.encode(
-        formatSSEEvent(`${providerEventName}-done`, { usage }),
-      ),
+      encoder.encode(formatSSEEvent(`${providerEventName}-done`, { usage })),
     );
   } catch (error) {
     // Model error — write error event for this model only
