@@ -38,6 +38,51 @@ export const TOOL_PRICING_SEED = [
     creditsPerUse: 100,
     costToUsCentsEstimate: 0,
   },
+  // ── Research Assistant (tiered pricing per action) ────────────
+  // Each action + tier combo is a separate tool key so the existing
+  // debitForToolUse() can look up the correct credit amount.
+  {
+    toolKey: "research_assistant_prompt_standard",
+    label: "Research Assistant — Standard Prompt",
+    active: true,
+    creditsPerUse: 10,
+    costToUsCentsEstimate: 2,
+  },
+  {
+    toolKey: "research_assistant_prompt_expert",
+    label: "Research Assistant — Expert Prompt",
+    active: true,
+    creditsPerUse: 20,
+    costToUsCentsEstimate: 8,
+  },
+  {
+    toolKey: "research_assistant_reconsider_standard",
+    label: "Research Assistant — Standard Reconsider",
+    active: true,
+    creditsPerUse: 5,
+    costToUsCentsEstimate: 1,
+  },
+  {
+    toolKey: "research_assistant_reconsider_expert",
+    label: "Research Assistant — Expert Reconsider",
+    active: true,
+    creditsPerUse: 10,
+    costToUsCentsEstimate: 4,
+  },
+  {
+    toolKey: "research_assistant_follow_up_standard",
+    label: "Research Assistant — Standard Follow-up",
+    active: true,
+    creditsPerUse: 5,
+    costToUsCentsEstimate: 1,
+  },
+  {
+    toolKey: "research_assistant_follow_up_expert",
+    label: "Research Assistant — Expert Follow-up",
+    active: true,
+    creditsPerUse: 10,
+    costToUsCentsEstimate: 4,
+  },
 ] as const;
 
 /**

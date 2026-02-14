@@ -25,7 +25,17 @@ describe("Tool pricing seed", () => {
   });
 
   it("active tools are marked active", () => {
-    const activeKeys = ["brand_scraper", "dave_ramsey", "tasks_app"];
+    const activeKeys = [
+      "brand_scraper",
+      "dave_ramsey",
+      "tasks_app",
+      "research_assistant_prompt_standard",
+      "research_assistant_prompt_expert",
+      "research_assistant_reconsider_standard",
+      "research_assistant_reconsider_expert",
+      "research_assistant_follow_up_standard",
+      "research_assistant_follow_up_expert",
+    ];
     for (const key of activeKeys) {
       const tool = TOOL_PRICING_SEED.find((t) => t.toolKey === key);
       expect(tool).toBeDefined();
@@ -34,7 +44,17 @@ describe("Tool pricing seed", () => {
   });
 
   it("placeholder tools are inactive", () => {
-    const activeKeys = new Set(["brand_scraper", "dave_ramsey", "tasks_app"]);
+    const activeKeys = new Set([
+      "brand_scraper",
+      "dave_ramsey",
+      "tasks_app",
+      "research_assistant_prompt_standard",
+      "research_assistant_prompt_expert",
+      "research_assistant_reconsider_standard",
+      "research_assistant_reconsider_expert",
+      "research_assistant_follow_up_standard",
+      "research_assistant_follow_up_expert",
+    ]);
     const placeholders = TOOL_PRICING_SEED.filter(
       (t) => !activeKeys.has(t.toolKey),
     );
