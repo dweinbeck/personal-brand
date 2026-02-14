@@ -115,7 +115,7 @@ describe("streaming-controller", () => {
 
   describe("createParallelStream", () => {
     it("returns a ReadableStream", () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(["hello"]) as never,
         openai: createMockStreamResult(["world"]) as never,
       });
@@ -125,7 +125,7 @@ describe("streaming-controller", () => {
     });
 
     it("both models stream text events", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(["Hello", " World"]) as never,
         openai: createMockStreamResult(["Hi", " there"]) as never,
       });
@@ -146,7 +146,7 @@ describe("streaming-controller", () => {
     });
 
     it("stream ends with done events and complete event", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(["a"]) as never,
         openai: createMockStreamResult(["b"]) as never,
       });
@@ -163,7 +163,7 @@ describe("streaming-controller", () => {
     });
 
     it("done events contain usage data", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(["a"]) as never,
         openai: createMockStreamResult(["b"]) as never,
       });
@@ -184,7 +184,7 @@ describe("streaming-controller", () => {
     // ── NFR-2.1: Error isolation ───────────────────────────
 
     it("one model error does not break the other (NFR-2.1)", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(
           ["partial"],
           "Gemini API rate limit exceeded",
@@ -222,7 +222,7 @@ describe("streaming-controller", () => {
     });
 
     it("both models erroring still produces complete event", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult([], "Gemini failed") as never,
         openai: createMockStreamResult([], "OpenAI failed") as never,
       });
@@ -237,7 +237,7 @@ describe("streaming-controller", () => {
     });
 
     it("onComplete callback receives success when both models succeed", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult(["a"]) as never,
         openai: createMockStreamResult(["b"]) as never,
       });
@@ -256,7 +256,7 @@ describe("streaming-controller", () => {
     });
 
     it("onComplete callback receives success when one model errors (partial success)", async () => {
-      mockCreateTierStreams.mockReturnValue({
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult([], "Gemini failed") as never,
         openai: createMockStreamResult(["ok"]) as never,
       });
@@ -274,13 +274,13 @@ describe("streaming-controller", () => {
       expect(onComplete).toHaveBeenCalledWith("success");
     });
 
-    it("passes tier and prompt to createTierStreams", () => {
-      mockCreateTierStreams.mockReturnValue({
+    it("passes tier and prompt to createTierStreams", async () => {
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult([]) as never,
         openai: createMockStreamResult([]) as never,
       });
 
-      createParallelStream("expert", "my query");
+      await readSSEStream(createParallelStream("expert", "my query"));
 
       expect(mockCreateTierStreams).toHaveBeenCalledWith(
         "expert",
@@ -289,16 +289,18 @@ describe("streaming-controller", () => {
       );
     });
 
-    it("passes combined AbortSignal (user + timeout) to createTierStreams", () => {
-      mockCreateTierStreams.mockReturnValue({
+    it("passes combined AbortSignal (user + timeout) to createTierStreams", async () => {
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult([]) as never,
         openai: createMockStreamResult([]) as never,
       });
 
       const controller = new AbortController();
-      createParallelStream("standard", "test", {
-        abortSignal: controller.signal,
-      });
+      await readSSEStream(
+        createParallelStream("standard", "test", {
+          abortSignal: controller.signal,
+        }),
+      );
 
       // Combined signal is passed, not the raw user signal
       const passedSignal = mockCreateTierStreams.mock.calls[0][2];
@@ -306,13 +308,13 @@ describe("streaming-controller", () => {
       expect(passedSignal).not.toBe(controller.signal);
     });
 
-    it("uses timeout-only signal when no user abortSignal provided", () => {
-      mockCreateTierStreams.mockReturnValue({
+    it("uses timeout-only signal when no user abortSignal provided", async () => {
+      mockCreateTierStreams.mockResolvedValue({
         gemini: createMockStreamResult([]) as never,
         openai: createMockStreamResult([]) as never,
       });
 
-      createParallelStream("standard", "test");
+      await readSSEStream(createParallelStream("standard", "test"));
 
       const passedSignal = mockCreateTierStreams.mock.calls[0][2];
       expect(passedSignal).toBeInstanceOf(AbortSignal);

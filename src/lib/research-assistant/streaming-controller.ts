@@ -93,13 +93,6 @@ export function createParallelStream(
     ? AbortSignal.any([options.abortSignal, timeoutSignal])
     : timeoutSignal;
 
-  // Start both model streams in parallel with combined signal
-  const { gemini: geminiResult, openai: openaiResult } = createTierStreams(
-    tier,
-    prompt,
-    combinedSignal,
-  );
-
   // Heartbeat — keeps SSE connection alive through proxies/load balancers
   const heartbeatInterval = setInterval(async () => {
     try {
@@ -120,22 +113,28 @@ export function createParallelStream(
     { once: true },
   );
 
-  // Fire and forget — stream processing is async
-  Promise.all([
-    pipeModelStream(geminiResult, SSE_EVENTS.GEMINI, writer, encoder),
-    pipeModelStream(openaiResult, SSE_EVENTS.OPENAI, writer, encoder),
-  ])
-    .then(async () => {
+  // Fire and forget — createTierStreams is async (retry logic), so
+  // the entire pipeline runs inside this async IIFE.
+  (async () => {
+    try {
+      const { gemini: geminiResult, openai: openaiResult } =
+        await createTierStreams(tier, prompt, combinedSignal);
+
+      await Promise.all([
+        pipeModelStream(geminiResult, SSE_EVENTS.GEMINI, writer, encoder),
+        pipeModelStream(openaiResult, SSE_EVENTS.OPENAI, writer, encoder),
+      ]);
+
       clearInterval(heartbeatInterval);
       await writer.write(
         encoder.encode(formatSSEEvent(SSE_EVENTS.COMPLETE, {})),
       );
       await writer.close();
       options?.onComplete?.("success");
-    })
-    .catch(async (error) => {
+    } catch (error) {
       clearInterval(heartbeatInterval);
-      // Safety net — should not happen due to per-stream try/catch
+      // Handles both createTierStreams failure (all retries exhausted)
+      // and unexpected pipeModelStream errors (safety net)
       try {
         await writer.write(
           encoder.encode(
@@ -147,7 +146,8 @@ export function createParallelStream(
         // Writer may already be closed if abort was triggered
       }
       options?.onComplete?.("failed");
-    });
+    }
+  })();
 
   return readable;
 }

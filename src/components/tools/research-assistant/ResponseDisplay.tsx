@@ -6,6 +6,7 @@ import type {
   ModelResponse,
   ResearchChatState,
 } from "@/lib/research-assistant/types";
+import { CopyButton } from "./CopyButton";
 
 // ── Props ──────────────────────────────────────────────────────
 
@@ -19,6 +20,13 @@ interface ResponseDisplayProps {
 
 function StatusBadge({ status }: { status: ModelResponse["status"] }) {
   switch (status) {
+    case "connecting":
+      return (
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-text-tertiary">
+          <span className="inline-block h-2 w-2 rounded-full bg-text-tertiary animate-pulse" />
+          Connecting
+        </span>
+      );
     case "streaming":
       return (
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gold">
@@ -113,11 +121,17 @@ function ModelPanel({
         )}
       </section>
 
-      {/* Footer — token usage (visible only when complete) */}
-      {response.status === "complete" && response.usage && (
-        <footer className="border-t border-border px-4 py-2 text-xs text-text-tertiary">
-          Tokens: {response.usage.promptTokens.toLocaleString()} in /{" "}
-          {response.usage.completionTokens.toLocaleString()} out
+      {/* Footer — copy button + token usage */}
+      {(response.text ||
+        (response.status === "complete" && response.usage)) && (
+        <footer className="flex items-center justify-between border-t border-border px-4 py-2">
+          {response.text && <CopyButton text={response.text} />}
+          {response.status === "complete" && response.usage && (
+            <span className="text-xs text-text-tertiary">
+              Tokens: {response.usage.promptTokens.toLocaleString()} in /{" "}
+              {response.usage.completionTokens.toLocaleString()} out
+            </span>
+          )}
         </footer>
       )}
     </article>
@@ -134,7 +148,8 @@ export function ResponseDisplay({
   const hasContent =
     state.gemini.text.length > 0 ||
     state.openai.text.length > 0 ||
-    state.overallStatus === "streaming";
+    state.overallStatus === "streaming" ||
+    state.overallStatus === "connecting";
 
   // Empty state — no panels shown
   if (state.overallStatus === "idle" && !hasContent) {

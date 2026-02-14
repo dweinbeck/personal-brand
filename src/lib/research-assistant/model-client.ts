@@ -56,6 +56,52 @@ export function createModelStream(
   return streamText({ model, prompt, abortSignal });
 }
 
+// ── Retry logic for 429 rate limits ──────────────────────────────
+
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 1000;
+
+function is429Error(error: unknown): boolean {
+  if (error instanceof Error) {
+    return (
+      error.message.includes("429") || error.message.includes("rate limit")
+    );
+  }
+  return false;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Wraps createModelStream with retry logic for 429 rate limit errors.
+ * Retries up to MAX_RETRIES times with exponential backoff + jitter.
+ * Only retries errors thrown BEFORE streaming starts (i.e., from streamText()
+ * itself). Mid-stream errors are handled by pipeModelStream's try/catch.
+ */
+export async function createModelStreamWithRetry(
+  config: ModelConfig,
+  prompt: string,
+  abortSignal?: AbortSignal,
+): Promise<ModelStreamResult> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return createModelStream(config, prompt, abortSignal);
+    } catch (error) {
+      lastError = error;
+      if (attempt < MAX_RETRIES && is429Error(error)) {
+        const jitter = Math.random() * 500;
+        await delay(BASE_DELAY_MS * 2 ** attempt + jitter);
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError;
+}
+
 // ── Tier stream factory ─────────────────────────────────────────
 
 export type TierStreams = {
@@ -67,12 +113,15 @@ export type TierStreams = {
  * Creates parallel streaming results for both models in a tier.
  * Returns named streams (gemini/openai) so the streaming controller
  * can tag SSE events with the correct provider name.
+ *
+ * Uses createModelStreamWithRetry to handle 429 rate limit errors
+ * with exponential backoff before any tokens are streamed.
  */
-export function createTierStreams(
+export async function createTierStreams(
   tier: ResearchTier,
   prompt: string,
   abortSignal?: AbortSignal,
-): TierStreams {
+): Promise<TierStreams> {
   const config = TIER_CONFIGS[tier];
 
   // Identify which model is Google (gemini) and which is OpenAI
@@ -89,8 +138,12 @@ export function createTierStreams(
     );
   }
 
-  return {
-    gemini: createModelStream(googleModel, prompt, abortSignal),
-    openai: createModelStream(openaiModel, prompt, abortSignal),
-  };
+  // Both retry calls run in parallel — if one gets 429'd,
+  // it retries independently without blocking the other.
+  const [gemini, openaiStream] = await Promise.all([
+    createModelStreamWithRetry(googleModel, prompt, abortSignal),
+    createModelStreamWithRetry(openaiModel, prompt, abortSignal),
+  ]);
+
+  return { gemini, openai: openaiStream };
 }
