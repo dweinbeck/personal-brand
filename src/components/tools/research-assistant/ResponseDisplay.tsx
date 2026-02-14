@@ -99,7 +99,7 @@ function ModelPanel({
       {/* Body */}
       <section
         ref={textRef}
-        className="flex-1 overflow-y-auto p-4 min-h-[200px] max-h-[500px]"
+        className="flex-1 overflow-y-auto p-4 min-h-[150px] max-h-[300px] sm:min-h-[200px] sm:max-h-[500px]"
         aria-live="polite"
         aria-busy={response.status === "streaming"}
       >
