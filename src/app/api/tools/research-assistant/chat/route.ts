@@ -4,8 +4,10 @@ import {
   debitForResearchAction,
   finalizeResearchBilling,
 } from "@/lib/research-assistant/billing";
+import { createRequestLogger } from "@/lib/research-assistant/logger";
 import { createParallelStream } from "@/lib/research-assistant/streaming-controller";
 import type { ResearchTier } from "@/lib/research-assistant/types";
+import { logResearchUsage } from "@/lib/research-assistant/usage-logger";
 
 // ── Runtime config ──────────────────────────────────────────────
 // Node.js runtime required for firebase-admin (no Edge Runtime).
@@ -24,6 +26,8 @@ const chatRequestSchema = z.object({
 // ── POST handler ────────────────────────────────────────────────
 
 export async function POST(request: Request) {
+  const logger = createRequestLogger(request);
+
   // 1. Auth verification
   const auth = await verifyUser(request);
   if (!auth.authorized) return unauthorizedResponse(auth);
@@ -45,6 +49,14 @@ export async function POST(request: Request) {
   }
 
   const { prompt, tier } = parsed.data;
+  const startTime = Date.now();
+
+  // Log prompt submission (no PII: no email, no prompt content)
+  logger.info("Research prompt submitted", {
+    userId: auth.uid,
+    tier,
+    promptLength: prompt.length,
+  });
 
   // 3. Credit deduction (two-phase: PENDING now, finalize after stream)
   const idempotencyKey = crypto.randomUUID();
@@ -72,7 +84,11 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("Billing debit failed:", error);
+    logger.error("Billing debit failed", {
+      userId: auth.uid,
+      tier,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
     return Response.json(
       { error: "Billing error. Please try again." },
       { status: 500 },
@@ -82,10 +98,40 @@ export async function POST(request: Request) {
   // 4. Create parallel SSE stream with billing finalization callback
   const readable = createParallelStream(tier as ResearchTier, prompt, {
     onComplete: (status) => {
+      const latencyMs = Date.now() - startTime;
+
+      logger.info("Research streaming completed", {
+        userId: auth.uid,
+        tier,
+        status,
+        latencyMs,
+      });
+
+      // Write usage log to Firestore (fire-and-forget, never throws)
+      logResearchUsage({
+        userId: auth.uid,
+        tier: tier as ResearchTier,
+        action: "prompt",
+        promptLength: prompt.length,
+        geminiLatencyMs: latencyMs, // Per-model latency will be refined in Phase 3
+        openaiLatencyMs: latencyMs, // Using overall latency as approximation for now
+        geminiTokens: null, // Token data not available here yet
+        openaiTokens: null,
+        geminiStatus: status === "success" ? "success" : "error",
+        openaiStatus: status === "success" ? "success" : "error",
+        creditsCharged: 0, // Will be filled with actual credits in future
+      });
+
       finalizeResearchBilling({
         usageId,
         status: status === "success" ? "SUCCESS" : "FAILED",
-      }).catch((err) => console.error("Billing finalization failed:", err));
+      }).catch((err) =>
+        logger.error("Billing finalization failed", {
+          userId: auth.uid,
+          usageId,
+          errorMessage: err instanceof Error ? err.message : String(err),
+        }),
+      );
     },
   });
 
@@ -95,6 +141,7 @@ export async function POST(request: Request) {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 }
