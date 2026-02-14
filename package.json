@@ -11,6 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.29",
+    "@ai-sdk/openai": "^3.0.29",
     "@ai-sdk/react": "^3.0.73",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
