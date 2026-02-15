@@ -69,6 +69,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 38]: ToolsShowcase placed between AppsGrid and BuildingBlocksCta in render order
 - [Phase 39]: Used getIdToken callback pattern instead of static token state for fresh auth on every brand scraper API request
 - [Phase 39]: URL validation uses URL constructor with protocol check for http/https
+- [Phase 39]: Map FastAPI 500 errors to knowledge-base re-sync message to surface BUG-03 root cause
+- [Phase 39]: Return 503 for Firestore index errors to signal temporary unavailability
+- [Phase 39]: Extract error detail from FastAPI response body by checking detail/error/message fields
 
 ### Pending Todos
 
@@ -91,9 +94,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 39-01-PLAN.md
+Stopped at: Completed 39-02-PLAN.md (Phase 39 complete)
 Resume file: None
 
 ## Next Step
 
-Continue Phase 39: Execute 39-02-PLAN.md.
+Phase 39 complete. Ready for Phase 40.
