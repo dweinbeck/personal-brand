@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 37 — next phase
+**Current focus:** v1.9 Phase 37 — Chatbot Popup Widget
 
 ## Current Position
 
-Phase: 36 of 40 (Tools Page & Nav Restructure) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase Complete
-Last activity: 2026-02-15 — Completed 36-02 (Nav restructure)
+Phase: 37 of 40 (Chatbot Popup Widget)
+Plan: 1 of 2 in current phase
+Status: Plan 01 Complete
+Last activity: 2026-02-15 — Completed 37-01 (Popup widget core)
 
 Progress: [#####.....] 50%
 
@@ -44,6 +44,7 @@ Progress: [#####.....] 50%
 | 35-demo-workspace | 02 | 3 min | 2 | 6 |
 | 36-tools-page-and-nav-restructure | 01 | 10 min | 2 | 4 |
 | 36-tools-page-and-nav-restructure | 02 | 8 min | 2 | 3 |
+| 37-chatbot-popup-widget | 01 | 10 min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -53,6 +54,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 36]: Reused Card + CardButtonLabel + gold-light tag badge pattern from AppCard for tool cards
 - [Phase 36]: Ask My Assistant link added for all users, pointing to /assistant until Phase 37 popup conversion
 - [Phase 36]: About, Custom GPTs, Assistant removed from navbar; replaced by new hierarchy (Home, Apps, Tools, Building Blocks, Contact)
+- [Phase 37]: ChatWidgetProvider wraps inside AuthProvider for auth access in popup
+- [Phase 37]: Ask My Assistant converted from Link to button toggle, no longer navigates to /assistant
+- [Phase 37]: Popup mode hides ExitRamps and PrivacyDisclosure for space efficiency
 
 ### Pending Todos
 
@@ -75,9 +79,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 36-02-PLAN.md (Phase 36 complete)
+Stopped at: Completed 37-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 36 complete. Ready for Phase 37.
+Ready for 37-02-PLAN.md.
