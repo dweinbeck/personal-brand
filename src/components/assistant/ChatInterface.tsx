@@ -37,6 +37,7 @@ export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
   const conversationId = useMemo(() => id, [id]);
 
   const isLoading = status === "streaming" || status === "submitted";
+  const isPopup = mode === "popup";
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -72,8 +73,10 @@ export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-4rem)] flex-col bg-background">
-      <ChatHeader />
+    <div
+      className={`flex flex-col bg-background ${isPopup ? "h-full" : "h-[calc(100dvh-4rem)]"}`}
+    >
+      {!isPopup && <ChatHeader />}
 
       {/* Messages area */}
       <div
@@ -86,13 +89,15 @@ export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center">
             <div className="text-center px-4">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <div
+                className={`mx-auto mb-4 flex items-center justify-center rounded-full bg-primary/10 ${isPopup ? "h-12 w-12" : "h-16 w-16"}`}
+              >
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={1.5}
-                  className="h-8 w-8 text-primary"
+                  className={`text-primary ${isPopup ? "h-6 w-6" : "h-8 w-8"}`}
                   aria-hidden="true"
                 >
                   <path
@@ -102,13 +107,17 @@ export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
                   />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-text-primary">
+              <h2
+                className={`font-semibold text-text-primary ${isPopup ? "text-base" : "text-lg"}`}
+              >
                 Hi! I&rsquo;m Dan&rsquo;s AI Assistant
               </h2>
-              <p className="mt-2 text-sm text-text-secondary max-w-md mx-auto">
-                I can tell you about Dan&rsquo;s projects, skills, experience,
-                and how to get in touch. What would you like to know?
-              </p>
+              {!isPopup && (
+                <p className="mt-2 text-sm text-text-secondary max-w-md mx-auto">
+                  I can tell you about Dan&rsquo;s projects, skills, experience,
+                  and how to get in touch. What would you like to know?
+                </p>
+              )}
             </div>
             <SuggestedPrompts onSelect={handleSuggestedPrompt} />
             <div className="w-full max-w-2xl mx-auto">
@@ -117,6 +126,7 @@ export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
                 onChange={setInput}
                 onSubmit={handleSend}
                 isLoading={isLoading}
+                rows={isPopup ? 2 : 4}
               />
             </div>
           </div>
@@ -161,15 +171,16 @@ export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
               onChange={setInput}
               onSubmit={handleSend}
               isLoading={isLoading}
+              rows={isPopup ? 2 : 4}
             />
           </div>
         </div>
       )}
       <div className="flex items-center justify-between px-4 py-2 sm:px-6">
-        <ExitRamps />
+        {!isPopup && <ExitRamps />}
         {messages.length >= 2 && <HumanHandoff messages={plainMessages} />}
       </div>
-      <PrivacyDisclosure />
+      {!isPopup && <PrivacyDisclosure />}
     </div>
   );
 }

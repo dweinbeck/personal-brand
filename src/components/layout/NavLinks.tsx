@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useChatWidget } from "@/context/ChatWidgetContext";
 import { ADMIN_EMAIL } from "@/lib/constants";
 
 const baseLinks = [
@@ -19,13 +20,13 @@ export function NavLinks() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useAuth();
+  const { isOpen: widgetOpen, toggle: toggleWidget } = useChatWidget();
 
   const links = useMemo(() => {
     const result = [...baseLinks];
     if (user?.email === ADMIN_EMAIL) {
       result.push({ name: "Control Center", href: "/control-center" });
     }
-    result.push({ name: "Ask My Assistant", href: "/assistant" });
     return result;
   }, [user]);
 
@@ -52,6 +53,18 @@ export function NavLinks() {
             {link.name}
           </Link>
         ))}
+        <button
+          type="button"
+          onClick={toggleWidget}
+          className={clsx(
+            "px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
+            widgetOpen
+              ? "bg-primary text-white font-bold shadow-sm border border-gold"
+              : "text-text-secondary hover:text-primary hover:bg-gold-light",
+          )}
+        >
+          Ask My Assistant
+        </button>
       </nav>
 
       {/* Mobile hamburger button */}
@@ -109,6 +122,21 @@ export function NavLinks() {
               {link.name}
             </Link>
           ))}
+          <button
+            type="button"
+            onClick={() => {
+              toggleWidget();
+              setMobileOpen(false);
+            }}
+            className={clsx(
+              "px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-left",
+              widgetOpen
+                ? "text-primary bg-gold-light border-l-2 border-gold"
+                : "text-text-secondary hover:text-primary hover:bg-gold-light",
+            )}
+          >
+            Ask My Assistant
+          </button>
         </nav>
       </div>
     </>

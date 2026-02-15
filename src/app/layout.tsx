@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
+import { ChatPopupWidget } from "@/components/assistant/ChatPopupWidget";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
+import { ChatWidgetProvider } from "@/context/ChatWidgetContext";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -65,9 +67,12 @@ export default function RootLayout({
         className={`${playfair.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <AuthProvider>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
+          <ChatWidgetProvider>
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+            <ChatPopupWidget />
+            <Footer />
+          </ChatWidgetProvider>
         </AuthProvider>
       </body>
     </html>

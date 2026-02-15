@@ -7,6 +7,7 @@ type ChatInputProps = {
   onChange: (value: string) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  rows?: number;
 };
 
 export function ChatInput({
@@ -14,6 +15,7 @@ export function ChatInput({
   onChange,
   onSubmit,
   isLoading,
+  rows = 4,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -47,7 +49,7 @@ export function ChatInput({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask about Dan's work, projects, or skills..."
-          rows={4}
+          rows={rows}
           maxLength={1000}
           disabled={isLoading}
           className="w-full resize-none rounded-xl border border-border bg-white px-4 py-3 pr-14 text-sm text-text-primary placeholder:text-text-tertiary focus:border-gold/40 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-50 transition-colors"
