@@ -125,11 +125,11 @@
   2. Navbar displays links in order: Home, Apps, Tools, Building Blocks, Contact, Control Center, Ask My Assistant, Sign in/Account
   3. Brand scraper link and page are removed from Control Center — users access brand scraper only via /apps
   4. /custom-gpts redirects to /tools (no broken bookmarks)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 36-01: TBD
-- [ ] 36-02: TBD
+- [ ] 36-01-PLAN.md — Create /tools page, move items off /apps, redirect /custom-gpts
+- [ ] 36-02-PLAN.md — Reorder navbar links, remove brand scraper from Control Center
 
 ### Phase 37: Chatbot Popup Widget
 **Goal**: Visitors can ask Dan's AI assistant from any page without navigating away, via a persistent popup that survives page navigation
@@ -209,7 +209,7 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 26 | v1.6 | 1/1 | Complete | 2026-02-10 |
 | 27-30 | v1.7 | 13/13 | Complete | 2026-02-11 |
 | 31-35 | v1.8 | 11/11 | Complete | 2026-02-12 |
-| 36. Tools Page & Nav Restructure | v1.9 | 0/TBD | Not started | - |
+| 36. Tools Page & Nav Restructure | v1.9 | 0/2 | Not started | - |
 | 37. Chatbot Popup Widget | v1.9 | 0/TBD | Not started | - |
 | 38. Home Page Enhancements | v1.9 | 0/TBD | Not started | - |
 | 39. Bug Fixes | v1.9 | 0/TBD | Not started | - |
