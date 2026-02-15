@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 38 of 40 (Home Page Enhancements)
-Plan: 1 of 2 in current phase
-Status: Executing Phase 38
-Last activity: 2026-02-15 — Completed 38-01 (Hero layout, tech tags, subtitles)
+Plan: 2 of 2 in current phase
+Status: Phase 38 Complete
+Last activity: 2026-02-15 — Completed 38-02 (Reading time and Dev Tools showcase)
 
 Progress: [##########] 100%
 
@@ -21,7 +21,7 @@ Progress: [##########] 100%
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 36
-- Total plans completed: 95
+- Total plans completed: 96
 - Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
@@ -47,6 +47,7 @@ Progress: [##########] 100%
 | 37-chatbot-popup-widget | 01 | 10 min | 2 | 6 |
 | 37-chatbot-popup-widget | 02 | 7 min | 2 | 1 |
 | 38-home-page-enhancements | 01 | 18 min | 2 | 5 |
+| 38-home-page-enhancements | 02 | 20 min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -62,6 +63,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 37]: Keep assistant/page.tsx as redirect rather than deleting, so bookmarks get 307 not 404
 - [Phase 38]: Used items-start with self-center on mobile for hero image top-alignment on desktop
 - [Phase 38]: Tech stack tag styling reuses TutorialCard additional tag pattern for visual consistency
+- [Phase 38]: Reading time uses 200 wpm average with Math.ceil rounding
+- [Phase 38]: ToolsShowcase placed between AppsGrid and BuildingBlocksCta in render order
 
 ### Pending Todos
 
@@ -84,9 +87,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 38-01-PLAN.md
+Stopped at: Completed 38-02-PLAN.md (Phase 38 complete)
 Resume file: None
 
 ## Next Step
 
-Phase 38 Plan 01 complete. Ready for 38-02.
+Phase 38 complete. Ready for Phase 39.
