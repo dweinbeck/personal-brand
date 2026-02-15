@@ -3,6 +3,7 @@ import type { Person, WithContext } from "schema-dts";
 import { AppsGrid } from "@/components/home/AppsGrid";
 import { BuildingBlocksCta } from "@/components/home/BuildingBlocksCta";
 import { HeroSection } from "@/components/home/HeroSection";
+import { ToolsShowcase } from "@/components/home/ToolsShowcase";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -39,6 +40,7 @@ export default function HomePage() {
       />
       <HeroSection />
       <AppsGrid />
+      <ToolsShowcase />
       <BuildingBlocksCta />
     </div>
   );
