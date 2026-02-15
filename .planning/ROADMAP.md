@@ -156,11 +156,11 @@ Plans:
   3. Building block cards on both the home page and /building-blocks show reading time (e.g., "5 min read") below the description and above tags
   4. The Apps section subtitle no longer says "Sign Up or Sign in" and the Building Blocks subtitle reads "Learn about AI Development with Building Block Tutorials"
   5. A new "Explore Development Tools" section appears after the Apps grid on the home page, displaying tool cards from the Tools page
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 38-01: TBD
-- [ ] 38-02: TBD
+- [ ] 38-01-PLAN.md — Hero layout redesign, section subtitle updates, tech stack tags on app cards
+- [ ] 38-02-PLAN.md — Reading time on building block cards, Dev Tools showcase section
 
 ### Phase 39: Bug Fixes
 **Goal**: All reported bugs in brand scraper, AI assistant, and research assistant are resolved so users encounter working tools
@@ -211,7 +211,7 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 31-35 | v1.8 | 11/11 | Complete | 2026-02-12 |
 | 36. Tools Page & Nav Restructure | v1.9 | 0/2 | Not started | - |
 | 37. Chatbot Popup Widget | v1.9 | 0/2 | Not started | - |
-| 38. Home Page Enhancements | v1.9 | 0/TBD | Not started | - |
+| 38. Home Page Enhancements | v1.9 | 0/2 | Not started | - |
 | 39. Bug Fixes | v1.9 | 0/TBD | Not started | - |
 | 40. Polish | v1.9 | 0/TBD | Not started | - |
 
