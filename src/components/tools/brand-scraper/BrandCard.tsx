@@ -11,14 +11,14 @@ type BrandCardProps = {
   result: BrandTaxonomy;
   brandJsonUrl?: string;
   jobId: string;
-  token: string;
+  getIdToken: () => Promise<string>;
 };
 
 export function BrandCard({
   result,
   brandJsonUrl,
   jobId,
-  token,
+  getIdToken,
 }: BrandCardProps) {
   let hostname: string;
   try {
@@ -43,7 +43,7 @@ export function BrandCard({
           <BrandCardDownloads
             brandJsonUrl={brandJsonUrl}
             jobId={jobId}
-            token={token}
+            getIdToken={getIdToken}
           />
         </div>
       </div>

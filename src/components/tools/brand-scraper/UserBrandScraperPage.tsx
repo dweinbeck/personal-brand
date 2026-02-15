@@ -38,10 +38,14 @@ function BrandScraperContent() {
   const [billing, setBilling] = useState<BillingMeResponse | null>(null);
   const [billingLoading, setBillingLoading] = useState(true);
   const [jobId, setJobId] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const getIdToken = useCallback(async () => {
+    if (!user) throw new Error("Not authenticated");
+    return user.getIdToken();
+  }, [user]);
 
   const {
     data,
@@ -50,7 +54,7 @@ function BrandScraperContent() {
     isTerminal,
     isTimedOut,
     reset,
-  } = useJobStatus(jobId, token, API_BASE);
+  } = useJobStatus(jobId, user ? getIdToken : null, API_BASE);
 
   // Load billing info
   const fetchBilling = useCallback(async () => {
@@ -120,7 +124,6 @@ function BrandScraperContent() {
       const job = (await res.json()) as ScrapeJobSubmission & {
         balanceAfter?: number;
       };
-      setToken(idToken);
       setJobId(job.job_id);
       setUrl("");
 
@@ -138,7 +141,6 @@ function BrandScraperContent() {
   const handleNewScrape = useCallback(() => {
     reset();
     setJobId(null);
-    setToken(null);
     setError(null);
     fetchBilling();
   }, [reset, fetchBilling]);
@@ -147,24 +149,15 @@ function BrandScraperContent() {
   useEffect(() => {
     if (initialJobId && user && !hasInitialized.current) {
       hasInitialized.current = true;
-      user.getIdToken().then((idToken) => {
-        setToken(idToken);
-        setJobId(initialJobId);
-      });
+      setJobId(initialJobId);
     }
   }, [initialJobId, user]);
 
   // Handle "View Results" from history list
-  const handleViewResults = useCallback(
-    async (historyJobId: string) => {
-      if (!user) return;
-      const idToken = await user.getIdToken();
-      setToken(idToken);
-      setJobId(historyJobId);
-      setError(null);
-    },
-    [user],
-  );
+  const handleViewResults = useCallback((historyJobId: string) => {
+    setJobId(historyJobId);
+    setError(null);
+  }, []);
 
   const inputStyles =
     "block w-full rounded-lg border border-border px-3 py-2 shadow-sm transition-colors focus:border-gold focus:ring-1 focus:ring-gold min-h-[44px]";
@@ -274,13 +267,13 @@ function BrandScraperContent() {
           )}
 
           {/* Parsed result — render Brand Card */}
-          {hasValidResult && parsed.success && token && (
+          {hasValidResult && parsed.success && (
             <div className="mt-6">
               <BrandCard
                 result={parsed.data}
                 brandJsonUrl={data.brand_json_url ?? undefined}
                 jobId={jobId}
-                token={token}
+                getIdToken={getIdToken}
               />
             </div>
           )}

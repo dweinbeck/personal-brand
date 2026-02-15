@@ -44,7 +44,16 @@ export async function askFastApi(question: string): Promise<FastApiResponse> {
   }
 
   if (!res.ok) {
-    throw new FastApiError(`FastAPI returned ${res.status}`, res.status);
+    let detail = `FastAPI returned ${res.status}`;
+    try {
+      const errBody = await res.json();
+      if (typeof errBody?.detail === "string") detail = errBody.detail;
+      else if (typeof errBody?.error === "string") detail = errBody.error;
+      else if (typeof errBody?.message === "string") detail = errBody.message;
+    } catch {
+      // Response body is not JSON
+    }
+    throw new FastApiError(detail, res.status);
   }
 
   const raw = await res.json();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { useJobStatus } from "@/lib/brand-scraper/hooks";
@@ -12,26 +12,22 @@ import { UrlSubmitForm } from "./UrlSubmitForm";
 export function BrandScraperPage() {
   const { user } = useAuth();
   const [jobId, setJobId] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
 
-  const { data, error, isPolling, isTerminal, isTimedOut, reset } =
-    useJobStatus(jobId, token);
-
-  const handleJobSubmitted = useCallback(
-    async (job: ScrapeJobSubmission) => {
-      const idToken = await user?.getIdToken();
-      if (idToken) {
-        setToken(idToken);
-      }
-      setJobId(job.job_id);
-    },
+  const getIdToken = useMemo(
+    () => (user ? () => user.getIdToken() : null),
     [user],
   );
+
+  const { data, error, isPolling, isTerminal, isTimedOut, reset } =
+    useJobStatus(jobId, getIdToken);
+
+  const handleJobSubmitted = useCallback((job: ScrapeJobSubmission) => {
+    setJobId(job.job_id);
+  }, []);
 
   const handleNewScrape = useCallback(() => {
     reset();
     setJobId(null);
-    setToken(null);
   }, [reset]);
 
   return (

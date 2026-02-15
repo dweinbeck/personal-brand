@@ -14,11 +14,11 @@ const MAX_POLLS = 100;
  * - Polls every 3 seconds while job is active (queued/processing)
  * - Stops automatically on terminal states (succeeded/partial/failed)
  * - Stops after 100 polls (~5 minutes) as timeout protection
- * - Includes Bearer token in every request (admin-protected endpoint)
+ * - Fetches a fresh auth token via getIdToken callback before each request
  */
 export function useJobStatus(
   jobId: string | null,
-  token: string | null,
+  getIdToken: (() => Promise<string>) | null,
   apiBase = "/api/admin/brand-scraper",
 ) {
   const [pollInterval, setPollInterval] = useState(POLL_INTERVAL_MS);
@@ -26,19 +26,20 @@ export function useJobStatus(
 
   const fetcher = useCallback(
     async (url: string): Promise<JobStatus> => {
+      const freshToken = await getIdToken?.();
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${freshToken}` },
       });
       if (!res.ok) {
         throw new Error(`Job status fetch failed: ${res.status}`);
       }
       return res.json() as Promise<JobStatus>;
     },
-    [token],
+    [getIdToken],
   );
 
   const { data, error, isLoading } = useSWR<JobStatus>(
-    jobId && token ? `${apiBase}/jobs/${jobId}` : null,
+    jobId && getIdToken ? `${apiBase}/jobs/${jobId}` : null,
     fetcher,
     {
       refreshInterval: pollInterval,

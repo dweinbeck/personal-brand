@@ -89,8 +89,11 @@ export async function POST(request: Request) {
       } else if (err.status === 503) {
         userMessage =
           "The assistant is currently unavailable. Please try again later.";
+      } else if (err.status === 500) {
+        userMessage =
+          "The assistant service encountered an error. This may indicate the knowledge base needs to be re-synced.";
       } else {
-        userMessage = "Something went wrong. Please try again.";
+        userMessage = err.message || "Something went wrong. Please try again.";
       }
 
       return new Response(JSON.stringify({ error: userMessage }), {

@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/Button";
 type BrandCardDownloadsProps = {
   brandJsonUrl?: string;
   jobId: string;
-  token: string;
+  getIdToken: () => Promise<string>;
 };
 
 export function BrandCardDownloads({
   brandJsonUrl,
   jobId,
-  token,
+  getIdToken,
 }: BrandCardDownloadsProps) {
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,11 +22,12 @@ export function BrandCardDownloads({
     setError(null);
 
     try {
+      const freshToken = await getIdToken();
       const res = await fetch(
         `/api/tools/brand-scraper/jobs/${jobId}/assets/zip`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${freshToken}` },
         },
       );
 
@@ -50,7 +51,7 @@ export function BrandCardDownloads({
     } finally {
       setDownloading(false);
     }
-  }, [jobId, token]);
+  }, [jobId, getIdToken]);
 
   return (
     <div className="flex flex-col items-end gap-2">
