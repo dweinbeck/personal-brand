@@ -32,6 +32,19 @@ export function AppCard({ app }: AppCardProps) {
         {app.description}
       </p>
 
+      {app.techStack.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {app.techStack.map((tech) => (
+            <span
+              key={tech}
+              className="px-2.5 py-0.5 font-mono text-xs text-text-tertiary bg-[rgba(27,42,74,0.04)] rounded-full"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="mt-auto pt-5">
         <CardButtonLabel>Enter App</CardButtonLabel>
       </div>
