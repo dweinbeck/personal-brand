@@ -26,7 +26,7 @@ const metadataSchema = z.object({
   confidence: z.enum(["low", "medium", "high"]).optional(),
 });
 
-export function ChatInterface() {
+export function ChatInterface({ mode = "page" }: { mode?: "page" | "popup" }) {
   const { messages, sendMessage, status, error, id } = useChat<ChatMessage_UI>({
     transport,
     messageMetadataSchema: metadataSchema,
