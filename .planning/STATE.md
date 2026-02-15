@@ -63,11 +63,12 @@ None.
 |---|-------------|------|--------|-----------|
 | 001 | Fix FRD Interviewer link and lint errors | 2026-02-08 | a0c31f8 | [001-fix-frd-link-and-lint-errors](./quick/001-fix-frd-link-and-lint-errors/) |
 | 002 | Fix broken documentation links on project pages | 2026-02-08 | 8377843 | [002-fix-broken-documentation-links-on-projec](./quick/002-fix-broken-documentation-links-on-projec/) |
+| 003 | Fix invisible sign-in prompt on /envelopes | 2026-02-15 | d290ffd | [003-fix-invisible-sign-in-prompt-and-google-](./quick/003-fix-invisible-sign-in-prompt-and-google-/) |
 
 ## Session Continuity
 
-Last session: 2026-02-12
-Stopped at: Milestone v1.8 archived
+Last session: 2026-02-15
+Stopped at: Completed quick task 003
 Resume file: None
 
 ## Next Step
