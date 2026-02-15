@@ -19,15 +19,6 @@ export function getApps(): AppListing[] {
       href: "/apps/brand-scraper",
     },
     {
-      slug: "envelopes",
-      title: "Envelopes",
-      tag: "Finance",
-      subtitle: "Zero-based budgeting with digital envelopes",
-      description:
-        "Manage your monthly budget using the envelope budgeting method. Allocate income to categories and track spending in real time.",
-      href: "/envelopes",
-    },
-    {
       slug: "tasks",
       title: "Tasks",
       tag: "Productivity",
@@ -35,15 +26,6 @@ export function getApps(): AppListing[] {
       description:
         "Full-featured task management with workspaces, projects, sections, tags, subtasks, effort scoring, and board views. Built with a standalone PostgreSQL backend.",
       href: "/apps/tasks",
-    },
-    {
-      slug: "research-assistant",
-      title: "Research",
-      tag: "AI",
-      subtitle: "Compare AI models side-by-side in real time",
-      description:
-        "Send a prompt to two AI models simultaneously and see their responses stream side-by-side. Choose between Standard and Expert tiers for different model combinations.",
-      href: "/tools/research-assistant",
     },
   ];
 }
