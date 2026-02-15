@@ -188,10 +188,10 @@ Plans:
   2. All contact page buttons (Email Dan, Copy Email, LinkedIn, etc.) share the same blue style with a glowing gold hover effect
   3. The FRD building block article links to the actual FRD Generator tool on /tools, and FRD Generator appears as a card on the Tools page
   4. The brand scraper Scrape button is the same height as the URL text input field
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 40-01: TBD
+- [ ] 40-01-PLAN.md — Contact page cleanup, unified button styles, FRD Generator links, scraper button height fix
 
 ## Progress
 
@@ -213,7 +213,7 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 37. Chatbot Popup Widget | v1.9 | 0/2 | Not started | - |
 | 38. Home Page Enhancements | v1.9 | 0/2 | Not started | - |
 | 39. Bug Fixes | v1.9 | 0/2 | Not started | - |
-| 40. Polish | v1.9 | 0/TBD | Not started | - |
+| 40. Polish | v1.9 | 0/1 | Not started | - |
 
 **Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 5 phases planned**
 
