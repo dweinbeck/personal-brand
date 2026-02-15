@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 37 of 40 (Chatbot Popup Widget)
-Plan: 1 of 2 in current phase
-Status: Plan 01 Complete
-Last activity: 2026-02-15 — Completed 37-01 (Popup widget core)
+Plan: 2 of 2 in current phase
+Status: Phase 37 Complete
+Last activity: 2026-02-15 — Completed 37-02 (Assistant page redirect)
 
-Progress: [#####.....] 50%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 36
-- Total plans completed: 93
+- Total plans completed: 94
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
@@ -45,6 +45,7 @@ Progress: [#####.....] 50%
 | 36-tools-page-and-nav-restructure | 01 | 10 min | 2 | 4 |
 | 36-tools-page-and-nav-restructure | 02 | 8 min | 2 | 3 |
 | 37-chatbot-popup-widget | 01 | 10 min | 2 | 6 |
+| 37-chatbot-popup-widget | 02 | 7 min | 2 | 1 |
 
 ## Accumulated Context
 
@@ -57,6 +58,7 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 37]: ChatWidgetProvider wraps inside AuthProvider for auth access in popup
 - [Phase 37]: Ask My Assistant converted from Link to button toggle, no longer navigates to /assistant
 - [Phase 37]: Popup mode hides ExitRamps and PrivacyDisclosure for space efficiency
+- [Phase 37]: Keep assistant/page.tsx as redirect rather than deleting, so bookmarks get 307 not 404
 
 ### Pending Todos
 
@@ -79,9 +81,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 37-01-PLAN.md
+Stopped at: Completed 37-02-PLAN.md (Phase 37 complete)
 Resume file: None
 
 ## Next Step
 
-Ready for 37-02-PLAN.md.
+Phase 37 complete. Ready for Phase 38.
