@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 Phase: 35 of 35 (Demo Workspace) -- complete
 Plan: All plans complete
 Status: v1.8 Tasks App milestone archived
-Last activity: 2026-02-15 -- Completed quick task 003: Fix invisible sign-in on /envelopes
+Last activity: 2026-02-15 -- Completed quick task 004: Create Tasks app landing page
 
 Progress: [##########] 100% (all milestones through v1.8 shipped)
 
@@ -64,11 +64,12 @@ None.
 | 001 | Fix FRD Interviewer link and lint errors | 2026-02-08 | a0c31f8 | [001-fix-frd-link-and-lint-errors](./quick/001-fix-frd-link-and-lint-errors/) |
 | 002 | Fix broken documentation links on project pages | 2026-02-08 | 8377843 | [002-fix-broken-documentation-links-on-projec](./quick/002-fix-broken-documentation-links-on-projec/) |
 | 003 | Fix invisible sign-in prompt on /envelopes | 2026-02-15 | d290ffd | [003-fix-invisible-sign-in-prompt-and-google-](./quick/003-fix-invisible-sign-in-prompt-and-google-/) |
+| 004 | Create Tasks app landing page with feature highlights | 2026-02-15 | 477b93c | [004-create-tasks-app-landing-page-with-featu](./quick/004-create-tasks-app-landing-page-with-featu/) |
 
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed quick task 003
+Stopped at: Completed quick task 004
 Resume file: None
 
 ## Next Step
