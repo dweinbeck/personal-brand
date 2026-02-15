@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 36 — Tools Page & Nav Restructure
+**Current focus:** v1.9 Phase 37 — next phase
 
 ## Current Position
 
-Phase: 36 of 40 (Tools Page & Nav Restructure)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-15 — Completed 36-01 (Tools page & data source)
+Phase: 36 of 40 (Tools Page & Nav Restructure) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-02-15 — Completed 36-02 (Nav restructure)
 
 Progress: [#####.....] 50%
 
@@ -20,8 +20,8 @@ Progress: [#####.....] 50%
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
-- Total phases completed: 35
-- Total plans completed: 91
+- Total phases completed: 36
+- Total plans completed: 93
 - Timeline: Jan 18 -> Feb 12, 2026 (26 days)
 
 **v1.8 Velocity:**
@@ -43,6 +43,7 @@ Progress: [#####.....] 50%
 | 35-demo-workspace | 01 | 4 min | 2 | 8 |
 | 35-demo-workspace | 02 | 3 min | 2 | 6 |
 | 36-tools-page-and-nav-restructure | 01 | 10 min | 2 | 4 |
+| 36-tools-page-and-nav-restructure | 02 | 8 min | 2 | 3 |
 
 ## Accumulated Context
 
@@ -50,6 +51,8 @@ Progress: [#####.....] 50%
 
 Full decision log in PROJECT.md Key Decisions table.
 - [Phase 36]: Reused Card + CardButtonLabel + gold-light tag badge pattern from AppCard for tool cards
+- [Phase 36]: Ask My Assistant link added for all users, pointing to /assistant until Phase 37 popup conversion
+- [Phase 36]: About, Custom GPTs, Assistant removed from navbar; replaced by new hierarchy (Home, Apps, Tools, Building Blocks, Contact)
 
 ### Pending Todos
 
@@ -72,9 +75,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 36-01-PLAN.md
+Stopped at: Completed 36-02-PLAN.md (Phase 36 complete)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 36 Plan 02: Nav restructure (header/footer link updates).
+Phase 36 complete. Ready for Phase 37.
