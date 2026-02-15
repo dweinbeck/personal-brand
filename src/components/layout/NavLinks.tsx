@@ -9,11 +9,9 @@ import { ADMIN_EMAIL } from "@/lib/constants";
 
 const baseLinks = [
   { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Building Blocks", href: "/building-blocks" },
-  { name: "Custom GPTs", href: "/custom-gpts" },
   { name: "Apps", href: "/apps" },
-  { name: "Assistant", href: "/assistant" },
+  { name: "Tools", href: "/tools" },
+  { name: "Building Blocks", href: "/building-blocks" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -27,6 +25,7 @@ export function NavLinks() {
     if (user?.email === ADMIN_EMAIL) {
       result.push({ name: "Control Center", href: "/control-center" });
     }
+    result.push({ name: "Ask My Assistant", href: "/assistant" });
     return result;
   }, [user]);
 
