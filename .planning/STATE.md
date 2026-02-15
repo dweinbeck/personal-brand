@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 38 — Home Page Enhancements
+**Current focus:** v1.9 Phase 39 — Bug Fixes
 
 ## Current Position
 
-Phase: 38 of 40 (Home Page Enhancements)
+Phase: 39 of 40 (Bug Fixes)
 Plan: 2 of 2 in current phase
-Status: Phase 38 Complete
-Last activity: 2026-02-15 — Completed 38-02 (Reading time and Dev Tools showcase)
+Status: Phase 39 Complete
+Last activity: 2026-02-15 — Completed 39-02 (External Service Error Handling)
 
 Progress: [##########] 100%
 
@@ -21,7 +21,7 @@ Progress: [##########] 100%
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 36
-- Total plans completed: 96
+- Total plans completed: 98
 - Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
@@ -48,6 +48,8 @@ Progress: [##########] 100%
 | 37-chatbot-popup-widget | 02 | 7 min | 2 | 1 |
 | 38-home-page-enhancements | 01 | 18 min | 2 | 5 |
 | 38-home-page-enhancements | 02 | 20 min | 2 | 4 |
+| 39-bug-fixes | 01 | 12 min | 2 | 5 |
+| 39-bug-fixes | 02 | 12 min | 2 | 9 |
 
 ## Accumulated Context
 
@@ -65,6 +67,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 38]: Tech stack tag styling reuses TutorialCard additional tag pattern for visual consistency
 - [Phase 38]: Reading time uses 200 wpm average with Math.ceil rounding
 - [Phase 38]: ToolsShowcase placed between AppsGrid and BuildingBlocksCta in render order
+- [Phase 39]: Used getIdToken callback pattern instead of static token state for fresh auth on every brand scraper API request
+- [Phase 39]: URL validation uses URL constructor with protocol check for http/https
 
 ### Pending Todos
 
@@ -87,9 +91,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 38-02-PLAN.md (Phase 38 complete)
+Stopped at: Completed 39-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 38 complete. Ready for Phase 39.
+Continue Phase 39: Execute 39-02-PLAN.md.
