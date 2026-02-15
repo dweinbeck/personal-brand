@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 — Site Restructure & Polish
+**Current focus:** v1.9 Phase 36 — Tools Page & Nav Restructure
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements for v1.9
-Last activity: 2026-02-15 — Milestone v1.9 started
+Phase: 36 of 40 (Tools Page & Nav Restructure)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-02-15 — Roadmap created for v1.9
 
 Progress: [..........] 0%
 
@@ -55,7 +55,8 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- Phase 39 (Bug Fixes): BUG-03 requires chatbot-assistant repo access for knowledge base sync
+- Phase 39 (Bug Fixes): BUG-04/BUG-05 may require research-assistant backend repo access
 
 ### Quick Tasks Completed
 
@@ -69,9 +70,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Milestone v1.9 initialized — defining requirements
+Stopped at: Roadmap created for v1.9 — 5 phases, 18 requirements mapped
 Resume file: None
 
 ## Next Step
 
-Define requirements and create roadmap for v1.9.
+Plan Phase 36: Tools Page & Nav Restructure.

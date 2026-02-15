@@ -34,7 +34,7 @@ Requirements for v1.9 — Site Restructure & Polish. Each maps to roadmap phases
 
 - [ ] **POL-01**: "Other ways to contact me" section removed from Contact page
 - [ ] **POL-02**: All three contact page buttons (Email Dan, Copy Email, etc.) unified with same blue format and glowing gold hover
-- [ ] **POL-03**: FRD building block links to actual FRD Generator tool and FRD Generator listed on Tools page
+- [ ] **POL-03**: FRD building block links to actual FRD Generator tool + listed in Tools page
 - [ ] **POL-04**: Brand scraper Scrape button height matches the URL text input height
 
 ## v2 Requirements
@@ -73,30 +73,30 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| NAV-04 | — | Pending |
-| HOME-01 | — | Pending |
-| HOME-02 | — | Pending |
-| HOME-03 | — | Pending |
-| HOME-04 | — | Pending |
-| HOME-05 | — | Pending |
-| BUG-01 | — | Pending |
-| BUG-02 | — | Pending |
-| BUG-03 | — | Pending |
-| BUG-04 | — | Pending |
-| BUG-05 | — | Pending |
-| POL-01 | — | Pending |
-| POL-02 | — | Pending |
-| POL-03 | — | Pending |
-| POL-04 | — | Pending |
+| NAV-01 | Phase 36 | Pending |
+| NAV-02 | Phase 37 | Pending |
+| NAV-03 | Phase 36 | Pending |
+| NAV-04 | Phase 36 | Pending |
+| HOME-01 | Phase 38 | Pending |
+| HOME-02 | Phase 38 | Pending |
+| HOME-03 | Phase 38 | Pending |
+| HOME-04 | Phase 38 | Pending |
+| HOME-05 | Phase 38 | Pending |
+| BUG-01 | Phase 39 | Pending |
+| BUG-02 | Phase 39 | Pending |
+| BUG-03 | Phase 39 | Pending |
+| BUG-04 | Phase 39 | Pending |
+| BUG-05 | Phase 39 | Pending |
+| POL-01 | Phase 40 | Pending |
+| POL-02 | Phase 40 | Pending |
+| POL-03 | Phase 40 | Pending |
+| POL-04 | Phase 40 | Pending |
 
 **Coverage:**
 - v1.9 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after initial definition*
+*Last updated: 2026-02-15 after roadmap creation*

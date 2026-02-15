@@ -11,6 +11,7 @@
 - ✅ **v1.6 Apps Hub Page** — Phase 26 (shipped 2026-02-10)
 - ✅ **v1.7 Apps-first Home + Brand Scraper Overhaul** — Phases 27-30 (shipped 2026-02-11)
 - ✅ **v1.8 Tasks App** — Phases 31-35 (shipped 2026-02-12)
+- 🚧 **v1.9 Site Restructure & Polish** — Phases 36-40 (in progress)
 
 ## Phases
 
@@ -103,7 +104,99 @@
 
 </details>
 
+### 🚧 v1.9 Site Restructure & Polish (In Progress)
+
+**Milestone Goal:** Restructure site navigation around Tools and Apps categories, replace standalone assistant page with popup chatbot, enhance home page sections, fix cross-repo bugs, and polish contact page and UI consistency.
+
+- [ ] **Phase 36: Tools Page & Nav Restructure** — Rename Custom GPTs to Tools, reorder navbar, remove brand scraper from Control Center
+- [ ] **Phase 37: Chatbot Popup Widget** — Replace /assistant page with persistent bottom-right popup chatbot
+- [ ] **Phase 38: Home Page Enhancements** — Hero layout, tech tags, reading time, subtitles, Dev Tools section
+- [ ] **Phase 39: Bug Fixes** — Brand scraper bugs, assistant RAG sync, research assistant API fixes
+- [ ] **Phase 40: Polish** — Contact page cleanup, button styles, FRD links, scraper button height
+
+## Phase Details
+
+### Phase 36: Tools Page & Nav Restructure
+**Goal**: Visitors navigate a clean site hierarchy where Apps are full applications and Tools are single-function dev utilities, with a streamlined navbar and no duplicate access paths
+**Depends on**: Phase 35 (v1.8 complete)
+**Requirements**: NAV-01, NAV-03, NAV-04
+**Success Criteria** (what must be TRUE):
+  1. Visiting /tools shows a card grid with New Phase Planner, FRD Interviewer, FRD Generator, Research Assistant, and Digital Envelopes — Research and Envelopes no longer appear on /apps
+  2. Navbar displays links in order: Home, Apps, Tools, Building Blocks, Contact, Control Center, Ask My Assistant, Sign in/Account
+  3. Brand scraper link and page are removed from Control Center — users access brand scraper only via /apps
+  4. /custom-gpts redirects to /tools (no broken bookmarks)
+**Plans**: TBD
+
+Plans:
+- [ ] 36-01: TBD
+- [ ] 36-02: TBD
+
+### Phase 37: Chatbot Popup Widget
+**Goal**: Visitors can ask Dan's AI assistant from any page without navigating away, via a persistent popup that survives page navigation
+**Depends on**: Phase 36 (navbar includes "Ask My Assistant" trigger)
+**Requirements**: NAV-02
+**Success Criteria** (what must be TRUE):
+  1. Clicking "Ask My Assistant" in the navbar opens a chatbot widget anchored to the bottom-right of the viewport
+  2. The widget persists across page navigation within the same session (conversation is not lost when changing pages)
+  3. The widget collapses via an X button and can be reopened without losing conversation history
+  4. The standalone /assistant page no longer exists (visiting it redirects or 404s)
+**Plans**: TBD
+
+Plans:
+- [ ] 37-01: TBD
+- [ ] 37-02: TBD
+
+### Phase 38: Home Page Enhancements
+**Goal**: The home page communicates Dan's work more effectively with an improved hero layout, richer card metadata, better section labels, and a new Dev Tools showcase
+**Depends on**: Phase 36 (Tools page must exist for HOME-05 to link to)
+**Requirements**: HOME-01, HOME-02, HOME-03, HOME-04, HOME-05
+**Success Criteria** (what must be TRUE):
+  1. Hero section has a wider text column with the image aligned to the top of the "Dan Weinbeck" heading and the second paragraph flowing below the image
+  2. App cards on both the home page and /apps display technology stack tags (e.g., "Next.js", "Firebase", "Stripe")
+  3. Building block cards on both the home page and /building-blocks show reading time (e.g., "5 min read") below the description and above tags
+  4. The Apps section subtitle no longer says "Sign Up or Sign in" and the Building Blocks subtitle reads "Learn about AI Development with Building Block Tutorials"
+  5. A new "Explore Development Tools" section appears after the Apps grid on the home page, displaying tool cards from the Tools page
+**Plans**: TBD
+
+Plans:
+- [ ] 38-01: TBD
+- [ ] 38-02: TBD
+
+### Phase 39: Bug Fixes
+**Goal**: All reported bugs in brand scraper, AI assistant, and research assistant are resolved so users encounter working tools
+**Depends on**: Phase 36 (NAV-04 removes CC brand scraper, reducing scope of BUG-02 testing)
+**Requirements**: BUG-01, BUG-02, BUG-03, BUG-04, BUG-05
+**Multi-repo note**: BUG-03 requires work in the chatbot-assistant repo (knowledge base sync). BUG-04 and BUG-05 may require work in the research-assistant backend repo.
+**Success Criteria** (what must be TRUE):
+  1. On the brand scraper page (/apps/brand-scraper), entering a valid URL enables the Scrape button immediately
+  2. Brand scraper in Control Center (if still accessible) no longer returns "invalid or expired token" errors — authenticated users can scrape successfully
+  3. The AI assistant returns relevant, contextual responses about Dan's work (not "no repos indexed" errors)
+  4. The research assistant chat endpoint returns search results instead of errors
+  5. The research assistant conversation history endpoint loads past conversations instead of errors
+**Plans**: TBD
+
+Plans:
+- [ ] 39-01: TBD
+- [ ] 39-02: TBD
+
+### Phase 40: Polish
+**Goal**: Contact page is clean and visually consistent, FRD content links to the real tool, and brand scraper form elements are properly sized
+**Depends on**: Phase 36 (POL-03 needs Tools page to exist for FRD Generator listing)
+**Requirements**: POL-01, POL-02, POL-03, POL-04
+**Success Criteria** (what must be TRUE):
+  1. The Contact page no longer has an "Other ways to contact me" section — only the primary contact methods remain
+  2. All contact page buttons (Email Dan, Copy Email, LinkedIn, etc.) share the same blue style with a glowing gold hover effect
+  3. The FRD building block article links to the actual FRD Generator tool on /tools, and FRD Generator appears as a card on the Tools page
+  4. The brand scraper Scrape button is the same height as the URL text input field
+**Plans**: TBD
+
+Plans:
+- [ ] 40-01: TBD
+
 ## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -116,9 +209,14 @@
 | 26 | v1.6 | 1/1 | Complete | 2026-02-10 |
 | 27-30 | v1.7 | 13/13 | Complete | 2026-02-11 |
 | 31-35 | v1.8 | 11/11 | Complete | 2026-02-12 |
+| 36. Tools Page & Nav Restructure | v1.9 | 0/TBD | Not started | - |
+| 37. Chatbot Popup Widget | v1.9 | 0/TBD | Not started | - |
+| 38. Home Page Enhancements | v1.9 | 0/TBD | Not started | - |
+| 39. Bug Fixes | v1.9 | 0/TBD | Not started | - |
+| 40. Polish | v1.9 | 0/TBD | Not started | - |
 
-**Total: 9 milestones, 35 phases, 70 plans — all shipped**
+**Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 5 phases planned**
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
-*For current requirements, see `.planning/REQUIREMENTS.md` (created per milestone)*
+*For current requirements, see `.planning/REQUIREMENTS.md`*
