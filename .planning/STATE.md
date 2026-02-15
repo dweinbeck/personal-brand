@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 Phase: 35 of 35 (Demo Workspace) -- complete
 Plan: All plans complete
 Status: v1.8 Tasks App milestone archived
-Last activity: 2026-02-12 -- Milestone v1.8 archived
+Last activity: 2026-02-15 -- Completed quick task 003: Fix invisible sign-in on /envelopes
 
 Progress: [##########] 100% (all milestones through v1.8 shipped)
 
