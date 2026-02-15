@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 36 of 40 (Tools Page & Nav Restructure)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-15 — Roadmap created for v1.9
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-15 — Completed 36-01 (Tools page & data source)
 
-Progress: [..........] 0%
+Progress: [#####.....] 50%
 
 ## Performance Metrics
 
@@ -42,12 +42,14 @@ Progress: [..........] 0%
 | 34-weekly-credit-gating | 03 | 4 min | 2 | 3 |
 | 35-demo-workspace | 01 | 4 min | 2 | 8 |
 | 35-demo-workspace | 02 | 3 min | 2 | 6 |
+| 36-tools-page-and-nav-restructure | 01 | 10 min | 2 | 4 |
 
 ## Accumulated Context
 
 ### Decisions
 
 Full decision log in PROJECT.md Key Decisions table.
+- [Phase 36]: Reused Card + CardButtonLabel + gold-light tag badge pattern from AppCard for tool cards
 
 ### Pending Todos
 
@@ -70,9 +72,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Roadmap created for v1.9 — 5 phases, 18 requirements mapped
+Stopped at: Completed 36-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Plan Phase 36: Tools Page & Nav Restructure.
+Execute Phase 36 Plan 02: Nav restructure (header/footer link updates).
