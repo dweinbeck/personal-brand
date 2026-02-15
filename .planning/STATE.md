@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 37 — Chatbot Popup Widget
+**Current focus:** v1.9 Phase 38 — Home Page Enhancements
 
 ## Current Position
 
-Phase: 37 of 40 (Chatbot Popup Widget)
-Plan: 2 of 2 in current phase
-Status: Phase 37 Complete
-Last activity: 2026-02-15 — Completed 37-02 (Assistant page redirect)
+Phase: 38 of 40 (Home Page Enhancements)
+Plan: 1 of 2 in current phase
+Status: Executing Phase 38
+Last activity: 2026-02-15 — Completed 38-01 (Hero layout, tech tags, subtitles)
 
 Progress: [##########] 100%
 
@@ -21,8 +21,8 @@ Progress: [##########] 100%
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 36
-- Total plans completed: 94
-- Timeline: Jan 18 -> Feb 12, 2026 (26 days)
+- Total plans completed: 95
+- Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
 - Plans completed: 11
@@ -46,6 +46,7 @@ Progress: [##########] 100%
 | 36-tools-page-and-nav-restructure | 02 | 8 min | 2 | 3 |
 | 37-chatbot-popup-widget | 01 | 10 min | 2 | 6 |
 | 37-chatbot-popup-widget | 02 | 7 min | 2 | 1 |
+| 38-home-page-enhancements | 01 | 18 min | 2 | 5 |
 
 ## Accumulated Context
 
@@ -59,6 +60,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 37]: Ask My Assistant converted from Link to button toggle, no longer navigates to /assistant
 - [Phase 37]: Popup mode hides ExitRamps and PrivacyDisclosure for space efficiency
 - [Phase 37]: Keep assistant/page.tsx as redirect rather than deleting, so bookmarks get 307 not 404
+- [Phase 38]: Used items-start with self-center on mobile for hero image top-alignment on desktop
+- [Phase 38]: Tech stack tag styling reuses TutorialCard additional tag pattern for visual consistency
 
 ### Pending Todos
 
@@ -81,9 +84,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 37-02-PLAN.md (Phase 37 complete)
+Stopped at: Completed 38-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 37 complete. Ready for Phase 38.
+Phase 38 Plan 01 complete. Ready for 38-02.
