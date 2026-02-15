@@ -140,11 +140,11 @@ Plans:
   2. The widget persists across page navigation within the same session (conversation is not lost when changing pages)
   3. The widget collapses via an X button and can be reopened without losing conversation history
   4. The standalone /assistant page no longer exists (visiting it redirects or 404s)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 37-01: TBD
-- [ ] 37-02: TBD
+- [ ] 37-01-PLAN.md — Create ChatWidgetContext, popup shell, adapt ChatInterface for popup mode, wire into layout and navbar
+- [ ] 37-02-PLAN.md — Replace /assistant page with redirect, human verification of full feature
 
 ### Phase 38: Home Page Enhancements
 **Goal**: The home page communicates Dan's work more effectively with an improved hero layout, richer card metadata, better section labels, and a new Dev Tools showcase
@@ -210,7 +210,7 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 27-30 | v1.7 | 13/13 | Complete | 2026-02-11 |
 | 31-35 | v1.8 | 11/11 | Complete | 2026-02-12 |
 | 36. Tools Page & Nav Restructure | v1.9 | 0/2 | Not started | - |
-| 37. Chatbot Popup Widget | v1.9 | 0/TBD | Not started | - |
+| 37. Chatbot Popup Widget | v1.9 | 0/2 | Not started | - |
 | 38. Home Page Enhancements | v1.9 | 0/TBD | Not started | - |
 | 39. Bug Fixes | v1.9 | 0/TBD | Not started | - |
 | 40. Polish | v1.9 | 0/TBD | Not started | - |
