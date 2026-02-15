@@ -34,6 +34,12 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         {tutorial.metadata.description}
       </p>
 
+      {tutorial.metadata.readingTime && (
+        <p className="mt-2 text-xs text-text-tertiary">
+          {tutorial.metadata.readingTime}
+        </p>
+      )}
+
       {/* Additional tags */}
       {tutorial.metadata.tags.length > 1 && (
         <div className="mt-5 flex flex-wrap gap-2">

@@ -6,6 +6,7 @@ export interface TutorialMeta {
   description: string;
   publishedAt: string;
   tags: string[];
+  readingTime: string;
 }
 
 export interface Tutorial {
@@ -57,6 +58,16 @@ export async function getAllTutorials(): Promise<Tutorial[]> {
     }
 
     if (metadata?.title) {
+      // Calculate reading time from MDX content word count
+      const rawContent = fs.readFileSync(path.join(CONTENT_DIR, file), "utf-8");
+      const contentBody = rawContent.replace(
+        /export\s+const\s+metadata\s*=\s*\{[\s\S]*?\n\};?\s*/,
+        "",
+      );
+      const wordCount = contentBody.split(/\s+/).filter(Boolean).length;
+      const minutes = Math.ceil(wordCount / 200);
+      metadata.readingTime = `${minutes} min read`;
+
       tutorials.push({ slug, metadata });
     }
   }
