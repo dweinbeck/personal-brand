@@ -11,7 +11,7 @@ export async function BuildingBlocksCta() {
         Want to learn about AI Agent Development?
       </h2>
       <p className="text-text-secondary text-center mt-2 mb-10">
-        Start with the building blocks below
+        Learn about AI Development with Building Block Tutorials
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tutorials.map((tutorial) => (

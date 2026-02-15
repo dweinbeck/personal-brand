@@ -11,9 +11,9 @@ export function HeroSection() {
   return (
     <section className="relative pt-16 md:pt-24 pb-8 motion-safe:animate-fade-in-up">
       <div className="absolute top-0 bottom-0 -left-10 -right-10 md:-left-20 md:-right-20 bg-gradient-to-b from-[rgba(200,165,90,0.04)] to-transparent rounded-b-3xl -z-10" />
-      <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+      <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12">
         {/* Headshot */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 self-center md:self-start">
           <div className="w-[256px] h-[256px] rounded-full overflow-hidden ring-4 ring-gold/30 shadow-xl shadow-[rgba(27,42,74,0.10)]">
             <Image
               src="/transparent-headshot-Dan Weinbeck-color.jpg"
@@ -27,7 +27,7 @@ export function HeroSection() {
         </div>
 
         {/* Text content */}
-        <div className="text-center md:text-left">
+        <div className="md:flex-1 text-center md:text-left">
           <h1 className="font-display text-[3rem] md:text-[4.5rem] font-semibold tracking-tight leading-[1.05] text-primary border-b border-primary pb-2 inline-block">
             Dan Weinbeck
           </h1>
@@ -64,19 +64,12 @@ export function HeroSection() {
               University of Iowa
             </a>
           </p>
-          <p className="mt-3 max-w-lg text-text-secondary leading-relaxed">
+          <p className="mt-3 text-text-secondary leading-relaxed">
             I build data products that ship and interfaces that make sense. 12+
             years of experience transforming the analytics function at 4 Fortune
             500 companies across Marketing, Sales, and Operations, with a
             specialization in business intelligence, data science, and turning
             data into actionable insights.
-          </p>
-          <p className="mt-3 max-w-lg text-text-secondary leading-relaxed">
-            This site is designed to showcase my projects and offer tutorials
-            for Agent Development, as well as offering apps that will help you
-            to accomplish a wide variety of objectives. You can ask questions of
-            my chatbot assistant, or reach out if you have any feedback or
-            questions for me. Enjoy!
           </p>
 
           <div className="mt-4 flex justify-center md:justify-start gap-4">
@@ -133,6 +126,15 @@ export function HeroSection() {
           </div>
         </div>
       </div>
+
+      {/* Full-width paragraph below the hero flex row */}
+      <p className="mt-6 max-w-3xl text-text-secondary leading-relaxed text-center md:text-left">
+        This site is designed to showcase my projects and offer tutorials for
+        Agent Development, as well as offering apps that will help you to
+        accomplish a wide variety of objectives. You can ask questions of my
+        chatbot assistant, or reach out if you have any feedback or questions
+        for me. Enjoy!
+      </p>
       <hr className="mt-14 border-t border-gold/40" />
     </section>
   );
