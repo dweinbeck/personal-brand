@@ -173,11 +173,11 @@ Plans:
   3. The AI assistant returns relevant, contextual responses about Dan's work (not "no repos indexed" errors)
   4. The research assistant chat endpoint returns search results instead of errors
   5. The research assistant conversation history endpoint loads past conversations instead of errors
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 39-01: TBD
-- [ ] 39-02: TBD
+- [ ] 39-01-PLAN.md — Fix brand scraper Scrape button disabled state and replace static auth tokens with fresh-token callbacks
+- [ ] 39-02-PLAN.md — Add missing Firestore indexes, improve error handling for assistant and research assistant endpoints
 
 ### Phase 40: Polish
 **Goal**: Contact page is clean and visually consistent, FRD content links to the real tool, and brand scraper form elements are properly sized
@@ -212,7 +212,7 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 36. Tools Page & Nav Restructure | v1.9 | 0/2 | Not started | - |
 | 37. Chatbot Popup Widget | v1.9 | 0/2 | Not started | - |
 | 38. Home Page Enhancements | v1.9 | 0/2 | Not started | - |
-| 39. Bug Fixes | v1.9 | 0/TBD | Not started | - |
+| 39. Bug Fixes | v1.9 | 0/2 | Not started | - |
 | 40. Polish | v1.9 | 0/TBD | Not started | - |
 
 **Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 5 phases planned**
