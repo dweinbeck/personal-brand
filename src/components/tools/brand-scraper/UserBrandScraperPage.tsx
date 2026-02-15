@@ -79,6 +79,16 @@ function BrandScraperContent() {
   const creditCost = scraperPricing?.creditsPerUse ?? 50;
   const hasEnough = billing ? billing.balanceCredits >= creditCost : false;
 
+  const isValidUrl = (() => {
+    if (!url.trim()) return false;
+    try {
+      const parsed = new URL(url.trim());
+      return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch {
+      return false;
+    }
+  })();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -235,7 +245,7 @@ function BrandScraperContent() {
               type="submit"
               variant="primary"
               size="sm"
-              disabled={submitting || !hasEnough}
+              disabled={submitting || !hasEnough || !isValidUrl}
             >
               {submitting ? "Submitting..." : `Scrape (${creditCost} credits)`}
             </Button>
