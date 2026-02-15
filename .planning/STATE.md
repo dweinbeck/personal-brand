@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-12)
+See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Planning next milestone
+**Current focus:** v1.9 — Site Restructure & Polish
 
 ## Current Position
 
-Phase: 35 of 35 (Demo Workspace) -- complete
-Plan: All plans complete
-Status: v1.8 Tasks App milestone archived
-Last activity: 2026-02-15 -- Completed quick task 004: Create Tasks app landing page
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v1.9
+Last activity: 2026-02-15 — Milestone v1.9 started
 
-Progress: [##########] 100% (all milestones through v1.8 shipped)
+Progress: [..........] 0%
 
 ## Performance Metrics
 
@@ -69,9 +69,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed quick task 004
+Stopped at: Milestone v1.9 initialized — defining requirements
 Resume file: None
 
 ## Next Step
 
-Start next milestone with `/gsd:new-milestone`. `/clear` first for fresh context window.
+Define requirements and create roadmap for v1.9.

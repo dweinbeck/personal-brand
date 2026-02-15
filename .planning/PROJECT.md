@@ -85,7 +85,26 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-(None — all current requirements shipped. Define new requirements with `/gsd:new-milestone`.)
+**v1.9 — Site Restructure & Polish**
+
+- [ ] Rename Custom GPTs to "Tools" page with consolidated dev tool cards (New Phase Planner, FRD Interviewer, FRD Generator) plus Research and Envelopes moved here
+- [ ] Replace standalone /assistant page with navbar popup chatbot widget (session-persistent, collapsible)
+- [ ] Reorder navbar: Home, Apps, Tools, Building Blocks, Contact, Control Center, Ask My Assistant, Sign in
+- [ ] Hero layout improvements — widen text column, align image top, reflow paragraph below image
+- [ ] Restore tech stack tags on app cards (home + /apps)
+- [ ] Add reading time to building block cards (home + /building-blocks)
+- [ ] New "Explore Development Tools" section on home page after Apps grid
+- [ ] Fix brand scraper URL input — scrape button stays disabled
+- [ ] Fix brand scraper button height to match text input
+- [ ] Fix brand scraper "invalid or expired token" in Control Center
+- [ ] Remove brand scraper from Control Center (access via /apps only)
+- [ ] Fix AI assistant RAG backend "no repos indexed" — sync knowledge base
+- [ ] Fix research assistant API failures (chat + conversation history endpoints)
+- [ ] FRD building block links to actual FRD Generator tool + listed in Tools page
+- [ ] Remove "Other ways to contact me" section from Contact page
+- [ ] Unify contact page button styles (blue + gold hover)
+- [ ] Remove "Sign up or Sign in" subtitle from Apps grid, rename Building Blocks subtitle
+- [ ] Clean up home page subtitles and section naming
 
 ### Deferred
 
@@ -126,7 +145,7 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 **Shipped:** v1.8 on 2026-02-12
 **Live at:** https://dan-weinbeck.com
-**In progress:** Planning next milestone
+**In progress:** v1.9 — Site Restructure & Polish
 
 Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App integrated via weekly credit gating with effort scoring and demo workspace, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
@@ -205,4 +224,4 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | useDemoMode() defaults to false | Guards are no-ops outside /demo tree; zero impact on production /tasks routes | ✓ Good — safe by default |
 
 ---
-*Last updated: 2026-02-12 after v1.8 milestone*
+*Last updated: 2026-02-15 after v1.9 milestone start*
