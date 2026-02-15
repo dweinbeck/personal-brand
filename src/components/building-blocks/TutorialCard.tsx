@@ -6,16 +6,7 @@ interface TutorialCardProps {
   tutorial: Tutorial;
 }
 
-const tagColors: Record<string, string> = {
-  Git: "bg-gold-light text-gold-hover border-gold",
-  GitHub: "bg-gold-light text-gold-hover border-gold",
-  DevOps: "bg-primary/10 text-primary border-primary/40",
-  Workflow: "bg-[#8B1E3F]/10 text-[#8B1E3F] border-[#8B1E3F]/30",
-};
-
-function getTagColor(tag: string): string {
-  return tagColors[tag] ?? "bg-primary/10 text-primary border-primary/40";
-}
+const tagColor = "bg-gold-light text-gold-hover border-gold";
 
 export function TutorialCard({ tutorial }: TutorialCardProps) {
   const primaryTag = tutorial.metadata.tags[0];
@@ -29,7 +20,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
       {/* Topic badge */}
       {primaryTag && (
         <span
-          className={`self-start px-2.5 py-0.5 text-xs font-medium rounded-full border mb-3 ${getTagColor(primaryTag)}`}
+          className={`self-start px-2.5 py-0.5 text-xs font-medium rounded-full border mb-3 ${tagColor}`}
         >
           {primaryTag}
         </span>

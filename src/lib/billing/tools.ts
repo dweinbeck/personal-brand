@@ -4,7 +4,7 @@ import { db } from "@/lib/firebase";
 export const TOOL_PRICING_SEED = [
   {
     toolKey: "brand_scraper",
-    label: "Brand Scraper",
+    label: "Brands",
     active: true,
     creditsPerUse: 50,
     costToUsCentsEstimate: 30,
@@ -33,52 +33,52 @@ export const TOOL_PRICING_SEED = [
   },
   {
     toolKey: "tasks_app",
-    label: "Task Manager (Weekly)",
+    label: "Tasks (Weekly)",
     active: true,
     creditsPerUse: 100,
     costToUsCentsEstimate: 0,
   },
-  // ── Research Assistant (tiered pricing per action) ────────────
+  // ── Research (tiered pricing per action) ──────────────────────
   // Each action + tier combo is a separate tool key so the existing
   // debitForToolUse() can look up the correct credit amount.
   {
     toolKey: "research_assistant_prompt_standard",
-    label: "Research Assistant — Standard Prompt",
+    label: "Research — Standard Prompt",
     active: true,
     creditsPerUse: 10,
     costToUsCentsEstimate: 2,
   },
   {
     toolKey: "research_assistant_prompt_expert",
-    label: "Research Assistant — Expert Prompt",
+    label: "Research — Expert Prompt",
     active: true,
     creditsPerUse: 20,
     costToUsCentsEstimate: 8,
   },
   {
     toolKey: "research_assistant_reconsider_standard",
-    label: "Research Assistant — Standard Reconsider",
+    label: "Research — Standard Reconsider",
     active: true,
     creditsPerUse: 5,
     costToUsCentsEstimate: 1,
   },
   {
     toolKey: "research_assistant_reconsider_expert",
-    label: "Research Assistant — Expert Reconsider",
+    label: "Research — Expert Reconsider",
     active: true,
     creditsPerUse: 10,
     costToUsCentsEstimate: 4,
   },
   {
     toolKey: "research_assistant_follow_up_standard",
-    label: "Research Assistant — Standard Follow-up",
+    label: "Research — Standard Follow-up",
     active: true,
     creditsPerUse: 5,
     costToUsCentsEstimate: 1,
   },
   {
     toolKey: "research_assistant_follow_up_expert",
-    label: "Research Assistant — Expert Follow-up",
+    label: "Research — Expert Follow-up",
     active: true,
     creditsPerUse: 10,
     costToUsCentsEstimate: 4,

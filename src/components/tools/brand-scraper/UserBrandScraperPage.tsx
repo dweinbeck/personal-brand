@@ -176,7 +176,7 @@ function BrandScraperContent() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       <h1 className="mb-2 text-2xl font-bold text-primary font-display">
-        Brand Scraper
+        Brands
       </h1>
       <p className="text-text-secondary text-sm mb-6">
         Extract colors, fonts, logos, and assets from any website.

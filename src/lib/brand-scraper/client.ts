@@ -11,9 +11,7 @@ const BRAND_SCRAPER_API_URL = process.env.BRAND_SCRAPER_API_URL;
  * Fetches a GCP identity token for server-to-server authentication.
  * Uses the metadata server on Cloud Run, returns null locally.
  */
-async function getIdentityToken(
-  audience: string,
-): Promise<string | null> {
+async function getIdentityToken(audience: string): Promise<string | null> {
   const metadataUrl = `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${encodeURIComponent(audience)}`;
   try {
     const res = await fetch(metadataUrl, {
@@ -69,7 +67,9 @@ export async function submitScrapeJob(
     throw new BrandScraperError("BRAND_SCRAPER_API_URL not configured", 503);
   }
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
   const idToken = await getIdentityToken(BRAND_SCRAPER_API_URL);
   if (idToken) {
     headers.Authorization = `Bearer ${idToken}`;

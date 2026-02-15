@@ -1,7 +1,7 @@
 import { ResearchAssistantPage } from "@/components/tools/research-assistant/ResearchAssistantPage";
 
 export const metadata = {
-  title: "Research Assistant | Daniel Weinbeck",
+  title: "Research | Daniel Weinbeck",
   description:
     "Compare responses from two AI models side-by-side in real time.",
 };

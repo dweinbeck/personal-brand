@@ -126,7 +126,7 @@ function AssetsPageContent({ jobId }: { jobId: string }) {
         href="/apps/brand-scraper"
         className="inline-flex items-center gap-1 text-sm font-medium text-gold hover:text-gold-hover transition-colors duration-200 mb-6"
       >
-        &larr; Back to Brand Scraper
+        &larr; Back to Brands
       </Link>
 
       {/* Page title */}
@@ -153,7 +153,7 @@ function AssetsPageContent({ jobId }: { jobId: string }) {
             href="/apps/brand-scraper"
             className="inline-block mt-4 text-sm font-medium text-gold hover:text-gold-hover transition-colors"
           >
-            &larr; Back to Brand Scraper
+            &larr; Back to Brands
           </Link>
         </div>
       )}
@@ -173,7 +173,7 @@ function AssetsPageContent({ jobId }: { jobId: string }) {
               href="/apps/brand-scraper"
               className="inline-block mt-4 text-sm font-medium text-gold hover:text-gold-hover transition-colors"
             >
-              &larr; Back to Brand Scraper
+              &larr; Back to Brands
             </Link>
           </div>
         )}
@@ -194,7 +194,7 @@ function AssetsPageContent({ jobId }: { jobId: string }) {
               href="/apps/brand-scraper"
               className="inline-block mt-4 text-sm font-medium text-gold hover:text-gold-hover transition-colors"
             >
-              &larr; Back to Brand Scraper
+              &larr; Back to Brands
             </Link>
           </div>
         )}

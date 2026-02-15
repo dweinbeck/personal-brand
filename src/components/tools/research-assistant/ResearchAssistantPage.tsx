@@ -205,7 +205,7 @@ function ResearchAssistantContent({
 
             <div>
               <h1 className="mb-2 text-2xl font-bold text-primary font-display">
-                Research Assistant
+                Research
               </h1>
               <p className="text-text-secondary text-sm">
                 Compare responses from two AI models side-by-side.

@@ -13,7 +13,7 @@
     "repo": "dweinbeck/brand-scraper",
     "featured": true,
     "status": "Live",
-    "name": "Brand Scraper",
+    "name": "Brands",
     "description": "A web scraper that automatically grabs the most important brand style components and images from any website a user specifies.",
     "tags": ["TypeScript", "Web Scraping"]
   },
@@ -31,7 +31,7 @@
     "repo": null,
     "featured": true,
     "status": "In Development",
-    "name": "Dave Ramsey Digital Envelope App",
+    "name": "Envelopes",
     "description": "A full-featured budget management app implementing the popular envelope method for personal finance. Users can allocate funds across custom categories, track real-time spending, and manage month-to-month rollovers.",
     "tags": ["React Native", "Firebase", "Fintech"]
   },
@@ -49,7 +49,7 @@
     "repo": null,
     "featured": false,
     "status": "In Development",
-    "name": "Research Assistant",
+    "name": "Research",
     "description": "Get opinions from multiple LLMs at one time for things that matter. Submit a single prompt and receive structured, side-by-side responses from GPT-4, Claude, and Gemini with source attribution.",
     "tags": ["Multi-LLM", "Python", "AI"]
   },

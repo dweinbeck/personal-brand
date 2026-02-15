@@ -8,7 +8,7 @@ const navLinks = [
   { name: "Dashboard", href: "/control-center", exact: true },
   { name: "Content Editor", href: "/control-center/content", exact: false },
   {
-    name: "Brand Scraper",
+    name: "Brands",
     href: "/control-center/brand-scraper",
     exact: false,
   },

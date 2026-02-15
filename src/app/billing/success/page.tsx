@@ -29,7 +29,7 @@ export default function BillingSuccessPage() {
             href="/apps/brand-scraper"
             className="block px-5 py-2.5 rounded-xl border border-border text-text-secondary text-sm text-center hover:bg-gold-light transition-all"
           >
-            Try Brand Scraper
+            Try Brands
           </Link>
         </div>
       </div>

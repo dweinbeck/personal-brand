@@ -2,16 +2,7 @@ import { Card } from "@/components/ui/Card";
 import { CardButtonLabel } from "@/components/ui/CardButtonLabel";
 import type { AppListing } from "@/data/apps";
 
-const tagColors: Record<string, string> = {
-  Branding: "bg-gold-light text-gold-hover border-gold",
-  Finance: "bg-primary/10 text-primary border-primary/40",
-  AI: "bg-purple-100 text-purple-700 border-purple-300",
-  Productivity: "bg-emerald-100 text-emerald-700 border-emerald-300",
-};
-
-function getTagColor(tag: string): string {
-  return tagColors[tag] ?? "bg-primary/10 text-primary border-primary/40";
-}
+const tagColor = "bg-gold-light text-gold-hover border-gold";
 
 interface AppCardProps {
   app: AppListing;
@@ -26,7 +17,7 @@ export function AppCard({ app }: AppCardProps) {
     >
       {/* Topic badge */}
       <span
-        className={`self-start px-2.5 py-0.5 text-xs font-medium rounded-full border mb-3 ${getTagColor(app.tag)}`}
+        className={`self-start px-2.5 py-0.5 text-xs font-medium rounded-full border mb-3 ${tagColor}`}
       >
         {app.tag}
       </span>
@@ -40,18 +31,6 @@ export function AppCard({ app }: AppCardProps) {
       <p className="mt-3 flex-1 text-sm text-text-secondary leading-relaxed line-clamp-3">
         {app.description}
       </p>
-
-      {/* Tech stack tags */}
-      <div className="mt-5 flex flex-wrap gap-2">
-        {app.techStack.map((tech) => (
-          <span
-            key={tech}
-            className="px-2.5 py-0.5 font-mono text-xs text-text-tertiary bg-[rgba(27,42,74,0.04)] rounded-full"
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
 
       <div className="mt-auto pt-5">
         <CardButtonLabel>Enter App</CardButtonLabel>
