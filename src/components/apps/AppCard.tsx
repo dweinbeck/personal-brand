@@ -28,25 +28,27 @@ export function AppCard({ app }: AppCardProps) {
 
       <p className="mt-1 text-sm text-text-secondary">{app.subtitle}</p>
 
-      <p className="mt-3 flex-1 text-sm text-text-secondary leading-relaxed line-clamp-3">
+      <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3 overflow-hidden">
         {app.description}
       </p>
 
-      {app.techStack.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {app.techStack.map((tech) => (
-            <span
-              key={tech}
-              className="px-2.5 py-0.5 font-mono text-xs text-text-tertiary bg-[rgba(27,42,74,0.04)] rounded-full"
-            >
-              {tech}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className="mt-auto">
+        {app.techStack.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {app.techStack.map((tech) => (
+              <span
+                key={tech}
+                className="px-2.5 py-0.5 font-mono text-xs text-text-tertiary bg-[rgba(27,42,74,0.04)] rounded-full"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
 
-      <div className="mt-auto pt-5">
-        <CardButtonLabel>Enter App</CardButtonLabel>
+        <div className="pt-5">
+          <CardButtonLabel>Enter App</CardButtonLabel>
+        </div>
       </div>
     </Card>
   );
