@@ -1,7 +1,5 @@
-import "@/lib/firebase"; // Ensure Firebase Admin SDK is initialized
-import { getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { ADMIN_EMAIL } from "@/lib/constants";
+import { auth } from "@/lib/firebase";
 
 export type AdminAuthResult =
   | { authorized: true; email: string }
@@ -13,9 +11,9 @@ export type AdminAuthResult =
  * Designed for Server Actions that receive a token directly (no Request object).
  */
 export async function verifyAdminToken(idToken: string): Promise<boolean> {
-  if (getApps().length === 0) return false;
+  if (!auth) return false;
   try {
-    const decoded = await getAuth().verifyIdToken(idToken);
+    const decoded = await auth.verifyIdToken(idToken);
     return decoded.email === ADMIN_EMAIL;
   } catch {
     return false;
@@ -39,7 +37,7 @@ export async function verifyAdmin(request: Request): Promise<AdminAuthResult> {
 
   const idToken = authHeader.slice(7);
 
-  if (getApps().length === 0) {
+  if (!auth) {
     return {
       authorized: false,
       error:
@@ -49,7 +47,7 @@ export async function verifyAdmin(request: Request): Promise<AdminAuthResult> {
   }
 
   try {
-    const decodedToken = await getAuth().verifyIdToken(idToken);
+    const decodedToken = await auth.verifyIdToken(idToken);
 
     if (decodedToken.email !== ADMIN_EMAIL) {
       return {

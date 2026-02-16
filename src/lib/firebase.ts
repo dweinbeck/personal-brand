@@ -2,9 +2,11 @@ import {
   applicationDefault,
   type Credential,
   cert,
+  getApp,
   getApps,
   initializeApp,
 } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import type { ContactFormData } from "@/lib/schemas/contact";
 
@@ -38,18 +40,33 @@ function getCredential(): Credential | undefined {
 
 const credential = getCredential();
 
-// Use FIREBASE_PROJECT_ID so the Admin SDK verifies tokens against the correct
-// Firebase project, even when Cloud Run runs in a different GCP project.
-const projectId = process.env.FIREBASE_PROJECT_ID;
-
+// Main app — no explicit projectId so on Cloud Run the SDK auto-detects the
+// GCP hosting project from the metadata server. Firestore data lives there.
 const app =
   getApps().length > 0
     ? getApps()[0]
     : credential
-      ? initializeApp({ credential, ...(projectId ? { projectId } : {}) })
+      ? initializeApp({ credential })
       : undefined;
 
+// Auth app — uses the Firebase project ID for verifyIdToken. On Cloud Run the
+// hosting GCP project may differ from the Firebase project that issues tokens.
+const firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
+
+function getAuthApp() {
+  if (!credential) return app;
+  if (!firebaseProjectId) return app;
+  try {
+    return getApp("auth");
+  } catch {
+    return initializeApp({ credential, projectId: firebaseProjectId }, "auth");
+  }
+}
+
+const authApp = getAuthApp();
+
 export const db = app ? getFirestore(app) : undefined;
+export const auth = authApp ? getAuth(authApp) : undefined;
 
 export async function saveContactSubmission(
   data: ContactFormData,

@@ -1,6 +1,4 @@
-import "@/lib/firebase";
-import { getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import { auth } from "@/lib/firebase";
 
 export type UserAuthResult =
   | { authorized: true; uid: string; email: string }
@@ -23,7 +21,7 @@ export async function verifyUser(request: Request): Promise<UserAuthResult> {
 
   const idToken = authHeader.slice(7);
 
-  if (getApps().length === 0) {
+  if (!auth) {
     return {
       authorized: false,
       error: "Firebase Admin SDK not initialized.",
@@ -32,7 +30,7 @@ export async function verifyUser(request: Request): Promise<UserAuthResult> {
   }
 
   try {
-    const decoded = await getAuth().verifyIdToken(idToken);
+    const decoded = await auth.verifyIdToken(idToken);
 
     if (!decoded.email) {
       return {
