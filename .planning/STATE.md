@@ -51,6 +51,7 @@ Progress: [##########] 100%
 | 39-bug-fixes | 01 | 12 min | 2 | 5 |
 | 39-bug-fixes | 02 | 12 min | 2 | 9 |
 | 40-polish | 01 | 4 min | 2 | 5 |
+| quick-006 | 01 | 2 min | 1 | 2 |
 
 ## Accumulated Context
 
@@ -75,6 +76,7 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 39]: Extract error detail from FastAPI response body by checking detail/error/message fields
 - [Phase 40]: Unified CTA button style: blue gradient with gold glow hover for all prominent action buttons
 - [Phase 40]: Added Try the Tools section at end of frd.mdx for FRD Generator discoverability
+- [Phase quick-006]: Moved Envelopes and Research from tools to apps section with concise display names
 
 ### Pending Todos
 
@@ -94,11 +96,12 @@ None.
 | 003 | Fix invisible sign-in prompt on /envelopes | 2026-02-15 | d290ffd | [003-fix-invisible-sign-in-prompt-and-google-](./quick/003-fix-invisible-sign-in-prompt-and-google-/) |
 | 004 | Create Tasks app landing page with feature highlights | 2026-02-15 | 477b93c | [004-create-tasks-app-landing-page-with-featu](./quick/004-create-tasks-app-landing-page-with-featu/) |
 | 005 | Fix HeroSection layout - move contact icons below both paragraphs, center justified | 2026-02-16 | 95ba586 | [5-fix-herosection-layout-move-contact-icon](./quick/5-fix-herosection-layout-move-contact-icon/) |
+| 006 | Move Envelopes and Research to apps section with concise display names | 2026-02-16 | 2e33227 | [6-move-envelopes-and-research-to-apps-sect](./quick/6-move-envelopes-and-research-to-apps-sect/) |
 
 ## Session Continuity
 
-Last session: 2026-02-15
-Stopped at: Completed 40-01-PLAN.md (Phase 40 complete, v1.9 milestone complete)
+Last session: 2026-02-16
+Stopped at: Completed quick-006-01: Move Envelopes and Research to apps section
 Resume file: None
 
 ## Next Step
