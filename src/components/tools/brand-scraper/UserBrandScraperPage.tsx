@@ -29,6 +29,26 @@ function getErrorMessage(error: unknown): string | null {
   return "An unknown error occurred.";
 }
 
+/** Auto-prepend https:// when the user omits a protocol. */
+function normalizeUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+/** Check whether a (possibly protocol-less) URL is valid after normalization. */
+function isUrlValid(raw: string): boolean {
+  const normalized = normalizeUrl(raw);
+  if (!normalized) return false;
+  try {
+    const parsed = new URL(normalized);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 function BrandScraperContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -37,6 +57,7 @@ function BrandScraperContent() {
 
   const [billing, setBilling] = useState<BillingMeResponse | null>(null);
   const [billingLoading, setBillingLoading] = useState(true);
+  const [billingError, setBillingError] = useState(false);
   const [jobId, setJobId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [url, setUrl] = useState("");
@@ -60,14 +81,19 @@ function BrandScraperContent() {
   const fetchBilling = useCallback(async () => {
     if (!user) return;
     setBillingLoading(true);
+    setBillingError(false);
     try {
       const t = await user.getIdToken();
       const res = await fetch("/api/billing/me", {
         headers: { Authorization: `Bearer ${t}` },
       });
-      if (res.ok) setBilling(await res.json());
+      if (res.ok) {
+        setBilling(await res.json());
+      } else {
+        setBillingError(true);
+      }
     } catch {
-      // Non-critical — we'll still show the form
+      setBillingError(true);
     } finally {
       setBillingLoading(false);
     }
@@ -83,21 +109,15 @@ function BrandScraperContent() {
   const creditCost = scraperPricing?.creditsPerUse ?? 50;
   const hasEnough = billing ? billing.balanceCredits >= creditCost : false;
 
-  const isValidUrl = (() => {
-    if (!url.trim()) return false;
-    try {
-      const parsed = new URL(url.trim());
-      return parsed.protocol === "https:" || parsed.protocol === "http:";
-    } catch {
-      return false;
-    }
-  })();
+  const isValidUrl = isUrlValid(url);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     setSubmitting(true);
     setError(null);
+
+    const submittedUrl = normalizeUrl(url);
 
     try {
       const idToken = await user.getIdToken();
@@ -110,7 +130,7 @@ function BrandScraperContent() {
           Authorization: `Bearer ${idToken}`,
           "X-Idempotency-Key": idempotencyKey,
         },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: submittedUrl }),
       });
 
       if (!res.ok) {
@@ -219,6 +239,17 @@ function BrandScraperContent() {
         </div>
       )}
 
+      {/* Billing load error */}
+      {!billingLoading && billingError && !jobId && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 mb-6 text-sm text-red-800">
+          <p className="font-medium mb-1">Could not load billing info</p>
+          <p>
+            Please try refreshing the page. If the problem persists, contact
+            support.
+          </p>
+        </div>
+      )}
+
       {/* URL form + history — only when no active job */}
       {!jobId && (
         <>
@@ -226,22 +257,36 @@ function BrandScraperContent() {
             onSubmit={handleSubmit}
             className="flex flex-col gap-3 sm:flex-row sm:items-end"
           >
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com"
-              required
-              className={`flex-1 ${inputStyles}`}
-            />
+            <div className="flex-1">
+              <input
+                type="text"
+                inputMode="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="example.com"
+                required
+                className={inputStyles}
+              />
+              {url.trim() && !isValidUrl && (
+                <p className="mt-1 text-xs text-red-500">
+                  Enter a valid website address (e.g. example.com)
+                </p>
+              )}
+            </div>
             <Button
               type="submit"
               variant="primary"
               size="md"
               className="min-h-[44px]"
-              disabled={submitting || !hasEnough || !isValidUrl}
+              disabled={
+                submitting || billingLoading || !hasEnough || !isValidUrl
+              }
             >
-              {submitting ? "Submitting..." : `Scrape (${creditCost} credits)`}
+              {submitting
+                ? "Submitting..."
+                : billingLoading
+                  ? "Loading..."
+                  : `Scrape (${creditCost} credits)`}
             </Button>
           </form>
           <ScrapeHistory onViewResults={handleViewResults} />
