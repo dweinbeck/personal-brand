@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 Phase: 40 of 40 (Polish)
 Plan: 1 of 1 in current phase
 Status: Phase 40 Complete — v1.9 Milestone Complete
-Last activity: 2026-02-15 — Completed 40-01 (Visual Polish)
+Last activity: 2026-02-16 - Completed quick task 005: Fix HeroSection layout - move contact icons below both paragraphs, center justified
 
 Progress: [##########] 100%
 
@@ -93,6 +93,7 @@ None.
 | 002 | Fix broken documentation links on project pages | 2026-02-08 | 8377843 | [002-fix-broken-documentation-links-on-projec](./quick/002-fix-broken-documentation-links-on-projec/) |
 | 003 | Fix invisible sign-in prompt on /envelopes | 2026-02-15 | d290ffd | [003-fix-invisible-sign-in-prompt-and-google-](./quick/003-fix-invisible-sign-in-prompt-and-google-/) |
 | 004 | Create Tasks app landing page with feature highlights | 2026-02-15 | 477b93c | [004-create-tasks-app-landing-page-with-featu](./quick/004-create-tasks-app-landing-page-with-featu/) |
+| 005 | Fix HeroSection layout - move contact icons below both paragraphs, center justified | 2026-02-16 | 95ba586 | [5-fix-herosection-layout-move-contact-icon](./quick/5-fix-herosection-layout-move-contact-icon/) |
 
 ## Session Continuity
 
