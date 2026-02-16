@@ -38,11 +38,15 @@ function getCredential(): Credential | undefined {
 
 const credential = getCredential();
 
+// Use FIREBASE_PROJECT_ID so the Admin SDK verifies tokens against the correct
+// Firebase project, even when Cloud Run runs in a different GCP project.
+const projectId = process.env.FIREBASE_PROJECT_ID;
+
 const app =
   getApps().length > 0
     ? getApps()[0]
     : credential
-      ? initializeApp({ credential })
+      ? initializeApp({ credential, ...(projectId ? { projectId } : {}) })
       : undefined;
 
 export const db = app ? getFirestore(app) : undefined;
