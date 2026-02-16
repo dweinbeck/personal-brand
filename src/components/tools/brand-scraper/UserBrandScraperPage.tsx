@@ -237,7 +237,8 @@ function BrandScraperContent() {
             <Button
               type="submit"
               variant="primary"
-              size="sm"
+              size="md"
+              className="min-h-[44px]"
               disabled={submitting || !hasEnough || !isValidUrl}
             >
               {submitting ? "Submitting..." : `Scrape (${creditCost} credits)`}
