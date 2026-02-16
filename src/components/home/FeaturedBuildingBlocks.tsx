@@ -7,9 +7,12 @@ export async function FeaturedBuildingBlocks() {
 
   return (
     <section className="py-8 motion-safe:animate-fade-in-up">
-      <h2 className="text-2xl font-semibold tracking-tight text-text-primary text-center mb-10">
-        Building Blocks
+      <h2 className="text-2xl font-semibold tracking-tight text-text-primary text-center">
+        Want to Learn About AI Development?
       </h2>
+      <p className="text-text-secondary text-center mt-2 mb-10">
+        Start with These Building Blocks
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tutorials.map((tutorial) => (
           <TutorialCard key={tutorial.slug} tutorial={tutorial} />

@@ -10,7 +10,7 @@ export function AppsGrid() {
         Explore my Published Apps
       </h2>
       <p className="text-text-secondary text-center mt-2 mb-10">
-        Web-based tools built for real-world use
+        Web-based Tools for Planning and Efficiency
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {apps.map((app) => (
