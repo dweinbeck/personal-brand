@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 Phase: 40 of 40 (Polish)
 Plan: 1 of 1 in current phase
 Status: Phase 40 Complete — v1.9 Milestone Complete
-Last activity: 2026-02-16 - Completed quick task 006: Move Envelopes and Research to apps section with correct names
+Last activity: 2026-02-16 - Completed quick task 008: Fix strange characters on Envelopes card
 
 Progress: [##########] 100%
 
@@ -52,6 +52,7 @@ Progress: [##########] 100%
 | 39-bug-fixes | 02 | 12 min | 2 | 9 |
 | 40-polish | 01 | 4 min | 2 | 5 |
 | quick-006 | 01 | 2 min | 1 | 2 |
+| quick-007 | 01 | 2 min | 1 | 3 |
 
 ## Accumulated Context
 
@@ -77,6 +78,7 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 40]: Unified CTA button style: blue gradient with gold glow hover for all prominent action buttons
 - [Phase 40]: Added Try the Tools section at end of frd.mdx for FRD Generator discoverability
 - [Phase quick-006]: Moved Envelopes and Research from tools to apps section with concise display names
+- [Phase quick-007]: Moved mb-10 from Building Blocks h2 to new subtitle p tag for consistent title/subtitle spacing pattern
 
 ### Pending Todos
 
@@ -97,11 +99,13 @@ None.
 | 004 | Create Tasks app landing page with feature highlights | 2026-02-15 | 477b93c | [004-create-tasks-app-landing-page-with-featu](./quick/004-create-tasks-app-landing-page-with-featu/) |
 | 005 | Fix HeroSection layout - move contact icons below both paragraphs, center justified | 2026-02-16 | 95ba586 | [5-fix-herosection-layout-move-contact-icon](./quick/5-fix-herosection-layout-move-contact-icon/) |
 | 006 | Move Envelopes and Research to apps section with concise display names | 2026-02-16 | 2e33227 | [6-move-envelopes-and-research-to-apps-sect](./quick/6-move-envelopes-and-research-to-apps-sect/) |
+| 007 | Update homepage section subtitles for better clarity | 2026-02-16 | 9263fea | [7-update-homepage-section-subtitles-for-ap](./quick/7-update-homepage-section-subtitles-for-ap/) |
+| 008 | Fix strange characters on Envelopes card | 2026-02-16 | fe6f337 | [8-fix-strange-characters-on-envelopes-card](./quick/8-fix-strange-characters-on-envelopes-card/) |
 
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed quick-006-01: Move Envelopes and Research to apps section
+Stopped at: Completed quick-008-01: Fix strange characters on Envelopes card
 Resume file: None
 
 ## Next Step
