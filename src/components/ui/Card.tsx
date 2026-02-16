@@ -38,13 +38,19 @@ export function Card(props: CardProps) {
   if (href) {
     const isExternal = href.startsWith("http");
     if (isExternal) {
+      const { target, rel, ...anchorRest } =
+        rest as AnchorHTMLAttributes<HTMLAnchorElement>;
+      const resolvedTarget = target ?? "_blank";
+      const resolvedRel =
+        rel ??
+        (resolvedTarget === "_blank" ? "noopener noreferrer" : undefined);
       return (
         <a
           href={href}
           className={clsx(classes, "block")}
-          target="_blank"
-          rel="noopener noreferrer"
-          {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
+          target={resolvedTarget}
+          rel={resolvedRel}
+          {...anchorRest}
         />
       );
     }

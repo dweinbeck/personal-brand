@@ -1,12 +1,8 @@
-import type { Metadata } from "next";
-import { TasksLandingPage } from "@/components/apps/TasksLandingPage";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Tasks | Daniel Weinbeck",
-  description:
-    "Full-featured task management with workspaces, projects, sections, tags, subtasks, and board views.",
-};
+const TASKS_URL =
+  process.env.NEXT_PUBLIC_TASKS_APP_URL || "https://tasks.dev.dan-weinbeck.com";
 
 export default function Page() {
-  return <TasksLandingPage />;
+  redirect(TASKS_URL);
 }

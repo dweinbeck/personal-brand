@@ -13,6 +13,7 @@ export function AppCard({ app }: AppCardProps) {
     <Card
       variant="clickable"
       href={app.href}
+      {...(app.sameTab ? { target: "_self" } : {})}
       className="group flex h-full flex-col"
     >
       {/* Topic badge */}

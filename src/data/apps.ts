@@ -5,6 +5,8 @@ export interface AppListing {
   subtitle: string;
   description: string;
   href: string;
+  /** When true, external links open in the same tab instead of a new tab. */
+  sameTab?: boolean;
   techStack: string[];
 }
 
@@ -27,7 +29,10 @@ export function getApps(): AppListing[] {
       subtitle: "Organize projects, tasks, and tags",
       description:
         "Full-featured task management with workspaces, projects, sections, tags, subtasks, effort scoring, and board views. Built with a standalone PostgreSQL backend.",
-      href: "/apps/tasks",
+      href:
+        process.env.NEXT_PUBLIC_TASKS_APP_URL ||
+        "https://tasks.dev.dan-weinbeck.com",
+      sameTab: true,
       techStack: ["Next.js", "PostgreSQL", "Tailwind CSS"],
     },
     {
