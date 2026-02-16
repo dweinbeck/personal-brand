@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 Phase: 40 of 40 (Polish)
 Plan: 1 of 1 in current phase
 Status: Phase 40 Complete — v1.9 Milestone Complete
-Last activity: 2026-02-16 - Completed quick task 005: Fix HeroSection layout - move contact icons below both paragraphs, center justified
+Last activity: 2026-02-16 - Completed quick task 006: Move Envelopes and Research to apps section with correct names
 
 Progress: [##########] 100%
 
