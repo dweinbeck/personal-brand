@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 39 — Bug Fixes
+**Current focus:** v1.9 Phase 40 — Polish (Complete)
 
 ## Current Position
 
-Phase: 39 of 40 (Bug Fixes)
-Plan: 2 of 2 in current phase
-Status: Phase 39 Complete
-Last activity: 2026-02-15 — Completed 39-02 (External Service Error Handling)
+Phase: 40 of 40 (Polish)
+Plan: 1 of 1 in current phase
+Status: Phase 40 Complete — v1.9 Milestone Complete
+Last activity: 2026-02-15 — Completed 40-01 (Visual Polish)
 
 Progress: [##########] 100%
 
@@ -20,8 +20,8 @@ Progress: [##########] 100%
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
-- Total phases completed: 36
-- Total plans completed: 98
+- Total phases completed: 37
+- Total plans completed: 99
 - Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
@@ -50,6 +50,7 @@ Progress: [##########] 100%
 | 38-home-page-enhancements | 02 | 20 min | 2 | 4 |
 | 39-bug-fixes | 01 | 12 min | 2 | 5 |
 | 39-bug-fixes | 02 | 12 min | 2 | 9 |
+| 40-polish | 01 | 4 min | 2 | 5 |
 
 ## Accumulated Context
 
@@ -72,6 +73,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 39]: Map FastAPI 500 errors to knowledge-base re-sync message to surface BUG-03 root cause
 - [Phase 39]: Return 503 for Firestore index errors to signal temporary unavailability
 - [Phase 39]: Extract error detail from FastAPI response body by checking detail/error/message fields
+- [Phase 40]: Unified CTA button style: blue gradient with gold glow hover for all prominent action buttons
+- [Phase 40]: Added Try the Tools section at end of frd.mdx for FRD Generator discoverability
 
 ### Pending Todos
 
@@ -94,9 +97,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 39-02-PLAN.md (Phase 39 complete)
+Stopped at: Completed 40-01-PLAN.md (Phase 40 complete, v1.9 milestone complete)
 Resume file: None
 
 ## Next Step
 
-Phase 39 complete. Ready for Phase 40.
+Phase 40 complete. v1.9 milestone (Site Restructure & Polish) is finished.
