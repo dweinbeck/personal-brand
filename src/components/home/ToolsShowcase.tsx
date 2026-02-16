@@ -10,10 +10,11 @@ export function ToolsShowcase() {
 
   return (
     <section className="py-12">
+      <hr className="mb-12 border-t border-gold/40" />
       <h2 className="text-2xl font-semibold tracking-tight text-text-primary text-center">
         Explore Development Tools
       </h2>
-      <p className="text-text-secondary text-center mt-2 mb-10">
+      <p className="text-text-secondary text-center mt-2 mb-8">
         Single-function AI Development Utilities
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -22,7 +23,7 @@ export function ToolsShowcase() {
             key={tool.slug}
             variant="clickable"
             href={tool.href}
-            className="group flex h-full flex-col p-8"
+            className="group flex h-full flex-col"
           >
             {/* Topic badge */}
             <span
@@ -35,7 +36,7 @@ export function ToolsShowcase() {
               {tool.title}
             </h3>
 
-            <p className="mt-1 text-sm text-text-secondary">{tool.subtitle}</p>
+            <p className="mt-2 text-sm text-text-secondary">{tool.subtitle}</p>
 
             <p className="mt-3 flex-1 text-sm text-text-secondary leading-relaxed line-clamp-3">
               {tool.description}

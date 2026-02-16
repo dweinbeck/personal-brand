@@ -13,7 +13,7 @@ export function AppCard({ app }: AppCardProps) {
     <Card
       variant="clickable"
       href={app.href}
-      className="group flex h-full flex-col p-8"
+      className="group flex h-full flex-col"
     >
       {/* Topic badge */}
       <span
@@ -26,7 +26,7 @@ export function AppCard({ app }: AppCardProps) {
         {app.title}
       </h3>
 
-      <p className="mt-1 text-sm text-text-secondary">{app.subtitle}</p>
+      <p className="mt-2 text-sm text-text-secondary">{app.subtitle}</p>
 
       <p className="mt-3 text-sm text-text-secondary leading-relaxed line-clamp-3 overflow-hidden">
         {app.description}

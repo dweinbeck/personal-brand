@@ -15,7 +15,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
     <Card
       variant="clickable"
       href={`/building-blocks/${tutorial.slug}`}
-      className="group flex h-full flex-col p-8"
+      className="group flex h-full flex-col"
     >
       {/* Topic badge */}
       {primaryTag && (
