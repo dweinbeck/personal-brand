@@ -75,7 +75,7 @@ export function HeroSection() {
       </div>
 
       {/* Full-width paragraph below the hero flex row */}
-      <p className="mt-6 max-w-3xl text-text-secondary leading-relaxed text-center md:text-left">
+      <p className="mt-6 text-text-secondary leading-relaxed text-center md:text-left">
         This site is designed to showcase my projects and offer tutorials for
         Agent Development, as well as offering apps that will help you to
         accomplish a wide variety of objectives. You can ask questions of my
