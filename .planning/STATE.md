@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 40.1 — Testing Feedback Fixes (Complete — Verified)
+**Current focus:** Phase 41 — Envelopes Enhancements (Fund Transfers, Analytics Redesign, Weekly Rollover)
 
 ## Current Position
 
-Phase: 40.1 (Testing Feedback Fixes)
-Plan: 4 of 4 complete in current phase
-Status: Phase 40.1 Complete — Verified (12/12 must-haves passed)
-Last activity: 2026-02-17 - Completed quick task 9: Render Research Assistant results as formatted HTML instead of raw markdown text
+Phase: 41 (Envelopes Enhancements)
+Plan: 1 of 4 complete in current phase
+Status: Executing Phase 41
+Last activity: 2026-02-17 - Completed 41-01: Fund transfer backend (types, Firestore ops, API route)
 
-Progress: [##########] 100% — v1.9 Milestone Complete
+Progress: [##--------] 25% — Phase 41 in progress
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 38
-- Total plans completed: 103
+- Total plans completed: 104
 - Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
@@ -57,6 +57,7 @@ Progress: [##########] 100% — v1.9 Milestone Complete
 | 40.1-testing-feedback-fixes | 02 | 13 min | 1 | 2 |
 | 40.1-testing-feedback-fixes | 03 | 12 min | 2 | 3 |
 | 40.1-testing-feedback-fixes | 04 | 12 min | 2 | 3 |
+| 41-envelopes-enhancements | 01 | 6 min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -92,6 +93,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 40.1-04]: Simplified 4-column transaction table on detail page (no envelope or actions columns)
 - [Phase 40.1-02]: Keep last known balance on Firestore permission errors instead of clearing to null
 - [Phase 40.1-02]: Use nullish coalescing (0 fallback) for undefined token counts rather than optional chaining
+- [Phase 41-01]: Compute source remaining outside transaction, use runTransaction only for ownership check + write
+- [Phase 41-01]: Return validation errors (insufficient balance, self-transfer, not found) as 400 not 500
 
 ### Roadmap Evolution
 
@@ -123,9 +126,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Quick task 9 complete
+Stopped at: Completed 41-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-v1.9 milestone complete. Ready for manual testing, then `/gsd:complete-milestone`.
+Execute 41-02-PLAN.md (Fund Transfer UI components).
