@@ -219,6 +219,18 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 
 **Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 6 phases, all complete**
 
+### Phase 41: Envelopes Enhancements — Fund transfers, analytics redesign, and weekly rollover workflow
+
+**Goal:** Users can transfer budget between envelopes, see enhanced spending analytics with new charts, and rollover-enabled envelopes accumulate unused budget from prior weeks
+**Depends on:** Phase 40
+**Plans:** 4 plans
+
+Plans:
+- [ ] 41-01-PLAN.md — Fund transfer backend: types, Firestore ops, API route, index
+- [ ] 41-02-PLAN.md — Fund transfer UI: TransferModal, home page + detail page integration
+- [ ] 41-03-PLAN.md — Analytics redesign: budget utilization bar chart, spending trend line chart
+- [ ] 41-04-PLAN.md — Rollover workflow: surplus computation, card + detail page display
+
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
 *For current requirements, see `.planning/REQUIREMENTS.md`*
