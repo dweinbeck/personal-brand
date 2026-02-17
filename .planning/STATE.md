@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 40 — Polish (Complete)
+**Current focus:** v1.9 Phase 40.1 — Testing Feedback Fixes (In Progress)
 
 ## Current Position
 
-Phase: 40 of 40 (Polish)
-Plan: 1 of 1 in current phase
-Status: Phase 40 Complete — v1.9 Milestone Complete
-Last activity: 2026-02-16 - Completed quick task 008: Fix strange characters on Envelopes card
+Phase: 40.1 (Testing Feedback Fixes)
+Plan: 1 of 4 complete in current phase
+Status: Executing Phase 40.1 — Plan 01 complete
+Last activity: 2026-02-16 - Completed 40.1-01: Envelope budget edit button
 
-Progress: [##########] 100%
+Progress: [##########] 100% (v1.9 base) + Phase 40.1 in progress
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [##########] 100%
 | 40-polish | 01 | 4 min | 2 | 5 |
 | quick-006 | 01 | 2 min | 1 | 2 |
 | quick-007 | 01 | 2 min | 1 | 3 |
+| 40.1-testing-feedback-fixes | 01 | 2 min | 1 | 2 |
 
 ## Accumulated Context
 
@@ -79,6 +80,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 40]: Added Try the Tools section at end of frd.mdx for FRD Generator discoverability
 - [Phase quick-006]: Moved Envelopes and Research from tools to apps section with concise display names
 - [Phase quick-007]: Moved mb-10 from Building Blocks h2 to new subtitle p tag for consistent title/subtitle spacing pattern
+- [Phase 40.1-01]: Reused existing EnvelopeForm edit mode for in-place budget editing
+- [Phase 40.1-01]: Pencil icon uses gold/primary styling to distinguish from red delete button
 
 ### Pending Todos
 
@@ -105,9 +108,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed quick-008-01: Fix strange characters on Envelopes card
+Stopped at: Completed 40.1-01-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 40 complete. v1.9 milestone (Site Restructure & Polish) is finished.
+Continue Phase 40.1 with Plan 02.

@@ -48,6 +48,35 @@ export function AdminBillingPage() {
     fetchData();
   }, [fetchData]);
 
+  const handleConsolidate = async (keepUid: string, mergeUid: string) => {
+    if (!user) return;
+    if (
+      !window.confirm(
+        "Consolidate duplicate billing users? This merges credits and deletes the duplicate entry.",
+      )
+    )
+      return;
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/admin/billing/users/consolidate", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ keepUid, mergeUid }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Consolidation failed.");
+        return;
+      }
+      await fetchData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Consolidation failed.");
+    }
+  };
+
   const handlePricingUpdate = async (tool: ToolPricing) => {
     if (!user) return;
     try {
@@ -109,7 +138,9 @@ export function AdminBillingPage() {
         ))}
       </div>
 
-      {tab === "users" && <UsersTable users={users} />}
+      {tab === "users" && (
+        <UsersTable users={users} onConsolidate={handleConsolidate} />
+      )}
       {tab === "pricing" && (
         <PricingTable pricing={pricing} onUpdate={handlePricingUpdate} />
       )}
@@ -117,10 +148,41 @@ export function AdminBillingPage() {
   );
 }
 
-function UsersTable({ users }: { users: (BillingUser & { id: string })[] }) {
+function UsersTable({
+  users,
+  onConsolidate,
+}: {
+  users: (BillingUser & { id: string })[];
+  onConsolidate: (keepUid: string, mergeUid: string) => Promise<void>;
+}) {
   if (users.length === 0) {
     return <p className="text-text-tertiary text-sm">No billing users yet.</p>;
   }
+
+  // Detect duplicate emails
+  const emailCounts = new Map<string, (BillingUser & { id: string })[]>();
+  for (const u of users) {
+    const list = emailCounts.get(u.email) ?? [];
+    list.push(u);
+    emailCounts.set(u.email, list);
+  }
+  const duplicateEmails = new Set<string>();
+  for (const [email, list] of emailCounts) {
+    if (list.length > 1) duplicateEmails.add(email);
+  }
+
+  const handleConsolidateClick = (u: BillingUser & { id: string }) => {
+    const duplicates = emailCounts.get(u.email) ?? [];
+    if (duplicates.length < 2) return;
+
+    // Keep the user with more credits, merge the other
+    const sorted = [...duplicates].sort(
+      (a, b) => b.balanceCredits - a.balanceCredits,
+    );
+    const keepUid = sorted[0].id;
+    const mergeUid = sorted[1].id;
+    onConsolidate(keepUid, mergeUid);
+  };
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
@@ -145,6 +207,9 @@ function UsersTable({ users }: { users: (BillingUser & { id: string })[] }) {
             <th className="text-right px-4 py-3 font-medium text-text-secondary">
               Margin
             </th>
+            <th className="text-right px-4 py-3 font-medium text-text-secondary">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
@@ -155,6 +220,7 @@ function UsersTable({ users }: { users: (BillingUser & { id: string })[] }) {
               revenue > 0
                 ? (((revenue - cost) / revenue) * 100).toFixed(0)
                 : "--";
+            const isDuplicate = duplicateEmails.has(u.email);
             return (
               <tr key={u.id} className="hover:bg-gold-light/30">
                 <td className="px-4 py-3">
@@ -164,6 +230,11 @@ function UsersTable({ users }: { users: (BillingUser & { id: string })[] }) {
                   >
                     {u.email}
                   </Link>
+                  {isDuplicate && (
+                    <span className="ml-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                      Duplicate
+                    </span>
+                  )}
                 </td>
                 <td className="text-right px-4 py-3 tabular-nums">
                   {u.balanceCredits.toLocaleString()}
@@ -179,6 +250,17 @@ function UsersTable({ users }: { users: (BillingUser & { id: string })[] }) {
                 </td>
                 <td className="text-right px-4 py-3 tabular-nums text-text-secondary">
                   {margin}%
+                </td>
+                <td className="text-right px-4 py-3">
+                  {isDuplicate && (
+                    <button
+                      type="button"
+                      onClick={() => handleConsolidateClick(u)}
+                      className="text-xs text-amber-700 hover:underline font-medium"
+                    >
+                      Consolidate
+                    </button>
+                  )}
                 </td>
               </tr>
             );
