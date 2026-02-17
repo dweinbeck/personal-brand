@@ -138,6 +138,7 @@ export type EnvelopeWithStatus = Envelope & {
   spentCents: number;
   remainingCents: number;
   status: "On Track" | "Watch" | "Over";
+  rolloverSurplusCents: number; // accumulated surplus from prior completed weeks (0 for non-rollover)
 };
 
 /** Response shape for GET /api/envelopes (home page data). */

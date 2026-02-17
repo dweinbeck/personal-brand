@@ -318,6 +318,54 @@ export function computeWeeklySavingsBreakdown(
 }
 
 /**
+ * Computes accumulated rollover surplus for a single envelope across all
+ * completed prior weeks. Only applies to rollover-enabled envelopes.
+ *
+ * For each completed week (from envelope creation to the week before current):
+ *   surplus += max(0, weeklyBudgetCents - spentInThatWeek)
+ *
+ * This is computed on the fly -- no separate Firestore storage needed.
+ * Returns 0 for non-rollover envelopes.
+ */
+export function computeRolloverSurplus(
+  envelope: { weeklyBudgetCents: number; rollover: boolean; createdAt: string },
+  transactions: { amountCents: number; date: string }[],
+  currentWeekStart: string,
+): number {
+  if (!envelope.rollover) return 0;
+
+  let surplus = 0;
+  // Start from the week the envelope was created
+  const envelopeCreatedWeekStart = format(
+    startOfWeek(new Date(`${envelope.createdAt}T00:00:00`), WEEK_OPTIONS),
+    "yyyy-MM-dd",
+  );
+
+  let weekStart = envelopeCreatedWeekStart;
+
+  while (weekStart < currentWeekStart) {
+    const weekStartDate = new Date(`${weekStart}T00:00:00`);
+    const nextWeekDate = addWeeks(weekStartDate, 1);
+    const weekEnd = format(
+      new Date(nextWeekDate.getTime() - 86_400_000),
+      "yyyy-MM-dd",
+    );
+
+    // Sum transactions for this envelope in this week
+    const weekSpent = transactions
+      .filter((t) => t.date >= weekStart && t.date <= weekEnd)
+      .reduce((sum, t) => sum + t.amountCents, 0);
+
+    // Surplus for this week (floored at 0 -- overspending doesn't create negative rollover)
+    surplus += Math.max(0, envelope.weeklyBudgetCents - weekSpent);
+
+    weekStart = format(nextWeekDate, "yyyy-MM-dd");
+  }
+
+  return surplus;
+}
+
+/**
  * Groups transactions by week (Sunday-Saturday) then by envelopeId.
  * Returns rows ordered newest-first (most recent week at top of table).
  * Weeks with zero transactions are omitted.
@@ -961,6 +1009,18 @@ export async function listEnvelopesWithRemaining(
     );
   }
 
+  // Fetch all historical transactions if any envelopes have rollover enabled
+  const hasRolloverEnvelopes = envSnap.docs.some(
+    (d) => d.data().rollover === true,
+  );
+  let allTxDocs: FirebaseFirestore.QueryDocumentSnapshot[] = [];
+  if (hasRolloverEnvelopes) {
+    const allTxSnap = await transactionsCol()
+      .where("userId", "==", userId)
+      .get();
+    allTxDocs = allTxSnap.docs;
+  }
+
   // Enrich envelopes with computed fields
   const envelopes: EnvelopeWithStatus[] = envSnap.docs.map((doc) => {
     const data = doc.data() as Omit<Envelope, "id">;
@@ -969,8 +1029,29 @@ export async function listEnvelopesWithRemaining(
     const donated = donatedByEnvelope.get(doc.id) ?? 0;
     const receivedTransfers = receivedTransfersByEnvelope.get(doc.id) ?? 0;
     const sentTransfers = sentTransfersByEnvelope.get(doc.id) ?? 0;
+
+    // Compute rollover surplus for rollover-enabled envelopes
+    const createdAtDate = data.createdAt?.toDate?.() ?? new Date();
+    const envelopeCreatedAt = format(createdAtDate, "yyyy-MM-dd");
+    const rolloverSurplusCents = data.rollover
+      ? computeRolloverSurplus(
+          {
+            weeklyBudgetCents: data.weeklyBudgetCents,
+            rollover: true,
+            createdAt: envelopeCreatedAt,
+          },
+          allTxDocs
+            .filter((t) => t.data().envelopeId === doc.id)
+            .map((t) => ({
+              amountCents: t.data().amountCents as number,
+              date: t.data().date as string,
+            })),
+          weekStartStr,
+        )
+      : 0;
+
     const { remainingCents, status } = computeEnvelopeStatus(
-      data.weeklyBudgetCents,
+      data.weeklyBudgetCents + rolloverSurplusCents, // effective budget includes rollover
       spentCents,
       today,
       received,
@@ -985,6 +1066,7 @@ export async function listEnvelopesWithRemaining(
       spentCents,
       remainingCents,
       status,
+      rolloverSurplusCents,
     } as EnvelopeWithStatus;
   });
 
