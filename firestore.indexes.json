@@ -49,6 +49,14 @@
       ]
     },
     {
+      "collectionGroup": "envelope_transfers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "weekStart", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "research_conversations",
       "queryScope": "COLLECTION",
       "fields": [
