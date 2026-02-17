@@ -38,8 +38,8 @@ export function SpendingTrendChart({ data }: SpendingTrendChartProps) {
           tick={{ fontSize: 12, fill: "#4a5568" }}
         />
         <Tooltip
-          formatter={(value: number, name: string) => [
-            formatCents(value),
+          formatter={(value: number | undefined, name: string | undefined) => [
+            formatCents(value ?? 0),
             name === "totalSpentCents" ? "Spent" : "Budget",
           ]}
         />

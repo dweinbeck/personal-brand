@@ -21,6 +21,7 @@ import { type OverageContext, OverageModal } from "./OverageModal";
 import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsBanner } from "./SavingsBanner";
 import { TransactionForm } from "./TransactionForm";
+import { TransferModal } from "./TransferModal";
 
 export function EnvelopesHomePage() {
   const { user } = useAuth();
@@ -39,6 +40,7 @@ export function EnvelopesHomePage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const [overageContext, setOverageContext] = useState<OverageContext | null>(
     null,
   );
@@ -273,7 +275,7 @@ export function EnvelopesHomePage() {
         </div>
       )}
 
-      {/* Full-width Add Transaction button */}
+      {/* Full-width Add Transaction button + Transfer Funds */}
       {!isReadOnly && !isEditing && envelopes.length > 0 && (
         <div className="mb-4">
           {isAddingTransaction ? (
@@ -286,14 +288,25 @@ export function EnvelopesHomePage() {
               />
             </Card>
           ) : (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsAddingTransaction(true)}
-              className="w-full"
-            >
-              Add Transaction
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsAddingTransaction(true)}
+                className="flex-1"
+              >
+                Add Transaction
+              </Button>
+              {envelopes.length >= 2 && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setTransferOpen(true)}
+                >
+                  Transfer Funds
+                </Button>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -372,6 +385,18 @@ export function EnvelopesHomePage() {
         context={overageContext}
         onClose={() => setOverageContext(null)}
         onAllocated={handleAllocated}
+        getToken={getToken}
+      />
+
+      <TransferModal
+        isOpen={transferOpen}
+        onClose={() => setTransferOpen(false)}
+        onTransferred={() => mutate()}
+        envelopes={envelopes.map((e) => ({
+          id: e.id,
+          title: e.title,
+          remainingCents: e.remainingCents,
+        }))}
         getToken={getToken}
       />
 

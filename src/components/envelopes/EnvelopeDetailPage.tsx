@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { format, startOfWeek } from "date-fns";
 import Link from "next/link";
 import { useCallback, useState } from "react";
@@ -7,7 +8,11 @@ import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { envelopeFetch } from "@/lib/envelopes/api";
 import { formatCents } from "@/lib/envelopes/format";
-import { useEnvelopes, useTransactions } from "@/lib/envelopes/hooks";
+import {
+  useEnvelopes,
+  useTransactions,
+  useTransfers,
+} from "@/lib/envelopes/hooks";
 import { getWeekRange } from "@/lib/envelopes/week-math";
 import { InlineTransactionForm } from "./InlineTransactionForm";
 import { type OverageContext, OverageModal } from "./OverageModal";
@@ -39,6 +44,8 @@ export function EnvelopeDetailPage({ envelopeId }: EnvelopeDetailPageProps) {
     isLoading: txLoading,
     mutate: mutateTransactions,
   } = useTransactions(weekStartStr, weekEndStr);
+
+  const { data: transferData } = useTransfers(weekStartStr, weekEndStr);
 
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -165,6 +172,14 @@ export function EnvelopeDetailPage({ envelopeId }: EnvelopeDetailPageProps) {
   const transactions = (txData?.transactions ?? []).filter(
     (txn) => txn.envelopeId === envelopeId,
   );
+
+  // Filter transfers involving this envelope
+  const filteredTransfers = (transferData?.transfers ?? []).filter(
+    (t) => t.fromEnvelopeId === envelopeId || t.toEnvelopeId === envelopeId,
+  );
+
+  const envelopeTitle = (id: string) =>
+    envData?.envelopes.find((e) => e.id === id)?.title ?? "Unknown";
 
   const isReadOnly = envData?.billing?.mode === "readonly";
 
@@ -297,6 +312,46 @@ export function EnvelopeDetailPage({ envelopeId }: EnvelopeDetailPageProps) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Transfers section */}
+      {filteredTransfers.length > 0 && (
+        <>
+          <div className="border-t border-border mb-6 mt-6" />
+          <h2 className="font-display text-lg font-semibold text-primary mb-4">
+            Transfers This Week
+          </h2>
+          <div className="divide-y divide-border">
+            {filteredTransfers.map((t) => (
+              <div
+                key={t.id}
+                className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <span className="text-sm text-text-primary">
+                    {t.fromEnvelopeId === envelopeId
+                      ? `Sent to ${envelopeTitle(t.toEnvelopeId)}`
+                      : `Received from ${envelopeTitle(t.fromEnvelopeId)}`}
+                  </span>
+                  {t.note && (
+                    <p className="text-xs text-text-secondary">{t.note}</p>
+                  )}
+                </div>
+                <span
+                  className={clsx(
+                    "text-sm font-semibold",
+                    t.fromEnvelopeId === envelopeId
+                      ? "text-red-600"
+                      : "text-sage",
+                  )}
+                >
+                  {t.fromEnvelopeId === envelopeId ? "-" : "+"}
+                  {formatCents(t.amountCents)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <OverageModal

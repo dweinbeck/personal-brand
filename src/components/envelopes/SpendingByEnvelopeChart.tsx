@@ -61,14 +61,15 @@ export function SpendingByEnvelopeChart({
           tick={{ fontSize: 12, fill: "#4a5568" }}
         />
         <Tooltip
-          formatter={(value: number, name: string) => [
-            formatCents(value),
+          formatter={(value: number | undefined, name: string | undefined) => [
+            formatCents(value ?? 0),
             name === "spent" ? "Spent" : "Remaining",
           ]}
-          labelFormatter={(label: string) => {
-            const item = chartData.find((d) => d.title === label);
-            if (!item) return label;
-            return `${label} (${item.percentUsed}% of ${formatCents(item.budgetCents)})`;
+          labelFormatter={(label: unknown) => {
+            const labelStr = String(label);
+            const item = chartData.find((d) => d.title === labelStr);
+            if (!item) return labelStr;
+            return `${labelStr} (${item.percentUsed}% of ${formatCents(item.budgetCents)})`;
           }}
         />
         <Bar
