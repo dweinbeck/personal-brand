@@ -113,6 +113,7 @@
 - [ ] **Phase 38: Home Page Enhancements** — Hero layout, tech tags, reading time, subtitles, Dev Tools section
 - [ ] **Phase 39: Bug Fixes** — Brand scraper bugs, assistant RAG sync, research assistant API fixes
 - [ ] **Phase 40: Polish** — Contact page cleanup, button styles, FRD links, scraper button height
+- [ ] **Phase 40.1: Testing Feedback Fixes** — Envelopes budget editing, envelope detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED)
 
 ## Phase Details
 
@@ -214,9 +215,22 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 38. Home Page Enhancements | v1.9 | 0/2 | Not started | - |
 | 39. Bug Fixes | v1.9 | 0/2 | Not started | - |
 | 40. Polish | v1.9 | 0/1 | Not started | - |
+| 40.1 Testing Feedback Fixes | v1.9 | 0/4 | Not started | - |
 
-**Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 5 phases planned**
+**Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 6 phases planned**
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
 *For current requirements, see `.planning/REQUIREMENTS.md`*
+
+### Phase 40.1: Testing Feedback Fixes — Envelopes budget editing and detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED)
+
+**Goal:** Fix 4 user-reported bugs/features: (1) Envelopes budget editing capability, (2) Envelopes envelope detail page with transactions, (3) Research Assistant Firestore permissions crash, (4) Billing duplicate user consolidation. NOTE: Tasks tooltips and view persistence are in the external Tasks app (tasks.dan-weinbeck.com) and are out of scope for this codebase.
+**Depends on:** Phase 40
+**Plans:** 4 plans
+
+Plans:
+- [ ] 40.1-01-PLAN.md — Add edit button to EnvelopeCard for budget editing
+- [ ] 40.1-02-PLAN.md — Fix Research Assistant permissions crash and token usage display
+- [ ] 40.1-03-PLAN.md — Fix billing duplicate user with deduplication and admin consolidation
+- [ ] 40.1-04-PLAN.md — Create envelope detail page with filtered transactions
