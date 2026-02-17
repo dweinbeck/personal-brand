@@ -5,13 +5,18 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 import { envelopeFetch } from "@/lib/envelopes/api";
-import { useEnvelopes } from "@/lib/envelopes/hooks";
-import type { EnvelopeWithStatus } from "@/lib/envelopes/types";
+import { useEnvelopeProfile, useEnvelopes } from "@/lib/envelopes/hooks";
+import type {
+  EnvelopeProfileInput,
+  EnvelopeWithStatus,
+} from "@/lib/envelopes/types";
 import { CreateEnvelopeCard } from "./CreateEnvelopeCard";
 import { EnvelopeCard } from "./EnvelopeCard";
 import { EnvelopeCardGrid } from "./EnvelopeCardGrid";
 import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
+import { KpiBox } from "./KpiBox";
+import { KpiWizardModal } from "./KpiWizardModal";
 import { type OverageContext, OverageModal } from "./OverageModal";
 import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsBanner } from "./SavingsBanner";
@@ -20,6 +25,13 @@ import { TransactionForm } from "./TransactionForm";
 export function EnvelopesHomePage() {
   const { user } = useAuth();
   const { data, error, isLoading, mutate } = useEnvelopes();
+  const {
+    profile,
+    isProfileMissing,
+    isLoading: profileLoading,
+    mutate: mutateProfile,
+  } = useEnvelopeProfile();
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -38,6 +50,18 @@ export function EnvelopesHomePage() {
     if (!token) throw new Error("Not authenticated");
     return token;
   }, [user]);
+
+  // -- KPI profile save --
+  async function handleSaveProfile(profileData: EnvelopeProfileInput) {
+    const token = await user?.getIdToken();
+    if (!token) return;
+    await envelopeFetch("/api/envelopes/profile", token, {
+      method: "PUT",
+      body: JSON.stringify(profileData),
+    });
+    await mutateProfile();
+    setWizardOpen(false);
+  }
 
   // -- CRUD handlers --
 
@@ -212,6 +236,11 @@ export function EnvelopesHomePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
       {isReadOnly && <ReadOnlyBanner />}
+      <KpiBox
+        profile={profile}
+        isLoading={profileLoading}
+        onEdit={() => setWizardOpen(true)}
+      />
       <GreetingBanner
         onTrackCount={onTrackCount}
         totalCount={envelopes.length}
@@ -309,7 +338,22 @@ export function EnvelopesHomePage() {
 
         {!isReadOnly &&
           isEditing &&
-          (isCreating ? (
+          (isProfileMissing ? (
+            <Card variant="default" className="min-h-[180px]">
+              <div className="flex flex-col items-center justify-center h-full py-6 text-center">
+                <p className="text-sm text-text-secondary mb-3">
+                  Complete your budget setup to start creating envelopes
+                </p>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setWizardOpen(true)}
+                >
+                  Set Up Budget
+                </Button>
+              </div>
+            </Card>
+          ) : isCreating ? (
             <Card variant="default" className="min-h-[180px]">
               <EnvelopeForm
                 mode="create"
@@ -328,6 +372,13 @@ export function EnvelopesHomePage() {
         onClose={() => setOverageContext(null)}
         onAllocated={handleAllocated}
         getToken={getToken}
+      />
+
+      <KpiWizardModal
+        isOpen={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onSave={handleSaveProfile}
+        initialProfile={profile}
       />
     </div>
   );
