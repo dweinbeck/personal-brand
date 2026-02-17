@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { formatCents } from "@/lib/envelopes/format";
 import type { EnvelopeWithStatus } from "@/lib/envelopes/types";
@@ -54,10 +55,12 @@ export function EnvelopeCard({
     );
   }
 
-  return (
+  const cardContent = (
     <Card
       variant="default"
-      className="relative flex min-h-[180px] flex-col gap-3"
+      className={`relative flex min-h-[180px] flex-col gap-3${
+        !isEditMode ? " cursor-pointer transition-shadow hover:shadow-md" : ""
+      }`}
     >
       {/* Edit-mode action buttons */}
       {isEditMode && (
@@ -116,5 +119,16 @@ export function EnvelopeCard({
         </p>
       </div>
     </Card>
+  );
+
+  // In edit mode, card is not clickable (edit/delete buttons take priority)
+  if (isEditMode) {
+    return cardContent;
+  }
+
+  return (
+    <Link href={`/envelopes/${envelope.id}`} className="block">
+      {cardContent}
+    </Link>
   );
 }
