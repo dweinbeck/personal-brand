@@ -1,8 +1,11 @@
 "use client";
 
-import { createContext, use, useReducer } from "react";
 import type { ReactNode } from "react";
-import { getRemainingDaysPercent, getStatusLabel } from "@/lib/envelopes/week-math";
+import { createContext, use, useReducer } from "react";
+import {
+  getRemainingDaysPercent,
+  getStatusLabel,
+} from "@/lib/envelopes/week-math";
 import {
   DEMO_ENVELOPES,
   DEMO_TRANSACTIONS,
@@ -102,9 +105,7 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
     }
 
     case "DELETE_TRANSACTION": {
-      const txn = state.transactions.find(
-        (t) => t.id === action.payload.id,
-      );
+      const txn = state.transactions.find((t) => t.id === action.payload.id);
       const updatedTransactions = state.transactions.filter(
         (t) => t.id !== action.payload.id,
       );

@@ -1,9 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import { DemoProvider } from "@/components/envelopes/demo/DemoProvider";
 
 const basePath = "/envelopes/demo";
@@ -23,7 +23,10 @@ function DemoNav() {
   }
 
   return (
-    <nav className="border-b border-gray-200 bg-white" aria-label="Demo Envelopes">
+    <nav
+      className="border-b border-gray-200 bg-white"
+      aria-label="Demo Envelopes"
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex gap-6">
           {navLinks.map((link) => {

@@ -57,6 +57,13 @@ export function allocationsCol() {
   return requireDb().collection("envelope_allocations");
 }
 
+/**
+ * Returns the envelope_profiles collection reference.
+ */
+export function envelopeProfilesCol() {
+  return requireDb().collection("envelope_profiles");
+}
+
 // ---------------------------------------------------------------------------
 // Query helpers (for reads)
 // ---------------------------------------------------------------------------

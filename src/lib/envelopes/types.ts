@@ -169,6 +169,28 @@ export type AnalyticsPageData = {
 };
 
 // ---------------------------------------------------------------------------
+// KPI Profile types (Phase 1: Public Landing + KPI Wizard)
+// ---------------------------------------------------------------------------
+
+/** KPI profile input validation — validated by Zod at API boundary. */
+export const envelopeProfileSchema = z.object({
+  averageWeeklyIncomeCents: z.number().int().min(0),
+  averageWeeklyBillsCents: z.number().int().min(0),
+  targetWeeklySavingsCents: z.number().int().min(0),
+});
+export type EnvelopeProfileInput = z.infer<typeof envelopeProfileSchema>;
+
+/** KPI profile Firestore document shape. */
+export type EnvelopeProfile = {
+  uid: string;
+  averageWeeklyIncomeCents: number;
+  averageWeeklyBillsCents: number;
+  targetWeeklySavingsCents: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
+// ---------------------------------------------------------------------------
 // Billing types (Phase 6)
 // ---------------------------------------------------------------------------
 
