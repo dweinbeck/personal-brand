@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { useAuth } from "@/context/AuthContext";
 import type {
   AnalyticsPageData,
+  EnvelopeProfileInput,
   HomePageData,
   TransactionsPageData,
 } from "@/lib/envelopes/types";
@@ -39,6 +40,39 @@ export function useTransactions(weekStart: string, weekEnd: string) {
   );
 
   return { data, error, isLoading, mutate };
+}
+
+export function useEnvelopeProfile() {
+  const { user } = useAuth();
+
+  const { data, error, isLoading, mutate } =
+    useSWR<EnvelopeProfileInput | null>(
+      user ? "/api/envelopes/profile" : null,
+      async (url: string) => {
+        const token = await user?.getIdToken();
+        if (!token) throw new Error("Not authenticated");
+        try {
+          return await envelopeFetch<EnvelopeProfileInput>(url, token);
+        } catch (err: unknown) {
+          // 404 means profile doesn't exist yet -- return null, not error
+          if (
+            err instanceof Error &&
+            err.message.includes("Profile not found")
+          ) {
+            return null;
+          }
+          throw err;
+        }
+      },
+    );
+
+  return {
+    profile: data,
+    isProfileMissing: data === null && !isLoading && !error,
+    error,
+    isLoading,
+    mutate,
+  };
 }
 
 export function useAnalytics() {
