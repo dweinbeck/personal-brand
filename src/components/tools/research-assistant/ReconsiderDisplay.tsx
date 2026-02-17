@@ -2,6 +2,8 @@
 
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getModelDisplayNames } from "@/lib/research-assistant/config";
 import type {
   ModelResponse,
@@ -107,8 +109,8 @@ function ReconsiderPanel({
         aria-busy={response.status === "streaming"}
       >
         {response.text ? (
-          <div className="whitespace-pre-wrap text-sm text-text-primary leading-relaxed">
-            {response.text}
+          <div className="prose prose-invert max-w-none text-sm">
+            <Markdown remarkPlugins={[remarkGfm]}>{response.text}</Markdown>
           </div>
         ) : response.status === "idle" ? (
           <p className="text-sm text-text-tertiary italic">
