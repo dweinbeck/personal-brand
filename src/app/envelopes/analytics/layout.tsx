@@ -5,10 +5,6 @@ export const metadata: Metadata = {
   title: "Analytics | Stash",
 };
 
-export default function AnalyticsLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function AnalyticsLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
