@@ -328,6 +328,7 @@ export function EnvelopesHomePage() {
                 envelope={env}
                 isEditMode={isEditing}
                 isDeleting={deletingId === env.id}
+                onEdit={() => setEditingId(env.id)}
                 onDelete={() => setDeletingId(env.id)}
                 onConfirmDelete={() => handleDelete(env.id)}
                 onCancelDelete={() => setDeletingId(null)}

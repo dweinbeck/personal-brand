@@ -61,6 +61,36 @@ export async function ensureBillingUser({
   const firestore = requireDb();
   const userRef = billingUsersCol().doc(uid);
 
+  // Check if a billing user already exists with this email under a different UID
+  const emailQuery = await billingUsersCol()
+    .where("email", "==", email)
+    .limit(1)
+    .get();
+
+  if (!emailQuery.empty) {
+    const existingDoc = emailQuery.docs[0];
+    if (existingDoc.id !== uid) {
+      // An entry already exists under a different UID.
+      // Return the canonical user data and ensure a stub exists at the new UID.
+      const canonicalUser = existingDoc.data() as BillingUser;
+      const newSnap = await userRef.get();
+      if (!newSnap.exists) {
+        await userRef.set({
+          uid,
+          email,
+          balanceCredits: canonicalUser.balanceCredits,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+          lifetimePurchasedCredits: canonicalUser.lifetimePurchasedCredits,
+          lifetimeSpentCredits: canonicalUser.lifetimeSpentCredits,
+          lifetimeCostToUsCents: canonicalUser.lifetimeCostToUsCents,
+          canonicalUid: existingDoc.id,
+        });
+      }
+      return canonicalUser;
+    }
+  }
+
   return firestore.runTransaction(async (txn) => {
     const snap = await txn.get(userRef);
 
@@ -458,6 +488,57 @@ export async function adminAdjustCredits({
       reason: `[${adminEmail}] ${reason}`,
       createdAt: now,
     });
+
+    return { balanceAfter };
+  });
+}
+
+// ── Duplicate consolidation ──────────────────────────────────
+
+export async function consolidateBillingUsers(
+  keepUid: string,
+  mergeUid: string,
+): Promise<{ balanceAfter: number }> {
+  const firestore = requireDb();
+  const keepRef = billingUsersCol().doc(keepUid);
+  const mergeRef = billingUsersCol().doc(mergeUid);
+
+  return firestore.runTransaction(async (txn) => {
+    const [keepSnap, mergeSnap] = await Promise.all([
+      txn.get(keepRef),
+      txn.get(mergeRef),
+    ]);
+
+    if (!keepSnap.exists) throw new Error(`Keep user ${keepUid} not found.`);
+    if (!mergeSnap.exists) throw new Error(`Merge user ${mergeUid} not found.`);
+
+    const keepUser = keepSnap.data() as BillingUser;
+    const mergeUser = mergeSnap.data() as BillingUser;
+
+    // Merge balances and lifetime stats
+    const balanceAfter = keepUser.balanceCredits + mergeUser.balanceCredits;
+
+    txn.update(keepRef, {
+      balanceCredits: balanceAfter,
+      lifetimePurchasedCredits:
+        keepUser.lifetimePurchasedCredits + mergeUser.lifetimePurchasedCredits,
+      lifetimeSpentCredits:
+        keepUser.lifetimeSpentCredits + mergeUser.lifetimeSpentCredits,
+      lifetimeCostToUsCents:
+        keepUser.lifetimeCostToUsCents + mergeUser.lifetimeCostToUsCents,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    // Add a ledger entry recording the merge
+    txn.set(ledgerCol(keepUid).doc(), {
+      type: "admin_adjustment",
+      deltaCredits: mergeUser.balanceCredits,
+      reason: `Consolidated duplicate account ${mergeUid} (${mergeUser.email})`,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+
+    // Delete the duplicate document
+    txn.delete(mergeRef);
 
     return { balanceAfter };
   });
