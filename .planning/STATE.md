@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v1.9 Phase 40.1 — Testing Feedback Fixes (In Progress)
+**Current focus:** v1.9 Phase 40.1 — Testing Feedback Fixes (Complete — Verified)
 
 ## Current Position
 
 Phase: 40.1 (Testing Feedback Fixes)
 Plan: 4 of 4 complete in current phase
-Status: Phase 40.1 Complete
-Last activity: 2026-02-16 - Completed 40.1-04: Envelope detail page
+Status: Phase 40.1 Complete — Verified (12/12 must-haves passed)
+Last activity: 2026-02-16 - Phase 40.1 verified and complete
 
-Progress: [##########] 100% (v1.9 base) + Phase 40.1 in progress
+Progress: [##########] 100% — v1.9 Milestone Complete
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
-- Total phases completed: 37
-- Total plans completed: 99
+- Total phases completed: 38
+- Total plans completed: 103
 - Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
@@ -118,9 +118,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 40.1-02-PLAN.md (all 4 plans now complete)
+Stopped at: Phase 40.1 complete and verified
 Resume file: None
 
 ## Next Step
 
-Phase 40.1 complete. Ready for manual testing.
+v1.9 milestone complete. Ready for manual testing, then `/gsd:complete-milestone`.

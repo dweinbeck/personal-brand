@@ -113,7 +113,7 @@
 - [ ] **Phase 38: Home Page Enhancements** — Hero layout, tech tags, reading time, subtitles, Dev Tools section
 - [ ] **Phase 39: Bug Fixes** — Brand scraper bugs, assistant RAG sync, research assistant API fixes
 - [ ] **Phase 40: Polish** — Contact page cleanup, button styles, FRD links, scraper button height
-- [ ] **Phase 40.1: Testing Feedback Fixes** — Envelopes budget editing, envelope detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED)
+- [x] **Phase 40.1: Testing Feedback Fixes** — Envelopes budget editing, envelope detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED) — completed 2026-02-16
 
 ## Phase Details
 
@@ -215,9 +215,9 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 38. Home Page Enhancements | v1.9 | 0/2 | Not started | - |
 | 39. Bug Fixes | v1.9 | 0/2 | Not started | - |
 | 40. Polish | v1.9 | 0/1 | Not started | - |
-| 40.1 Testing Feedback Fixes | v1.9 | 0/4 | Not started | - |
+| 40.1 Testing Feedback Fixes | v1.9 | 4/4 | Complete | 2026-02-16 |
 
-**Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 6 phases planned**
+**Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 6 phases, all complete**
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
@@ -230,7 +230,7 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 **Plans:** 4 plans
 
 Plans:
-- [ ] 40.1-01-PLAN.md — Add edit button to EnvelopeCard for budget editing
-- [ ] 40.1-02-PLAN.md — Fix Research Assistant permissions crash and token usage display
-- [ ] 40.1-03-PLAN.md — Fix billing duplicate user with deduplication and admin consolidation
-- [ ] 40.1-04-PLAN.md — Create envelope detail page with filtered transactions
+- [x] 40.1-01-PLAN.md — Add edit button to EnvelopeCard for budget editing
+- [x] 40.1-02-PLAN.md — Fix Research Assistant permissions crash and token usage display
+- [x] 40.1-03-PLAN.md — Fix billing duplicate user with deduplication and admin consolidation
+- [x] 40.1-04-PLAN.md — Create envelope detail page with filtered transactions
