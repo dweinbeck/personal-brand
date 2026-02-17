@@ -165,6 +165,98 @@ describe("serverEnvSchema", () => {
   });
 });
 
+// ── Path-routing detection ───────────────────────────────────
+
+describe("path-routing detection", () => {
+  it("rejects CHATBOT_API_URL with /api/ path", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      CHATBOT_API_URL: "https://dan-weinbeck.com/api/chat",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages.some((m) => m.includes("/api/ path"))).toBe(true);
+    }
+  });
+
+  it("rejects BRAND_SCRAPER_API_URL with /api/ path", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      BRAND_SCRAPER_API_URL: "https://example.com/api/scrape",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages.some((m) => m.includes("/api/ path"))).toBe(true);
+    }
+  });
+
+  it("accepts service URLs without /api/ paths", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      CHATBOT_API_URL: "https://chatbot-service-abc-uc.a.run.app",
+      BRAND_SCRAPER_API_URL: "https://brand-scraper-xyz-uc.a.run.app",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts service URLs with non-api paths", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      CHATBOT_API_URL: "https://chatbot-service-abc-uc.a.run.app/v1/chat",
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+// ── Numeric project ID guard ────────────────────────────────
+
+describe("numeric project ID guard", () => {
+  it("rejects purely numeric FIREBASE_PROJECT_ID", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      FIREBASE_PROJECT_ID: "123456789012",
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: "123456789012",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages.some((m) => m.includes("GCP project number"))).toBe(true);
+    }
+  });
+
+  it("rejects purely numeric NEXT_PUBLIC_FIREBASE_PROJECT_ID in client schema", () => {
+    const result = clientEnvSchema.safeParse({
+      ...validClientEnv(),
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: "987654321",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages.some((m) => m.includes("GCP project number"))).toBe(true);
+    }
+  });
+
+  it("accepts alphanumeric Firebase project IDs", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      FIREBASE_PROJECT_ID: "personal-brand-486314",
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: "personal-brand-486314",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts project IDs with numbers mixed with letters", () => {
+    const result = serverEnvSchema.safeParse({
+      ...validServerEnv(),
+      FIREBASE_PROJECT_ID: "my-project-123",
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: "my-project-123",
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
 // ── Secret format validation ────────────────────────────────────
 
 describe("secret format validation", () => {

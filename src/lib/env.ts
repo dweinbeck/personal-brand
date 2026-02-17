@@ -49,6 +49,31 @@ function nonEmptyNonPlaceholder(fieldName: string) {
     );
 }
 
+// ── Semantic validators ──────────────────────────────────────
+
+/**
+ * Returns true if a URL does NOT look like path-based routing on the main app.
+ * Catches mistakes like setting CHATBOT_API_URL to "https://dan-weinbeck.com/api/chat"
+ * when it should point to a separate Cloud Run service.
+ */
+function isNotPathRouted(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return !parsed.pathname.startsWith("/api/");
+  } catch {
+    return true; // Invalid URL — let the z.url() check catch it
+  }
+}
+
+/**
+ * Returns true if the value does NOT look like a numeric GCP project number.
+ * Firebase project IDs are strings like "personal-brand-486314".
+ * GCP project numbers are purely numeric like "123456789012".
+ */
+function isNotNumericProjectId(val: string): boolean {
+  return !/^\d+$/.test(val);
+}
+
 // ── Client env schema (NEXT_PUBLIC_* only) ──────────────────────
 
 export const clientEnvSchema = z.object({
@@ -60,6 +85,9 @@ export const clientEnvSchema = z.object({
   ),
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: nonEmptyNonPlaceholder(
     "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+  ).refine(
+    isNotNumericProjectId,
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID looks like a GCP project number (purely numeric). Use the Firebase project ID string instead.",
   ),
   NEXT_PUBLIC_TASKS_APP_URL: z.string().url().optional(),
 });
@@ -70,7 +98,10 @@ export type ClientEnv = z.infer<typeof clientEnvSchema>;
 
 const serverEnvBaseSchema = z.object({
   // Firebase Admin (optional locally — Cloud Run uses ADC)
-  FIREBASE_PROJECT_ID: nonEmptyNonPlaceholder("FIREBASE_PROJECT_ID"),
+  FIREBASE_PROJECT_ID: nonEmptyNonPlaceholder("FIREBASE_PROJECT_ID").refine(
+    isNotNumericProjectId,
+    "FIREBASE_PROJECT_ID looks like a GCP project number (purely numeric). Use the Firebase project ID string (e.g., 'personal-brand-486314') instead.",
+  ),
 
   FIREBASE_CLIENT_EMAIL: z
     .string()
@@ -83,11 +114,21 @@ const serverEnvBaseSchema = z.object({
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1),
 
   // External service URLs
-  CHATBOT_API_URL: z.string().url("CHATBOT_API_URL must be a valid URL"),
+  CHATBOT_API_URL: z
+    .string()
+    .url("CHATBOT_API_URL must be a valid URL")
+    .refine(
+      isNotPathRouted,
+      "CHATBOT_API_URL contains a /api/ path — this looks like a route on this app, not an external service. Use the chatbot's own Cloud Run URL instead.",
+    ),
 
   BRAND_SCRAPER_API_URL: z
     .string()
-    .url("BRAND_SCRAPER_API_URL must be a valid URL"),
+    .url("BRAND_SCRAPER_API_URL must be a valid URL")
+    .refine(
+      isNotPathRouted,
+      "BRAND_SCRAPER_API_URL contains a /api/ path — this looks like a route on this app, not an external service. Use the scraper's own Cloud Run URL instead.",
+    ),
 
   // API keys — optional keys have fallback behavior in their consumers
   CHATBOT_API_KEY: z

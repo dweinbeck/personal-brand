@@ -73,6 +73,43 @@ This project uses **trunk-based development**:
 
 ---
 
+## Multi-Service Architecture
+
+### Service Map
+
+This app coordinates with external services. Every service URL must point to a DISTINCT external service, never back to this app.
+
+| Service | Env Var | What It Is | What It Is NOT |
+|---------|---------|-----------|---------------|
+| Chatbot (FastAPI) | `CHATBOT_API_URL` | Separate Cloud Run service | NOT a path on this app |
+| Brand Scraper | `BRAND_SCRAPER_API_URL` | Separate Cloud Run service | NOT `dan-weinbeck.com/...` |
+| Tasks App | `NEXT_PUBLIC_TASKS_APP_URL` | Separate app on tasks subdomain | NOT `dan-weinbeck.com/tasks` |
+
+### Proven Configuration Mistakes (From Real Bugs)
+
+| # | Mistake | Symptom | Prevention |
+|---|---------|---------|------------|
+| 1 | Service URL points back to this app | 404 or HTML where JSON expected | `npm run validate-env` |
+| 2 | URL uses path routing instead of subdomain | Wrong service handles request | Check hostname is distinct |
+| 3 | `FIREBASE_PROJECT_ID` is GCP project, not Firebase | All auth fails | Must equal `NEXT_PUBLIC_FIREBASE_PROJECT_ID` |
+| 4 | Secret Manager has placeholder value | API errors silently caught | `npm run validate-env` |
+| 5 | Firebase Auth domain not added | `auth/unauthorized-domain` | Manual: Firebase Console |
+| 6 | Firestore indexes not deployed to target env | 500 "requires an index" | `npm run verify-indexes` |
+| 7 | Database not created for service | Connection refused | Run migrations BEFORE deploy |
+| 8 | Cookie auth across subdomains | Blank page, auth mismatch | Cookie domain: `.dan-weinbeck.com` |
+
+### Infrastructure Validation Protocol
+
+Before every deploy, run in order:
+1. `npm test && npm run lint && npm run build` (code quality)
+2. `npm run validate-env` (config syntax + semantics)
+3. `npm run verify-indexes -- --project <id>` (Firestore indexes)
+4. After deploy: `npm run smoke-test` (service connectivity)
+
+When adding a new external service, follow `docs/NEW-SERVICE-CHECKLIST.md`.
+
+---
+
 ## AI SDK Gotchas (Vercel AI SDK v5+)
 
 Avoid these common mistakes:
