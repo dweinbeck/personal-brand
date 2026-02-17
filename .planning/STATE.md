@@ -93,6 +93,10 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 40.1-02]: Keep last known balance on Firestore permission errors instead of clearing to null
 - [Phase 40.1-02]: Use nullish coalescing (0 fallback) for undefined token counts rather than optional chaining
 
+### Roadmap Evolution
+
+- Phase 41 added: Envelopes Enhancements — Fund transfers, analytics redesign, and weekly rollover workflow
+
 ### Pending Todos
 
 None.
@@ -114,11 +118,12 @@ None.
 | 006 | Move Envelopes and Research to apps section with concise display names | 2026-02-16 | 2e33227 | [6-move-envelopes-and-research-to-apps-sect](./quick/6-move-envelopes-and-research-to-apps-sect/) |
 | 007 | Update homepage section subtitles for better clarity | 2026-02-16 | 9263fea | [7-update-homepage-section-subtitles-for-ap](./quick/7-update-homepage-section-subtitles-for-ap/) |
 | 008 | Fix strange characters on Envelopes card | 2026-02-16 | fe6f337 | [8-fix-strange-characters-on-envelopes-card](./quick/8-fix-strange-characters-on-envelopes-card/) |
+| 009 | Render Research Assistant results as formatted markdown | 2026-02-17 | dc2fcc9 | [9-render-research-assistant-results-as-for](./quick/9-render-research-assistant-results-as-for/) |
 
 ## Session Continuity
 
-Last session: 2026-02-16
-Stopped at: Phase 40.1 complete and verified
+Last session: 2026-02-17
+Stopped at: Quick task 9 complete
 Resume file: None
 
 ## Next Step
