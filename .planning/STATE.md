@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 40.1 (Testing Feedback Fixes)
-Plan: 1 of 4 complete in current phase
-Status: Executing Phase 40.1 — Plan 01 complete
-Last activity: 2026-02-16 - Completed 40.1-01: Envelope budget edit button
+Plan: 4 of 4 complete in current phase
+Status: Phase 40.1 Complete
+Last activity: 2026-02-16 - Completed 40.1-04: Envelope detail page
 
 Progress: [##########] 100% (v1.9 base) + Phase 40.1 in progress
 
@@ -54,6 +54,8 @@ Progress: [##########] 100% (v1.9 base) + Phase 40.1 in progress
 | quick-006 | 01 | 2 min | 1 | 2 |
 | quick-007 | 01 | 2 min | 1 | 3 |
 | 40.1-testing-feedback-fixes | 01 | 2 min | 1 | 2 |
+| 40.1-testing-feedback-fixes | 03 | 12 min | 2 | 3 |
+| 40.1-testing-feedback-fixes | 04 | 12 min | 2 | 3 |
 
 ## Accumulated Context
 
@@ -82,6 +84,11 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase quick-007]: Moved mb-10 from Building Blocks h2 to new subtitle p tag for consistent title/subtitle spacing pattern
 - [Phase 40.1-01]: Reused existing EnvelopeForm edit mode for in-place budget editing
 - [Phase 40.1-01]: Pencil icon uses gold/primary styling to distinguish from red delete button
+- [Phase 40.1-03]: Email dedup query runs outside transaction; stub doc with canonicalUid for duplicate prevention
+- [Phase 40.1-03]: Consolidation keeps user with more credits; merges all lifetime stats atomically with audit ledger entry
+- [Phase 40.1-04]: Client-side transaction filtering for detail page rather than new API endpoint
+- [Phase 40.1-04]: Conditional Link wrapper pattern for clickable/non-clickable card states
+- [Phase 40.1-04]: Simplified 4-column transaction table on detail page (no envelope or actions columns)
 
 ### Pending Todos
 
@@ -108,9 +115,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 40.1-01-PLAN.md
+Stopped at: Completed 40.1-04-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Continue Phase 40.1 with Plan 02.
+Phase 40.1 complete. Ready for manual testing.
