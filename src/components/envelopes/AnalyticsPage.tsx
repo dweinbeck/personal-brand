@@ -3,6 +3,8 @@
 import { useAnalytics } from "@/lib/envelopes/hooks";
 import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsChart } from "./SavingsChart";
+import { SpendingByEnvelopeChart } from "./SpendingByEnvelopeChart";
+import { SpendingTrendChart } from "./SpendingTrendChart";
 import { SummaryStats } from "./SummaryStats";
 import { WeeklyPivotTable } from "./WeeklyPivotTable";
 
@@ -37,6 +39,20 @@ export function AnalyticsPage() {
           This Week
         </h2>
         <SummaryStats {...data.summary} />
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold font-display text-primary mb-4">
+          Budget Utilization
+        </h2>
+        <SpendingByEnvelopeChart data={data.spendingByEnvelope} />
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold font-display text-primary mb-4">
+          Spending Trend
+        </h2>
+        <SpendingTrendChart data={data.weeklyTotals} />
       </section>
 
       <section>
