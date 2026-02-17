@@ -230,6 +230,12 @@ export function EnvelopeDetailPage({ envelopeId }: EnvelopeDetailPageProps) {
         <p className="text-sm text-text-secondary">
           {formatCents(envelope.spentCents)} spent this week
         </p>
+        {envelope.rolloverSurplusCents > 0 && (
+          <p className="text-sm text-sage">
+            +{formatCents(envelope.rolloverSurplusCents)} rollover from prior
+            weeks
+          </p>
+        )}
       </div>
 
       {/* Divider */}

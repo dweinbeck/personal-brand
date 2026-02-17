@@ -117,6 +117,11 @@ export function EnvelopeCard({
         <p className="text-sm text-text-secondary">
           of {formatCents(envelope.weeklyBudgetCents)} budget
         </p>
+        {envelope.rolloverSurplusCents > 0 && (
+          <p className="text-xs text-sage mt-0.5">
+            +{formatCents(envelope.rolloverSurplusCents)} rollover
+          </p>
+        )}
       </div>
     </Card>
   );
