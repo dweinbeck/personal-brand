@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 Phase: 40.1 (Testing Feedback Fixes)
 Plan: 4 of 4 complete in current phase
 Status: Phase 40.1 Complete — Verified (12/12 must-haves passed)
-Last activity: 2026-02-16 - Phase 40.1 verified and complete
+Last activity: 2026-02-17 - Completed quick task 9: Render Research Assistant results as formatted HTML instead of raw markdown text
 
 Progress: [##########] 100% — v1.9 Milestone Complete
 
