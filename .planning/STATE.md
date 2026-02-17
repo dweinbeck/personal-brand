@@ -54,6 +54,7 @@ Progress: [##########] 100% (v1.9 base) + Phase 40.1 in progress
 | quick-006 | 01 | 2 min | 1 | 2 |
 | quick-007 | 01 | 2 min | 1 | 3 |
 | 40.1-testing-feedback-fixes | 01 | 2 min | 1 | 2 |
+| 40.1-testing-feedback-fixes | 02 | 13 min | 1 | 2 |
 | 40.1-testing-feedback-fixes | 03 | 12 min | 2 | 3 |
 | 40.1-testing-feedback-fixes | 04 | 12 min | 2 | 3 |
 
@@ -89,6 +90,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 40.1-04]: Client-side transaction filtering for detail page rather than new API endpoint
 - [Phase 40.1-04]: Conditional Link wrapper pattern for clickable/non-clickable card states
 - [Phase 40.1-04]: Simplified 4-column transaction table on detail page (no envelope or actions columns)
+- [Phase 40.1-02]: Keep last known balance on Firestore permission errors instead of clearing to null
+- [Phase 40.1-02]: Use nullish coalescing (0 fallback) for undefined token counts rather than optional chaining
 
 ### Pending Todos
 
@@ -115,7 +118,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 40.1-04-PLAN.md
+Stopped at: Completed 40.1-02-PLAN.md (all 4 plans now complete)
 Resume file: None
 
 ## Next Step
