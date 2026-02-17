@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Transactions | Stash",
+  title: "Transactions | Envelopes",
 };
 
 export default function TransactionsLayout({

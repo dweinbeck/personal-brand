@@ -33,7 +33,7 @@ export function EnvelopesLandingPage() {
       {/* Hero */}
       <div className="text-center mb-12">
         <h1 className="font-display text-4xl md:text-5xl font-bold text-primary mb-3">
-          Stash
+          Envelopes
         </h1>
         <p className="text-lg text-text-secondary max-w-2xl mx-auto">
           Envelope Budgeting Made Simple

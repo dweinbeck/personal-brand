@@ -177,7 +177,7 @@ export function DemoHomePage() {
       {/* Greeting */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-display text-primary">
-          Welcome to Stash Demo
+          Welcome to Envelopes Demo
         </h1>
         <p className="text-sm text-text-secondary mt-1">
           {onTrackCount}/{envelopes.length} envelopes on track &middot;{" "}

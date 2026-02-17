@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { EnvelopesNav } from "@/components/envelopes/EnvelopesNav";
 
 export const metadata: Metadata = {
-  title: "Stash | Envelope Budgeting",
+  title: "Envelopes | Envelope Budgeting",
 };
 
 export default function EnvelopesLayout({ children }: { children: ReactNode }) {

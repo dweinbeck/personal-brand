@@ -203,8 +203,24 @@ d @ aebc3b6d791f68d2.js:1Understand this error
 
 ## Planning Notes
 
-> Optional: jot down any bigger-picture thoughts, patterns you noticed, or sequencing preferences.
+> Phase 40.1 just shipped. Here's what to test:
 
--
--
--
+**Envelopes (`/envelopes`):**
+- Click "Edit Cards" — each card should now show BOTH a pencil (edit) icon and an X (delete) icon
+- Click the pencil icon — the form should open pre-filled with the envelope's current title, budget, and rollover setting
+- Change the budget and save — the card should update immediately
+- Click an envelope card in NORMAL mode (not edit mode) — it should navigate to `/envelopes/{id}` detail page
+- Detail page should show: envelope name, status badge, budget summary, current-week transactions
+- "Add Transaction" on the detail page should have the envelope pre-selected and hidden
+- Back link should return to `/envelopes`
+
+**Research Assistant (`/tools/research-assistant`):**
+- Run a research query — token usage display should show numbers (not crash)
+- If Firestore permissions expire mid-session, the page should NOT crash (credit balance stays at last known value)
+
+**Billing Admin (`/control-center/billing`):**
+- Check if duplicate email entries show a yellow "Duplicate" badge
+- Test the "Consolidate" button — it should merge credits and remove the duplicate entry
+
+**General:**
+- Run `npm run dev` and navigate between pages — no console errors expected
