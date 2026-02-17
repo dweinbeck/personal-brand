@@ -174,6 +174,23 @@ export type PivotRow = {
   totalCents: number; // sum across all envelopes for this week
 };
 
+/** Per-envelope spending breakdown for budget utilization bar chart. */
+export type SpendingByEnvelopeEntry = {
+  envelopeId: string;
+  title: string;
+  spentCents: number;
+  budgetCents: number;
+  percentUsed: number; // 0-100+, can exceed 100 for over-budget
+};
+
+/** Weekly totals for spending trend line chart. */
+export type WeeklyTotalEntry = {
+  weekStart: string;
+  weekLabel: string;
+  totalSpentCents: number;
+  totalBudgetCents: number;
+};
+
 /** Response shape for GET /api/envelopes/analytics. */
 export type AnalyticsPageData = {
   summary: {
@@ -186,6 +203,8 @@ export type AnalyticsPageData = {
   envelopes: { id: string; title: string }[]; // column headers for pivot table
   pivotRows: PivotRow[]; // rows, newest week first
   savingsByWeek: WeeklySavingsEntry[]; // oldest first (for chart x-axis)
+  spendingByEnvelope: SpendingByEnvelopeEntry[]; // per-envelope budget utilization
+  weeklyTotals: WeeklyTotalEntry[]; // weekly spending totals for trend chart
   billing: BillingStatus;
 };
 

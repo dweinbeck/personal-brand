@@ -4,7 +4,9 @@ import useSWR from "swr";
 import { useAuth } from "@/context/AuthContext";
 import type {
   AnalyticsPageData,
+  BillingStatus,
   EnvelopeProfileInput,
+  EnvelopeTransfer,
   HomePageData,
   TransactionsPageData,
 } from "@/lib/envelopes/types";
@@ -36,6 +38,28 @@ export function useTransactions(weekStart: string, weekEnd: string) {
       const token = await user?.getIdToken();
       if (!token) throw new Error("Not authenticated");
       return envelopeFetch<TransactionsPageData>(url, token);
+    },
+  );
+
+  return { data, error, isLoading, mutate };
+}
+
+type TransfersPageData = {
+  transfers: EnvelopeTransfer[];
+  billing: BillingStatus;
+};
+
+export function useTransfers(weekStart: string, weekEnd: string) {
+  const { user } = useAuth();
+
+  const { data, error, isLoading, mutate } = useSWR<TransfersPageData>(
+    user
+      ? `/api/envelopes/transfers?weekStart=${weekStart}&weekEnd=${weekEnd}`
+      : null,
+    async (url: string) => {
+      const token = await user?.getIdToken();
+      if (!token) throw new Error("Not authenticated");
+      return envelopeFetch<TransfersPageData>(url, token);
     },
   );
 

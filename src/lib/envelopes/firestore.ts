@@ -1172,10 +1172,71 @@ export async function getAnalyticsData(
     weekStartStr,
   );
 
+  // 7. Compute SPENDING BY ENVELOPE (budget utilization bar chart)
+  const spendingByEnvelope = envelopeData.map((env) => {
+    const spentCents = spentByEnvelope.get(env.id) ?? 0;
+    const budgetCents = env.weeklyBudgetCents;
+    const percentUsed =
+      budgetCents > 0 ? Math.round((spentCents / budgetCents) * 100) : 0;
+    const header = envelopeHeaders.find((h) => h.id === env.id);
+    return {
+      envelopeId: env.id,
+      title: header?.title ?? env.id,
+      spentCents,
+      budgetCents,
+      percentUsed,
+    };
+  });
+  // Sort descending by percentUsed (most utilized first)
+  spendingByEnvelope.sort((a, b) => b.percentUsed - a.percentUsed);
+
+  // 8. Compute WEEKLY TOTALS (spending trend line chart)
+  const totalBudgetCentsAllEnvelopes = envelopeData.reduce(
+    (sum, env) => sum + env.weeklyBudgetCents,
+    0,
+  );
+  const weeklyTotals: {
+    weekStart: string;
+    weekLabel: string;
+    totalSpentCents: number;
+    totalBudgetCents: number;
+  }[] = [];
+  let iterWeek = earliestWeekStart;
+  // Include current week (unlike savings which only counts completed weeks)
+  const nextWeekAfterCurrent = format(
+    addWeeks(new Date(`${weekStartStr}T00:00:00`), 1),
+    "yyyy-MM-dd",
+  );
+  while (iterWeek < nextWeekAfterCurrent) {
+    const iterWeekDate = new Date(`${iterWeek}T00:00:00`);
+    const nextWeekDate = addWeeks(iterWeekDate, 1);
+    const iterWeekEnd = format(
+      new Date(nextWeekDate.getTime() - 86_400_000),
+      "yyyy-MM-dd",
+    );
+
+    const weekTxs = allTransactions.filter(
+      (t) => t.date >= iterWeek && t.date <= iterWeekEnd,
+    );
+    const totalSpent = weekTxs.reduce((sum, t) => sum + t.amountCents, 0);
+
+    const weekNumber = getWeekNumber(iterWeekDate);
+    weeklyTotals.push({
+      weekStart: iterWeek,
+      weekLabel: `Wk ${weekNumber}`,
+      totalSpentCents: totalSpent,
+      totalBudgetCents: totalBudgetCentsAllEnvelopes,
+    });
+
+    iterWeek = format(nextWeekDate, "yyyy-MM-dd");
+  }
+
   return {
     summary,
     envelopes: envelopeHeaders,
     pivotRows,
     savingsByWeek,
+    spendingByEnvelope,
+    weeklyTotals,
   };
 }
