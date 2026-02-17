@@ -1,10 +1,8 @@
+import { serverEnv } from "@/lib/env";
 import {
   type FastApiResponse,
   fastApiResponseSchema,
 } from "@/lib/schemas/fastapi";
-
-const CHATBOT_API_URL = process.env.CHATBOT_API_URL;
-const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY;
 
 export class FastApiError extends Error {
   constructor(
@@ -18,17 +16,17 @@ export class FastApiError extends Error {
 }
 
 export async function askFastApi(question: string): Promise<FastApiResponse> {
-  if (!CHATBOT_API_URL) {
-    throw new FastApiError("CHATBOT_API_URL not configured", 503);
-  }
+  const env = serverEnv();
+  const chatbotUrl = env.CHATBOT_API_URL;
+  const chatbotKey = env.CHATBOT_API_KEY;
 
   let res: Response;
   try {
-    res = await fetch(`${CHATBOT_API_URL}/chat`, {
+    res = await fetch(`${chatbotUrl}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(CHATBOT_API_KEY && { "X-API-Key": CHATBOT_API_KEY }),
+        ...(chatbotKey && { "X-API-Key": chatbotKey }),
       },
       body: JSON.stringify({ question }),
       signal: AbortSignal.timeout(15_000),

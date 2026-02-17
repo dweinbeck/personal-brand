@@ -1,3 +1,5 @@
+import { serverEnv } from "@/lib/env";
+
 interface GitHubRepoAdmin {
   name: string;
   html_url: string;
@@ -14,14 +16,13 @@ interface AdminRepo {
   purpose: string;
 }
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-
 async function githubFetch(url: string) {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.v3+json",
   };
-  if (GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${GITHUB_TOKEN}`;
+  const githubToken = serverEnv().GITHUB_TOKEN;
+  if (githubToken) {
+    headers.Authorization = `Bearer ${githubToken}`;
   }
   return fetch(url, { headers, next: { revalidate: 3600 } });
 }

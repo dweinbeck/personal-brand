@@ -4,8 +4,7 @@ import {
   type ScrapeJobSubmission,
   scrapeJobSubmissionSchema,
 } from "@/lib/brand-scraper/types";
-
-const BRAND_SCRAPER_API_URL = process.env.BRAND_SCRAPER_API_URL;
+import { serverEnv } from "@/lib/env";
 
 /**
  * Fetches a GCP identity token for server-to-server authentication.
@@ -63,21 +62,19 @@ async function extractErrorMessage(
 export async function submitScrapeJob(
   url: string,
 ): Promise<ScrapeJobSubmission> {
-  if (!BRAND_SCRAPER_API_URL) {
-    throw new BrandScraperError("BRAND_SCRAPER_API_URL not configured", 503);
-  }
+  const scraperUrl = serverEnv().BRAND_SCRAPER_API_URL;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  const idToken = await getIdentityToken(BRAND_SCRAPER_API_URL);
+  const idToken = await getIdentityToken(scraperUrl);
   if (idToken) {
     headers.Authorization = `Bearer ${idToken}`;
   }
 
   let res: Response;
   try {
-    res = await fetch(`${BRAND_SCRAPER_API_URL}/scrape`, {
+    res = await fetch(`${scraperUrl}/scrape`, {
       method: "POST",
       headers,
       body: JSON.stringify({ site_url: url }),
@@ -119,19 +116,17 @@ export async function submitScrapeJob(
  * Timeout: 10 seconds (lightweight status check).
  */
 export async function getScrapeJobStatus(jobId: string): Promise<JobStatus> {
-  if (!BRAND_SCRAPER_API_URL) {
-    throw new BrandScraperError("BRAND_SCRAPER_API_URL not configured", 503);
-  }
+  const scraperUrl = serverEnv().BRAND_SCRAPER_API_URL;
 
   const headers: Record<string, string> = {};
-  const idToken = await getIdentityToken(BRAND_SCRAPER_API_URL);
+  const idToken = await getIdentityToken(scraperUrl);
   if (idToken) {
     headers.Authorization = `Bearer ${idToken}`;
   }
 
   let res: Response;
   try {
-    res = await fetch(`${BRAND_SCRAPER_API_URL}/jobs/${jobId}`, {
+    res = await fetch(`${scraperUrl}/jobs/${jobId}`, {
       headers,
       signal: AbortSignal.timeout(10_000),
     });

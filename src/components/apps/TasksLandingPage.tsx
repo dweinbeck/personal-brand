@@ -4,12 +4,13 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
+import { clientEnv } from "@/lib/env";
 import { getFirebaseAuth } from "@/lib/firebase-client";
 
 const provider = new GoogleAuthProvider();
 
 const TASKS_URL =
-  process.env.NEXT_PUBLIC_TASKS_APP_URL || "https://tasks.dan-weinbeck.com";
+  clientEnv().NEXT_PUBLIC_TASKS_APP_URL || "https://tasks.dan-weinbeck.com";
 
 const features = [
   {

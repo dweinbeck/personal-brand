@@ -212,11 +212,97 @@ This is safe to run multiple times -- it only creates documents that don't alrea
 
 ---
 
+## Per-Environment Setup Checklist
+
+Use this checklist when setting up a new environment (production, dev, or local).
+
+### 1. Firebase Auth Authorized Domains
+
+Firebase Auth blocks sign-in from domains not in its allowlist. This is a **manual** step in the Firebase Console.
+
+1. Go to Firebase Console → Authentication → Settings → Authorized domains
+2. Add each domain that will host the app:
+   - Production: `dan-weinbeck.com`
+   - Dev: `dev.dan-weinbeck.com`
+   - Cloud Run: `personal-brand-pcyrow43pa-uc.a.run.app`
+   - Local: `localhost`
+
+### 2. Secret Manager Secrets
+
+All secrets must use real values, not placeholders. Expected format prefixes:
+
+| Secret | Expected Prefix | Source |
+|--------|----------------|--------|
+| `GITHUB_TOKEN` | `ghp_` or `github_pat_` | GitHub → Settings → Developer Settings → Personal Access Tokens |
+| `STRIPE_SECRET_KEY` | `sk_test_` or `sk_live_` | Stripe Dashboard → API Keys |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_` | Stripe Dashboard → Webhooks → Signing Secret |
+| `OPENAI_API_KEY` | `sk-` | OpenAI Dashboard → API Keys |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | `AIza` | Google AI Studio → API Keys |
+| `TODOIST_API_TOKEN` | (any) | Todoist → Settings → Integrations → API Token |
+| `CHATBOT_API_KEY` | (any, optional) | FastAPI backend config |
+
+### 3. FIREBASE_PROJECT_ID Gotcha
+
+`FIREBASE_PROJECT_ID` must be the **Firebase project ID** (e.g., `personal-brand-486314`), NOT the GCP project ID (which may differ). It must exactly match `NEXT_PUBLIC_FIREBASE_PROJECT_ID`. The startup validation enforces this.
+
+### 4. External Service URLs
+
+`CHATBOT_API_URL` and `BRAND_SCRAPER_API_URL` must point to the **external Cloud Run services**, not back to this app. Common mistake: setting these to the app's own URL, which causes 404s.
+
+### 5. Firestore Indexes
+
+Deploy and verify indexes are READY before going live:
+
+```bash
+firebase deploy --only firestore:indexes --project=personal-brand-486314
+npm run verify-indexes -- --project personal-brand-486314
+```
+
+### 6. Service Account IAM Roles
+
+The Cloud Run service account needs:
+- `roles/datastore.user` (Firestore read/write)
+- `roles/secretmanager.secretAccessor` (read secrets)
+- `roles/iam.serviceAccountTokenCreator` (sign custom tokens, if applicable)
+
+---
+
+## Validation Scripts
+
+### Pre-Deploy Env Validation
+
+Validates all environment variables, checks cross-field consistency, detects self-referencing URLs, verifies secret formats, and optionally probes service health:
+
+```bash
+# Full validation with health probes
+npm run validate-env
+
+# Skip health probes (faster, for CI)
+npm run validate-env -- --skip-health
+```
+
+### Firestore Index Verification
+
+Checks that all composite indexes in `firestore.indexes.json` are deployed and READY:
+
+```bash
+npm run verify-indexes -- --project personal-brand-486314
+```
+
+Requires `gcloud auth login` for authentication.
+
+---
+
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Build fails on Firebase credentials | Check `FIREBASE_PRIVATE_KEY` escaping—`\n` must be literal |
-| AI assistant not responding | Verify `CHATBOT_API_URL` is set in Cloud Run env and the FastAPI service is reachable |
-| GitHub data stale | ISR revalidates hourly; force refresh via redeploy |
-| Auth not working | Check Firebase Auth domain in console matches env var |
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Build fails on Firebase credentials | `FIREBASE_PRIVATE_KEY` escaping wrong | `\n` must be literal in the env var value |
+| AI assistant not responding | `CHATBOT_API_URL` not set or wrong | Verify URL points to the FastAPI Cloud Run service |
+| GitHub data stale | ISR revalidation period | Revalidates hourly; force refresh via redeploy |
+| `auth/unauthorized-domain` | Domain not in Firebase Auth allowlist | Add domain in Firebase Console → Auth → Settings → Authorized Domains |
+| All API routes return 401 | `FIREBASE_PROJECT_ID` is GCP project ID, not Firebase ID | Must match `NEXT_PUBLIC_FIREBASE_PROJECT_ID` exactly |
+| Chatbot/scraper returns 404 HTML | Service URL points to this app, not external service | Fix URL to point to the actual Cloud Run service |
+| "Incorrect API key" from OpenAI/Google | Secret Manager has placeholder value | Update with real key: `gcloud secrets versions add SECRET_NAME --data-file=-` |
+| "requires an index" 500 error | Missing Firestore composite index | `firebase deploy --only firestore:indexes` and wait for READY status |
+| Env validation fails at startup | Missing or invalid environment variables | Run `npm run validate-env` locally to see detailed error messages |

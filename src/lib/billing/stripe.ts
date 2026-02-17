@@ -1,11 +1,12 @@
 import Stripe from "stripe";
+import { serverEnv } from "@/lib/env";
 import { CREDIT_PACKS } from "./types";
 
 let _stripe: Stripe | undefined;
 
 function getStripe(): Stripe {
   if (!_stripe) {
-    const key = process.env.STRIPE_SECRET_KEY;
+    const key = serverEnv().STRIPE_SECRET_KEY;
     if (!key) {
       throw new Error("STRIPE_SECRET_KEY environment variable is not set.");
     }
@@ -62,7 +63,7 @@ export function constructWebhookEvent(
   body: string,
   signature: string,
 ): Stripe.Event {
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const secret = serverEnv().STRIPE_WEBHOOK_SECRET;
   if (!secret) {
     throw new Error("STRIPE_WEBHOOK_SECRET environment variable is not set.");
   }

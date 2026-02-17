@@ -1,21 +1,15 @@
 import { type FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
 import { type Auth, getAuth } from "firebase/auth";
 import { type Firestore, getFirestore } from "firebase/firestore";
+import { clientEnv } from "@/lib/env";
 
 function getFirebaseConfig() {
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  const authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN;
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-
-  if (!apiKey || !authDomain || !projectId) {
-    throw new Error(
-      `Firebase config missing required environment variables. ` +
-        `Ensure NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, ` +
-        `and NEXT_PUBLIC_FIREBASE_PROJECT_ID are set in .env.local`,
-    );
-  }
-
-  return { apiKey, authDomain, projectId };
+  const env = clientEnv();
+  return {
+    apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  };
 }
 
 let _app: FirebaseApp | undefined;

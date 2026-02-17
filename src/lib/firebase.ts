@@ -10,6 +10,11 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import type { ContactFormData } from "@/lib/schemas/contact";
 
+// NOTE: This file uses process.env directly instead of serverEnv() because
+// getCredential() runs at module scope (imported by other modules). Calling
+// serverEnv() here would throw in test environments that don't set all env
+// vars. The instrumentation.ts hook validates env at startup independently.
+
 function getCredential(): Credential | undefined {
   if (process.env.K_SERVICE) {
     return applicationDefault();

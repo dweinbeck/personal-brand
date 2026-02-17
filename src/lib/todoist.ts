@@ -1,16 +1,16 @@
+import { serverEnv } from "@/lib/env";
 import type {
   TodoistProject,
   TodoistSection,
   TodoistTask,
 } from "@/types/todoist";
 
-const TODOIST_API_TOKEN = process.env.TODOIST_API_TOKEN;
 const BASE_URL = "https://api.todoist.com/rest/v2";
 
 async function todoistFetch<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     headers: {
-      Authorization: `Bearer ${TODOIST_API_TOKEN}`,
+      Authorization: `Bearer ${serverEnv().TODOIST_API_TOKEN}`,
     },
     next: { revalidate: 300 },
   });
