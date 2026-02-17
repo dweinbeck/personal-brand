@@ -30,6 +30,14 @@ function isNotPlaceholder(val: string): boolean {
   return !PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(val));
 }
 
+/** Returns undefined if the value is empty, missing, or looks like a placeholder. */
+function optionalEnv(val: string | undefined): string | undefined {
+  if (!val) return undefined;
+  if (PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(val)))
+    return undefined;
+  return val;
+}
+
 /** Creates a Zod string schema with min(1) and placeholder detection. */
 function nonEmptyNonPlaceholder(fieldName: string) {
   return z
@@ -244,14 +252,15 @@ export function serverEnv(): ServerEnv {
         process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
       CHATBOT_API_URL: process.env.CHATBOT_API_URL ?? "",
       BRAND_SCRAPER_API_URL: process.env.BRAND_SCRAPER_API_URL ?? "",
-      CHATBOT_API_KEY: process.env.CHATBOT_API_KEY || undefined,
-      GITHUB_TOKEN: process.env.GITHUB_TOKEN || undefined,
-      TODOIST_API_TOKEN: process.env.TODOIST_API_TOKEN || undefined,
-      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
-      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY || undefined,
-      GOOGLE_GENERATIVE_AI_API_KEY:
-        process.env.GOOGLE_GENERATIVE_AI_API_KEY || undefined,
+      CHATBOT_API_KEY: optionalEnv(process.env.CHATBOT_API_KEY),
+      GITHUB_TOKEN: optionalEnv(process.env.GITHUB_TOKEN),
+      TODOIST_API_TOKEN: optionalEnv(process.env.TODOIST_API_TOKEN),
+      STRIPE_SECRET_KEY: optionalEnv(process.env.STRIPE_SECRET_KEY),
+      STRIPE_WEBHOOK_SECRET: optionalEnv(process.env.STRIPE_WEBHOOK_SECRET),
+      OPENAI_API_KEY: optionalEnv(process.env.OPENAI_API_KEY),
+      GOOGLE_GENERATIVE_AI_API_KEY: optionalEnv(
+        process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+      ),
     });
   }
   return _serverEnv;
@@ -278,14 +287,15 @@ export function validateServerEnv(): ValidationResult {
       process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
     CHATBOT_API_URL: process.env.CHATBOT_API_URL ?? "",
     BRAND_SCRAPER_API_URL: process.env.BRAND_SCRAPER_API_URL ?? "",
-    CHATBOT_API_KEY: process.env.CHATBOT_API_KEY || undefined,
-    GITHUB_TOKEN: process.env.GITHUB_TOKEN || undefined,
-    TODOIST_API_TOKEN: process.env.TODOIST_API_TOKEN || undefined,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
-    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY || undefined,
-    GOOGLE_GENERATIVE_AI_API_KEY:
-      process.env.GOOGLE_GENERATIVE_AI_API_KEY || undefined,
+    CHATBOT_API_KEY: optionalEnv(process.env.CHATBOT_API_KEY),
+    GITHUB_TOKEN: optionalEnv(process.env.GITHUB_TOKEN),
+    TODOIST_API_TOKEN: optionalEnv(process.env.TODOIST_API_TOKEN),
+    STRIPE_SECRET_KEY: optionalEnv(process.env.STRIPE_SECRET_KEY),
+    STRIPE_WEBHOOK_SECRET: optionalEnv(process.env.STRIPE_WEBHOOK_SECRET),
+    OPENAI_API_KEY: optionalEnv(process.env.OPENAI_API_KEY),
+    GOOGLE_GENERATIVE_AI_API_KEY: optionalEnv(
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    ),
   });
 
   if (!parsed.success) {

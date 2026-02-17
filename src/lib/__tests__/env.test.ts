@@ -3,6 +3,7 @@ import {
   clientEnvSchema,
   detectSelfReferenceUrls,
   serverEnvSchema,
+  validateServerEnv,
 } from "../env";
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -231,6 +232,39 @@ describe("cross-field validation", () => {
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: "same-project",
     });
     expect(result.success).toBe(true);
+  });
+});
+
+// ── validateServerEnv with placeholder secrets ──────────────────
+
+describe("validateServerEnv with placeholder secrets from Secret Manager", () => {
+  beforeEach(() => {
+    vi.stubEnv("FIREBASE_PROJECT_ID", "personal-brand-486314");
+    vi.stubEnv("NEXT_PUBLIC_FIREBASE_PROJECT_ID", "personal-brand-486314");
+    vi.stubEnv("CHATBOT_API_URL", "https://chatbot.example.com");
+    vi.stubEnv("BRAND_SCRAPER_API_URL", "https://scraper.example.com");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("passes when optional secrets contain PLACEHOLDER values", () => {
+    vi.stubEnv("TODOIST_API_TOKEN", "PLACEHOLDER");
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", "PLACEHOLDER");
+    vi.stubEnv("STRIPE_SECRET_KEY", "PLACEHOLDER");
+    const result = validateServerEnv();
+    expect(result.success).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("passes when optional secrets contain other placeholder patterns", () => {
+    vi.stubEnv("TODOIST_API_TOKEN", "your-api-key-here");
+    vi.stubEnv("GITHUB_TOKEN", "TODO-set-this");
+    vi.stubEnv("OPENAI_API_KEY", "CHANGE_ME");
+    const result = validateServerEnv();
+    expect(result.success).toBe(true);
+    expect(result.errors).toHaveLength(0);
   });
 });
 
