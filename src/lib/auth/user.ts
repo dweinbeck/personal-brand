@@ -41,7 +41,11 @@ export async function verifyUser(request: Request): Promise<UserAuthResult> {
     }
 
     return { authorized: true, uid: decoded.uid, email: decoded.email };
-  } catch {
+  } catch (err) {
+    console.error(
+      "verifyIdToken failed:",
+      err instanceof Error ? err.message : err,
+    );
     return {
       authorized: false,
       error: "Invalid or expired token.",
