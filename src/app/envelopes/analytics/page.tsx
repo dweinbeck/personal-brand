@@ -1,9 +1,12 @@
+"use client";
+
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { AnalyticsPage } from "@/components/envelopes/AnalyticsPage";
 
-export const metadata = {
-  title: "Analytics | Digital Envelopes",
-};
-
 export default function AnalyticsRoute() {
-  return <AnalyticsPage />;
+  return (
+    <AuthGuard>
+      <AnalyticsPage />
+    </AuthGuard>
+  );
 }
