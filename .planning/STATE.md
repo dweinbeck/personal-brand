@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 41 (Envelopes Enhancements)
-Plan: 1 of 4 complete in current phase
+Plan: 3 of 4 complete in current phase
 Status: Executing Phase 41
-Last activity: 2026-02-17 - Completed 41-01: Fund transfer backend (types, Firestore ops, API route)
+Last activity: 2026-02-17 - Completed 41-03: Analytics redesign with budget utilization and spending trend charts
 
-Progress: [##--------] 25% — Phase 41 in progress
+Progress: [########--] 75% — Phase 41 in progress
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [##--------] 25% — Phase 41 in progress
 | 40.1-testing-feedback-fixes | 03 | 12 min | 2 | 3 |
 | 40.1-testing-feedback-fixes | 04 | 12 min | 2 | 3 |
 | 41-envelopes-enhancements | 01 | 6 min | 2 | 4 |
+| 41-envelopes-enhancements | 03 | 8 min | 2 | 6 |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 40.1-02]: Use nullish coalescing (0 fallback) for undefined token counts rather than optional chaining
 - [Phase 41-01]: Compute source remaining outside transaction, use runTransaction only for ownership check + write
 - [Phase 41-01]: Return validation errors (insufficient balance, self-transfer, not found) as 400 not 500
+- [Phase 41-03]: Stacked bar chart (spent + remaining) for budget utilization instead of single bar with reference line
+- [Phase 41-03]: weeklyTotals includes current week (unlike savings which only counts completed weeks)
+- [Phase 41-03]: Sort spendingByEnvelope descending by percentUsed for most-utilized-first display
 
 ### Roadmap Evolution
 
@@ -126,9 +130,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41-01-PLAN.md
+Stopped at: Completed 41-03-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Execute 41-02-PLAN.md (Fund Transfer UI components).
+Execute 41-04-PLAN.md (Weekly Rollover Workflow).
