@@ -60,8 +60,8 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | | | | |
-| 2 | | | | |
+| 1 | bug | M | Tasks sidebar | The bubbles that come up when you click on the question marks seems to be hidding behind other things.  The top one is cut off on the right side, the bottom one is cut off on top |
+| 2 | ui | M | View | It should remember the view that the user last clicked on (Kanban or List) so that if a user prefers one view that becomes his default |
 
 ---
 
@@ -72,7 +72,7 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | | | | |
+| 1 | bug | M | EnvelopesHomePage | I have no way to adjust a card's budget.  I can only delete it, but then that gets rid of all the transactions too.  Make the budget a field that is available to edit when in the Editing mode |
 | 2 | | | | |
 | 3 | | | | |
 
@@ -84,7 +84,25 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | | | | |
+| 1 |bug | H | ResponseDisplay | Everything was working well and the responses were streaming and then we got a 500 error: 5110906506a766b5.js:1 Credit balance listener error: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ 5110906506a766b5.js:1Understand this error
+inpage.js:1 Uncaught (in promise) i: Failed to connect to MetaMask
+    at Object.connect (inpage.js:1:63510)
+    at async s (inpage.js:1:61013)Caused by: Error: MetaMask extension not found
+    at inpage.js:1:57963Understand this error
+aebc3b6d791f68d2.js:1 TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at F (5110906506a766b5.js:1:21722)
+    at av (aebc3b6d791f68d2.js:1:63230)
+    at oY (aebc3b6d791f68d2.js:1:83503)
+    at io (aebc3b6d791f68d2.js:1:94935)
+    at sc (aebc3b6d791f68d2.js:1:137956)
+    at aebc3b6d791f68d2.js:1:137801
+    at ss (aebc3b6d791f68d2.js:1:137809)
+    at u9 (aebc3b6d791f68d2.js:1:133734)
+    at sV (aebc3b6d791f68d2.js:1:159329)
+    at MessagePort.O (aebc3b6d791f68d2.js:1:8295)
+d @ aebc3b6d791f68d2.js:1Understand this error
+69487a961c0d369d.js:1 [Error Boundary] Object |
 | 2 | | | | |
 | 3 | | | | |
 
@@ -131,7 +149,7 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | | | | |
+| 1 | bug | H | main | In Billing Management in the Control center, user "daniel.weinbeck@gmail.com" is listed twice and has different numbers of credits.  One user should never be in the system twice.  Please consolidate into one account and never allow this to happen in the future |
 | 2 | | | | |
 
 ---
