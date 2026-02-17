@@ -9,6 +9,7 @@ export function useCreditBalance() {
   const { user } = useAuth();
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -30,14 +31,16 @@ export function useCreditBalance() {
         }
         setLoading(false);
       },
-      (error) => {
-        console.error("Credit balance listener error:", error);
+      (err) => {
+        console.error("Credit balance listener error:", err);
+        setError(err);
         setLoading(false);
+        // Don't clear balance — keep last known value so UI doesn't break
       },
     );
 
     return unsubscribe;
   }, [user]);
 
-  return { balance, loading };
+  return { balance, loading, error };
 }

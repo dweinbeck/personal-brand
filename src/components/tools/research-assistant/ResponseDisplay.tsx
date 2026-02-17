@@ -128,7 +128,7 @@ function ModelPanel({
           {response.status === "complete" && (
             <span className="text-xs text-text-tertiary">
               {response.usage
-                ? `Tokens: ${response.usage.promptTokens.toLocaleString()} in / ${response.usage.completionTokens.toLocaleString()} out`
+                ? `Tokens: ${(response.usage.promptTokens ?? 0).toLocaleString()} in / ${(response.usage.completionTokens ?? 0).toLocaleString()} out`
                 : "Usage data unavailable"}
             </span>
           )}
