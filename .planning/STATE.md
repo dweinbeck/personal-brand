@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 41 (Envelopes Enhancements)
-Plan: 3 of 4 complete in current phase
-Status: Executing Phase 41
-Last activity: 2026-02-17 - Completed 41-03: Analytics redesign with budget utilization and spending trend charts
+Plan: 4 of 4 complete in current phase
+Status: Phase 41 Complete
+Last activity: 2026-02-17 - Completed 41-04: Weekly rollover workflow with surplus computation and UI display
 
-Progress: [########--] 75% — Phase 41 in progress
+Progress: [##########] 100% — Phase 41 complete
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 38
-- Total plans completed: 104
+- Total plans completed: 105
 - Timeline: Jan 18 -> Feb 15, 2026 (29 days)
 
 **v1.8 Velocity:**
@@ -59,6 +59,7 @@ Progress: [########--] 75% — Phase 41 in progress
 | 40.1-testing-feedback-fixes | 04 | 12 min | 2 | 3 |
 | 41-envelopes-enhancements | 01 | 6 min | 2 | 4 |
 | 41-envelopes-enhancements | 03 | 8 min | 2 | 6 |
+| 41-envelopes-enhancements | 04 | 3 min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -99,6 +100,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 41-03]: Stacked bar chart (spent + remaining) for budget utilization instead of single bar with reference line
 - [Phase 41-03]: weeklyTotals includes current week (unlike savings which only counts completed weeks)
 - [Phase 41-03]: Sort spendingByEnvelope descending by percentUsed for most-utilized-first display
+- [Phase 41-04]: Compute rollover surplus on-the-fly from historical transactions, no separate Firestore document needed
+- [Phase 41-04]: Rollover surplus added to effective budget (not weeklyBudgetCents) to keep base budget immutable
+- [Phase 41-04]: Only fetch all historical transactions when at least one envelope has rollover enabled
 
 ### Roadmap Evolution
 
@@ -130,9 +134,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41-03-PLAN.md
+Stopped at: Completed 41-04-PLAN.md (Phase 41 complete)
 Resume file: None
 
 ## Next Step
 
-Execute 41-04-PLAN.md (Weekly Rollover Workflow).
+Phase 41 complete. Ready for next milestone or testing feedback.
