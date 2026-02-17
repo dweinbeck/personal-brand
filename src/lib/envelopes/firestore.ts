@@ -6,11 +6,13 @@ import type {
   AnalyticsPageData,
   Envelope,
   EnvelopeTransaction,
+  EnvelopeTransfer,
   EnvelopeWithStatus,
   HomePageData,
   PivotRow,
   TransactionInput,
   TransactionUpdateInput,
+  TransferInput,
   WeeklySavingsEntry,
 } from "./types";
 import {
@@ -64,6 +66,13 @@ export function envelopeProfilesCol() {
   return requireDb().collection("envelope_profiles");
 }
 
+/**
+ * Returns the envelope_transfers collection reference.
+ */
+export function transfersCol() {
+  return requireDb().collection("envelope_transfers");
+}
+
 // ---------------------------------------------------------------------------
 // Query helpers (for reads)
 // ---------------------------------------------------------------------------
@@ -106,8 +115,8 @@ type SavingsEnvelope = {
 
 /**
  * Computes remaining cents and status label for a single envelope.
- * Optionally accounts for overage allocations (received increases balance,
- * donated decreases balance). Defaults to 0 for backward compatibility.
+ * Optionally accounts for overage allocations and transfers (received increases
+ * balance, donated/sent decreases balance). Defaults to 0 for backward compat.
  */
 export function computeEnvelopeStatus(
   weeklyBudgetCents: number,
@@ -115,12 +124,16 @@ export function computeEnvelopeStatus(
   today: Date,
   receivedAllocationsCents = 0,
   donatedAllocationsCents = 0,
+  receivedTransfersCents = 0,
+  sentTransfersCents = 0,
 ): { remainingCents: number; status: "On Track" | "Watch" | "Over" } {
   const remainingCents =
     weeklyBudgetCents -
     spentCents +
     receivedAllocationsCents -
-    donatedAllocationsCents;
+    donatedAllocationsCents +
+    receivedTransfersCents -
+    sentTransfersCents;
   const remainingDaysPercent = getRemainingDaysPercent(today);
   const status = getStatusLabel(
     remainingCents,
@@ -612,6 +625,157 @@ export async function createAllocations(
   await batch.commit();
 }
 
+// ---------------------------------------------------------------------------
+// Transfer CRUD operations
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a fund transfer between two envelopes within a week.
+ * Validates that both envelopes belong to the user, are different,
+ * and that the source envelope has sufficient remaining balance.
+ *
+ * Uses runTransaction for the write + ownership check; remaining
+ * computation happens before the transaction (Firestore transactions
+ * cannot query collections).
+ */
+export async function createTransfer(
+  userId: string,
+  input: TransferInput,
+  weekStart: string,
+): Promise<EnvelopeTransfer> {
+  const { fromEnvelopeId, toEnvelopeId, amountCents, note } = input;
+
+  // Reject self-transfers before any Firestore calls
+  if (fromEnvelopeId === toEnvelopeId) {
+    throw new Error("Cannot transfer funds to the same envelope.");
+  }
+
+  // Compute source envelope remaining outside the transaction
+  const { start, end } = getWeekRange(new Date(`${weekStart}T00:00:00`));
+  const weekStartStr = format(start, "yyyy-MM-dd");
+  const weekEndStr = format(end, "yyyy-MM-dd");
+
+  const [txSnap, allocSnap, existingTransferSnap] = await Promise.all([
+    transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
+    allocationsCol().where("userId", "==", userId).get(),
+    transfersCol()
+      .where("userId", "==", userId)
+      .where("weekStart", "==", weekStartStr)
+      .get(),
+  ]);
+
+  // Compute spent for source envelope
+  let spentCents = 0;
+  const txEnvelopeMap = new Map<string, string>();
+  for (const doc of txSnap.docs) {
+    const data = doc.data();
+    if (data.envelopeId === fromEnvelopeId) {
+      spentCents += data.amountCents as number;
+    }
+    txEnvelopeMap.set(doc.id, data.envelopeId as string);
+  }
+
+  // Compute allocation adjustments for source envelope
+  let receivedAllocationsCents = 0;
+  let donatedAllocationsCents = 0;
+  const txIds = new Set(txEnvelopeMap.keys());
+  for (const doc of allocSnap.docs) {
+    const data = doc.data();
+    const sourceTxId = data.sourceTransactionId as string;
+    if (!txIds.has(sourceTxId)) continue;
+
+    if (data.donorEnvelopeId === fromEnvelopeId) {
+      donatedAllocationsCents += data.amountCents as number;
+    }
+    const recipientId = txEnvelopeMap.get(sourceTxId);
+    if (recipientId === fromEnvelopeId) {
+      receivedAllocationsCents += data.amountCents as number;
+    }
+  }
+
+  // Compute transfer adjustments for source envelope
+  let sentTransfersCents = 0;
+  let receivedTransfersCents = 0;
+  for (const doc of existingTransferSnap.docs) {
+    const data = doc.data();
+    if (data.fromEnvelopeId === fromEnvelopeId) {
+      sentTransfersCents += data.amountCents as number;
+    }
+    if (data.toEnvelopeId === fromEnvelopeId) {
+      receivedTransfersCents += data.amountCents as number;
+    }
+  }
+
+  // Read source envelope budget to compute remaining
+  const fromEnvDoc = await envelopesCol().doc(fromEnvelopeId).get();
+  if (!fromEnvDoc.exists || fromEnvDoc.data()?.userId !== userId) {
+    throw new Error("Source envelope not found or access denied.");
+  }
+  const weeklyBudgetCents = fromEnvDoc.data()?.weeklyBudgetCents as number;
+
+  const sourceRemaining =
+    weeklyBudgetCents -
+    spentCents +
+    receivedAllocationsCents -
+    donatedAllocationsCents +
+    receivedTransfersCents -
+    sentTransfersCents;
+
+  if (amountCents > sourceRemaining) {
+    throw new Error(
+      `Transfer amount (${amountCents}) exceeds source envelope remaining (${sourceRemaining}).`,
+    );
+  }
+
+  // Use transaction for ownership check + write
+  const docRef = transfersCol().doc();
+  await requireDb().runTransaction(async (transaction) => {
+    const fromSnap = await transaction.get(envelopesCol().doc(fromEnvelopeId));
+    const toSnap = await transaction.get(envelopesCol().doc(toEnvelopeId));
+
+    if (!fromSnap.exists || fromSnap.data()?.userId !== userId) {
+      throw new Error("Source envelope not found or access denied.");
+    }
+    if (!toSnap.exists || toSnap.data()?.userId !== userId) {
+      throw new Error("Destination envelope not found or access denied.");
+    }
+
+    transaction.set(docRef, {
+      userId,
+      fromEnvelopeId,
+      toEnvelopeId,
+      amountCents,
+      weekStart: weekStartStr,
+      ...(note ? { note } : {}),
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  });
+
+  const snap = await docRef.get();
+  return { id: docRef.id, ...snap.data() } as EnvelopeTransfer;
+}
+
+/**
+ * Lists transfers for a user within a given week range, ordered by createdAt descending.
+ */
+export async function listTransfersForWeek(
+  userId: string,
+  weekStart: string,
+  weekEnd: string,
+): Promise<EnvelopeTransfer[]> {
+  const snap = await transfersCol()
+    .where("userId", "==", userId)
+    .where("weekStart", ">=", weekStart)
+    .where("weekStart", "<=", weekEnd)
+    .orderBy("createdAt", "desc")
+    .get();
+
+  return snap.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as EnvelopeTransfer[];
+}
+
 /**
  * Finds all overage allocations linked to a source transaction.
  * Returns the allocation document references for batch operations.
@@ -686,10 +850,14 @@ export async function listEnvelopesWithRemaining(
   const weekStartStr = format(start, "yyyy-MM-dd");
   const weekEndStr = format(end, "yyyy-MM-dd");
 
-  // Parallel fetch: envelopes and transactions for current week
-  const [envSnap, txSnap] = await Promise.all([
+  // Parallel fetch: envelopes, transactions, and transfers for current week
+  const [envSnap, txSnap, transferSnap] = await Promise.all([
     envelopesForUser(userId).get(),
     transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
+    transfersCol()
+      .where("userId", "==", userId)
+      .where("weekStart", "==", weekStartStr)
+      .get(),
   ]);
 
   // Build transaction sums by envelopeId and map transaction IDs to envelope IDs
@@ -775,18 +943,40 @@ export async function listEnvelopesWithRemaining(
     }
   }
 
+  // Build transfer maps by envelope
+  const receivedTransfersByEnvelope = new Map<string, number>();
+  const sentTransfersByEnvelope = new Map<string, number>();
+  for (const doc of transferSnap.docs) {
+    const data = doc.data();
+    const fromId = data.fromEnvelopeId as string;
+    const toId = data.toEnvelopeId as string;
+    const amount = data.amountCents as number;
+    sentTransfersByEnvelope.set(
+      fromId,
+      (sentTransfersByEnvelope.get(fromId) ?? 0) + amount,
+    );
+    receivedTransfersByEnvelope.set(
+      toId,
+      (receivedTransfersByEnvelope.get(toId) ?? 0) + amount,
+    );
+  }
+
   // Enrich envelopes with computed fields
   const envelopes: EnvelopeWithStatus[] = envSnap.docs.map((doc) => {
     const data = doc.data() as Omit<Envelope, "id">;
     const spentCents = spentByEnvelope.get(doc.id) ?? 0;
     const received = receivedByEnvelope.get(doc.id) ?? 0;
     const donated = donatedByEnvelope.get(doc.id) ?? 0;
+    const receivedTransfers = receivedTransfersByEnvelope.get(doc.id) ?? 0;
+    const sentTransfers = sentTransfersByEnvelope.get(doc.id) ?? 0;
     const { remainingCents, status } = computeEnvelopeStatus(
       data.weeklyBudgetCents,
       spentCents,
       today,
       received,
       donated,
+      receivedTransfers,
+      sentTransfers,
     );
 
     return {

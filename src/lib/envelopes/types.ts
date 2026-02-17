@@ -64,6 +64,15 @@ export const overageAllocationSchema = z.object({
 });
 export type OverageAllocationInput = z.infer<typeof overageAllocationSchema>;
 
+/** Transfer input: move funds from one envelope to another within a week. */
+export const transferSchema = z.object({
+  fromEnvelopeId: z.string().min(1),
+  toEnvelopeId: z.string().min(1),
+  amountCents: z.number().int().min(1),
+  note: z.string().max(200).optional(),
+});
+export type TransferInput = z.infer<typeof transferSchema>;
+
 /** Result of validating an allocation request. */
 export type AllocationValidationResult =
   | { valid: true }
@@ -105,6 +114,18 @@ export type OverageAllocation = {
   sourceTransactionId: string; // the transaction that caused the overage
   donorEnvelopeId: string; // the envelope donating funds
   amountCents: number; // how much was reallocated
+  createdAt: Timestamp;
+};
+
+/** Envelope transfer document (funds moved between envelopes within a week). */
+export type EnvelopeTransfer = {
+  id: string;
+  userId: string;
+  fromEnvelopeId: string;
+  toEnvelopeId: string;
+  amountCents: number;
+  weekStart: string; // YYYY-MM-DD -- scoped to the current week
+  note?: string;
   createdAt: Timestamp;
 };
 
