@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 41.1 — Testing Feedback Round 2 (Assistant Accuracy, Envelopes UX, Research Assistant Styling)
+**Current focus:** Phase 42 — Envelopes Home Redesign, Income Entries & Analytics Enhancement
 
 ## Current Position
 
-Phase: 41.1 (Testing Feedback Round 2)
+Phase: 42 (Envelopes Home Redesign, Income Entries & Analytics Enhancement)
 Plan: 4 of 4 complete in current phase
 Status: Phase Complete
-Last activity: 2026-02-17 - Completed 41.1-04: Conversation loading with history display
+Last activity: 2026-02-17 - Completed Phase 42: income entries, home redesign, analytics charts, demo parity
 
 Progress: [##########] 100% — Plan 4 of 4 complete
 
@@ -20,9 +20,9 @@ Progress: [##########] 100% — Plan 4 of 4 complete
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
-- Total phases completed: 38
-- Total plans completed: 105
-- Timeline: Jan 18 -> Feb 15, 2026 (29 days)
+- Total phases completed: 39
+- Total plans completed: 109
+- Timeline: Jan 18 -> Feb 17, 2026 (31 days)
 
 **v1.8 Velocity:**
 - Plans completed: 11
@@ -120,11 +120,18 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 41.1-04]: Last exchange becomes current state; prior exchanges become loadedExchanges history
 - [Phase 41.1-04]: Session history clears when switching conversations to avoid context mixing
 - [Phase 41.1-04]: Loading indicator shown while fetching conversation data from API
+- [Phase 42-01]: Income entries stored in separate Firestore collection (envelope_income_entries), scoped to weeks
+- [Phase 42-02]: Home page layout: greeting → week header → forms → cards → income banner → savings → KpiBox
+- [Phase 42-02]: Mutual exclusion between Log Income and Add Transaction forms
+- [Phase 42-03]: SpendingDistributionChart uses Recharts PieChart with 8-color palette cycle
+- [Phase 42-03]: IncomeVsSpendingChart groups base income + extra income as stacked bar
+- [Phase 42-04]: Demo KpiBox reused directly (pure data props); TransferModal recreated as DemoTransferModal (uses reducer)
 
 ### Roadmap Evolution
 
 - Phase 41 added: Envelopes Enhancements — Fund transfers, analytics redesign, and weekly rollover workflow
 - Phase 41.1 inserted after Phase 41: Testing Feedback Round 2 — Assistant accuracy, Envelopes UX, Research Assistant styling (URGENT)
+- Phase 42 completed: Envelopes Home Redesign, Income Entries & Analytics Enhancement
 
 ### Pending Todos
 
@@ -152,9 +159,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41.1-04-PLAN.md (Conversation loading with history display)
+Stopped at: Completed Phase 42 (Income entries, home redesign, analytics charts, demo parity)
 Resume file: None
 
 ## Next Step
 
-Phase 41.1 complete. Ready for manual testing of all changes.
+Phase 42 complete. Ready for manual testing of all changes.

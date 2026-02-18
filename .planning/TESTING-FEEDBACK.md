@@ -67,8 +67,8 @@
 
 ## 5. Envelopes (`/envelopes`)
 
-> Pages: home, `/[envelopeId]` detail, `/analytics`, `/transactions`, `/demo`
-> Components: EnvelopesHomePage, EnvelopeCardGrid, EnvelopeCard, EnvelopeDetailPage, CreateEnvelopeCard, EnvelopeForm, GreetingBanner, SavingsBanner, SummaryStats, EnvelopesNav, OverageModal, TransferModal, ReadOnlyBanner, TransactionsPage, TransactionList, TransactionRow, TransactionForm, InlineTransactionForm, WeeklyPivotTable, WeekSelector, StatusBadge, AnalyticsPage, SavingsChart, SpendingByEnvelopeChart, SpendingTrendChart, DonorAllocationRow
+> Pages: home, `/[envelopeId]` detail, `/analytics`, `/transactions`, `/demo`, `/demo/analytics`
+> Components: EnvelopesHomePage, EnvelopeCardGrid, EnvelopeCard, EnvelopeDetailPage, CreateEnvelopeCard, EnvelopeForm, GreetingBanner, SavingsBanner, SummaryStats, EnvelopesNav, OverageModal, TransferModal, ReadOnlyBanner, TransactionsPage, TransactionList, TransactionRow, TransactionForm, InlineTransactionForm, IncomeEntryForm, IncomeBanner, KpiBox, WeeklyPivotTable, WeekSelector, StatusBadge, AnalyticsPage, SavingsChart, SpendingByEnvelopeChart, SpendingTrendChart, SpendingDistributionChart, IncomeVsSpendingChart, DonorAllocationRow
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
@@ -189,18 +189,30 @@
 
 > Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
 
-### Phase 41.1 Testing Focus Areas
+### Phase 42 Testing Focus Areas
 
-**Envelopes (`/envelopes`):**
-- Button layout: Verify "Edit Envelopes", "Transfer Funds", "Add Transaction" appear in a horizontal row on desktop and stack on mobile
-- Inline budget editing: In edit mode, tap the budget amount — it should become an input field. Change the value and click away (blur) — it should save immediately
-- Transfer modal: Open "Transfer Funds" — verify no note/reason field, target dropdown shows available balance next to each envelope name
+**Envelopes Home Page (`/envelopes`) — Layout Reorganization:**
+- The page layout should feel natural for daily use: greeting banner at top, then week header with action buttons, then envelope cards, then supplementary info (income banner, savings banner, KPI box at the bottom)
+- There should be 4 action buttons: "Edit Envelopes", "Transfer Funds", "Log Income", "Add Transaction"
+- Clicking "Log Income" opens an income entry form (amount, description, date); clicking "Add Transaction" closes the income form and vice versa — only one form shows at a time
 
-**AI Assistant (popup widget):**
-- Chat input: Verify no "Press Enter to send..." text below the input and no placeholder text inside the input area — just a clean text field with send button
+**Income Entries (`/envelopes`):**
+- Log a supplemental income entry (e.g., "$30 — Sold old speaker") — it should appear in a green "Extra Income This Week" banner below the envelope cards
+- The income banner shows each entry with a delete button (x) — clicking delete removes the entry
+- Income entries are scoped to the current week only (they don't carry over)
+- The KPI box (now at the bottom) should still show correct disposable income calculations
 
-**Research Assistant (`/tools/research-assistant`):**
-- Response text color: Submit a query — response body text should be dark on light background (not white on dark). The dark blue header bar should still be dark with white text
-- Session history: After your FIRST query, "Conversation Thread" section should NOT appear. After your SECOND query, prior exchanges should appear in chronological order above
-- Conversation loading: Click a conversation in the sidebar — full thread should load with all exchanges. You should be able to continue asking follow-up questions
+**Analytics Page (`/envelopes/analytics`) — New Charts:**
+- There should now be 7 sections total: This Week, Budget Utilization, Spending Distribution (NEW), Spending Trend, Income vs Spending (NEW), Weekly Spending, Savings Growth
+- Spending Distribution: donut/pie chart showing what % of spending goes to each envelope
+- Income vs Spending: grouped bar chart comparing weekly income (green bars) to weekly spending (navy bars)
+
+**Demo Mode (`/envelopes/demo`) — Full Parity:**
+- Demo should have the same layout and features as the real version: greeting banner, all 4 action buttons, envelope cards, income banner, savings banner, KPI box
+- "Log Income" should work — add an entry and see it appear in the income banner
+- "Transfer Funds" should open a transfer modal — transfer between envelopes and see budgets update
+- Inline budget editing should work — in edit mode, click a budget amount, type a new value, blur to save
+- Demo analytics (`/envelopes/demo/analytics`) should show all 7 chart sections with demo data
+- All demo interactions are in-memory only — refreshing resets to seed data
+- Clear "Demo Mode" announcements should be visible
 

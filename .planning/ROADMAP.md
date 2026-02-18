@@ -247,10 +247,10 @@ Plans:
   6. All existing tests pass and new functionality has test coverage
 
 Plans:
-- [ ] 42-01-PLAN.md — Income entries data layer: types, Firestore CRUD, API routes, index
-- [ ] 42-02-PLAN.md — Home page reorganization, income entry UI, income banner
-- [ ] 42-03-PLAN.md — Analytics enhancement: income vs spending chart, spending distribution donut chart
-- [ ] 42-04-PLAN.md — Demo feature parity and test coverage
+- [x] 42-01-PLAN.md — Income entries data layer: types, Firestore CRUD, API routes, index
+- [x] 42-02-PLAN.md — Home page reorganization, income entry UI, income banner
+- [x] 42-03-PLAN.md — Analytics enhancement: income vs spending chart, spending distribution donut chart
+- [x] 42-04-PLAN.md — Demo feature parity and test coverage
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
