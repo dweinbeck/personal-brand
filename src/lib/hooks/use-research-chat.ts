@@ -3,6 +3,8 @@
 import { useCallback, useRef, useState } from "react";
 import { SSE_EVENTS } from "../research-assistant/config";
 import type {
+  BillingAction,
+  MessageRole,
   ModelResponse,
   ResearchChatState,
   ResearchTier,
@@ -22,6 +24,47 @@ const INITIAL_STATE: ResearchChatState = {
   openai: { ...INITIAL_MODEL_RESPONSE },
   overallStatus: "idle",
 };
+
+// ── Loaded exchange type ───────────────────────────────────────
+
+export interface LoadedExchange {
+  prompt: string;
+  tier: ResearchTier;
+  action: BillingAction;
+  geminiText: string;
+  openaiText: string;
+  geminiUsage?: ModelResponse["usage"];
+  openaiUsage?: ModelResponse["usage"];
+  geminiReconsiderText?: string;
+  openaiReconsiderText?: string;
+}
+
+// ── API response types ─────────────────────────────────────────
+
+interface ConversationAPIMessage {
+  id: string;
+  role: MessageRole;
+  content: string;
+  turnNumber: number;
+  action: BillingAction;
+  usage?: ModelResponse["usage"];
+  creditsCharged?: number;
+  createdAt: string;
+}
+
+interface ConversationAPIResponse {
+  conversation: {
+    id: string;
+    title: string;
+    tier: ResearchTier;
+    messageCount: number;
+    totalCreditsSpent: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  messages: ConversationAPIMessage[];
+}
 
 // ── SSE stream reader ─────────────────────────────────────────
 
@@ -61,6 +104,59 @@ async function readSSEResponse(
   }
 }
 
+// ── Build exchanges from loaded messages ──────────────────────
+
+function buildExchanges(
+  messages: ConversationAPIMessage[],
+  tier: ResearchTier,
+): LoadedExchange[] {
+  const exchanges: LoadedExchange[] = [];
+
+  // Group user messages (prompts/follow-ups) with their model responses
+  const userMessages = messages.filter((m) => m.role === "user");
+
+  for (const userMsg of userMessages) {
+    const userTurn = userMsg.turnNumber;
+
+    // Model responses are at the next turn number
+    const responseTurn = userTurn + 1;
+    const geminiMsg = messages.find(
+      (m) => m.turnNumber === responseTurn && m.role === "gemini",
+    );
+    const openaiMsg = messages.find(
+      (m) => m.turnNumber === responseTurn && m.role === "openai",
+    );
+
+    // Check for reconsider responses (same turn as model responses, with -reconsider role)
+    const geminiReconsider = messages.find(
+      (m) =>
+        m.role === "gemini-reconsider" &&
+        m.turnNumber > responseTurn &&
+        m.turnNumber <= responseTurn + 1,
+    );
+    const openaiReconsider = messages.find(
+      (m) =>
+        m.role === "openai-reconsider" &&
+        m.turnNumber > responseTurn &&
+        m.turnNumber <= responseTurn + 1,
+    );
+
+    exchanges.push({
+      prompt: userMsg.content,
+      tier,
+      action: userMsg.action,
+      geminiText: geminiMsg?.content ?? "",
+      openaiText: openaiMsg?.content ?? "",
+      geminiUsage: geminiMsg?.usage,
+      openaiUsage: openaiMsg?.usage,
+      geminiReconsiderText: geminiReconsider?.content,
+      openaiReconsiderText: openaiReconsider?.content,
+    });
+  }
+
+  return exchanges;
+}
+
 // ── Hook ───────────────────────────────────────────────────────
 
 export function useResearchChat(getIdToken: () => Promise<string>) {
@@ -72,6 +168,11 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
   const [isReconsiderStreaming, setIsReconsiderStreaming] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const tierRef = useRef<ResearchTier>("standard");
+
+  // ── Loaded conversation state ──────────────────────────────────
+  const [loadedExchanges, setLoadedExchanges] = useState<LoadedExchange[]>([]);
+  const [loadedPrompt, setLoadedPrompt] = useState("");
+  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
 
   // ── SSE event processors ─────────────────────────────────────
 
@@ -329,6 +430,8 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
       setConversationId(null);
       setReconsiderState({ ...INITIAL_STATE });
       setIsReconsiderStreaming(false);
+      setLoadedExchanges([]);
+      setLoadedPrompt("");
       setState({
         gemini: { ...INITIAL_MODEL_RESPONSE, status: "connecting" },
         openai: { ...INITIAL_MODEL_RESPONSE, status: "connecting" },
@@ -487,9 +590,117 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
 
   // ── loadConversation ─────────────────────────────────────────
 
-  const loadConversation = useCallback((id: string) => {
-    setConversationId(id || null);
-  }, []);
+  const loadConversation = useCallback(
+    async (id: string) => {
+      // New conversation — reset everything
+      if (!id) {
+        setConversationId(null);
+        setLoadedExchanges([]);
+        setLoadedPrompt("");
+        setState({ ...INITIAL_STATE });
+        setReconsiderState({ ...INITIAL_STATE });
+        setIsReconsiderStreaming(false);
+        return;
+      }
+
+      setIsLoadingConversation(true);
+
+      try {
+        const idToken = await getIdToken();
+        const response = await fetch(
+          `/api/tools/research-assistant/conversations/${id}`,
+          {
+            headers: { Authorization: `Bearer ${idToken}` },
+          },
+        );
+
+        if (!response.ok) {
+          console.error(
+            "Failed to load conversation:",
+            response.status,
+            response.statusText,
+          );
+          setIsLoadingConversation(false);
+          return;
+        }
+
+        const data = (await response.json()) as ConversationAPIResponse;
+        const exchanges = buildExchanges(data.messages, data.conversation.tier);
+
+        if (exchanges.length === 0) {
+          setIsLoadingConversation(false);
+          return;
+        }
+
+        // Set tier from the loaded conversation
+        tierRef.current = data.conversation.tier;
+        setConversationId(id);
+
+        // All exchanges except the last become the loaded history
+        const historyExchanges = exchanges.slice(0, -1);
+        const currentExchange = exchanges[exchanges.length - 1];
+
+        setLoadedExchanges(historyExchanges);
+        setLoadedPrompt(currentExchange.prompt);
+
+        // Hydrate the current state from the latest exchange
+        setState({
+          gemini: {
+            text: currentExchange.geminiText,
+            status: "complete",
+            error: undefined,
+            usage: currentExchange.geminiUsage,
+          },
+          openai: {
+            text: currentExchange.openaiText,
+            status: "complete",
+            error: undefined,
+            usage: currentExchange.openaiUsage,
+          },
+          overallStatus: "complete",
+        });
+
+        // Hydrate reconsider state if present
+        if (
+          currentExchange.geminiReconsiderText ||
+          currentExchange.openaiReconsiderText
+        ) {
+          setReconsiderState({
+            gemini: {
+              text: currentExchange.geminiReconsiderText ?? "",
+              status: currentExchange.geminiReconsiderText
+                ? "complete"
+                : "idle",
+              error: undefined,
+              usage: undefined,
+            },
+            openai: {
+              text: currentExchange.openaiReconsiderText ?? "",
+              status: currentExchange.openaiReconsiderText
+                ? "complete"
+                : "idle",
+              error: undefined,
+              usage: undefined,
+            },
+            overallStatus:
+              currentExchange.geminiReconsiderText ||
+              currentExchange.openaiReconsiderText
+                ? "complete"
+                : "idle",
+          });
+        } else {
+          setReconsiderState({ ...INITIAL_STATE });
+        }
+
+        setIsReconsiderStreaming(false);
+      } catch (err) {
+        console.error("Failed to load conversation:", err);
+      } finally {
+        setIsLoadingConversation(false);
+      }
+    },
+    [getIdToken],
+  );
 
   // ── Derived state ────────────────────────────────────────────
 
@@ -514,5 +725,8 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
     isReconsiderStreaming,
     canReconsider,
     loadConversation,
+    loadedExchanges,
+    loadedPrompt,
+    isLoadingConversation,
   };
 }

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
+import type { LoadedExchange } from "@/lib/hooks/use-research-chat";
 import { useResearchChat } from "@/lib/hooks/use-research-chat";
 import { getModelDisplayNames } from "@/lib/research-assistant/config";
 import type {
@@ -27,6 +28,61 @@ interface SessionEntry {
   geminiDisplayName: string;
   openaiDisplayName: string;
   state: ResearchChatState;
+}
+
+// ── Loaded exchange display ──────────────────────────────────
+
+function LoadedExchangeDisplay({ exchange }: { exchange: LoadedExchange }) {
+  const [gemName, oaName] = getModelDisplayNames(exchange.tier);
+  const exchangeState: ResearchChatState = {
+    gemini: {
+      text: exchange.geminiText,
+      status: "complete",
+      error: undefined,
+      usage: exchange.geminiUsage,
+    },
+    openai: {
+      text: exchange.openaiText,
+      status: "complete",
+      error: undefined,
+      usage: exchange.openaiUsage,
+    },
+    overallStatus: "complete",
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 text-xs text-text-tertiary">
+        <span className="font-medium text-text-secondary">
+          {exchange.prompt.slice(0, 100)}
+          {exchange.prompt.length > 100 ? "..." : ""}
+        </span>
+        <span className="uppercase tracking-wide">{exchange.tier}</span>
+      </div>
+      <ResponseDisplay
+        state={exchangeState}
+        geminiDisplayName={gemName}
+        openaiDisplayName={oaName}
+      />
+      {(exchange.geminiReconsiderText || exchange.openaiReconsiderText) && (
+        <ReconsiderDisplay
+          geminiResponse={{
+            text: exchange.geminiReconsiderText ?? "",
+            status: exchange.geminiReconsiderText ? "complete" : "idle",
+            error: undefined,
+            usage: undefined,
+          }}
+          openaiResponse={{
+            text: exchange.openaiReconsiderText ?? "",
+            status: exchange.openaiReconsiderText ? "complete" : "idle",
+            error: undefined,
+            usage: undefined,
+          }}
+          tier={exchange.tier}
+        />
+      )}
+    </div>
+  );
 }
 
 // ── Inner content (rendered inside AuthGuard) ───────────────────
@@ -56,6 +112,9 @@ function ResearchAssistantContent({
     isReconsiderStreaming,
     canReconsider,
     loadConversation,
+    loadedExchanges,
+    loadedPrompt,
+    isLoadingConversation,
   } = useResearchChat(getIdToken);
 
   // Track the current tier for display name derivation.
@@ -66,6 +125,9 @@ function ResearchAssistantContent({
   // Mobile sidebar toggle
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Ref to the main content area for scrolling
+  const mainRef = useRef<HTMLElement>(null);
+
   // Load initial conversation from URL if provided
   // biome-ignore lint/correctness/useExhaustiveDependencies: only run once on mount
   useEffect(() => {
@@ -73,6 +135,18 @@ function ResearchAssistantContent({
       loadConversation(initialConversationId);
     }
   }, []);
+
+  // Scroll to bottom when a conversation finishes loading
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally narrow dependency on conversationId and loading state
+  useEffect(() => {
+    if (conversationId && !isLoadingConversation && !isStreaming) {
+      setTimeout(() => {
+        if (mainRef.current) {
+          mainRef.current.scrollTop = mainRef.current.scrollHeight;
+        }
+      }, 100);
+    }
+  }, [conversationId, isLoadingConversation]);
 
   // ── Session history ──────────────────────────────────────────
   const [sessionHistory, setSessionHistory] = useState<SessionEntry[]>([]);
@@ -114,12 +188,14 @@ function ResearchAssistantContent({
 
   const handleNewConversation = useCallback(() => {
     loadConversation("");
+    setSessionHistory([]);
     setSidebarOpen(false);
   }, [loadConversation]);
 
   const handleSelectConversation = useCallback(
     (id: string) => {
       loadConversation(id);
+      setSessionHistory([]);
       setSidebarOpen(false);
     },
     [loadConversation],
@@ -135,6 +211,12 @@ function ResearchAssistantContent({
     reconsiderState.openai.text.length > 0 ||
     reconsiderState.overallStatus !== "idle";
   const showFollowUp = state.overallStatus === "complete";
+
+  // Determine if we have responses to show (either from streaming or loaded conversation)
+  const hasCurrentResponse =
+    state.gemini.text.length > 0 ||
+    state.openai.text.length > 0 ||
+    state.overallStatus !== "idle";
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
@@ -173,7 +255,7 @@ function ResearchAssistantContent({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
+      <main ref={mainRef} className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <header className="mb-8 flex items-center gap-3">
             {/* Mobile hamburger toggle */}
@@ -213,16 +295,52 @@ function ResearchAssistantContent({
             </div>
           </header>
 
+          {/* Loading state */}
+          {isLoadingConversation && (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-text-secondary text-sm">
+                Loading conversation...
+              </div>
+            </div>
+          )}
+
           <div className="space-y-6">
+            {/* Loaded conversation history (prior exchanges from Firestore) */}
+            {loadedExchanges.length > 0 && (
+              <section className="space-y-6">
+                <h2 className="text-sm font-medium text-text-secondary border-b border-border pb-2">
+                  Conversation Thread
+                </h2>
+                {loadedExchanges.map((exchange, index) => (
+                  <LoadedExchangeDisplay
+                    key={`loaded-${exchange.action}-${index}`}
+                    exchange={exchange}
+                  />
+                ))}
+              </section>
+            )}
+
+            {/* Loaded prompt display (shows what the user originally asked for the current exchange) */}
+            {loadedPrompt && hasCurrentResponse && (
+              <div className="flex items-center gap-2 text-xs text-text-tertiary">
+                <span className="font-medium text-text-secondary">
+                  {loadedPrompt.slice(0, 100)}
+                  {loadedPrompt.length > 100 ? "..." : ""}
+                </span>
+              </div>
+            )}
+
             <ChatInterface onSubmit={handleSubmit} isStreaming={isStreaming} />
 
-            <ResponseDisplay
-              state={state}
-              geminiDisplayName={geminiDisplayName}
-              openaiDisplayName={openaiDisplayName}
-            />
+            {hasCurrentResponse && (
+              <ResponseDisplay
+                state={state}
+                geminiDisplayName={geminiDisplayName}
+                openaiDisplayName={openaiDisplayName}
+              />
+            )}
 
-            {/* Reconsider button — visible when both initial responses are complete */}
+            {/* Reconsider button -- visible when both initial responses are complete */}
             {showReconsiderButton && (
               <ReconsiderButton
                 onReconsider={sendReconsider}
@@ -232,7 +350,7 @@ function ResearchAssistantContent({
               />
             )}
 
-            {/* Reconsider display — visible when reconsider has content */}
+            {/* Reconsider display -- visible when reconsider has content */}
             {showReconsiderDisplay && (
               <ReconsiderDisplay
                 geminiResponse={reconsiderState.gemini}
@@ -241,7 +359,7 @@ function ResearchAssistantContent({
               />
             )}
 
-            {/* Follow-up input — visible when initial responses are complete */}
+            {/* Follow-up input -- visible when initial responses are complete */}
             {showFollowUp && (
               <FollowUpInput
                 onSendFollowUp={sendFollowUp}
@@ -250,11 +368,13 @@ function ResearchAssistantContent({
               />
             )}
 
-            {/* Session history — conversation thread (oldest first, excludes current) */}
+            {/* Session history -- conversation thread (oldest first, excludes current) */}
             {sessionHistory.length > 1 && (
               <section className="space-y-6">
                 <h2 className="text-sm font-medium text-text-secondary border-b border-border pb-2">
-                  Conversation Thread
+                  {loadedExchanges.length > 0
+                    ? "New Exchanges"
+                    : "Conversation Thread"}
                 </h2>
                 {sessionHistory.slice(0, -1).map((entry) => (
                   <div key={entry.id} className="space-y-2">
