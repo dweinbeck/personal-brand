@@ -8,13 +8,66 @@ type BrandCardDescriptionProps = {
   typography?: BrandTaxonomy["typography"];
 };
 
+type FontEntry = NonNullable<
+  BrandTaxonomy["typography"]
+>["font_families"][number];
+
+/** Renders a single font entry in its actual typeface (Google Fonts only). */
+function TypographyEntry({ entry }: { entry: FontEntry }) {
+  const isGoogle = entry.value.source === "google_fonts";
+  const { loaded, error } = useGoogleFont(
+    isGoogle ? entry.value.family : null,
+    entry.value.weight ?? "400",
+  );
+
+  const fontStyle: React.CSSProperties =
+    isGoogle && loaded
+      ? {
+          fontFamily: `"${entry.value.family}", sans-serif`,
+          fontWeight: entry.value.weight ?? 400,
+        }
+      : {};
+
+  return (
+    <div className="rounded-lg border border-border bg-white dark:bg-gray-900 p-3">
+      {/* Font preview — the family name rendered in its own typeface */}
+      <p
+        className="text-lg text-text-primary leading-snug mb-1"
+        style={fontStyle}
+      >
+        {entry.value.family}
+        {isGoogle && !loaded && !error && (
+          <span className="text-xs text-text-tertiary ml-2">(loading...)</span>
+        )}
+        {isGoogle && error && (
+          <span className="text-xs text-text-tertiary ml-2">
+            (font unavailable)
+          </span>
+        )}
+      </p>
+      {/* Metadata row */}
+      <div className="flex flex-wrap items-center gap-2 text-xs text-text-tertiary">
+        {entry.value.weight && <span>{entry.value.weight}</span>}
+        {entry.value.usage && (
+          <span className="bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+            {entry.value.usage}
+          </span>
+        )}
+        {entry.value.source && (
+          <span>({entry.value.source.replace(/_/g, " ")})</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function BrandCardDescription({
   identity,
   typography,
 }: BrandCardDescriptionProps) {
   const fontFamilies = typography?.font_families ?? [];
 
-  // Find the first Google Fonts family for the preview
+  // Find the first Google Fonts family for the tagline preview
   const googleFontEntry = fontFamilies.find(
     (entry) => entry.value.source === "google_fonts",
   );
@@ -76,44 +129,19 @@ export function BrandCardDescription({
 
         {/* Typography */}
         {hasFonts && (
-          <div className="rounded-lg border border-border bg-white dark:bg-gray-900 p-4">
+          <div>
             <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-2">
               Typography
             </p>
-            <ul className="space-y-1.5">
+            <div className="space-y-2">
               {fontFamilies.map((entry) => (
-                <li
+                <TypographyEntry
                   key={`${entry.value.family}-${entry.value.weight}-${entry.value.usage ?? ""}`}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <span className="font-medium text-text-primary">
-                    {entry.value.family}
-                  </span>
-                  <span className="text-text-tertiary">
-                    {entry.value.weight}
-                  </span>
-                  {entry.value.usage && (
-                    <span className="text-xs text-text-tertiary bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded">
-                      {entry.value.usage}
-                    </span>
-                  )}
-                  {entry.value.source && (
-                    <span className="text-xs text-text-tertiary">
-                      ({entry.value.source.replace(/_/g, " ")})
-                    </span>
-                  )}
-                </li>
+                  entry={entry}
+                />
               ))}
-            </ul>
+            </div>
           </div>
-        )}
-
-        {/* Google Font preview */}
-        {primaryFontFamily && (
-          <p className="text-xs text-text-tertiary">
-            Preview font: {primaryFontFamily}
-            {!loaded && " (loading...)"}
-          </p>
         )}
       </div>
     </div>

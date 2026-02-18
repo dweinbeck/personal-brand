@@ -7,8 +7,67 @@ type BrandCardLogosProps = {
   logos: BrandTaxonomy["assets"];
 };
 
+/** Image with error fallback — renders a placeholder icon when the URL fails. */
+function AssetImage({
+  src,
+  alt,
+  maxHeightClass,
+  onClick,
+}: {
+  src: string;
+  alt: string;
+  maxHeightClass: string;
+  onClick: () => void;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <div
+        className={`${maxHeightClass} aspect-video flex items-center justify-center rounded-lg border border-dashed border-border bg-gray-50 dark:bg-gray-800 text-text-tertiary`}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          role="img"
+          aria-label="Image unavailable"
+        >
+          <title>Image unavailable</title>
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <line x1="3" y1="3" x2="21" y2="21" />
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-lg border border-border p-3 bg-white dark:bg-gray-900 cursor-pointer transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+    >
+      {/* biome-ignore lint/performance/noImgElement: GCS signed URLs have dynamic hostnames incompatible with next/image */}
+      <img
+        src={src}
+        loading="lazy"
+        alt={alt}
+        onError={() => setFailed(true)}
+        className={`${maxHeightClass} object-contain`}
+      />
+    </button>
+  );
+}
+
 export function BrandCardLogos({ logos: assets }: BrandCardLogosProps) {
-  const entries = assets?.logos ?? [];
+  const logos = assets?.logos ?? [];
+  const favicons = assets?.favicons ?? [];
+  const ogImages = assets?.og_images ?? [];
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
 
   const closeLightbox = useCallback(() => setSelectedUrl(null), []);
@@ -23,36 +82,81 @@ export function BrandCardLogos({ logos: assets }: BrandCardLogosProps) {
     return () => document.removeEventListener("keydown", handleKey);
   }, [selectedUrl, closeLightbox]);
 
-  if (entries.length === 0) {
+  const hasAnyAssets =
+    logos.length > 0 || favicons.length > 0 || ogImages.length > 0;
+
+  if (!hasAnyAssets) {
     return (
       <div>
-        <h3 className="text-sm font-semibold text-text-primary mb-3">Logos</h3>
-        <p className="text-sm text-text-tertiary">No logos detected</p>
+        <h3 className="text-sm font-semibold text-text-primary mb-3">
+          Brand Assets
+        </h3>
+        <p className="text-sm text-text-tertiary">No assets detected</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h3 className="text-sm font-semibold text-text-primary mb-3">Logos</h3>
-      <div className="flex flex-wrap gap-4">
-        {entries.map((entry, i) => (
-          <button
-            key={entry.value.url}
-            type="button"
-            onClick={() => setSelectedUrl(entry.value.url)}
-            className="rounded-lg border border-border p-3 bg-white dark:bg-gray-900 cursor-pointer transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
-          >
-            {/* biome-ignore lint/performance/noImgElement: GCS signed URLs have dynamic hostnames incompatible with next/image */}
-            <img
-              src={entry.value.url}
-              loading="lazy"
-              alt={`Logo ${i + 1}`}
-              className="max-h-16 object-contain"
-            />
-          </button>
-        ))}
-      </div>
+    <div className="space-y-5">
+      {/* Logos */}
+      {logos.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">
+            Logos
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {logos.map((entry, i) => (
+              <AssetImage
+                key={entry.value.url}
+                src={entry.value.url}
+                alt={`Logo ${i + 1}`}
+                maxHeightClass="max-h-32"
+                onClick={() => setSelectedUrl(entry.value.url)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Favicons */}
+      {favicons.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">
+            Favicons
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {favicons.map((entry, i) => (
+              <AssetImage
+                key={entry.value.url}
+                src={entry.value.url}
+                alt={`Favicon ${i + 1}`}
+                maxHeightClass="max-h-16"
+                onClick={() => setSelectedUrl(entry.value.url)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Social Previews (OG images) */}
+      {ogImages.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-text-primary mb-3">
+            Social Previews
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {ogImages.map((entry, i) => (
+              <AssetImage
+                key={entry.value.url}
+                src={entry.value.url}
+                alt={`Social preview ${i + 1}`}
+                maxHeightClass="max-h-24"
+                onClick={() => setSelectedUrl(entry.value.url)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Lightbox overlay */}
       {selectedUrl && (
@@ -64,7 +168,7 @@ export function BrandCardLogos({ logos: assets }: BrandCardLogosProps) {
           }}
           role="dialog"
           aria-modal="true"
-          aria-label="Logo preview"
+          aria-label="Asset preview"
         >
           {/* biome-ignore lint/a11y/noStaticElementInteractions: presentation wrapper to stop click propagation on backdrop */}
           <div
@@ -98,7 +202,7 @@ export function BrandCardLogos({ logos: assets }: BrandCardLogosProps) {
             {/* biome-ignore lint/performance/noImgElement: GCS signed URLs have dynamic hostnames incompatible with next/image */}
             <img
               src={selectedUrl}
-              alt="Logo full size"
+              alt="Asset full size"
               className="max-w-full max-h-[80vh] object-contain"
             />
           </div>
