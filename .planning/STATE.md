@@ -107,6 +107,7 @@ Full decision log in PROJECT.md Key Decisions table.
 ### Roadmap Evolution
 
 - Phase 41 added: Envelopes Enhancements — Fund transfers, analytics redesign, and weekly rollover workflow
+- Phase 41.1 inserted after Phase 41: Testing Feedback Round 2 — Assistant accuracy, Envelopes UX, Research Assistant styling (URGENT)
 
 ### Pending Todos
 
