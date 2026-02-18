@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 41.1 (Testing Feedback Round 2)
-Plan: 3 of 4 complete in current phase
-Status: Executing
-Last activity: 2026-02-17 - Completed 41.1-03: Research Assistant styling and session history fixes
+Plan: 4 of 4 complete in current phase
+Status: Phase Complete
+Last activity: 2026-02-17 - Completed 41.1-04: Conversation loading with history display
 
-Progress: [#######...] 75% — Plan 3 of 4 complete
+Progress: [##########] 100% — Plan 4 of 4 complete
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [#######...] 75% — Plan 3 of 4 complete
 | 41-envelopes-enhancements | 04 | 3 min | 2 | 4 |
 | 41.1-testing-feedback | 02 | 8 min | 2 | 3 |
 | 41.1-testing-feedback | 03 | 6 min | 2 | 2 |
+| 41.1-testing-feedback | 04 | 8 min | 2 | 3 |
 | 41.1-testing-feedback | 01 | 12 min | 2 | 3 |
 
 ## Accumulated Context
@@ -115,6 +116,10 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 41.1-01]: Replaced pencil edit button + EnvelopeForm popup with inline number input on blur-to-save for faster budget editing
 - [Phase 41.1-01]: Removed note field from TransferModal since user feedback said it was unnecessary
 - [Phase 41.1-01]: Cleaned up unused editingId state since EnvelopeForm popup is no longer used for editing
+- [Phase 41.1-04]: Exchange grouping pairs user messages with model responses at turnNumber+1
+- [Phase 41.1-04]: Last exchange becomes current state; prior exchanges become loadedExchanges history
+- [Phase 41.1-04]: Session history clears when switching conversations to avoid context mixing
+- [Phase 41.1-04]: Loading indicator shown while fetching conversation data from API
 
 ### Roadmap Evolution
 
@@ -147,9 +152,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41.1-01-PLAN.md (Envelopes UX improvements)
+Stopped at: Completed 41.1-04-PLAN.md (Conversation loading with history display)
 Resume file: None
 
 ## Next Step
 
-Execute 41.1-04-PLAN.md to complete Phase 41.1.
+Phase 41.1 complete. Ready for manual testing of all changes.
