@@ -48,7 +48,7 @@ export function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about Dan's work, projects, or skills..."
+          placeholder=""
           rows={rows}
           maxLength={1000}
           disabled={isLoading}
@@ -77,9 +77,6 @@ export function ChatInput({
           </svg>
         </button>
       </div>
-      <p className="mt-1.5 text-[11px] text-text-tertiary">
-        Press Enter to send, Shift+Enter for new line
-      </p>
     </div>
   );
 }
