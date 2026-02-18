@@ -235,6 +235,18 @@ Plans:
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
 *For current requirements, see `.planning/REQUIREMENTS.md`*
 
+### Phase 41.1: Testing Feedback Round 2 — Assistant accuracy, Envelopes UX, Research Assistant styling (INSERTED)
+
+**Goal:** Fix 8 user-reported bugs and UX issues across AI Assistant (accuracy + chat input cleanup), Envelopes (inline budget editing, transfer modal simplification, button layout reorganization), and Research Assistant (color fix, session history threshold, conversation history loading)
+**Depends on:** Phase 41
+**Plans:** 4 plans
+
+Plans:
+- [ ] 41.1-01-PLAN.md — Envelopes UX: button layout, inline budget editing, transfer modal simplification
+- [ ] 41.1-02-PLAN.md — AI Assistant: chat input cleanup, knowledge base audit, KB documentation
+- [ ] 41.1-03-PLAN.md — Research Assistant: color fix (remove prose-invert), session history threshold
+- [ ] 41.1-04-PLAN.md — Research Assistant: full conversation history loading from sidebar
+
 ### Phase 40.1: Testing Feedback Fixes — Envelopes budget editing and detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED)
 
 **Goal:** Fix 4 user-reported bugs/features: (1) Envelopes budget editing capability, (2) Envelopes envelope detail page with transactions, (3) Research Assistant Firestore permissions crash, (4) Billing duplicate user consolidation. NOTE: Tasks tooltips and view persistence are in the external Tasks app (tasks.dan-weinbeck.com) and are out of scope for this codebase.
