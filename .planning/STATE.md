@@ -60,6 +60,7 @@ Progress: [#######...] 75% — Plan 3 of 4 complete
 | 41-envelopes-enhancements | 01 | 6 min | 2 | 4 |
 | 41-envelopes-enhancements | 03 | 8 min | 2 | 6 |
 | 41-envelopes-enhancements | 04 | 3 min | 2 | 4 |
+| 41.1-testing-feedback | 02 | 8 min | 2 | 3 |
 | 41.1-testing-feedback | 03 | 6 min | 2 | 2 |
 
 ## Accumulated Context
@@ -107,6 +108,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 41.1-03]: Removed prose-invert only from body; header retains bg-primary with white text
 - [Phase 41.1-03]: Chronological append order with slice(0, -1) to exclude current response from thread
 - [Phase 41.1-03]: Threshold changed from >0 to >1 to suppress duplicate display after first query
+- [Phase 41.1-02]: Envelopes project status updated to Live with Next.js/Firebase/Tailwind tags (was In Development with React Native)
+- [Phase 41.1-02]: Research project status updated to Live with Next.js/Vercel AI SDK tags (was In Development with Python)
+- [Phase 41.1-02]: custom-gpts.json left as-is (legacy, unused but not harmful)
 
 ### Roadmap Evolution
 
@@ -139,7 +143,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41.1-03-PLAN.md
+Stopped at: Completed 41.1-02-PLAN.md
 Resume file: None
 
 ## Next Step
