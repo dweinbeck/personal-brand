@@ -106,7 +106,7 @@ function ModelPanel({
         aria-busy={response.status === "streaming"}
       >
         {response.text ? (
-          <div className="prose prose-invert max-w-none text-sm">
+          <div className="prose max-w-none text-sm">
             <Markdown remarkPlugins={[remarkGfm]}>{response.text}</Markdown>
           </div>
         ) : response.status === "idle" ? (
