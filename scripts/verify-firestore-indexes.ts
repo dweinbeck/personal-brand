@@ -146,6 +146,7 @@ function extractCollection(apiName: string): string {
 
 // ── Main ────────────────────────────────────────────────────────
 
+async function main() {
 const token = await getAccessToken();
 const liveIndexes = await fetchLiveIndexes(token);
 
@@ -203,3 +204,6 @@ if (allReady) {
   );
   process.exit(1);
 }
+}
+
+main();
