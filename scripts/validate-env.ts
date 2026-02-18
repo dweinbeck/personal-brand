@@ -86,7 +86,6 @@ const serverInput = {
   BRAND_SCRAPER_API_URL: process.env.BRAND_SCRAPER_API_URL ?? "",
   CHATBOT_API_KEY: process.env.CHATBOT_API_KEY || undefined,
   GITHUB_TOKEN: process.env.GITHUB_TOKEN || undefined,
-  TODOIST_API_TOKEN: process.env.TODOIST_API_TOKEN || undefined,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || undefined,

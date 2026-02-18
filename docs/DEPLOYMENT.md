@@ -27,7 +27,6 @@ These are used by API routes at runtime:
 | `CHATBOT_API_URL` | URL for the external FastAPI RAG backend |
 | `BRAND_SCRAPER_API_URL` | URL for the external Brand Scraper service |
 | `GITHUB_TOKEN` | GitHub personal access token (for repo data) |
-| `TODOIST_API_TOKEN` | Todoist API token (for admin dashboard) |
 | `STRIPE_SECRET_KEY` | Stripe secret key (via Secret Manager on Cloud Run) |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (via Secret Manager on Cloud Run) |
 
@@ -100,8 +99,6 @@ Runtime environment variables are set in Cloud Run service settings (not in clou
 
 - `CHATBOT_API_URL`
 - `GITHUB_TOKEN`
-- `TODOIST_API_TOKEN`
-
 The service uses ADC for Firebase Admin SDK—no credentials needed if the Cloud Run service account has Firestore access.
 
 ---
@@ -238,7 +235,6 @@ All secrets must use real values, not placeholders. Expected format prefixes:
 | `STRIPE_WEBHOOK_SECRET` | `whsec_` | Stripe Dashboard → Webhooks → Signing Secret |
 | `OPENAI_API_KEY` | `sk-` | OpenAI Dashboard → API Keys |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | `AIza` | Google AI Studio → API Keys |
-| `TODOIST_API_TOKEN` | (any) | Todoist → Settings → Integrations → API Token |
 | `CHATBOT_API_KEY` | (any, optional) | FastAPI backend config |
 
 ### 3. FIREBASE_PROJECT_ID Gotcha

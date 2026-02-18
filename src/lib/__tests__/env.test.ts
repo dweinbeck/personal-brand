@@ -131,7 +131,6 @@ describe("serverEnvSchema", () => {
         "-----BEGIN PRIVATE KEY-----\nreal-key\n-----END PRIVATE KEY-----",
       CHATBOT_API_KEY: "real-chatbot-key-abc123",
       GITHUB_TOKEN: "ghp_abcdef1234567890abcdef1234567890abcd",
-      TODOIST_API_TOKEN: "abc123def456",
       STRIPE_SECRET_KEY: "sk_test_abc123",
       STRIPE_WEBHOOK_SECRET: "whsec_abc123",
       OPENAI_API_KEY: "sk-proj-abc123",
@@ -342,7 +341,6 @@ describe("validateServerEnv with placeholder secrets from Secret Manager", () =>
   });
 
   it("passes when optional secrets contain PLACEHOLDER values", () => {
-    vi.stubEnv("TODOIST_API_TOKEN", "PLACEHOLDER");
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", "PLACEHOLDER");
     vi.stubEnv("STRIPE_SECRET_KEY", "PLACEHOLDER");
     const result = validateServerEnv();
@@ -351,7 +349,6 @@ describe("validateServerEnv with placeholder secrets from Secret Manager", () =>
   });
 
   it("passes when optional secrets contain other placeholder patterns", () => {
-    vi.stubEnv("TODOIST_API_TOKEN", "your-api-key-here");
     vi.stubEnv("GITHUB_TOKEN", "TODO-set-this");
     vi.stubEnv("OPENAI_API_KEY", "CHANGE_ME");
     const result = validateServerEnv();

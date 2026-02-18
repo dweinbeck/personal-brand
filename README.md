@@ -8,7 +8,7 @@ This site replaces the need for a static resume or scattered online presence wit
 
 The home page features Dan's headshot, tagline pills, and social links alongside 6 curated project cards with status badges (Live, In Development, Planning). The dedicated Projects page offers rich detail with paragraph descriptions, date ranges, visibility badges, and client-side filtering. An AI assistant enables conversational discovery—visitors can ask questions and get instant, contextual answers about Dan's work, projects, and skills.
 
-The site serves recruiters and hiring managers evaluating Dan's skills, collaborators exploring his open-source work, and anyone who prefers conversational discovery over browsing. An authenticated admin control center provides management of GitHub repos, Todoist tasks, and AI assistant analytics/configuration.
+The site serves recruiters and hiring managers evaluating Dan's skills, collaborators exploring his open-source work, and anyone who prefers conversational discovery over browsing. An authenticated admin control center provides management of GitHub repos and AI assistant analytics/configuration.
 
 ## Tech Stack
 
@@ -20,7 +20,7 @@ The site serves recruiters and hiring managers evaluating Dan's skills, collabor
 | Database | Firebase Firestore |
 | AI/LLM | Gemini 2.0 Flash (Vercel AI SDK) |
 | Auth | Firebase Auth (Google Sign-In) |
-| Data Sources | GitHub REST API (ISR), Todoist REST API, MDX |
+| Data Sources | GitHub REST API (ISR), MDX |
 | Linting | Biome v2.3 |
 
 ## Documentation

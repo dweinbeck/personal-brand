@@ -147,12 +147,6 @@ const serverEnvBaseSchema = z.object({
     )
     .optional(),
 
-  TODOIST_API_TOKEN: z
-    .string()
-    .min(1)
-    .refine(isNotPlaceholder, "TODOIST_API_TOKEN looks like a placeholder")
-    .optional(),
-
   STRIPE_SECRET_KEY: z
     .string()
     .min(1)
@@ -295,7 +289,6 @@ export function serverEnv(): ServerEnv {
       BRAND_SCRAPER_API_URL: process.env.BRAND_SCRAPER_API_URL ?? "",
       CHATBOT_API_KEY: optionalEnv(process.env.CHATBOT_API_KEY),
       GITHUB_TOKEN: optionalEnv(process.env.GITHUB_TOKEN),
-      TODOIST_API_TOKEN: optionalEnv(process.env.TODOIST_API_TOKEN),
       STRIPE_SECRET_KEY: optionalEnv(process.env.STRIPE_SECRET_KEY),
       STRIPE_WEBHOOK_SECRET: optionalEnv(process.env.STRIPE_WEBHOOK_SECRET),
       OPENAI_API_KEY: optionalEnv(process.env.OPENAI_API_KEY),
@@ -330,7 +323,6 @@ export function validateServerEnv(): ValidationResult {
     BRAND_SCRAPER_API_URL: process.env.BRAND_SCRAPER_API_URL ?? "",
     CHATBOT_API_KEY: optionalEnv(process.env.CHATBOT_API_KEY),
     GITHUB_TOKEN: optionalEnv(process.env.GITHUB_TOKEN),
-    TODOIST_API_TOKEN: optionalEnv(process.env.TODOIST_API_TOKEN),
     STRIPE_SECRET_KEY: optionalEnv(process.env.STRIPE_SECRET_KEY),
     STRIPE_WEBHOOK_SECRET: optionalEnv(process.env.STRIPE_WEBHOOK_SECRET),
     OPENAI_API_KEY: optionalEnv(process.env.OPENAI_API_KEY),

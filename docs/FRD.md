@@ -54,7 +54,7 @@ A visitor on a phone sees a hamburger menu. Tapping it reveals smooth navigation
 Dan clicks "Sign In" (gold-bordered pill in the navbar). A Google sign-in popup appears. After authenticating with `daniel.weinbeck@gmail.com`, the button is replaced by a navy circle with gold border showing his initial. A "Control Center" link appears in the navigation.
 
 ### S7: Admin Control Center
-Dan navigates to the Control Center. He sees a grid of all GitHub repos (public and private) with names, last commit dates, and purposes extracted from READMEs. Below that, he sees Todoist project cards with task counts. Clicking a Todoist project shows a board view with tasks grouped by section.
+Dan navigates to the Control Center. He sees a grid of all GitHub repos (public and private) with names, last commit dates, and purposes extracted from READMEs.
 
 ### S8: Exploring Writing
 A visitor navigates to the Writing page. They see the title "Writing" with subtitle "Articles and Blog Posts by Dan" and a 2-column grid of article cards. Each card displays a topic badge (color-coded like project status badges), a Playfair Display title, a publish date, an excerpt, and a "Read More" link. Cards lift on hover with the title shifting to gold. Currently displays placeholder articles; real content deferred.
@@ -77,7 +77,7 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 `Navigate to Writing` -> `See title and subtitle` -> `Browse article cards with topic badges, dates, excerpts`
 
 ### Admin Flow
-`Click Sign In` -> `Google popup` -> `Authenticate` -> `See Control Center in nav` -> `Browse repos and Todoist projects` -> `Click Todoist project` -> `View task board`
+`Click Sign In` -> `Google popup` -> `Authenticate` -> `See Control Center in nav` -> `Browse repos`
 
 ## v1 Requirements
 
@@ -155,9 +155,6 @@ A visitor navigates to the Writing page. They see the title "Writing" with subti
 | ADMIN-01 | Admin-only Control Center route (email guard) | Complete |
 | ADMIN-02 | Control Center nav link visible only to admin | Complete |
 | ADMIN-03 | GitHub repo cards (all repos, public + private) with name, last commit, purpose | Complete |
-| ADMIN-04 | Todoist project cards with task counts | Complete |
-| ADMIN-05 | Todoist board view (sections as columns, tasks as cards) | Complete |
-
 ### Design & Performance
 | ID | Requirement | Status |
 |----|-------------|--------|

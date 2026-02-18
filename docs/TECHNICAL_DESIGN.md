@@ -20,10 +20,9 @@ Next.js 16 application using App Router with React Server Components. Hybrid ren
 │ (Cloud Run)   │            │ (External)       │
 │               │            └─────────────────┘
 │ - Contact form│
-│               │            ┌─────────────────┐
-│ Route Handlers│            │ Todoist REST API │
-│ - AI chat API │            │ (External)       │
-│ - Feedback API│            └─────────────────┘
+│ Route Handlers│
+│ - AI chat API │
+│ - Feedback API│
 │ - Facts CRUD  │
 └───────┬───────┘            ┌─────────────────┐
         │                    │ FastAPI RAG      │
@@ -67,14 +66,11 @@ src/app/
 │   └── page.tsx            # Contact page — hero CTAs, form, "Other Ways", privacy note
 ├── control-center/
 │   ├── layout.tsx          # AdminGuard wrapper
-│   ├── page.tsx            # Admin dashboard (GitHub repos + Todoist projects)
+│   ├── page.tsx            # Admin dashboard (GitHub repos)
 │   ├── assistant/
 │   │   ├── page.tsx        # AI assistant analytics dashboard
 │   │   └── facts/
 │   │       └── page.tsx    # Canonical facts editor + prompt versions
-│   └── todoist/
-│       └── [projectId]/
-│           └── page.tsx    # Todoist board view per project
 ├── sitemap.ts              # Generated sitemap.xml
 └── robots.ts               # Generated robots.txt
 ```
@@ -104,8 +100,6 @@ src/components/
 ├── admin/
 │   ├── AdminGuard.tsx      # Client component — email-based admin route guard
 │   ├── RepoCard.tsx        # GitHub repo card (name, last commit, purpose)
-│   ├── TodoistProjectCard.tsx # Todoist project card (name, task count)
-│   ├── TodoistBoard.tsx    # Board layout (sections as columns, tasks as cards)
 │   ├── AssistantAnalytics.tsx # Stats cards (conversations, messages, satisfaction)
 │   ├── TopQuestions.tsx     # Question ranking table
 │   ├── UnansweredQuestions.tsx # Safety-blocked conversation list
@@ -206,17 +200,8 @@ src/components/
 3. `NavLinks` conditionally renders "Control Center" link for admin
 4. Server component fetches all GitHub repos via authenticated `/user/repos` endpoint
 5. README purpose extracted by decoding base64 content and finding first meaningful paragraph
-6. Todoist projects fetched server-side; task counts resolved in parallel
-7. Admin API routes (`/api/assistant/facts`, `/api/assistant/reindex`, `/api/assistant/prompt-versions`) require server-side auth via `verifyAdmin()` — validates Firebase ID token and checks email
+6. Admin API routes (`/api/assistant/facts`, `/api/assistant/reindex`, `/api/assistant/prompt-versions`) require server-side auth via `verifyAdmin()` — validates Firebase ID token and checks email
 8. Client components use `useIdToken` hook to include `Authorization: Bearer <idToken>` header in admin API requests
-
-### Todoist Integration
-
-1. Server-side API client uses bearer token auth (`TODOIST_API_TOKEN`)
-2. Projects listed via `GET /rest/v2/projects`
-3. Board view fetches sections and tasks in parallel for a given project
-4. Tasks grouped by `section_id` and rendered as columns
-5. ISR caching with 5-minute revalidation
 
 ### MDX Tutorials
 
@@ -267,22 +252,6 @@ Fetches all repos (public + private) via authenticated GitHub API. Admin only.
 **Auth:** `GITHUB_TOKEN` with `repo` scope
 **Caching:** ISR with 1-hour revalidation
 **Returns:** Array of `{ name, url, isPrivate, lastCommit, purpose }`
-
-### `fetchTodoistProjects(): Promise<TodoistProject[]>`
-
-Fetches all Todoist projects.
-
-**Endpoint:** `https://api.todoist.com/rest/v2/projects`
-**Auth:** Bearer token (`TODOIST_API_TOKEN`)
-**Caching:** ISR with 5-minute revalidation
-
-### `fetchProjectSections(projectId)` / `fetchProjectTasks(projectId)`
-
-Fetches sections and tasks for a given Todoist project.
-
-**Endpoints:** `/rest/v2/sections?project_id={id}`, `/rest/v2/tasks?project_id={id}`
-**Auth:** Bearer token (`TODOIST_API_TOKEN`)
-**Caching:** ISR with 5-minute revalidation
 
 ### `POST /api/assistant/chat`
 
@@ -365,13 +334,6 @@ Rolls back to a previous prompt version. Input: `{ action: "rollback", versionId
 - **Endpoint:** `/users/dweinbeck/repos`
 - **Caching:** Next.js ISR fetch cache with `revalidate: 3600`
 
-### Todoist REST API
-
-- **Auth:** Bearer token via `TODOIST_API_TOKEN`
-- **Endpoints:** `/rest/v2/projects`, `/rest/v2/sections`, `/rest/v2/tasks`
-- **Caching:** ISR with 5-minute revalidation
-- **Usage:** Admin-only Control Center
-
 ### FastAPI RAG Backend
 
 - **Service:** External FastAPI RAG backend on Cloud Run
@@ -409,7 +371,6 @@ Rolls back to a previous prompt version. Input: `{ action: "rollback", versionId
 | 23 | Pill-style active nav with gold border over underline indicator | More visually distinctive; complements the overall design language |
 | 17 | Firebase client SDK lazy initialization | Getter function avoids SSR errors during Next.js prerender |
 | 18 | Client-side admin email check | Simple guard for personal site; no server-side token verification needed |
-| 19 | Todoist ISR with 5-minute revalidation | Shorter than GitHub (1h) since task data changes more frequently |
 | 13 | Child pages omit openGraph config | Inherit from root layout; avoids Next.js shallow merge pitfall |
 | 14 | String plugin names in createMDX | Required for Turbopack serialization compatibility |
 | 15 | `<output>` element for form status messages | Per Biome `useSemanticElements` rule |
@@ -453,7 +414,6 @@ GitHub Repo -> Docker Build -> GCP Cloud Run
 - **In-memory rate limiting resets on deploy** — acceptable for a personal site; would need Redis for multi-instance
 - **Unauthenticated GitHub API has 60 req/hour limit** — ISR caching mitigates this; add token if needed
 - **Admin guard is client-side only** — email check happens in browser; acceptable for a personal admin dashboard
-- **Todoist API token is server-side only** — never exposed to client
 - **OG image generated at edge runtime** — uses `next/og` ImageResponse API with serif fallback font (no custom font loading)
 - **Firebase env vars required for production** — contact form silently degrades without them in dev
 - **No dark mode in v1** — deferred to v2 (DESIGN-01)
