@@ -87,6 +87,7 @@ function ResearchAssistantContent({
     ) {
       const [gemName, oaName] = getModelDisplayNames(currentTier);
       setSessionHistory((prev) => [
+        ...prev,
         {
           id: crypto.randomUUID(),
           prompt: lastPromptRef.current,
@@ -96,7 +97,6 @@ function ResearchAssistantContent({
           openaiDisplayName: oaName,
           state: { ...state },
         },
-        ...prev,
       ]);
     }
   }, [state.overallStatus]);
@@ -250,13 +250,13 @@ function ResearchAssistantContent({
               />
             )}
 
-            {/* Session history — previous prompts/responses (newest first) */}
-            {sessionHistory.length > 0 && (
+            {/* Session history — conversation thread (oldest first, excludes current) */}
+            {sessionHistory.length > 1 && (
               <section className="space-y-6">
                 <h2 className="text-sm font-medium text-text-secondary border-b border-border pb-2">
-                  Previous in this session
+                  Conversation Thread
                 </h2>
-                {sessionHistory.map((entry) => (
+                {sessionHistory.slice(0, -1).map((entry) => (
                   <div key={entry.id} className="space-y-2">
                     <div className="flex items-center gap-2 text-xs text-text-tertiary">
                       <span className="font-medium text-text-secondary">
