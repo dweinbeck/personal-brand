@@ -239,7 +239,7 @@ Plans:
 
 **Goal:** Fix 8 user-reported bugs and UX issues across AI Assistant (accuracy + chat input cleanup), Envelopes (inline budget editing, transfer modal simplification, button layout reorganization), and Research Assistant (color fix, session history threshold, conversation history loading)
 **Depends on:** Phase 41
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 41.1-01-PLAN.md — Envelopes UX: button layout, inline budget editing, transfer modal simplification
