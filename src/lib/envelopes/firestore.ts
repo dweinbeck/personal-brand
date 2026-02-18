@@ -9,10 +9,13 @@ import type {
   EnvelopeTransfer,
   EnvelopeWithStatus,
   HomePageData,
+  IncomeEntry,
+  IncomeEntryInput,
   PivotRow,
   TransactionInput,
   TransactionUpdateInput,
   TransferInput,
+  WeeklyIncomeEntry,
   WeeklySavingsEntry,
 } from "./types";
 import {
@@ -73,6 +76,13 @@ export function transfersCol() {
   return requireDb().collection("envelope_transfers");
 }
 
+/**
+ * Returns the envelope_income_entries collection reference.
+ */
+export function incomeEntriesCol() {
+  return requireDb().collection("envelope_income_entries");
+}
+
 // ---------------------------------------------------------------------------
 // Query helpers (for reads)
 // ---------------------------------------------------------------------------
@@ -96,6 +106,20 @@ export function transactionsForUserInWeek(
   weekEnd: string,
 ) {
   return transactionsCol()
+    .where("userId", "==", userId)
+    .where("date", ">=", weekStart)
+    .where("date", "<=", weekEnd);
+}
+
+/**
+ * Returns income entries for a specific user within a date range.
+ */
+function incomeEntriesForUserInWeek(
+  userId: string,
+  weekStart: string,
+  weekEnd: string,
+) {
+  return incomeEntriesCol()
     .where("userId", "==", userId)
     .where("date", ">=", weekStart)
     .where("date", "<=", weekEnd);
@@ -824,6 +848,93 @@ export async function listTransfersForWeek(
   })) as EnvelopeTransfer[];
 }
 
+// ---------------------------------------------------------------------------
+// Income entry CRUD operations
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a new income entry for the given user.
+ * Computes weekStart from the entry date.
+ */
+export async function createIncomeEntry(
+  userId: string,
+  input: IncomeEntryInput,
+): Promise<{ id: string }> {
+  const entryDate = new Date(`${input.date}T00:00:00`);
+  const weekStartDate = startOfWeek(entryDate, WEEK_OPTIONS);
+  const weekStartStr = format(weekStartDate, "yyyy-MM-dd");
+
+  const docRef = incomeEntriesCol().doc();
+  await docRef.set({
+    userId,
+    amountCents: input.amountCents,
+    description: input.description,
+    date: input.date,
+    weekStart: weekStartStr,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
+  return { id: docRef.id };
+}
+
+/**
+ * Lists income entries for a user within a given date range, ordered by date descending.
+ */
+export async function listIncomeEntriesForWeek(
+  userId: string,
+  weekStart: string,
+  weekEnd: string,
+): Promise<IncomeEntry[]> {
+  const snap = await incomeEntriesForUserInWeek(userId, weekStart, weekEnd)
+    .orderBy("date", "desc")
+    .get();
+
+  return snap.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as IncomeEntry[];
+}
+
+/**
+ * Deletes an income entry. Verifies ownership before deleting.
+ */
+export async function deleteIncomeEntry(
+  userId: string,
+  entryId: string,
+): Promise<void> {
+  const docRef = incomeEntriesCol().doc(entryId);
+  const snap = await docRef.get();
+
+  if (!snap.exists) {
+    throw new Error("Income entry not found.");
+  }
+  if (snap.data()?.userId !== userId) {
+    throw new Error("Income entry access denied.");
+  }
+
+  await docRef.delete();
+}
+
+/**
+ * Returns total income cents for a user within a week range.
+ */
+export async function getWeeklyIncomeTotal(
+  userId: string,
+  weekStart: string,
+  weekEnd: string,
+): Promise<number> {
+  const snap = await incomeEntriesForUserInWeek(
+    userId,
+    weekStart,
+    weekEnd,
+  ).get();
+
+  return snap.docs.reduce(
+    (sum, doc) => sum + (doc.data().amountCents as number),
+    0,
+  );
+}
+
 /**
  * Finds all overage allocations linked to a source transaction.
  * Returns the allocation document references for batch operations.
@@ -898,14 +1009,15 @@ export async function listEnvelopesWithRemaining(
   const weekStartStr = format(start, "yyyy-MM-dd");
   const weekEndStr = format(end, "yyyy-MM-dd");
 
-  // Parallel fetch: envelopes, transactions, and transfers for current week
-  const [envSnap, txSnap, transferSnap] = await Promise.all([
+  // Parallel fetch: envelopes, transactions, transfers, and income for current week
+  const [envSnap, txSnap, transferSnap, weeklyIncomeCents] = await Promise.all([
     envelopesForUser(userId).get(),
     transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
     transfersCol()
       .where("userId", "==", userId)
       .where("weekStart", "==", weekStartStr)
       .get(),
+    getWeeklyIncomeTotal(userId, weekStartStr, weekEndStr),
   ]);
 
   // Build transaction sums by envelopeId and map transaction IDs to envelope IDs
@@ -1076,6 +1188,7 @@ export async function listEnvelopesWithRemaining(
     envelopes,
     weekLabel: formatWeekLabel(today),
     cumulativeSavingsCents,
+    weeklyIncomeCents,
   };
 }
 
@@ -1158,11 +1271,12 @@ export async function getAnalyticsData(
   const weekStartStr = format(start, "yyyy-MM-dd");
   const weekEndStr = format(end, "yyyy-MM-dd");
 
-  // 1. Parallel fetch: envelopes + current-week transactions + ALL transactions
-  const [envSnap, currentTxSnap, allTxSnap] = await Promise.all([
+  // 1. Parallel fetch: envelopes + current-week transactions + ALL transactions + ALL income entries
+  const [envSnap, currentTxSnap, allTxSnap, allIncomeSnap] = await Promise.all([
     envelopesForUser(userId).get(),
     transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
     transactionsCol().where("userId", "==", userId).get(),
+    incomeEntriesCol().where("userId", "==", userId).get(),
   ]);
 
   // 2. Parse envelope data
@@ -1313,6 +1427,40 @@ export async function getAnalyticsData(
     iterWeek = format(nextWeekDate, "yyyy-MM-dd");
   }
 
+  // 9. Parse ALL income entries and compute WEEKLY INCOME
+  const allIncomeEntries = allIncomeSnap.docs.map((doc) => ({
+    amountCents: doc.data().amountCents as number,
+    date: doc.data().date as string,
+  }));
+
+  const weeklyIncome: WeeklyIncomeEntry[] = [];
+  let incomeIterWeek = earliestWeekStart;
+  while (incomeIterWeek < nextWeekAfterCurrent) {
+    const iterWeekDate = new Date(`${incomeIterWeek}T00:00:00`);
+    const nextWeekDate = addWeeks(iterWeekDate, 1);
+    const iterWeekEnd = format(
+      new Date(nextWeekDate.getTime() - 86_400_000),
+      "yyyy-MM-dd",
+    );
+
+    const weekIncomeEntries = allIncomeEntries.filter(
+      (e) => e.date >= incomeIterWeek && e.date <= iterWeekEnd,
+    );
+    const totalIncome = weekIncomeEntries.reduce(
+      (sum, e) => sum + e.amountCents,
+      0,
+    );
+
+    const weekNumber = getWeekNumber(iterWeekDate);
+    weeklyIncome.push({
+      weekStart: incomeIterWeek,
+      weekLabel: `Wk ${weekNumber}`,
+      totalIncomeCents: totalIncome,
+    });
+
+    incomeIterWeek = format(nextWeekDate, "yyyy-MM-dd");
+  }
+
   return {
     summary,
     envelopes: envelopeHeaders,
@@ -1320,5 +1468,6 @@ export async function getAnalyticsData(
     savingsByWeek,
     spendingByEnvelope,
     weeklyTotals,
+    weeklyIncome,
   };
 }

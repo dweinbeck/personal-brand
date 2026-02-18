@@ -1,20 +1,28 @@
 "use client";
 
+import { format } from "date-fns";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 import { envelopeFetch } from "@/lib/envelopes/api";
-import { useEnvelopeProfile, useEnvelopes } from "@/lib/envelopes/hooks";
+import {
+  useEnvelopeProfile,
+  useEnvelopes,
+  useIncome,
+} from "@/lib/envelopes/hooks";
 import type {
   EnvelopeProfileInput,
   EnvelopeWithStatus,
 } from "@/lib/envelopes/types";
+import { getWeekRange } from "@/lib/envelopes/week-math";
 import { CreateEnvelopeCard } from "./CreateEnvelopeCard";
 import { EnvelopeCard } from "./EnvelopeCard";
 import { EnvelopeCardGrid } from "./EnvelopeCardGrid";
 import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
+import { IncomeBanner } from "./IncomeBanner";
+import { IncomeEntryForm } from "./IncomeEntryForm";
 import { KpiBox } from "./KpiBox";
 import { KpiWizardModal } from "./KpiWizardModal";
 import { type OverageContext, OverageModal } from "./OverageModal";
@@ -32,13 +40,25 @@ export function EnvelopesHomePage() {
     isLoading: profileLoading,
     mutate: mutateProfile,
   } = useEnvelopeProfile();
-  const [wizardOpen, setWizardOpen] = useState(false);
 
+  // Compute week range for income hook
+  const today = new Date();
+  const { start, end } = getWeekRange(today);
+  const weekStartStr = format(start, "yyyy-MM-dd");
+  const weekEndStr = format(end, "yyyy-MM-dd");
+  const {
+    entries: incomeEntries,
+    totalCents: incomeTotalCents,
+    mutate: mutateIncome,
+  } = useIncome(weekStartStr, weekEndStr);
+
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  const [isAddingIncome, setIsAddingIncome] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [overageContext, setOverageContext] = useState<OverageContext | null>(
     null,
@@ -183,6 +203,45 @@ export function EnvelopesHomePage() {
     }
   }
 
+  async function handleAddIncome(incomeData: {
+    amountCents: number;
+    description: string;
+    date: string;
+  }) {
+    if (isReadOnly) return;
+    setIsSubmitting(true);
+    try {
+      const token = await getToken();
+      await envelopeFetch("/api/envelopes/income", token, {
+        method: "POST",
+        body: JSON.stringify(incomeData),
+      });
+      await mutateIncome();
+      setIsAddingIncome(false);
+    } catch (err) {
+      window.alert(
+        err instanceof Error ? err.message : "Failed to add income.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleDeleteIncome(entryId: string) {
+    if (isReadOnly) return;
+    try {
+      const token = await getToken();
+      await envelopeFetch(`/api/envelopes/income/${entryId}`, token, {
+        method: "DELETE",
+      });
+      await mutateIncome();
+    } catch (err) {
+      window.alert(
+        err instanceof Error ? err.message : "Failed to delete income entry.",
+      );
+    }
+  }
+
   function handleAllocated() {
     mutate();
   }
@@ -235,12 +294,10 @@ export function EnvelopesHomePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+      {/* 1. Read-only banner (conditional) */}
       {isReadOnly && <ReadOnlyBanner />}
-      <KpiBox
-        profile={profile}
-        isLoading={profileLoading}
-        onEdit={() => setWizardOpen(true)}
-      />
+
+      {/* 2. Greeting banner (personal greeting first) */}
       <GreetingBanner
         onTrackCount={onTrackCount}
         totalCount={envelopes.length}
@@ -248,10 +305,7 @@ export function EnvelopesHomePage() {
         totalRemainingCents={totalRemainingCents}
       />
 
-      {data && data.cumulativeSavingsCents > 0 && (
-        <SavingsBanner savingsCents={data.cumulativeSavingsCents} />
-      )}
-
+      {/* 3. Week header + action buttons */}
       {data && (
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h2 className="font-display text-lg font-semibold text-primary">
@@ -266,6 +320,7 @@ export function EnvelopesHomePage() {
                   setIsEditing(!isEditing);
                   setDeletingId(null);
                   setIsAddingTransaction(false);
+                  setIsAddingIncome(false);
                 }}
               >
                 {isEditing ? "Done Editing" : "Edit Envelopes"}
@@ -281,9 +336,24 @@ export function EnvelopesHomePage() {
               )}
               {!isEditing && (
                 <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setIsAddingIncome(!isAddingIncome);
+                    setIsAddingTransaction(false);
+                  }}
+                >
+                  {isAddingIncome ? "Cancel Income" : "Log Income"}
+                </Button>
+              )}
+              {!isEditing && (
+                <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => setIsAddingTransaction(!isAddingTransaction)}
+                  onClick={() => {
+                    setIsAddingTransaction(!isAddingTransaction);
+                    setIsAddingIncome(false);
+                  }}
                 >
                   {isAddingTransaction ? "Cancel" : "Add Transaction"}
                 </Button>
@@ -293,7 +363,20 @@ export function EnvelopesHomePage() {
         </div>
       )}
 
-      {/* Inline Add Transaction form */}
+      {/* 4. Inline Income Entry form */}
+      {!isReadOnly && !isEditing && isAddingIncome && (
+        <div className="mb-4">
+          <Card variant="default">
+            <IncomeEntryForm
+              onSubmit={handleAddIncome}
+              onCancel={() => setIsAddingIncome(false)}
+              isSubmitting={isSubmitting}
+            />
+          </Card>
+        </div>
+      )}
+
+      {/* 5. Inline Add Transaction form */}
       {!isReadOnly &&
         !isEditing &&
         isAddingTransaction &&
@@ -310,6 +393,7 @@ export function EnvelopesHomePage() {
           </div>
         )}
 
+      {/* 6. Empty state */}
       {isEmpty && (
         <div className="mb-6 text-center">
           <p className="text-text-secondary mb-2">
@@ -318,6 +402,7 @@ export function EnvelopesHomePage() {
         </div>
       )}
 
+      {/* 7. Envelope card grid */}
       <EnvelopeCardGrid>
         {envelopes.map((env: EnvelopeWithStatus) => (
           <div key={env.id}>
@@ -371,6 +456,38 @@ export function EnvelopesHomePage() {
           ))}
       </EnvelopeCardGrid>
 
+      {/* 8. Income banner */}
+      {incomeEntries.length > 0 && (
+        <div className="mt-6">
+          <IncomeBanner
+            totalCents={incomeTotalCents}
+            entries={incomeEntries.map((e) => ({
+              id: e.id,
+              amountCents: e.amountCents,
+              description: e.description,
+            }))}
+            onDelete={isReadOnly ? undefined : handleDeleteIncome}
+          />
+        </div>
+      )}
+
+      {/* 9. Savings banner */}
+      {data && data.cumulativeSavingsCents > 0 && (
+        <div className="mt-4">
+          <SavingsBanner savingsCents={data.cumulativeSavingsCents} />
+        </div>
+      )}
+
+      {/* 10. KPI metrics (supplementary, at bottom) */}
+      <div className="mt-6">
+        <KpiBox
+          profile={profile}
+          isLoading={profileLoading}
+          onEdit={() => setWizardOpen(true)}
+        />
+      </div>
+
+      {/* Modals */}
       <OverageModal
         context={overageContext}
         onClose={() => setOverageContext(null)}

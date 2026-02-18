@@ -8,6 +8,7 @@ import type {
   EnvelopeProfileInput,
   EnvelopeTransfer,
   HomePageData,
+  IncomeEntry,
   TransactionsPageData,
 } from "@/lib/envelopes/types";
 import { envelopeFetch } from "./api";
@@ -97,6 +98,31 @@ export function useEnvelopeProfile() {
     isLoading,
     mutate,
   };
+}
+
+type IncomePageData = {
+  entries: IncomeEntry[];
+  billing: BillingStatus;
+};
+
+export function useIncome(weekStart: string, weekEnd: string) {
+  const { user } = useAuth();
+
+  const { data, error, isLoading, mutate } = useSWR<IncomePageData>(
+    user
+      ? `/api/envelopes/income?weekStart=${weekStart}&weekEnd=${weekEnd}`
+      : null,
+    async (url: string) => {
+      const token = await user?.getIdToken();
+      if (!token) throw new Error("Not authenticated");
+      return envelopeFetch<IncomePageData>(url, token);
+    },
+  );
+
+  const entries = data?.entries ?? [];
+  const totalCents = entries.reduce((sum, e) => sum + e.amountCents, 0);
+
+  return { entries, totalCents, error, isLoading, mutate };
 }
 
 export function useAnalytics() {

@@ -1,15 +1,18 @@
 "use client";
 
-import { useAnalytics } from "@/lib/envelopes/hooks";
+import { useAnalytics, useEnvelopeProfile } from "@/lib/envelopes/hooks";
+import { IncomeVsSpendingChart } from "./IncomeVsSpendingChart";
 import { ReadOnlyBanner } from "./ReadOnlyBanner";
 import { SavingsChart } from "./SavingsChart";
 import { SpendingByEnvelopeChart } from "./SpendingByEnvelopeChart";
+import { SpendingDistributionChart } from "./SpendingDistributionChart";
 import { SpendingTrendChart } from "./SpendingTrendChart";
 import { SummaryStats } from "./SummaryStats";
 import { WeeklyPivotTable } from "./WeeklyPivotTable";
 
 export function AnalyticsPage() {
   const { data, error, isLoading } = useAnalytics();
+  const { profile } = useEnvelopeProfile();
 
   if (isLoading) {
     return (
@@ -34,6 +37,8 @@ export function AnalyticsPage() {
   return (
     <div className="space-y-8">
       {isReadOnly && <ReadOnlyBanner />}
+
+      {/* 1. This Week */}
       <section>
         <h2 className="text-lg font-semibold font-display text-primary mb-4">
           This Week
@@ -41,6 +46,7 @@ export function AnalyticsPage() {
         <SummaryStats {...data.summary} />
       </section>
 
+      {/* 2. Budget Utilization */}
       <section>
         <h2 className="text-lg font-semibold font-display text-primary mb-4">
           Budget Utilization
@@ -48,6 +54,20 @@ export function AnalyticsPage() {
         <SpendingByEnvelopeChart data={data.spendingByEnvelope} />
       </section>
 
+      {/* 3. Spending Distribution (NEW) */}
+      <section>
+        <h2 className="text-lg font-semibold font-display text-primary mb-4">
+          Spending Distribution
+        </h2>
+        <SpendingDistributionChart
+          data={data.spendingByEnvelope.map((e) => ({
+            title: e.title,
+            spentCents: e.spentCents,
+          }))}
+        />
+      </section>
+
+      {/* 4. Spending Trend */}
       <section>
         <h2 className="text-lg font-semibold font-display text-primary mb-4">
           Spending Trend
@@ -55,6 +75,19 @@ export function AnalyticsPage() {
         <SpendingTrendChart data={data.weeklyTotals} />
       </section>
 
+      {/* 5. Income vs Spending (NEW) */}
+      <section>
+        <h2 className="text-lg font-semibold font-display text-primary mb-4">
+          Income vs Spending
+        </h2>
+        <IncomeVsSpendingChart
+          weeklyTotals={data.weeklyTotals}
+          weeklyIncome={data.weeklyIncome}
+          baseWeeklyIncomeCents={profile?.averageWeeklyIncomeCents}
+        />
+      </section>
+
+      {/* 6. Weekly Spending */}
       <section>
         <h2 className="text-lg font-semibold font-display text-primary mb-4">
           Weekly Spending
@@ -65,6 +98,7 @@ export function AnalyticsPage() {
         />
       </section>
 
+      {/* 7. Savings Growth */}
       <section>
         <h2 className="text-lg font-semibold font-display text-primary mb-4">
           Savings Growth

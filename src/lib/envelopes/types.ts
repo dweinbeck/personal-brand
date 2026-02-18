@@ -73,6 +73,14 @@ export const transferSchema = z.object({
 });
 export type TransferInput = z.infer<typeof transferSchema>;
 
+/** Income entry creation payload (supplemental income for a specific week). */
+export const incomeEntrySchema = z.object({
+  amountCents: z.number().int().min(1),
+  description: z.string().min(1).max(200),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+});
+export type IncomeEntryInput = z.infer<typeof incomeEntrySchema>;
+
 /** Result of validating an allocation request. */
 export type AllocationValidationResult =
   | { valid: true }
@@ -129,6 +137,17 @@ export type EnvelopeTransfer = {
   createdAt: Timestamp;
 };
 
+/** Income entry Firestore document (supplemental income for a specific week). */
+export type IncomeEntry = {
+  id: string;
+  userId: string;
+  amountCents: number;
+  description: string;
+  date: string; // YYYY-MM-DD
+  weekStart: string; // YYYY-MM-DD (Sunday of the week this income belongs to)
+  createdAt: Timestamp;
+};
+
 // ---------------------------------------------------------------------------
 // Computed / display types (used by UI and API responses)
 // ---------------------------------------------------------------------------
@@ -146,6 +165,7 @@ export type HomePageData = {
   envelopes: EnvelopeWithStatus[];
   weekLabel: string;
   cumulativeSavingsCents: number;
+  weeklyIncomeCents: number; // total extra income for current week
   billing: BillingStatus;
 };
 
@@ -192,6 +212,13 @@ export type WeeklyTotalEntry = {
   totalBudgetCents: number;
 };
 
+/** Weekly income entry for analytics charts. */
+export type WeeklyIncomeEntry = {
+  weekStart: string;
+  weekLabel: string;
+  totalIncomeCents: number;
+};
+
 /** Response shape for GET /api/envelopes/analytics. */
 export type AnalyticsPageData = {
   summary: {
@@ -206,6 +233,7 @@ export type AnalyticsPageData = {
   savingsByWeek: WeeklySavingsEntry[]; // oldest first (for chart x-axis)
   spendingByEnvelope: SpendingByEnvelopeEntry[]; // per-envelope budget utilization
   weeklyTotals: WeeklyTotalEntry[]; // weekly spending totals for trend chart
+  weeklyIncome: WeeklyIncomeEntry[]; // weekly income totals for income vs spending chart
   billing: BillingStatus;
 };
 

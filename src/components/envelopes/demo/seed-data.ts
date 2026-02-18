@@ -24,6 +24,27 @@ export type DemoTransaction = {
   description?: string;
 };
 
+export type DemoProfile = {
+  averageWeeklyIncomeCents: number;
+  averageWeeklyBillsCents: number;
+  targetWeeklySavingsCents: number;
+};
+
+export type DemoTransfer = {
+  id: string;
+  fromEnvelopeId: string;
+  toEnvelopeId: string;
+  amountCents: number;
+  weekStart: string;
+};
+
+export type DemoIncomeEntry = {
+  id: string;
+  amountCents: number;
+  description: string;
+  date: string;
+};
+
 // ---------------------------------------------------------------------------
 // Seed data — current week dates computed dynamically
 // ---------------------------------------------------------------------------
@@ -32,6 +53,17 @@ const weekStart = startOfWeek(new Date(), { weekStartsOn: 0 });
 function weekDay(offset: number): string {
   return format(addDays(weekStart, offset), "yyyy-MM-dd");
 }
+
+function priorWeekDay(weeksAgo: number, dayOffset: number): string {
+  const priorWeekStart = addDays(weekStart, -(weeksAgo * 7));
+  return format(addDays(priorWeekStart, dayOffset), "yyyy-MM-dd");
+}
+
+export const DEMO_PROFILE: DemoProfile = {
+  averageWeeklyIncomeCents: 200000, // $2,000/week
+  averageWeeklyBillsCents: 120000, // $1,200/week
+  targetWeeklySavingsCents: 30000, // $300/week
+};
 
 export const DEMO_ENVELOPES: DemoEnvelope[] = [
   {
@@ -153,5 +185,105 @@ export const DEMO_TRANSACTIONS: DemoTransaction[] = [
     amountCents: 550,
     date: weekDay(3),
     merchant: "Local Coffee Co",
+  },
+];
+
+export const DEMO_INCOME_ENTRIES: DemoIncomeEntry[] = [
+  {
+    id: "demo-income-1",
+    amountCents: 3000,
+    description: "Sold old speaker",
+    date: weekDay(1),
+  },
+  {
+    id: "demo-income-2",
+    amountCents: 2500,
+    description: "Freelance task",
+    date: weekDay(3),
+  },
+];
+
+// Historical data for analytics charts
+export const DEMO_HISTORICAL_TRANSACTIONS: DemoTransaction[] = [
+  // Week -2 (two weeks ago)
+  {
+    id: "demo-hist-1",
+    envelopeId: "demo-env-1",
+    amountCents: 12000,
+    date: priorWeekDay(2, 1),
+    merchant: "Kroger",
+  },
+  {
+    id: "demo-hist-2",
+    envelopeId: "demo-env-2",
+    amountCents: 5000,
+    date: priorWeekDay(2, 2),
+    merchant: "Olive Garden",
+  },
+  {
+    id: "demo-hist-3",
+    envelopeId: "demo-env-3",
+    amountCents: 4500,
+    date: priorWeekDay(2, 0),
+    merchant: "Shell",
+  },
+  {
+    id: "demo-hist-4",
+    envelopeId: "demo-env-4",
+    amountCents: 2000,
+    date: priorWeekDay(2, 3),
+    merchant: "AMC",
+  },
+  {
+    id: "demo-hist-5",
+    envelopeId: "demo-env-5",
+    amountCents: 1800,
+    date: priorWeekDay(2, 1),
+    merchant: "Starbucks",
+  },
+  // Week -1 (last week)
+  {
+    id: "demo-hist-6",
+    envelopeId: "demo-env-1",
+    amountCents: 14000,
+    date: priorWeekDay(1, 0),
+    merchant: "Trader Joe's",
+  },
+  {
+    id: "demo-hist-7",
+    envelopeId: "demo-env-2",
+    amountCents: 7000,
+    date: priorWeekDay(1, 2),
+    merchant: "Chipotle",
+  },
+  {
+    id: "demo-hist-8",
+    envelopeId: "demo-env-3",
+    amountCents: 3500,
+    date: priorWeekDay(1, 1),
+    merchant: "BP",
+  },
+  {
+    id: "demo-hist-9",
+    envelopeId: "demo-env-4",
+    amountCents: 3000,
+    date: priorWeekDay(1, 4),
+    merchant: "Steam",
+  },
+  {
+    id: "demo-hist-10",
+    envelopeId: "demo-env-5",
+    amountCents: 2200,
+    date: priorWeekDay(1, 3),
+    merchant: "Local Coffee Co",
+  },
+];
+
+export const DEMO_HISTORICAL_INCOME: DemoIncomeEntry[] = [
+  {
+    id: "demo-hist-inc-1",
+    amountCents: 5000,
+    description: "Garage sale",
+    date: priorWeekDay(1, 2),
   },
 ];
