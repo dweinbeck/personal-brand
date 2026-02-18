@@ -62,6 +62,7 @@ Progress: [#######...] 75% — Plan 3 of 4 complete
 | 41-envelopes-enhancements | 04 | 3 min | 2 | 4 |
 | 41.1-testing-feedback | 02 | 8 min | 2 | 3 |
 | 41.1-testing-feedback | 03 | 6 min | 2 | 2 |
+| 41.1-testing-feedback | 01 | 12 min | 2 | 3 |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 41.1-02]: Envelopes project status updated to Live with Next.js/Firebase/Tailwind tags (was In Development with React Native)
 - [Phase 41.1-02]: Research project status updated to Live with Next.js/Vercel AI SDK tags (was In Development with Python)
 - [Phase 41.1-02]: custom-gpts.json left as-is (legacy, unused but not harmful)
+- [Phase 41.1-01]: Replaced pencil edit button + EnvelopeForm popup with inline number input on blur-to-save for faster budget editing
+- [Phase 41.1-01]: Removed note field from TransferModal since user feedback said it was unnecessary
+- [Phase 41.1-01]: Cleaned up unused editingId state since EnvelopeForm popup is no longer used for editing
 
 ### Roadmap Evolution
 
@@ -143,7 +147,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41.1-02-PLAN.md
+Stopped at: Completed 41.1-01-PLAN.md (Envelopes UX improvements)
 Resume file: None
 
 ## Next Step
