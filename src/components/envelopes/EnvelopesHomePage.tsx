@@ -255,49 +255,25 @@ export function EnvelopesHomePage() {
       )}
 
       {data && (
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h2 className="font-display text-lg font-semibold text-primary">
             Week of {data.weekLabel}
           </h2>
-          {!isReadOnly && (
-            <Button
-              variant={isEditing ? "primary" : "secondary"}
-              size="sm"
-              onClick={() => {
-                setIsEditing(!isEditing);
-                setEditingId(null);
-                setDeletingId(null);
-              }}
-            >
-              {isEditing ? "Done Editing" : "Edit Cards"}
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Full-width Add Transaction button + Transfer Funds */}
-      {!isReadOnly && !isEditing && envelopes.length > 0 && (
-        <div className="mb-4">
-          {isAddingTransaction ? (
-            <Card variant="default">
-              <TransactionForm
-                envelopes={envelopeOptions}
-                onSubmit={handleAddTransaction}
-                onCancel={() => setIsAddingTransaction(false)}
-                isSubmitting={isSubmitting}
-              />
-            </Card>
-          ) : (
-            <div className="flex gap-2">
+          {!isReadOnly && envelopes.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
-                variant="primary"
+                variant={isEditing ? "primary" : "secondary"}
                 size="sm"
-                onClick={() => setIsAddingTransaction(true)}
-                className="flex-1"
+                onClick={() => {
+                  setIsEditing(!isEditing);
+                  setEditingId(null);
+                  setDeletingId(null);
+                  setIsAddingTransaction(false);
+                }}
               >
-                Add Transaction
+                {isEditing ? "Done Editing" : "Edit Envelopes"}
               </Button>
-              {envelopes.length >= 2 && (
+              {!isEditing && envelopes.length >= 2 && (
                 <Button
                   variant="secondary"
                   size="sm"
@@ -306,10 +282,36 @@ export function EnvelopesHomePage() {
                   Transfer Funds
                 </Button>
               )}
+              {!isEditing && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setIsAddingTransaction(!isAddingTransaction)}
+                >
+                  {isAddingTransaction ? "Cancel" : "Add Transaction"}
+                </Button>
+              )}
             </div>
           )}
         </div>
       )}
+
+      {/* Inline Add Transaction form */}
+      {!isReadOnly &&
+        !isEditing &&
+        isAddingTransaction &&
+        envelopes.length > 0 && (
+          <div className="mb-4">
+            <Card variant="default">
+              <TransactionForm
+                envelopes={envelopeOptions}
+                onSubmit={handleAddTransaction}
+                onCancel={() => setIsAddingTransaction(false)}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          </div>
+        )}
 
       {isEmpty && (
         <div className="mb-6 text-center">
