@@ -89,7 +89,7 @@ export function ScrapeProgressPanel({ events }: ScrapeProgressPanelProps) {
       {pages.length > 0 && (
         <div>
           <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">
-            Pages being scraped
+            Pages being analyzed
           </h4>
           <ul className="space-y-1">
             {pages.map((page) => (

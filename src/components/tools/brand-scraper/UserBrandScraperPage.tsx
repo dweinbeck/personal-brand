@@ -216,7 +216,7 @@ function BrandScraperContent() {
           </span>
           <span className="text-text-tertiary">|</span>
           <span className="text-text-secondary">
-            Cost per scrape: <strong>{creditCost} credits</strong> ($
+            Cost per profile: <strong>{creditCost} credits</strong> ($
             {(creditCost / 100).toFixed(2)})
           </span>
         </div>
@@ -227,7 +227,7 @@ function BrandScraperContent() {
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-6 text-sm text-amber-800">
           <p className="font-medium mb-1">Insufficient credits</p>
           <p>
-            You need {creditCost} credits to run a scrape. Your balance is{" "}
+            You need {creditCost} credits to create a profile. Your balance is{" "}
             {billing.balanceCredits}.{" "}
             <Link
               href="/billing"
@@ -286,7 +286,7 @@ function BrandScraperContent() {
                 ? "Submitting..."
                 : billingLoading
                   ? "Loading..."
-                  : `Scrape (${creditCost} credits)`}
+                  : `Create Profile (${creditCost} credits)`}
             </Button>
           </form>
           <ScrapeHistory onViewResults={handleViewResults} />
@@ -359,7 +359,7 @@ function BrandScraperContent() {
           {isTerminal && (
             <div className="mt-6">
               <Button variant="secondary" onClick={handleNewScrape}>
-                Scrape Another URL
+                Create Another Profile
               </Button>
             </div>
           )}

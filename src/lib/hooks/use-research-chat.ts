@@ -551,6 +551,12 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
 
     if (!response) {
       setIsReconsiderStreaming(false);
+      setReconsiderState((prev) => ({
+        ...prev,
+        overallStatus: "error",
+        gemini: { ...prev.gemini, status: "error", error: "Failed to connect" },
+        openai: { ...prev.openai, status: "error", error: "Failed to connect" },
+      }));
       return;
     }
 

@@ -75,7 +75,21 @@ export function BrandCardDownloads({
           {downloading ? "Preparing download..." : "Download Assets"}
         </Button>
       </div>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && (
+        <div className="flex flex-col items-end gap-1.5">
+          <p className="text-xs text-red-600">{error}</p>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" onClick={handleZipDownload}>
+              Retry Download
+            </Button>
+            {brandJsonUrl && (
+              <span className="text-xs text-text-tertiary">
+                or download the JSON instead
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
