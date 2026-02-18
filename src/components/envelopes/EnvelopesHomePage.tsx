@@ -34,7 +34,6 @@ export function EnvelopesHomePage() {
   } = useEnvelopeProfile();
   const [wizardOpen, setWizardOpen] = useState(false);
 
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -103,7 +102,6 @@ export function EnvelopesHomePage() {
         body: JSON.stringify(formData),
       });
       await mutate();
-      setEditingId(null);
     } catch (err) {
       window.alert(
         err instanceof Error ? err.message : "Failed to update envelope.",
@@ -266,7 +264,6 @@ export function EnvelopesHomePage() {
                 size="sm"
                 onClick={() => {
                   setIsEditing(!isEditing);
-                  setEditingId(null);
                   setDeletingId(null);
                   setIsAddingTransaction(false);
                 }}
@@ -324,31 +321,22 @@ export function EnvelopesHomePage() {
       <EnvelopeCardGrid>
         {envelopes.map((env: EnvelopeWithStatus) => (
           <div key={env.id}>
-            {editingId === env.id ? (
-              <Card variant="default" className="min-h-[180px]">
-                <EnvelopeForm
-                  mode="edit"
-                  initialValues={{
-                    title: env.title,
-                    weeklyBudgetCents: env.weeklyBudgetCents,
-                    rollover: env.rollover,
-                  }}
-                  onSubmit={(formData) => handleUpdate(env.id, formData)}
-                  onCancel={() => setEditingId(null)}
-                  isSubmitting={isSubmitting}
-                />
-              </Card>
-            ) : (
-              <EnvelopeCard
-                envelope={env}
-                isEditMode={isEditing}
-                isDeleting={deletingId === env.id}
-                onEdit={() => setEditingId(env.id)}
-                onDelete={() => setDeletingId(env.id)}
-                onConfirmDelete={() => handleDelete(env.id)}
-                onCancelDelete={() => setDeletingId(null)}
-              />
-            )}
+            <EnvelopeCard
+              envelope={env}
+              isEditMode={isEditing}
+              isDeleting={deletingId === env.id}
+              onEdit={() => {}}
+              onDelete={() => setDeletingId(env.id)}
+              onConfirmDelete={() => handleDelete(env.id)}
+              onCancelDelete={() => setDeletingId(null)}
+              onBudgetChange={(newCents) =>
+                handleUpdate(env.id, {
+                  title: env.title,
+                  weeklyBudgetCents: newCents,
+                  rollover: env.rollover,
+                })
+              }
+            />
           </div>
         ))}
 

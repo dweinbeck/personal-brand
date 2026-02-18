@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRef, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { formatCents } from "@/lib/envelopes/format";
 import type { EnvelopeWithStatus } from "@/lib/envelopes/types";
@@ -14,6 +15,7 @@ type EnvelopeCardProps = {
   onDelete: () => void;
   onConfirmDelete: () => void;
   onCancelDelete: () => void;
+  onBudgetChange?: (newBudgetCents: number) => void;
 };
 
 export function EnvelopeCard({
@@ -24,7 +26,25 @@ export function EnvelopeCard({
   onDelete,
   onConfirmDelete,
   onCancelDelete,
+  onBudgetChange,
 }: EnvelopeCardProps) {
+  const [budgetValue, setBudgetValue] = useState(
+    (envelope.weeklyBudgetCents / 100).toFixed(2),
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleBudgetBlur() {
+    const parsed = Number.parseFloat(budgetValue);
+    if (Number.isNaN(parsed) || parsed <= 0) {
+      // Revert to original value
+      setBudgetValue((envelope.weeklyBudgetCents / 100).toFixed(2));
+      return;
+    }
+    const newCents = Math.round(parsed * 100);
+    if (newCents !== envelope.weeklyBudgetCents && onBudgetChange) {
+      onBudgetChange(newCents);
+    }
+  }
   if (isDeleting) {
     return (
       <Card
@@ -62,26 +82,9 @@ export function EnvelopeCard({
         !isEditMode ? " cursor-pointer transition-shadow hover:shadow-md" : ""
       }`}
     >
-      {/* Edit-mode action buttons */}
+      {/* Edit-mode delete button (top-right) */}
       {isEditMode && (
         <div className="absolute top-2 right-2 flex gap-1">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="flex h-6 w-6 items-center justify-center rounded-full text-primary hover:bg-gold-light hover:text-primary"
-            aria-label={`Edit ${envelope.title}`}
-          >
-            <svg
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4"
-            >
-              <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
-              <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
-            </svg>
-          </button>
           <button
             type="button"
             onClick={onDelete}
@@ -114,9 +117,27 @@ export function EnvelopeCard({
         <p className="text-2xl font-bold text-text-primary">
           {formatCents(envelope.remainingCents)}
         </p>
-        <p className="text-sm text-text-secondary">
-          of {formatCents(envelope.weeklyBudgetCents)} budget
-        </p>
+        {isEditMode ? (
+          <p className="text-sm text-text-secondary">
+            of $
+            <input
+              ref={inputRef}
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={budgetValue}
+              onChange={(e) => setBudgetValue(e.target.value)}
+              onBlur={handleBudgetBlur}
+              className="inline w-20 border-b border-dashed border-primary bg-transparent text-sm font-medium text-text-primary focus:outline-none focus:border-solid"
+              aria-label={`Budget for ${envelope.title}`}
+            />{" "}
+            budget
+          </p>
+        ) : (
+          <p className="text-sm text-text-secondary">
+            of {formatCents(envelope.weeklyBudgetCents)} budget
+          </p>
+        )}
         {envelope.rolloverSurplusCents > 0 && (
           <p className="text-xs text-sage mt-0.5">
             +{formatCents(envelope.rolloverSurplusCents)} rollover

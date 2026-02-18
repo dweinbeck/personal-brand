@@ -26,7 +26,6 @@ export function TransferModal({
   const [fromEnvelopeId, setFromEnvelopeId] = useState("");
   const [toEnvelopeId, setToEnvelopeId] = useState("");
   const [amountDollars, setAmountDollars] = useState("");
-  const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -36,7 +35,6 @@ export function TransferModal({
       setFromEnvelopeId("");
       setToEnvelopeId("");
       setAmountDollars("");
-      setNote("");
       setIsSubmitting(false);
       setServerError(null);
     }
@@ -79,7 +77,6 @@ export function TransferModal({
           fromEnvelopeId,
           toEnvelopeId,
           amountCents,
-          note: note.trim() || undefined,
         }),
       });
       onTransferred();
@@ -169,7 +166,7 @@ export function TransferModal({
               <option value="">Select target...</option>
               {targetEnvelopes.map((e) => (
                 <option key={e.id} value={e.id}>
-                  {e.title}
+                  {e.title} (available: {formatCents(e.remainingCents)})
                 </option>
               ))}
             </select>
@@ -199,25 +196,6 @@ export function TransferModal({
                 Max: {formatCents(maxCents)}
               </p>
             )}
-          </div>
-
-          {/* Note */}
-          <div className="flex flex-col gap-1">
-            <label
-              htmlFor="transfer-note"
-              className="text-sm font-medium text-text-primary"
-            >
-              Note (optional)
-            </label>
-            <input
-              id="transfer-note"
-              type="text"
-              maxLength={200}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Reason for transfer..."
-              className="rounded-lg border border-border bg-white px-3 py-2 text-sm"
-            />
           </div>
 
           {/* Error display */}
