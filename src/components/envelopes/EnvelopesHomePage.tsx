@@ -23,6 +23,7 @@ import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
 import { IncomeBanner } from "./IncomeBanner";
 import { IncomeEntryForm } from "./IncomeEntryForm";
+import { KeyMetricsCard } from "./KeyMetricsCard";
 import { KpiBox } from "./KpiBox";
 import { KpiWizardModal } from "./KpiWizardModal";
 import { type OverageContext, OverageModal } from "./OverageModal";
@@ -285,6 +286,10 @@ export function EnvelopesHomePage() {
     (sum, e) => sum + e.remainingCents,
     0,
   );
+  const totalBudgetCents = envelopes.reduce(
+    (sum, e) => sum + e.weeklyBudgetCents,
+    0,
+  );
   const isEmpty = envelopes.length === 0 && !isCreating;
 
   const envelopeOptions = envelopes.map((e) => ({
@@ -298,12 +303,18 @@ export function EnvelopesHomePage() {
       {isReadOnly && <ReadOnlyBanner />}
 
       {/* 2. Greeting banner (personal greeting first) */}
-      <GreetingBanner
-        onTrackCount={onTrackCount}
-        totalCount={envelopes.length}
-        totalSpentCents={totalSpentCents}
-        totalRemainingCents={totalRemainingCents}
-      />
+      <GreetingBanner />
+
+      {/* 2.5. Key Metrics summary card */}
+      {envelopes.length > 0 && (
+        <KeyMetricsCard
+          totalRemainingCents={totalRemainingCents}
+          totalBudgetCents={totalBudgetCents}
+          totalSpentCents={totalSpentCents}
+          onTrackCount={onTrackCount}
+          totalCount={envelopes.length}
+        />
+      )}
 
       {/* 3. Week header + action buttons */}
       {data && (

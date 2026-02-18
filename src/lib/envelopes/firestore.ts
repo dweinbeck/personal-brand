@@ -456,6 +456,18 @@ export async function createEnvelope(
   input: { title: string; weeklyBudgetCents: number },
 ): Promise<Envelope> {
   const existing = await envelopesForUser(userId).get();
+
+  // Prevent duplicate envelope titles for the same user
+  const titleLower = input.title.trim().toLowerCase();
+  const duplicate = existing.docs.find(
+    (doc) => (doc.data().title as string).trim().toLowerCase() === titleLower,
+  );
+  if (duplicate) {
+    throw new Error(
+      `An envelope named "${input.title}" already exists. Please choose a different name.`,
+    );
+  }
+
   let maxSort = -1;
   for (const doc of existing.docs) {
     const data = doc.data();
