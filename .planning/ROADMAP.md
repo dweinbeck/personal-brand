@@ -104,7 +104,7 @@
 
 </details>
 
-### 🚧 v1.9 Site Restructure & Polish (In Progress)
+### v1.9 Site Restructure & Polish (In Progress)
 
 **Milestone Goal:** Restructure site navigation around Tools and Apps categories, replace standalone assistant page with popup chatbot, enhance home page sections, fix cross-repo bugs, and polish contact page and UI consistency.
 
@@ -230,6 +230,27 @@ Plans:
 - [ ] 41-02-PLAN.md — Fund transfer UI: TransferModal, home page + detail page integration
 - [ ] 41-03-PLAN.md — Analytics redesign: budget utilization bar chart, spending trend line chart
 - [ ] 41-04-PLAN.md — Rollover workflow: surplus computation, card + detail page display
+
+### Phase 42: Envelopes Home Redesign, Income Entries & Analytics Enhancement
+
+**Goal:** Reorganize the envelopes home page for a more intuitive layout, add the ability to log supplemental income that temporarily boosts weekly spending power, enhance the analytics page with more robust charts, and bring the demo to full feature parity with the real version (same interface and functionality, no persistence, clear demo announcements)
+
+**Depends on:** Phase 41.1
+**Plans:** 4 plans
+
+**Success Criteria** (what must be TRUE):
+  1. The envelopes home page has a reorganized section layout that puts the greeting and primary envelope content first, with KPI metrics and supplementary info below — the layout feels natural for daily budgeting use
+  2. Users can log supplemental/extra income entries (e.g., "Sold speaker — $30") via a form on the home page, and that income increases the effective weekly budget for the current week only — base income/bills KPIs remain unchanged
+  3. Income entries are visible on the home page (showing this week's extra income total) and recorded with amount, description, and date
+  4. The analytics page displays additional charts beyond the current set (budget utilization, spending trend, pivot table, savings) — at minimum: income vs. spending comparison, and spending distribution by envelope (pie/donut chart)
+  5. The demo version (/envelopes/demo) mirrors the real version's interface and functionality — including KPI display, transfer funds, inline budget editing, income entries, and the enhanced analytics — with data stored in-memory only (resets on refresh) and clear demo announcements
+  6. All existing tests pass and new functionality has test coverage
+
+Plans:
+- [ ] 42-01-PLAN.md — Income entries data layer: types, Firestore CRUD, API routes, index
+- [ ] 42-02-PLAN.md — Home page reorganization, income entry UI, income banner
+- [ ] 42-03-PLAN.md — Analytics enhancement: income vs spending chart, spending distribution donut chart
+- [ ] 42-04-PLAN.md — Demo feature parity and test coverage
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
