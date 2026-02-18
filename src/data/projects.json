@@ -30,10 +30,10 @@
     "slug": "envelope-budget-app",
     "repo": null,
     "featured": true,
-    "status": "In Development",
+    "status": "Live",
     "name": "Envelopes",
-    "description": "A full-featured budget management app implementing the popular envelope method for personal finance. Users can allocate funds across custom categories, track real-time spending, and manage month-to-month rollovers.",
-    "tags": ["React Native", "Firebase", "Fintech"]
+    "description": "A full-featured budget management app implementing the popular envelope method for personal finance. Users can allocate funds across custom categories, track real-time spending, transfer between envelopes, view analytics, and manage weekly rollovers.",
+    "tags": ["Next.js", "Firebase", "Tailwind CSS"]
   },
   {
     "slug": "60-second-lesson",
@@ -48,10 +48,10 @@
     "slug": "research-assistant",
     "repo": null,
     "featured": false,
-    "status": "In Development",
+    "status": "Live",
     "name": "Research",
-    "description": "Get opinions from multiple LLMs at one time for things that matter. Submit a single prompt and receive structured, side-by-side responses from GPT-4, Claude, and Gemini with source attribution.",
-    "tags": ["Multi-LLM", "Python", "AI"]
+    "description": "Get opinions from multiple LLMs at one time for things that matter. Submit a single prompt and receive structured, side-by-side responses from multiple AI models with streaming output and formatted markdown results.",
+    "tags": ["Next.js", "Vercel AI SDK", "AI"]
   },
   {
     "slug": "promptos",
