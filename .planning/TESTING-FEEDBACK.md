@@ -29,9 +29,9 @@
 
 ---
 
-## 2. AI Assistant (`/assistant`)
+## 2. AI Assistant (Popup Widget)
 
-> Components: ChatInterface, ChatInput, ChatMessage, ChatHeader, ChatPopupWidget, TypingIndicator, MarkdownRenderer, SuggestedPrompts, CitationList, ConfidenceBadge, FeedbackButtons, LeadCaptureFlow, HumanHandoff, ExitRamps, PrivacyDisclosure
+> Components: ChatPopupWidget, ChatInterface, ChatInput, ChatMessage, ChatHeader, TypingIndicator, MarkdownRenderer, SuggestedPrompts, CitationList, ConfidenceBadge, FeedbackButtons, LeadCaptureFlow, HumanHandoff, PrivacyDisclosure
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
@@ -60,19 +60,19 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | bug | M | Tasks sidebar | The bubbles that come up when you click on the question marks seems to be hidding behind other things.  The top one is cut off on the right side, the bottom one is cut off on top |
-| 2 | ui | M | View | It should remember the view that the user last clicked on (Kanban or List) so that if a user prefers one view that becomes his default |
+| 1 | | | | |
+| 2 | | | | |
 
 ---
 
 ## 5. Envelopes (`/envelopes`)
 
-> Pages: home, `/analytics`, `/transactions`
-> Components: EnvelopesHomePage, EnvelopeCardGrid, EnvelopeCard, CreateEnvelopeCard, EnvelopeForm, GreetingBanner, SavingsBanner, SummaryStats, EnvelopesNav, OverageModal, ReadOnlyBanner, TransactionsPage, TransactionList, TransactionRow, TransactionForm, InlineTransactionForm, WeeklyPivotTable, WeekSelector, StatusBadge, AnalyticsPage, SavingsChart, DonorAllocationRow
+> Pages: home, `/[envelopeId]` detail, `/analytics`, `/transactions`, `/demo`
+> Components: EnvelopesHomePage, EnvelopeCardGrid, EnvelopeCard, EnvelopeDetailPage, CreateEnvelopeCard, EnvelopeForm, GreetingBanner, SavingsBanner, SummaryStats, EnvelopesNav, OverageModal, TransferModal, ReadOnlyBanner, TransactionsPage, TransactionList, TransactionRow, TransactionForm, InlineTransactionForm, WeeklyPivotTable, WeekSelector, StatusBadge, AnalyticsPage, SavingsChart, SpendingByEnvelopeChart, SpendingTrendChart, DonorAllocationRow
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | bug | M | EnvelopesHomePage | I have no way to adjust a card's budget.  I can only delete it, but then that gets rid of all the transactions too.  Make the budget a field that is available to edit when in the Editing mode |
+| 1 | | | | |
 | 2 | | | | |
 | 3 | | | | |
 
@@ -84,25 +84,7 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 |bug | H | ResponseDisplay | Everything was working well and the responses were streaming and then we got a 500 error: 5110906506a766b5.js:1 Credit balance listener error: FirebaseError: Missing or insufficient permissions.
-(anonymous) @ 5110906506a766b5.js:1Understand this error
-inpage.js:1 Uncaught (in promise) i: Failed to connect to MetaMask
-    at Object.connect (inpage.js:1:63510)
-    at async s (inpage.js:1:61013)Caused by: Error: MetaMask extension not found
-    at inpage.js:1:57963Understand this error
-aebc3b6d791f68d2.js:1 TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at F (5110906506a766b5.js:1:21722)
-    at av (aebc3b6d791f68d2.js:1:63230)
-    at oY (aebc3b6d791f68d2.js:1:83503)
-    at io (aebc3b6d791f68d2.js:1:94935)
-    at sc (aebc3b6d791f68d2.js:1:137956)
-    at aebc3b6d791f68d2.js:1:137801
-    at ss (aebc3b6d791f68d2.js:1:137809)
-    at u9 (aebc3b6d791f68d2.js:1:133734)
-    at sV (aebc3b6d791f68d2.js:1:159329)
-    at MessagePort.O (aebc3b6d791f68d2.js:1:8295)
-d @ aebc3b6d791f68d2.js:1Understand this error
-69487a961c0d369d.js:1 [Error Boundary] Object |
+| 1 | | | | |
 | 2 | | | | |
 | 3 | | | | |
 
@@ -121,7 +103,9 @@ d @ aebc3b6d791f68d2.js:1Understand this error
 
 ---
 
-## 8. Custom GPTs (`/custom-gpts`)
+## 8. Tools Page (`/tools`)
+
+> Components: ToolsShowcase (home), tool cards
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
@@ -149,7 +133,7 @@ d @ aebc3b6d791f68d2.js:1Understand this error
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | bug | H | main | In Billing Management in the Control center, user "daniel.weinbeck@gmail.com" is listed twice and has different numbers of credits.  One user should never be in the system twice.  Please consolidate into one account and never allow this to happen in the future |
+| 1 | | | | |
 | 2 | | | | |
 
 ---
@@ -203,24 +187,20 @@ d @ aebc3b6d791f68d2.js:1Understand this error
 
 ## Planning Notes
 
-> Phase 40.1 just shipped. Here's what to test:
+> Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
+
+### Phase 41.1 Testing Focus Areas
 
 **Envelopes (`/envelopes`):**
-- Click "Edit Cards" — each card should now show BOTH a pencil (edit) icon and an X (delete) icon
-- Click the pencil icon — the form should open pre-filled with the envelope's current title, budget, and rollover setting
-- Change the budget and save — the card should update immediately
-- Click an envelope card in NORMAL mode (not edit mode) — it should navigate to `/envelopes/{id}` detail page
-- Detail page should show: envelope name, status badge, budget summary, current-week transactions
-- "Add Transaction" on the detail page should have the envelope pre-selected and hidden
-- Back link should return to `/envelopes`
+- Button layout: Verify "Edit Envelopes", "Transfer Funds", "Add Transaction" appear in a horizontal row on desktop and stack on mobile
+- Inline budget editing: In edit mode, tap the budget amount — it should become an input field. Change the value and click away (blur) — it should save immediately
+- Transfer modal: Open "Transfer Funds" — verify no note/reason field, target dropdown shows available balance next to each envelope name
+
+**AI Assistant (popup widget):**
+- Chat input: Verify no "Press Enter to send..." text below the input and no placeholder text inside the input area — just a clean text field with send button
 
 **Research Assistant (`/tools/research-assistant`):**
-- Run a research query — token usage display should show numbers (not crash)
-- If Firestore permissions expire mid-session, the page should NOT crash (credit balance stays at last known value)
+- Response text color: Submit a query — response body text should be dark on light background (not white on dark). The dark blue header bar should still be dark with white text
+- Session history: After your FIRST query, "Conversation Thread" section should NOT appear. After your SECOND query, prior exchanges should appear in chronological order above
+- Conversation loading: Click a conversation in the sidebar — full thread should load with all exchanges. You should be able to continue asking follow-up questions
 
-**Billing Admin (`/control-center/billing`):**
-- Check if duplicate email entries show a yellow "Duplicate" badge
-- Test the "Consolidate" button — it should merge credits and remove the duplicate entry
-
-**General:**
-- Run `npm run dev` and navigate between pages — no console errors expected
