@@ -21,6 +21,7 @@ import { EnvelopeCard } from "./EnvelopeCard";
 import { EnvelopeCardGrid } from "./EnvelopeCardGrid";
 import { EnvelopeForm } from "./EnvelopeForm";
 import { GreetingBanner } from "./GreetingBanner";
+import { IncomeAllocationModal } from "./IncomeAllocationModal";
 import { IncomeBanner } from "./IncomeBanner";
 import { IncomeEntryForm } from "./IncomeEntryForm";
 import { KeyMetricsCard } from "./KeyMetricsCard";
@@ -61,6 +62,7 @@ export function EnvelopesHomePage() {
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
   const [isAddingIncome, setIsAddingIncome] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [allocationOpen, setAllocationOpen] = useState(false);
   const [overageContext, setOverageContext] = useState<OverageContext | null>(
     null,
   );
@@ -245,6 +247,7 @@ export function EnvelopesHomePage() {
 
   function handleAllocated() {
     mutate();
+    mutateIncome();
   }
 
   // -- Loading state --
@@ -290,6 +293,8 @@ export function EnvelopesHomePage() {
     (sum, e) => sum + e.weeklyBudgetCents,
     0,
   );
+  const allocatedIncomeCents = data?.allocatedIncomeCents ?? 0;
+  const unallocatedCents = incomeTotalCents - allocatedIncomeCents;
   const isEmpty = envelopes.length === 0 && !isCreating;
 
   const envelopeOptions = envelopes.map((e) => ({
@@ -309,7 +314,7 @@ export function EnvelopesHomePage() {
       {envelopes.length > 0 && (
         <KeyMetricsCard
           totalRemainingCents={totalRemainingCents}
-          totalBudgetCents={totalBudgetCents}
+          totalBudgetCents={totalBudgetCents + allocatedIncomeCents}
           totalSpentCents={totalSpentCents}
           onTrackCount={onTrackCount}
           totalCount={envelopes.length}
@@ -343,6 +348,15 @@ export function EnvelopesHomePage() {
                   onClick={() => setTransferOpen(true)}
                 >
                   Transfer Funds
+                </Button>
+              )}
+              {!isEditing && unallocatedCents > 0 && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setAllocationOpen(true)}
+                >
+                  Allocate Income
                 </Button>
               )}
               {!isEditing && (
@@ -472,6 +486,7 @@ export function EnvelopesHomePage() {
         <div className="mt-6">
           <IncomeBanner
             totalCents={incomeTotalCents}
+            allocatedCents={allocatedIncomeCents}
             entries={incomeEntries.map((e) => ({
               id: e.id,
               amountCents: e.amountCents,
@@ -515,6 +530,15 @@ export function EnvelopesHomePage() {
           title: e.title,
           remainingCents: e.remainingCents,
         }))}
+        getToken={getToken}
+      />
+
+      <IncomeAllocationModal
+        isOpen={allocationOpen}
+        onClose={() => setAllocationOpen(false)}
+        onAllocated={handleAllocated}
+        unallocatedCents={unallocatedCents}
+        envelopes={envelopeOptions}
         getToken={getToken}
       />
 

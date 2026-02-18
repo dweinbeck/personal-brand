@@ -572,6 +572,7 @@ export function DemoHomePage() {
         <div className="mt-6">
           <IncomeBanner
             totalCents={incomeTotalCents}
+            allocatedCents={0}
             entries={state.incomeEntries.map((e) => ({
               id: e.id,
               amountCents: e.amountCents,

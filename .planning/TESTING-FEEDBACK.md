@@ -189,30 +189,61 @@
 
 > Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
 
-### Phase 42 Testing Focus Areas
+### Testing Focus Areas — Multi-Area Feedback Fixes
 
-**Envelopes Home Page (`/envelopes`) — Layout Reorganization:**
-- The page layout should feel natural for daily use: greeting banner at top, then week header with action buttons, then envelope cards, then supplementary info (income banner, savings banner, KPI box at the bottom)
-- There should be 4 action buttons: "Edit Envelopes", "Transfer Funds", "Log Income", "Add Transaction"
-- Clicking "Log Income" opens an income entry form (amount, description, date); clicking "Add Transaction" closes the income form and vice versa — only one form shows at a time
+**Brand Scraper (`/apps/brand-scraper`):**
+- Old entries that were stuck "In Progress" should now show as viewable (with red dot) if >30 min old
+- Submit button should say "Create Profile (X credits)" not "Scrape"
+- History section header should say "Recent Brand Profiles" not "Recent Scrapes"
+- Progress panel should say "Pages being analyzed" not "Pages being scraped"
+- Click a logo thumbnail → lightbox should open with full-size image; click outside or press Escape to close
+- Brand Identity section should show distinct sub-sections: Tagline, Industry badge, Typography list (all fonts, not just first)
+- If zip download fails → should show "Retry Download" button and "or download the JSON instead" hint
 
-**Income Entries (`/envelopes`):**
-- Log a supplemental income entry (e.g., "$30 — Sold old speaker") — it should appear in a green "Extra Income This Week" banner below the envelope cards
-- The income banner shows each entry with a delete button (x) — clicking delete removes the entry
-- Income entries are scoped to the current week only (they don't carry over)
-- The KPI box (now at the bottom) should still show correct disposable income calculations
+**Research Assistant (`/tools/research-assistant`):**
+- Complete a research query → click Reconsider → should NOT get stuck at "Connecting..." forever
+- If connection fails, should show error state instead
 
-**Analytics Page (`/envelopes/analytics`) — New Charts:**
-- There should now be 7 sections total: This Week, Budget Utilization, Spending Distribution (NEW), Spending Trend, Income vs Spending (NEW), Weekly Spending, Savings Growth
-- Spending Distribution: donut/pie chart showing what % of spending goes to each envelope
-- Income vs Spending: grouped bar chart comparing weekly income (green bars) to weekly spending (navy bars)
+**Building Blocks (`/building-blocks/frd` and `/building-blocks/custom-gpt`):**
+- All text should say "Functional Requirements Document (FRD)" — no mentions of "PRD" anywhere
 
-**Demo Mode (`/envelopes/demo`) — Full Parity:**
-- Demo should have the same layout and features as the real version: greeting banner, all 4 action buttons, envelope cards, income banner, savings banner, KPI box
-- "Log Income" should work — add an entry and see it appear in the income banner
-- "Transfer Funds" should open a transfer modal — transfer between envelopes and see budgets update
-- Inline budget editing should work — in edit mode, click a budget amount, type a new value, blur to save
-- Demo analytics (`/envelopes/demo/analytics`) should show all 7 chart sections with demo data
-- All demo interactions are in-memory only — refreshing resets to seed data
-- Clear "Demo Mode" announcements should be visible
+**Envelopes (`/envelopes`) — on dev.dan-weinbeck.com:**
+- Check if data loads properly; if empty, Firestore indexes may need deploying
+
+### Testing Focus Areas — Income Allocation Feature
+
+**Envelopes Home (`/envelopes`):**
+- Log extra income (via "Log Income" button) — IncomeBanner should appear below the envelope grid
+- After logging income, "Allocate Income" button should appear in the action button row
+- Click "Allocate Income" → modal opens with green "Available Income" banner showing correct amount
+- Select an envelope from dropdown, enter amount, submit → envelope card's remaining budget should increase
+- IncomeBanner should now show "Allocated: $X | Unallocated: $X" breakdown
+- KeyMetricsCard "budget" figure should include allocated income
+- Try allocating more than unallocated amount → should show server error "exceeds unallocated income"
+- After allocating all income, "Allocate Income" button should disappear
+- Verify allocations are week-scoped (don't carry over — check next week if possible)
+- NOTE: Firestore index for `envelope_income_allocations` must be deployed first:
+  `firebase deploy --only firestore:indexes --project <id>`
+
+**Todoist (tasks.dan-weinbeck.com):**
+- No question-mark help bubbles should be visible anywhere (sidebar, board toggle, sections, search, tags)
+- Edit a task that has subtasks → subtasks should remain visible below the edit form
+- Switch to Kanban view → refresh the page → should still be in Kanban view (persisted per project)
+  - NOTE: requires `npx prisma db push` in todoist repo first
+
+**Chatbot (chatbot on dan-weinbeck.com):**
+- After re-sync: ask "What projects has Dan built?" → should return correct project names
+  - NOTE: requires calling `POST /admin/sync-repo` after deploying the denylist change
+
+### Testing Focus Areas — Brand Card Logos + Typography Fix
+
+**Brand Scraper Result Card (`/apps/brand-scraper`):**
+- **Logos:** Should render at 128px max height (was 64px). Broken image URLs should show a placeholder icon instead of invisible nothing.
+- **Favicons:** New "Favicons" section should appear below Logos showing detected favicons at 64px max height.
+- **Social Previews:** New "Social Previews" section should show OG images at 96px max height.
+- **Empty state:** If no assets detected at all, shows "No assets detected" instead of "No logos detected".
+- **Lightbox:** Click any asset (logo, favicon, or OG image) → full-size lightbox should still work.
+- **Typography:** Each font entry should render its name **in the actual Google Font** with correct weight. System fonts show in default UI font. Loading/error states shown inline.
+- **Tagline:** Tagline preview should still render in the primary Google Font (unchanged).
+- **Tasks app:** Out of scope — separate repo/service at tasks.dan-weinbeck.com.
 

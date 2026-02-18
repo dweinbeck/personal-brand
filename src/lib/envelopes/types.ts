@@ -81,6 +81,13 @@ export const incomeEntrySchema = z.object({
 });
 export type IncomeEntryInput = z.infer<typeof incomeEntrySchema>;
 
+/** Income allocation input: allocate extra income to a specific envelope. */
+export const incomeAllocationSchema = z.object({
+  envelopeId: z.string().min(1),
+  amountCents: z.number().int().min(1),
+});
+export type IncomeAllocationInput = z.infer<typeof incomeAllocationSchema>;
+
 /** Result of validating an allocation request. */
 export type AllocationValidationResult =
   | { valid: true }
@@ -148,6 +155,16 @@ export type IncomeEntry = {
   createdAt: Timestamp;
 };
 
+/** Income allocation Firestore document (income allocated to an envelope for a week). */
+export type IncomeAllocation = {
+  id: string;
+  userId: string;
+  envelopeId: string;
+  amountCents: number;
+  weekStart: string; // YYYY-MM-DD (scoped to current week)
+  createdAt: Timestamp;
+};
+
 // ---------------------------------------------------------------------------
 // Computed / display types (used by UI and API responses)
 // ---------------------------------------------------------------------------
@@ -166,6 +183,7 @@ export type HomePageData = {
   weekLabel: string;
   cumulativeSavingsCents: number;
   weeklyIncomeCents: number; // total extra income for current week
+  allocatedIncomeCents: number; // total income already allocated to envelopes this week
   billing: BillingStatus;
 };
 

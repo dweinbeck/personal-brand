@@ -9,6 +9,8 @@ import type {
   EnvelopeTransfer,
   EnvelopeWithStatus,
   HomePageData,
+  IncomeAllocation,
+  IncomeAllocationInput,
   IncomeEntry,
   IncomeEntryInput,
   PivotRow,
@@ -81,6 +83,13 @@ export function transfersCol() {
  */
 export function incomeEntriesCol() {
   return requireDb().collection("envelope_income_entries");
+}
+
+/**
+ * Returns the envelope_income_allocations collection reference.
+ */
+export function incomeAllocationsCol() {
+  return requireDb().collection("envelope_income_allocations");
 }
 
 // ---------------------------------------------------------------------------
@@ -927,6 +936,88 @@ export async function deleteIncomeEntry(
   await docRef.delete();
 }
 
+// ---------------------------------------------------------------------------
+// Income allocation CRUD operations
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates an income allocation — assigns extra income to a specific envelope.
+ * Validates that:
+ *  - The envelope belongs to the user (transaction check)
+ *  - amountCents does not exceed unallocated income for the week
+ */
+export async function createIncomeAllocation(
+  userId: string,
+  input: IncomeAllocationInput,
+  weekStart: string,
+): Promise<IncomeAllocation> {
+  const { start, end } = getWeekRange(new Date(`${weekStart}T00:00:00`));
+  const weekStartStr = format(start, "yyyy-MM-dd");
+  const weekEndStr = format(end, "yyyy-MM-dd");
+
+  // Parallel fetch: income entries + existing allocations for the week
+  const [incomeCents, existingAllocSnap] = await Promise.all([
+    getWeeklyIncomeTotal(userId, weekStartStr, weekEndStr),
+    incomeAllocationsCol()
+      .where("userId", "==", userId)
+      .where("weekStart", "==", weekStartStr)
+      .get(),
+  ]);
+
+  const alreadyAllocated = existingAllocSnap.docs.reduce(
+    (sum, doc) => sum + (doc.data().amountCents as number),
+    0,
+  );
+
+  const unallocated = incomeCents - alreadyAllocated;
+  if (input.amountCents > unallocated) {
+    throw new Error(
+      `Allocation amount (${input.amountCents}) exceeds unallocated income (${unallocated}).`,
+    );
+  }
+
+  // Verify envelope ownership inside a transaction
+  const docRef = incomeAllocationsCol().doc();
+  await requireDb().runTransaction(async (transaction) => {
+    const envSnap = await transaction.get(envelopesCol().doc(input.envelopeId));
+    if (!envSnap.exists || envSnap.data()?.userId !== userId) {
+      throw new Error("Envelope not found or access denied.");
+    }
+
+    transaction.set(docRef, {
+      userId,
+      envelopeId: input.envelopeId,
+      amountCents: input.amountCents,
+      weekStart: weekStartStr,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  });
+
+  const snap = await docRef.get();
+  return { id: docRef.id, ...snap.data() } as IncomeAllocation;
+}
+
+/**
+ * Lists income allocations for a user within a given week range, ordered by createdAt desc.
+ */
+export async function listIncomeAllocations(
+  userId: string,
+  weekStart: string,
+  weekEnd: string,
+): Promise<IncomeAllocation[]> {
+  const snap = await incomeAllocationsCol()
+    .where("userId", "==", userId)
+    .where("weekStart", ">=", weekStart)
+    .where("weekStart", "<=", weekEnd)
+    .orderBy("createdAt", "desc")
+    .get();
+
+  return snap.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as IncomeAllocation[];
+}
+
 /**
  * Returns total income cents for a user within a week range.
  */
@@ -1021,16 +1112,21 @@ export async function listEnvelopesWithRemaining(
   const weekStartStr = format(start, "yyyy-MM-dd");
   const weekEndStr = format(end, "yyyy-MM-dd");
 
-  // Parallel fetch: envelopes, transactions, transfers, and income for current week
-  const [envSnap, txSnap, transferSnap, weeklyIncomeCents] = await Promise.all([
-    envelopesForUser(userId).get(),
-    transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
-    transfersCol()
-      .where("userId", "==", userId)
-      .where("weekStart", "==", weekStartStr)
-      .get(),
-    getWeeklyIncomeTotal(userId, weekStartStr, weekEndStr),
-  ]);
+  // Parallel fetch: envelopes, transactions, transfers, income, and income allocations for current week
+  const [envSnap, txSnap, transferSnap, weeklyIncomeCents, incomeAllocSnap] =
+    await Promise.all([
+      envelopesForUser(userId).get(),
+      transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
+      transfersCol()
+        .where("userId", "==", userId)
+        .where("weekStart", "==", weekStartStr)
+        .get(),
+      getWeeklyIncomeTotal(userId, weekStartStr, weekEndStr),
+      incomeAllocationsCol()
+        .where("userId", "==", userId)
+        .where("weekStart", "==", weekStartStr)
+        .get(),
+    ]);
 
   // Build transaction sums by envelopeId and map transaction IDs to envelope IDs
   const spentByEnvelope = new Map<string, number>();
@@ -1133,6 +1229,19 @@ export async function listEnvelopesWithRemaining(
     );
   }
 
+  // Add income allocations to receivedTransfersByEnvelope (they increase remaining just like received transfers)
+  let allocatedIncomeCents = 0;
+  for (const doc of incomeAllocSnap.docs) {
+    const data = doc.data();
+    const envId = data.envelopeId as string;
+    const amount = data.amountCents as number;
+    allocatedIncomeCents += amount;
+    receivedTransfersByEnvelope.set(
+      envId,
+      (receivedTransfersByEnvelope.get(envId) ?? 0) + amount,
+    );
+  }
+
   // Fetch all historical transactions if any envelopes have rollover enabled
   const hasRolloverEnvelopes = envSnap.docs.some(
     (d) => d.data().rollover === true,
@@ -1201,6 +1310,7 @@ export async function listEnvelopesWithRemaining(
     weekLabel: formatWeekLabel(today),
     cumulativeSavingsCents,
     weeklyIncomeCents,
+    allocatedIncomeCents,
   };
 }
 
@@ -1283,13 +1393,18 @@ export async function getAnalyticsData(
   const weekStartStr = format(start, "yyyy-MM-dd");
   const weekEndStr = format(end, "yyyy-MM-dd");
 
-  // 1. Parallel fetch: envelopes + current-week transactions + ALL transactions + ALL income entries
-  const [envSnap, currentTxSnap, allTxSnap, allIncomeSnap] = await Promise.all([
-    envelopesForUser(userId).get(),
-    transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
-    transactionsCol().where("userId", "==", userId).get(),
-    incomeEntriesCol().where("userId", "==", userId).get(),
-  ]);
+  // 1. Parallel fetch: envelopes + current-week transactions + ALL transactions + ALL income entries + current-week allocations
+  const [envSnap, currentTxSnap, allTxSnap, allIncomeSnap, currentAllocSnap] =
+    await Promise.all([
+      envelopesForUser(userId).get(),
+      transactionsForUserInWeek(userId, weekStartStr, weekEndStr).get(),
+      transactionsCol().where("userId", "==", userId).get(),
+      incomeEntriesCol().where("userId", "==", userId).get(),
+      incomeAllocationsCol()
+        .where("userId", "==", userId)
+        .where("weekStart", "==", weekStartStr)
+        .get(),
+    ]);
 
   // 2. Parse envelope data
   const envelopeHeaders = envSnap.docs.map((doc) => ({
@@ -1335,10 +1450,17 @@ export async function getAnalyticsData(
     if (status === "On Track") onTrackCount++;
   }
 
+  // Sum allocated income for current week
+  const analyticsAllocatedIncome = currentAllocSnap.docs.reduce(
+    (sum, doc) => sum + (doc.data().amountCents as number),
+    0,
+  );
+
   const summary = {
     totalSpentCents,
-    totalBudgetCents,
-    totalRemainingCents: totalBudgetCents - totalSpentCents,
+    totalBudgetCents: totalBudgetCents + analyticsAllocatedIncome,
+    totalRemainingCents:
+      totalBudgetCents + analyticsAllocatedIncome - totalSpentCents,
     onTrackCount,
     totalEnvelopeCount: envelopeData.length,
   };
