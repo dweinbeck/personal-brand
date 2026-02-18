@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 41 — Envelopes Enhancements (Fund Transfers, Analytics Redesign, Weekly Rollover)
+**Current focus:** Phase 41.1 — Testing Feedback Round 2 (Assistant Accuracy, Envelopes UX, Research Assistant Styling)
 
 ## Current Position
 
-Phase: 41 (Envelopes Enhancements)
-Plan: 4 of 4 complete in current phase
-Status: Phase 41 Complete
-Last activity: 2026-02-17 - Completed 41-04: Weekly rollover workflow with surplus computation and UI display
+Phase: 41.1 (Testing Feedback Round 2)
+Plan: 3 of 4 complete in current phase
+Status: Executing
+Last activity: 2026-02-17 - Completed 41.1-03: Research Assistant styling and session history fixes
 
-Progress: [##########] 100% — Phase 41 complete
+Progress: [#######...] 75% — Plan 3 of 4 complete
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [##########] 100% — Phase 41 complete
 | 41-envelopes-enhancements | 01 | 6 min | 2 | 4 |
 | 41-envelopes-enhancements | 03 | 8 min | 2 | 6 |
 | 41-envelopes-enhancements | 04 | 3 min | 2 | 4 |
+| 41.1-testing-feedback | 03 | 6 min | 2 | 2 |
 
 ## Accumulated Context
 
@@ -103,6 +104,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [Phase 41-04]: Compute rollover surplus on-the-fly from historical transactions, no separate Firestore document needed
 - [Phase 41-04]: Rollover surplus added to effective budget (not weeklyBudgetCents) to keep base budget immutable
 - [Phase 41-04]: Only fetch all historical transactions when at least one envelope has rollover enabled
+- [Phase 41.1-03]: Removed prose-invert only from body; header retains bg-primary with white text
+- [Phase 41.1-03]: Chronological append order with slice(0, -1) to exclude current response from thread
+- [Phase 41.1-03]: Threshold changed from >0 to >1 to suppress duplicate display after first query
 
 ### Roadmap Evolution
 
@@ -135,9 +139,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 41-04-PLAN.md (Phase 41 complete)
+Stopped at: Completed 41.1-03-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Phase 41 complete. Ready for next milestone or testing feedback.
+Execute 41.1-04-PLAN.md to complete Phase 41.1.
