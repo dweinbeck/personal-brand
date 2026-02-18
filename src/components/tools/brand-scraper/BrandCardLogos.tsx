@@ -65,9 +65,9 @@ function AssetImage({
 }
 
 export function BrandCardLogos({ logos: assets }: BrandCardLogosProps) {
-  const logos = assets?.logos ?? [];
-  const favicons = assets?.favicons ?? [];
-  const ogImages = assets?.og_images ?? [];
+  const logos = (assets?.logos ?? []).filter((e) => e.value.url?.trim());
+  const favicons = (assets?.favicons ?? []).filter((e) => e.value.url?.trim());
+  const ogImages = (assets?.og_images ?? []).filter((e) => e.value.url?.trim());
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
 
   const closeLightbox = useCallback(() => setSelectedUrl(null), []);

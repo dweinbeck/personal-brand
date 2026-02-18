@@ -12,6 +12,19 @@ type FontEntry = NonNullable<
   BrandTaxonomy["typography"]
 >["font_families"][number];
 
+function getFontSizeClass(usage?: string): string {
+  if (!usage) return "text-lg";
+  const lower = usage.toLowerCase();
+  if (
+    lower.includes("heading") ||
+    lower.includes("display") ||
+    lower.includes("title")
+  )
+    return "text-2xl";
+  if (lower.includes("body") || lower.includes("paragraph")) return "text-base";
+  return "text-lg";
+}
+
 /** Renders a single font entry in its actual typeface (Google Fonts only). */
 function TypographyEntry({ entry }: { entry: FontEntry }) {
   const isGoogle = entry.value.source === "google_fonts";
@@ -28,11 +41,19 @@ function TypographyEntry({ entry }: { entry: FontEntry }) {
         }
       : {};
 
+  const sizeClass = getFontSizeClass(entry.value.usage);
+
   return (
     <div className="rounded-lg border border-border bg-white dark:bg-gray-900 p-3">
+      {/* Usage role label */}
+      {entry.value.usage && (
+        <p className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider mb-1">
+          {entry.value.usage}
+        </p>
+      )}
       {/* Font preview — the family name rendered in its own typeface */}
       <p
-        className="text-lg text-text-primary leading-snug mb-1"
+        className={`${sizeClass} text-text-primary leading-snug mb-1`}
         style={fontStyle}
       >
         {entry.value.family}
@@ -48,11 +69,6 @@ function TypographyEntry({ entry }: { entry: FontEntry }) {
       {/* Metadata row */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-text-tertiary">
         {entry.value.weight && <span>{entry.value.weight}</span>}
-        {entry.value.usage && (
-          <span className="bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded">
-            {entry.value.usage}
-          </span>
-        )}
         {entry.value.source && (
           <span>({entry.value.source.replace(/_/g, " ")})</span>
         )}

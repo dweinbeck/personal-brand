@@ -22,7 +22,7 @@ export function EnvelopeCard({
   envelope,
   isEditMode,
   isDeleting,
-  onEdit,
+  onEdit: _onEdit,
   onDelete,
   onConfirmDelete,
   onCancelDelete,

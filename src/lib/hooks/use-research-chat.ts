@@ -353,12 +353,26 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
     async (
       body: Record<string, unknown>,
       signal: AbortSignal,
+      onError?: (message: string) => void,
     ): Promise<Response | null> => {
+      const handleError = (message: string) => {
+        if (onError) {
+          onError(message);
+        } else {
+          setState((prev) => ({
+            ...prev,
+            overallStatus: "error",
+            gemini: { ...prev.gemini, status: "error", error: message },
+            openai: { ...prev.openai, status: "error", error: message },
+          }));
+        }
+      };
+
       let idToken: string;
       try {
         idToken = await getIdToken();
       } catch {
-        setState((prev) => ({ ...prev, overallStatus: "error" }));
+        handleError("Failed to authenticate");
         return null;
       }
 
@@ -376,36 +390,23 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError")
           return null;
-        setState((prev) => ({ ...prev, overallStatus: "error" }));
+        handleError("Failed to connect to server");
         return null;
       }
 
       if (!response.ok) {
         try {
           const errBody = (await response.json()) as { error?: string };
-          setState((prev) => ({
-            ...prev,
-            overallStatus: "error",
-            gemini: {
-              ...prev.gemini,
-              status: "error",
-              error: errBody.error ?? `Request failed (${response.status})`,
-            },
-            openai: {
-              ...prev.openai,
-              status: "error",
-              error: errBody.error ?? `Request failed (${response.status})`,
-            },
-          }));
+          handleError(errBody.error ?? `Request failed (${response.status})`);
         } catch {
-          setState((prev) => ({ ...prev, overallStatus: "error" }));
+          handleError(`Request failed (${response.status})`);
         }
         return null;
       }
 
       const contentType = response.headers.get("Content-Type") ?? "";
       if (!contentType.includes("text/event-stream")) {
-        setState((prev) => ({ ...prev, overallStatus: "error" }));
+        handleError("Unexpected response format");
         return null;
       }
 
@@ -547,18 +548,18 @@ export function useResearchChat(getIdToken: () => Promise<string>) {
         conversationId,
       },
       controller.signal,
+      (errorMessage) => {
+        setIsReconsiderStreaming(false);
+        setReconsiderState((prev) => ({
+          ...prev,
+          overallStatus: "error",
+          gemini: { ...prev.gemini, status: "error", error: errorMessage },
+          openai: { ...prev.openai, status: "error", error: errorMessage },
+        }));
+      },
     );
 
-    if (!response) {
-      setIsReconsiderStreaming(false);
-      setReconsiderState((prev) => ({
-        ...prev,
-        overallStatus: "error",
-        gemini: { ...prev.gemini, status: "error", error: "Failed to connect" },
-        openai: { ...prev.openai, status: "error", error: "Failed to connect" },
-      }));
-      return;
-    }
+    if (!response) return;
 
     try {
       await readSSEResponse(response, (eventName, data) => {

@@ -147,63 +147,64 @@ function extractCollection(apiName: string): string {
 // ── Main ────────────────────────────────────────────────────────
 
 async function main() {
-const token = await getAccessToken();
-const liveIndexes = await fetchLiveIndexes(token);
+  const token = await getAccessToken();
+  const liveIndexes = await fetchLiveIndexes(token);
 
-let allReady = true;
+  let allReady = true;
 
-// Table header
-console.log(
-  `  ${"Collection".padEnd(28)} ${"Fields".padEnd(40)} ${"Status".padEnd(10)}`,
-);
-console.log(`  ${"─".repeat(28)} ${"─".repeat(40)} ${"─".repeat(10)}`);
+  // Table header
+  console.log(
+    `  ${"Collection".padEnd(28)} ${"Fields".padEnd(40)} ${"Status".padEnd(10)}`,
+  );
+  console.log(`  ${"─".repeat(28)} ${"─".repeat(40)} ${"─".repeat(10)}`);
 
-for (const local of localIndexes) {
-  const fieldsDesc = local.fields
-    .map(
-      (f) => `${f.fieldPath} ${(f.order ?? f.arrayConfig ?? "").toLowerCase()}`,
-    )
-    .join(", ");
+  for (const local of localIndexes) {
+    const fieldsDesc = local.fields
+      .map(
+        (f) =>
+          `${f.fieldPath} ${(f.order ?? f.arrayConfig ?? "").toLowerCase()}`,
+      )
+      .join(", ");
 
-  // Find matching live index
-  const match = liveIndexes.find((live) => {
-    const collection = extractCollection(live.name);
-    if (collection !== local.collectionGroup) return false;
-    return fieldsMatch(local.fields, live.fields);
-  });
+    // Find matching live index
+    const match = liveIndexes.find((live) => {
+      const collection = extractCollection(live.name);
+      if (collection !== local.collectionGroup) return false;
+      return fieldsMatch(local.fields, live.fields);
+    });
 
-  let status: string;
-  if (!match) {
-    status = red("MISSING");
-    allReady = false;
-  } else if (match.state === "READY") {
-    status = green("READY");
-  } else if (match.state === "CREATING") {
-    status = yellow("CREATING");
-    allReady = false;
-  } else {
-    status = yellow(match.state);
-    allReady = false;
+    let status: string;
+    if (!match) {
+      status = red("MISSING");
+      allReady = false;
+    } else if (match.state === "READY") {
+      status = green("READY");
+    } else if (match.state === "CREATING") {
+      status = yellow("CREATING");
+      allReady = false;
+    } else {
+      status = yellow(match.state);
+      allReady = false;
+    }
+
+    console.log(
+      `  ${local.collectionGroup.padEnd(28)} ${fieldsDesc.padEnd(40)} ${status}`,
+    );
   }
 
-  console.log(
-    `  ${local.collectionGroup.padEnd(28)} ${fieldsDesc.padEnd(40)} ${status}`,
-  );
-}
-
-// Summary
-console.log(`\n${bold("─".repeat(50))}`);
-if (allReady) {
-  console.log(green("\n  ✓ All indexes are READY.\n"));
-} else {
-  console.log(
-    yellow(
-      "\n  ⚠ Some indexes are not ready. Deploy with:\n" +
-        `    firebase deploy --only firestore:indexes --project=${projectId}\n`,
-    ),
-  );
-  process.exit(1);
-}
+  // Summary
+  console.log(`\n${bold("─".repeat(50))}`);
+  if (allReady) {
+    console.log(green("\n  ✓ All indexes are READY.\n"));
+  } else {
+    console.log(
+      yellow(
+        "\n  ⚠ Some indexes are not ready. Deploy with:\n" +
+          `    firebase deploy --only firestore:indexes --project=${projectId}\n`,
+      ),
+    );
+    process.exit(1);
+  }
 }
 
 main();
