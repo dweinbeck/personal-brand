@@ -1,5 +1,8 @@
-export const EFFORT_VALUES = [1, 2, 3, 5, 8, 13] as const;
-export type EffortValue = (typeof EFFORT_VALUES)[number];
+export const EFFORT_QUICK_PICKS = [1, 2, 3, 5, 8, 13] as const;
+export type EffortQuickPick = (typeof EFFORT_QUICK_PICKS)[number];
+
+/** @deprecated Use EFFORT_QUICK_PICKS instead */
+export const EFFORT_VALUES = EFFORT_QUICK_PICKS;
 
 /**
  * Compute sum of effort scores for incomplete, top-level tasks.
