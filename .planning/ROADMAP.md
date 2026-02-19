@@ -264,3 +264,17 @@ Phases execute in numeric order: 43 -> 44 -> 45 -> 46 -> 47 -> 48
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
 *For current requirements, see `.planning/REQUIREMENTS.md`*
+
+### Phase 48.1: Tasks App Testing Feedback — Effort Scoring, Drag-and-Drop, UI Polish & Data Import (INSERTED)
+
+**Goal:** Address urgent testing feedback for the Tasks app: remove help tips, add sidebar home link, make free trial banner dismissible with countdown, overhaul effort scoring with subtask budgeting, add drag-and-drop task reordering between sections, and bulk import sprint plan data
+**Depends on:** Phase 48
+**Requirements:** TF-01, TF-02, TF-03, TF-04, TF-05, TF-06
+**Plans:** 5 plans
+
+Plans:
+- [ ] 48.1-01-PLAN.md — Remove all help tip icons and add Home link to sidebar
+- [ ] 48.1-02-PLAN.md — Dismissible free trial banner with dynamic countdown
+- [ ] 48.1-03-PLAN.md — Effort scoring overhaul with subtask editing and budget allocation
+- [ ] 48.1-04-PLAN.md — Drag-and-drop tasks between sections in list view
+- [ ] 48.1-05-PLAN.md — Bulk data import from sprint plan JSON
