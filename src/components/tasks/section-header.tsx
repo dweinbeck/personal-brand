@@ -6,7 +6,6 @@ import {
   updateSectionAction,
 } from "@/actions/tasks/section";
 import { ConfirmDialog } from "@/components/tasks/ui/confirm-dialog";
-import { HelpTip } from "@/components/tasks/ui/help-tip";
 import { useAuth } from "@/context/AuthContext";
 import { useDemoMode } from "@/lib/tasks/demo";
 
@@ -99,7 +98,6 @@ export function SectionHeader({
                 )}
               </button>
             )}
-            <HelpTip tipId="sections" />
           </div>
         )}
         {!isDemo && (

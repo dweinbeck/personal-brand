@@ -6,7 +6,6 @@ import { createTagAction, deleteTagAction } from "@/actions/tasks/tag";
 import { Badge } from "@/components/tasks/ui/badge";
 import { Button } from "@/components/tasks/ui/button";
 import { ConfirmDialog } from "@/components/tasks/ui/confirm-dialog";
-import { HelpTip } from "@/components/tasks/ui/help-tip";
 import { Input } from "@/components/tasks/ui/input";
 import { useAuth } from "@/context/AuthContext";
 
@@ -64,7 +63,6 @@ export function TagList({ tags }: TagListProps) {
         <span className="text-xs font-medium text-text-secondary">
           Manage tags
         </span>
-        <HelpTip tipId="tags" />
       </div>
       <div className="space-y-2 mb-6">
         {tags.length === 0 && !adding && (

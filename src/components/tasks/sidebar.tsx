@@ -13,7 +13,6 @@ import {
 } from "@/actions/tasks/workspace";
 import { QuickAddModal } from "@/components/tasks/quick-add-modal";
 import { ConfirmDialog } from "@/components/tasks/ui/confirm-dialog";
-import { HelpTip } from "@/components/tasks/ui/help-tip";
 import { useAuth } from "@/context/AuthContext";
 import type { SidebarWorkspace } from "@/lib/tasks/types";
 import { cn } from "@/lib/utils";
@@ -24,6 +23,7 @@ interface SidebarProps {
 }
 
 const navItems = [
+  { href: "/apps/tasks", label: "Home", icon: "home" },
   { href: "/apps/tasks/today", label: "Today", icon: "sun" },
   { href: "/apps/tasks/completed", label: "Completed", icon: "check" },
   { href: "/apps/tasks/search", label: "Search", icon: "search" },
@@ -32,6 +32,22 @@ const navItems = [
 
 function NavIcon({ icon }: { icon: string }) {
   switch (icon) {
+    case "home":
+      return (
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
     case "sun":
       return (
         <svg
@@ -164,7 +180,6 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
             </svg>
             Add Task
           </button>
-          <HelpTip tipId="quick-add" />
         </div>
 
         <nav className="p-3 space-y-1">
