@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { verifyUser } from "@/lib/tasks/auth";
-import { billingGuard, checkBillingAccess } from "@/lib/tasks/billing";
 import {
   createSectionSchema,
   updateSectionSchema,
 } from "@/lib/schemas/tasks/section";
+import { verifyUser } from "@/lib/tasks/auth";
+import { billingGuard, checkBillingAccess } from "@/lib/tasks/billing";
 import {
   createSection as createSectionSvc,
   deleteSection as deleteSectionSvc,

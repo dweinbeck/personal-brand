@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createTagSchema, updateTagSchema } from "@/lib/schemas/tasks/tag";
 import { verifyUser } from "@/lib/tasks/auth";
 import { billingGuard, checkBillingAccess } from "@/lib/tasks/billing";
-import { createTagSchema, updateTagSchema } from "@/lib/schemas/tasks/tag";
 import {
   createTag as createTagSvc,
   deleteTag as deleteTagSvc,

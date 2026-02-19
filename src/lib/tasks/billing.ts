@@ -1,7 +1,7 @@
 import "server-only";
 
-import { auth } from "@/lib/firebase";
 import { checkTasksAccess } from "@/lib/billing/tasks";
+import { auth } from "@/lib/firebase";
 
 export type BillingStatus = {
   mode: "readwrite" | "readonly";
