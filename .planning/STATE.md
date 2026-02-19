@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 47 of 48 (Feature Parity & Demo Mode)
-Plan: 2 of 4 in current phase
-Status: Plan 47-02 Complete
-Last activity: 2026-02-19 — Plan 47-02 complete (Smart Views & Help Tips)
+Plan: 3 of 4 in current phase
+Status: Plan 47-03 Complete
+Last activity: 2026-02-19 — Plan 47-03 complete (Demo Mode)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 120
+- Total plans completed: 121
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -65,6 +65,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [47-02]: HelpTip uses createPortal to document.body to avoid overflow clipping in sidebar/cards
 - [47-02]: Used <output> element instead of role=status div for Biome a11y compliance
 - [47-02]: Help tips placed only in client components (hooks require client context)
+- [47-03]: Route group (authenticated) separates auth-required routes from public demo route
+- [47-03]: Demo uses purely client-side rendering with no server actions or database access
+- [47-03]: Minimal root layout.tsx passes children through without auth check
 
 ### Roadmap Evolution
 
@@ -83,9 +86,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 47-02-PLAN.md (Smart Views & Help Tips)
+Stopped at: Completed 47-03-PLAN.md (Demo Mode)
 Resume file: None
 
 ## Next Step
 
-Continue Phase 47: Plan 47-03 next.
+Continue Phase 47: Plan 47-04 next.
