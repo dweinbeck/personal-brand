@@ -78,6 +78,7 @@ Full decision log in PROJECT.md Key Decisions table.
 - [48.1-03]: Parent task effort is a manual budget (not auto-summed from subtasks)
 - [48.1-04]: Native HTML5 Drag and Drop API for task section reordering (no external library)
 - [48.1-04]: Semantic HTML (section, ul, li) for drag-and-drop containers and items
+- [48.1-01]: Preserved concurrent drag-and-drop changes in project-view.tsx when removing HelpTip
 
 ### Roadmap Evolution
 
