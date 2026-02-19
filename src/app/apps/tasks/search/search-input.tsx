@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { HelpTip } from "@/components/tasks/ui/help-tip";
 
 interface SearchInputProps {
   initialQuery: string;
@@ -20,10 +21,11 @@ export function SearchInput({ initialQuery }: SearchInputProps) {
 
   return (
     <form onSubmit={handleSearch}>
-      <div className="mb-2">
+      <div className="mb-2 flex items-center gap-1.5">
         <span className="text-xs font-medium text-text-secondary">
           Search tasks
         </span>
+        <HelpTip tipId="search" />
       </div>
       <div className="relative">
         <svg

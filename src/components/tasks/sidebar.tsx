@@ -13,6 +13,7 @@ import {
 } from "@/actions/tasks/workspace";
 import { QuickAddModal } from "@/components/tasks/quick-add-modal";
 import { ConfirmDialog } from "@/components/tasks/ui/confirm-dialog";
+import { HelpTip } from "@/components/tasks/ui/help-tip";
 import { useAuth } from "@/context/AuthContext";
 import type { SidebarWorkspace } from "@/lib/tasks/types";
 import { cn } from "@/lib/utils";
@@ -163,6 +164,7 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
             </svg>
             Add Task
           </button>
+          <HelpTip tipId="quick-add" />
         </div>
 
         <nav className="p-3 space-y-1">

@@ -6,6 +6,7 @@ import {
   updateSectionAction,
 } from "@/actions/tasks/section";
 import { ConfirmDialog } from "@/components/tasks/ui/confirm-dialog";
+import { HelpTip } from "@/components/tasks/ui/help-tip";
 import { useAuth } from "@/context/AuthContext";
 import { useDemoMode } from "@/lib/tasks/demo";
 
@@ -68,7 +69,7 @@ export function SectionHeader({
             className="text-sm font-semibold text-text-primary px-1 py-0.5 border border-border rounded-[var(--radius-button)] bg-surface focus:outline-none focus:ring-2 focus:ring-gold/50"
           />
         ) : (
-          <div className="flex items-center">
+          <div className="flex items-center gap-1.5">
             {isDemo ? (
               <span className="text-sm font-semibold text-text-primary">
                 {section.name}
@@ -98,6 +99,7 @@ export function SectionHeader({
                 )}
               </button>
             )}
+            <HelpTip tipId="sections" />
           </div>
         )}
         {!isDemo && (
