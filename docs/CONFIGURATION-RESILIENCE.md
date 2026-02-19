@@ -49,14 +49,13 @@ Every new service multiplies the drift surface. Every environment adds a dimensi
 
 ## The N x (N-1) URL Problem
 
-With 4 services (personal-brand, brand-scraper, chatbot, tasks), there are **12 potential URL configurations** (each service can reference 3 others). Each must be correct, in every environment, simultaneously.
+With 3 services (personal-brand, brand-scraper, chatbot), there are **6 potential URL configurations** (each service can reference 2 others). Each must be correct, in every environment, simultaneously. (Tasks was decommissioned as a separate service and integrated into personal-brand at `/apps/tasks`.)
 
-| From \ To | Brand Scraper | Chatbot | Tasks | Personal Brand |
-|-----------|---------------|---------|-------|----------------|
-| Personal Brand | `BRAND_SCRAPER_API_URL` | `CHATBOT_API_URL` | `NEXT_PUBLIC_TASKS_APP_URL` | (self) |
-| Brand Scraper | (self) | - | - | `CALLBACK_URL` |
-| Chatbot | - | (self) | - | - |
-| Tasks | - | - | (self) | `MAIN_APP_URL` |
+| From \ To | Brand Scraper | Chatbot | Personal Brand |
+|-----------|---------------|---------|----------------|
+| Personal Brand | `BRAND_SCRAPER_API_URL` | `CHATBOT_API_URL` | (self) |
+| Brand Scraper | (self) | - | `CALLBACK_URL` |
+| Chatbot | - | (self) | - |
 
 A self-referencing URL (service A's env var pointing back to service A) often returns HTTP 200 — just from the wrong service. The personal-brand app serves HTML at any path, so `CHATBOT_API_URL=https://dan-weinbeck.com/api/chat` returns 200 with HTML content instead of the expected JSON from the FastAPI chatbot.
 

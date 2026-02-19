@@ -12,7 +12,6 @@ Last updated: 2026-02-17
 |---------|------|-----|-------|
 | `CHATBOT_API_URL` | Cloud Run URL (set in Cloud Build trigger) | Cloud Run URL (set in Cloud Build trigger) | `http://localhost:8000` |
 | `BRAND_SCRAPER_API_URL` | Cloud Run URL (set in Cloud Build trigger) | Cloud Run URL (set in Cloud Build trigger) | `http://localhost:8001` |
-| `NEXT_PUBLIC_TASKS_APP_URL` | `https://tasks.dan-weinbeck.com` | `https://tasks.dev.dan-weinbeck.com` | `http://localhost:3001` |
 
 **Key rule:** Every service URL must point to a **distinct external service**, never back to this app. See [CONFIGURATION-RESILIENCE.md](./CONFIGURATION-RESILIENCE.md) for why.
 
@@ -102,27 +101,19 @@ Use this when setting up a new environment or verifying an existing one.
                     │   (personal-brand)   │
                     │   Next.js on Cloud   │
                     │        Run           │
-                    └──┬───────┬───────┬───┘
-                       │       │       │
-          CHATBOT_API  │       │       │  BRAND_SCRAPER_API
-            _URL       │       │       │    _URL
-                       ▼       │       ▼
-              ┌────────────┐   │   ┌────────────────┐
-              │  Chatbot   │   │   │ Brand Scraper   │
-              │  (FastAPI) │   │   │   (Fastify)     │
-              │  Cloud Run │   │   │   Cloud Run     │
-              └────────────┘   │   └────────────────┘
-                               │
-                   NEXT_PUBLIC  │
-                  _TASKS_APP   │
-                    _URL       │
-                               ▼
-                      ┌────────────────┐
-                      │   Tasks App    │
-                      │   (separate)   │
-                      │ tasks.dan-     │
-                      │ weinbeck.com   │
-                      └────────────────┘
+                    │                     │
+                    │  Tasks integrated   │
+                    │  at /apps/tasks     │
+                    └──┬───────────────┬───┘
+                       │               │
+          CHATBOT_API  │               │  BRAND_SCRAPER_API
+            _URL       │               │    _URL
+                       ▼               ▼
+              ┌────────────┐   ┌────────────────┐
+              │  Chatbot   │   │ Brand Scraper   │
+              │  (FastAPI) │   │   (Fastify)     │
+              │  Cloud Run │   │   Cloud Run     │
+              └────────────┘   └────────────────┘
 ```
 
-Each box is a **separate Cloud Run service** with its own URL. Arrows represent env var references. If any arrow points back to the source box, that's a misconfiguration.
+Two external Cloud Run services. Tasks is now integrated within the personal-brand app at `/apps/tasks` (no separate service). Arrows represent env var references. If any arrow points back to the source box, that's a misconfiguration.

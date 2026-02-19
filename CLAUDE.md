@@ -75,15 +75,20 @@ This project uses **trunk-based development**:
 
 ## Multi-Service Architecture
 
+### Service URL Sanity Rule
+
+> **MUST: Every service URL MUST be a distinct external service — never a path on this app.** Self-referencing URLs are the #1 recurring config bug. Validate with `npm run validate-env` before every commit that touches service URLs.
+
 ### Service Map
 
-This app coordinates with external services. Every service URL must point to a DISTINCT external service, never back to this app.
+This app coordinates with external services.
 
 | Service | Env Var | What It Is | What It Is NOT |
 |---------|---------|-----------|---------------|
 | Chatbot (FastAPI) | `CHATBOT_API_URL` | Separate Cloud Run service | NOT a path on this app |
 | Brand Scraper | `BRAND_SCRAPER_API_URL` | Separate Cloud Run service | NOT `dan-weinbeck.com/...` |
-| Tasks App | `NEXT_PUBLIC_TASKS_APP_URL` | Separate app on tasks subdomain | NOT `dan-weinbeck.com/tasks` |
+
+> **Note:** Tasks is integrated within this app at `/apps/tasks` -- it is not an external service.
 
 ### Proven Configuration Mistakes (From Real Bugs)
 
@@ -107,6 +112,14 @@ Before every deploy, run in order:
 4. After deploy: `npm run smoke-test` (service connectivity)
 
 When adding a new external service, follow `docs/NEW-SERVICE-CHECKLIST.md`.
+
+### Mandatory `validate-env` Gate
+
+Run `npm run validate-env` before any PR/commit that touches:
+- `src/app/api/**` (server routes)
+- `src/lib/firebase.ts` (Firebase config)
+- Any file referencing `process.env`
+- Any service URL usage
 
 ---
 
