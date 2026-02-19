@@ -127,7 +127,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 **Milestone Goal:** Merge the standalone Tasks app (todoist) into the personal-brand Next.js app for unified deployment, native /apps/tasks routing, and direct billing integration — eliminating a separate Cloud Run service while preserving all existing functionality and data.
 
 - [x] **Phase 43: Prisma & Database Foundation** — Add Prisma to personal-brand, connect to Cloud SQL PostgreSQL, verify schema with existing data (completed 2026-02-19)
-- [ ] **Phase 44: Server-Side Code Migration** — Migrate server actions, services, Zod schemas, auth integration, and billing wiring
+- [x] **Phase 44: Server-Side Code Migration** — Migrate server actions, services, Zod schemas, auth integration, and billing wiring (completed 2026-02-19)
 - [ ] **Phase 45: UI Components & Routing** — Migrate UI components, set up /apps/tasks routes, integrate sidebar
 - [ ] **Phase 46: Landing Page & KPI Dashboard** — Build custom landing page with "Your Tasks at a Glance" card
 - [ ] **Phase 47: Feature Parity & Demo Mode** — Verify all existing features work end-to-end, demo mode functional
@@ -253,7 +253,7 @@ Phases execute in numeric order: 43 -> 44 -> 45 -> 46 -> 47 -> 48
 | 31-35 | v1.8 | 11/11 | Complete | 2026-02-12 |
 | 36-42 | v1.9 | 16/25 | Deferred | - |
 | 43. Prisma & Database Foundation | v2.0 | Complete    | 2026-02-19 | - |
-| 44. Server-Side Code Migration | v2.0 | 0/3 | Not started | - |
+| 44. Server-Side Code Migration | v2.0 | Complete    | 2026-02-19 | - |
 | 45. UI Components & Routing | v2.0 | 0/3 | Not started | - |
 | 46. Landing Page & KPI Dashboard | v2.0 | 0/2 | Not started | - |
 | 47. Feature Parity & Demo Mode | v2.0 | 0/4 | Not started | - |
