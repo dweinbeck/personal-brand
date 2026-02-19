@@ -1,5 +1,3 @@
-import { clientEnv } from "@/lib/env";
-
 export interface AppListing {
   slug: string;
   title: string;
@@ -31,10 +29,7 @@ export function getApps(): AppListing[] {
       subtitle: "Organize projects, tasks, and tags",
       description:
         "Full-featured task management with workspaces, projects, sections, tags, subtasks, effort scoring, and board views. Built with a standalone PostgreSQL backend.",
-      href:
-        clientEnv().NEXT_PUBLIC_TASKS_APP_URL ||
-        "https://tasks.dev.dan-weinbeck.com",
-      sameTab: true,
+      href: "/apps/tasks",
       techStack: ["Next.js", "PostgreSQL", "Tailwind CSS"],
     },
     {
