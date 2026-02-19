@@ -270,7 +270,7 @@ Phases execute in numeric order: 43 -> 44 -> 45 -> 46 -> 47 -> 48
 **Goal:** Address urgent testing feedback for the Tasks app: remove help tips, add sidebar home link, make free trial banner dismissible with countdown, overhaul effort scoring with subtask budgeting, add drag-and-drop task reordering between sections, and bulk import sprint plan data
 **Depends on:** Phase 48
 **Requirements:** TF-01, TF-02, TF-03, TF-04, TF-05, TF-06
-**Plans:** 5 plans
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] 48.1-01-PLAN.md — Remove all help tip icons and add Home link to sidebar
