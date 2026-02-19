@@ -9,17 +9,17 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 ## Current Position
 
-Phase: 46 of 48 (Landing Page & KPI Dashboard)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-19 — Plan 46-01 complete (Landing Page Title & KPI Card)
+Phase: 46 of 48 (Landing Page & KPI Dashboard) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-02-19 — Plan 46-02 complete (Data Fetching & KPI Wiring)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 117
+- Total plans completed: 118
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -58,6 +58,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [46-01]: TasksKpiCard is a server component (not 'use client') receiving data via props from the page
 - [46-01]: Inner task mini-cards use simple divs with bg-[#f5f0e8] instead of shared Card component
 - [46-01]: Next tasks column shows exactly 2 slots with placeholder for missing tasks
+- [46-02]: KPI functions query only top-level tasks (parentTaskId === null) to avoid counting subtasks
+- [46-02]: Promise.all used to fetch all KPI data + workspaces in parallel for performance
+- [46-02]: Unauthenticated users see title/subtitle only; KPI card conditionally rendered when kpiData exists
 
 ### Roadmap Evolution
 
@@ -76,9 +79,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 46-01-PLAN.md (Landing Page Title & KPI Card)
+Stopped at: Completed 46-02-PLAN.md (Data Fetching & KPI Wiring) -- Phase 46 complete
 Resume file: None
 
 ## Next Step
 
-Plan 46-01 complete. Next: Plan 46-02 (Data Fetching & KPI Wiring).
+Phase 46 complete. Next: Phase 47 (Feature Parity & Enhancements).
