@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 48.1 of 48.1 (Tasks App Testing Feedback)
-Plan: 3 of 5 in current phase
-Status: Executing Phase 48.1 -- Plan 03 complete
-Last activity: 2026-02-19 — Completed 48.1-03 (Effort Scoring Overhaul)
+Plan: 4 of 5 in current phase
+Status: Executing Phase 48.1 -- Plan 04 complete
+Last activity: 2026-02-19 — Completed 48.1-04 (Drag-and-Drop Between Sections)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 48
-- Total plans completed: 128
+- Total plans completed: 129
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -76,6 +76,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [48.1-03]: Effort schema changed from Fibonacci-only union to z.number().int().positive()
 - [48.1-03]: EFFORT_QUICK_PICKS constant for UI buttons, EFFORT_VALUES kept as backward-compatible alias
 - [48.1-03]: Parent task effort is a manual budget (not auto-summed from subtasks)
+- [48.1-04]: Native HTML5 Drag and Drop API for task section reordering (no external library)
+- [48.1-04]: Semantic HTML (section, ul, li) for drag-and-drop containers and items
 
 ### Roadmap Evolution
 
@@ -95,9 +97,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 48.1-03-PLAN.md
+Stopped at: Completed 48.1-04-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Continue Phase 48.1 with Plan 04 (next in sequence).
+Continue Phase 48.1 with Plan 05 (last plan in phase).
