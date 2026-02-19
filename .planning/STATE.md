@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 46 of 48 (Landing Page & KPI Dashboard)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-19 — Phase 45 complete (UI Components & Routing)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-19 — Plan 46-01 complete (Landing Page Title & KPI Card)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 116
+- Total plans completed: 117
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -55,6 +55,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [45-02]: External redirect page.tsx replaced with proper Tasks landing page
 - [45-03]: Removed clientEnv import from apps.ts (no other listing used it after Tasks href change)
 - [45-03]: Integrated apps use internal routes (/apps/slug) not external URLs in apps hub listings
+- [46-01]: TasksKpiCard is a server component (not 'use client') receiving data via props from the page
+- [46-01]: Inner task mini-cards use simple divs with bg-[#f5f0e8] instead of shared Card component
+- [46-01]: Next tasks column shows exactly 2 slots with placeholder for missing tasks
 
 ### Roadmap Evolution
 
@@ -73,9 +76,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 45-03-PLAN.md (Apps Hub Listing)
+Stopped at: Completed 46-01-PLAN.md (Landing Page Title & KPI Card)
 Resume file: None
 
 ## Next Step
 
-Phase 45 (UI Components & Routing) complete. Next: Phase 46 (Landing Page).
+Plan 46-01 complete. Next: Plan 46-02 (Data Fetching & KPI Wiring).
