@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 44 of 48 (Server-Side Code Migration)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-02-19 — Phase 43 complete (Prisma & Database Foundation)
+Plan: 2 of 3 in current phase
+Status: Executing
+Last activity: 2026-02-19 — Completed 44-02 (Auth & Billing Adapters)
 
 ## Performance Metrics
 
@@ -41,6 +41,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [43-02]: DATABASE_URL validation: fail in production context, warn in local dev
 - [43-03]: Temporary test endpoint /api/tasks-test with no auth (will be removed in Phase 44)
 - [43-03]: All database queries strictly read-only to preserve existing data (DB-04)
+- [44-02]: Tasks auth adapter delegates to shared Firebase Admin SDK singleton (no duplicate init)
+- [44-02]: Tasks billing adapter calls checkTasksAccess() via direct import (no HTTP, no BILLING_API_URL)
+- [44-02]: Graceful degradation: billing defaults to readwrite on auth/billing errors (matches todoist)
 
 ### Roadmap Evolution
 
@@ -58,10 +61,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: Completed 43-03-PLAN.md (Database Connectivity Verification) — Phase 43 complete
+Last session: 2026-02-19
+Stopped at: Completed 44-02-PLAN.md (Auth & Billing Adapters)
 Resume file: None
 
 ## Next Step
 
-Execute Phase 44 (next phase — Tasks Server Actions Migration).
+Execute 44-03-PLAN.md (Server Actions Migration).
