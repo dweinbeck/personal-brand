@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { deleteTaskAction, toggleTaskAction } from "@/actions/tasks/task";
+import {
+  deleteTaskAction,
+  toggleTaskAction,
+  updateTaskAction,
+} from "@/actions/tasks/task";
 import { Badge } from "@/components/tasks/ui/badge";
 import { ConfirmDialog } from "@/components/tasks/ui/confirm-dialog";
 import { useAuth } from "@/context/AuthContext";
@@ -30,7 +34,16 @@ export function TaskCard({
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [overBudgetDismissed, setOverBudgetDismissed] = useState(false);
   const isCompleted = task.status === "COMPLETED";
+
+  const subtaskEffortTotal = task.subtasks
+    .filter((s) => s.effort != null)
+    .reduce((sum, s) => sum + (s.effort as number), 0);
+  const isOverBudget =
+    task.effort != null &&
+    task.subtasks.length > 0 &&
+    subtaskEffortTotal > task.effort;
 
   async function handleToggle(e: React.MouseEvent) {
     e.stopPropagation();
@@ -73,6 +86,7 @@ export function TaskCard({
               subtasks={task.subtasks}
               parentTaskId={task.id}
               projectId={projectId}
+              parentEffort={task.effort}
             />
           </div>
         )}
@@ -156,8 +170,9 @@ export function TaskCard({
               ))}
               {task.subtasks.length > 0 && (
                 <span className="text-xs text-text-tertiary">
-                  {task.subtasks.filter((s) => s.status === "COMPLETED").length}
-                  /{task.subtasks.length}
+                  {task.effort != null
+                    ? `${task.subtasks.length} subtasks - ${subtaskEffortTotal}/${task.effort} allocated`
+                    : `${task.subtasks.filter((s) => s.status === "COMPLETED").length}/${task.subtasks.length}`}
                 </span>
               )}
             </div>
@@ -227,10 +242,47 @@ export function TaskCard({
                 {task.description}
               </p>
             )}
+            {task.effort != null && (
+              <span className="inline-block text-xs font-medium text-amber px-2 py-0.5 rounded-full bg-amber/10 border border-amber/20 mb-2">
+                Task budget: {task.effort}
+              </span>
+            )}
+            {isOverBudget && !overBudgetDismissed && !isDemo && (
+              <div className="flex items-center gap-2 mb-2 p-2 rounded-[var(--radius-button)] bg-danger/5 border border-danger/20">
+                <span className="text-xs text-danger font-medium flex-1">
+                  Over budget by {subtaskEffortTotal - (task.effort ?? 0)}
+                </span>
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const token = await user!.getIdToken();
+                    await updateTaskAction(token, {
+                      id: task.id,
+                      effort: subtaskEffortTotal,
+                    });
+                  }}
+                  className="text-xs text-gold hover:text-gold-hover cursor-pointer whitespace-nowrap"
+                >
+                  Update to {subtaskEffortTotal}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOverBudgetDismissed(true);
+                  }}
+                  className="text-xs text-text-tertiary hover:text-text-primary cursor-pointer whitespace-nowrap"
+                >
+                  Keep at {task.effort}
+                </button>
+              </div>
+            )}
             <SubtaskList
               subtasks={task.subtasks}
               parentTaskId={task.id}
               projectId={projectId}
+              parentEffort={task.effort}
             />
           </div>
         )}

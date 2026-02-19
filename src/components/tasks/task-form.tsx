@@ -5,7 +5,7 @@ import { createTaskAction, updateTaskAction } from "@/actions/tasks/task";
 import { Button } from "@/components/tasks/ui/button";
 import { Input } from "@/components/tasks/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { EFFORT_VALUES } from "@/lib/tasks/effort";
+import { EFFORT_QUICK_PICKS } from "@/lib/tasks/effort";
 import type { TaskWithRelations } from "@/lib/tasks/types";
 import { cn } from "@/lib/utils";
 
@@ -43,8 +43,31 @@ export function TaskForm({
     task?.tags.map((t) => t.tag.id) ?? [],
   );
   const [effort, setEffort] = useState<number | null>(task?.effort ?? null);
+  const [customEffort, setCustomEffort] = useState(
+    task?.effort != null ? String(task.effort) : "",
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function handleEffortQuickPick(value: number) {
+    if (effort === value) {
+      setEffort(null);
+      setCustomEffort("");
+    } else {
+      setEffort(value);
+      setCustomEffort(String(value));
+    }
+  }
+
+  function handleCustomEffortChange(val: string) {
+    setCustomEffort(val);
+    const num = Number.parseInt(val, 10);
+    if (val && !Number.isNaN(num) && num > 0) {
+      setEffort(num);
+    } else if (!val) {
+      setEffort(null);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -173,12 +196,12 @@ export function TaskForm({
         <span className="text-xs font-medium text-text-secondary mb-1.5 block">
           Effort
         </span>
-        <div className="flex flex-wrap gap-1.5">
-          {EFFORT_VALUES.map((value) => (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {EFFORT_QUICK_PICKS.map((value) => (
             <button
               key={value}
               type="button"
-              onClick={() => setEffort(effort === value ? null : value)}
+              onClick={() => handleEffortQuickPick(value)}
               className={cn(
                 "px-2.5 py-1 text-xs rounded-full border transition-colors cursor-pointer",
                 effort === value
@@ -189,6 +212,15 @@ export function TaskForm({
               {value}
             </button>
           ))}
+          <input
+            type="number"
+            min={1}
+            max={100}
+            value={customEffort}
+            onChange={(e) => handleCustomEffortChange(e.target.value)}
+            placeholder="Custom"
+            className="w-16 px-2 py-1 text-xs border border-border rounded-[var(--radius-button)] bg-surface focus:outline-none focus:ring-2 focus:ring-gold/50 text-text-primary"
+          />
         </div>
       </div>
 
