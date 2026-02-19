@@ -130,7 +130,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 - [x] **Phase 44: Server-Side Code Migration** — Migrate server actions, services, Zod schemas, auth integration, and billing wiring (completed 2026-02-19)
 - [x] **Phase 45: UI Components & Routing** — Migrate UI components, set up /apps/tasks routes, integrate sidebar (completed 2026-02-19)
 - [x] **Phase 46: Landing Page & KPI Dashboard** — Build custom landing page with "Your Tasks at a Glance" card (completed 2026-02-19)
-- [ ] **Phase 47: Feature Parity & Demo Mode** — Verify all existing features work end-to-end, demo mode functional
+- [x] **Phase 47: Feature Parity & Demo Mode** — Verify all existing features work end-to-end, demo mode functional (completed 2026-02-19)
 - [ ] **Phase 48: Decommission** — Remove old Tasks service, update apps hub, clean up infrastructure
 
 ## Phase Details
@@ -256,7 +256,7 @@ Phases execute in numeric order: 43 -> 44 -> 45 -> 46 -> 47 -> 48
 | 44. Server-Side Code Migration | v2.0 | Complete    | 2026-02-19 | - |
 | 45. UI Components & Routing | v2.0 | Complete    | 2026-02-19 | - |
 | 46. Landing Page & KPI Dashboard | v2.0 | Complete    | 2026-02-19 | - |
-| 47. Feature Parity & Demo Mode | v2.0 | 0/4 | Not started | - |
+| 47. Feature Parity & Demo Mode | v2.0 | Complete    | 2026-02-19 | - |
 | 48. Decommission | v2.0 | 0/2 | Not started | - |
 
 **Total: 9 milestones shipped, 42 phases through v1.9 | v2.0: 6 phases, 17 plans, not started**
