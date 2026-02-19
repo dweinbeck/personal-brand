@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v2.0 — Tasks App Integration (Phase 48 - Complete)
+**Current focus:** Phase 48.1 — Tasks App Testing Feedback (Effort Scoring, Drag-and-Drop, UI Polish, Data Import)
 
 ## Current Position
 
-Phase: 48 of 48 (Decommission) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase 48 Complete -- v2.0 Tasks App Integration milestone complete
-Last activity: 2026-02-19 — Phase 48 complete (Tasks external service fully decommissioned)
+Phase: 48.1 of 48.1 (Tasks App Testing Feedback)
+Plan: 2 of 5 in current phase
+Status: Executing Phase 48.1 -- Plan 02 complete
+Last activity: 2026-02-19 — Completed 48.1-02 (Dismissible Free Trial Banner)
 
 ## Performance Metrics
 
@@ -71,11 +71,14 @@ Full decision log in PROJECT.md Key Decisions table.
 - [47-04]: No code changes needed -- all 14 requirements verified passing via automated code inspection and human manual testing
 - [48-02]: Tasks App row removed from CLAUDE.md Service Map with explanatory note added
 - [48-02]: Service count updated from 4 to 3 in CONFIGURATION-RESILIENCE.md (6 URL configs instead of 12)
+- [48.1-02]: Lazy useState initializer to avoid SSR/hydration mismatch with localStorage
+- [48.1-02]: localStorage key 'tasks-free-trial-dismissed' for dismissal persistence
 
 ### Roadmap Evolution
 
 - v1.9 marked as deferred (phases 36-40 never started; 40.1, 41, 41.1, 42 completed as standalone work)
 - v2.0 Tasks App Integration roadmap created with phases 43-48
+- Phase 48.1 inserted after Phase 48: Tasks App Testing Feedback — Effort Scoring, Drag-and-Drop, UI Polish & Data Import (URGENT)
 
 ### Pending Todos
 
@@ -89,9 +92,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed Phase 48 (Decommission) -- v2.0 Tasks App Integration milestone complete
+Stopped at: Completed 48.1-02-PLAN.md
 Resume file: None
 
 ## Next Step
 
-v2.0 Tasks App Integration milestone is complete. All 6 phases (43-48) executed. The standalone todoist app can be retired.
+Continue Phase 48.1 with Plan 03 (next in sequence).
