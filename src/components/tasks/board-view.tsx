@@ -26,12 +26,22 @@ export function BoardView({ project, allTags, sections }: BoardViewProps) {
     })),
   ];
 
-  const completedTasks = [
+  // Auto-archive: only show completed tasks from today or yesterday
+  const archiveCutoff = new Date();
+  archiveCutoff.setHours(0, 0, 0, 0);
+  archiveCutoff.setDate(archiveCutoff.getDate() - 1);
+
+  const allCompletedTasks = [
     ...project.tasks.filter((t) => t.status === "COMPLETED"),
     ...project.sections.flatMap((s) =>
       s.tasks.filter((t) => t.status === "COMPLETED"),
     ),
   ];
+
+  const completedTasks = allCompletedTasks.filter(
+    (t) => new Date(t.updatedAt) >= archiveCutoff,
+  );
+  const archivedCount = allCompletedTasks.length - completedTasks.length;
 
   const completedEffortSum = completedTasks
     .filter((t) => t.effort != null)
@@ -89,7 +99,7 @@ export function BoardView({ project, allTags, sections }: BoardViewProps) {
         </div>
       </div>
 
-      {completedTasks.length > 0 && (
+      {(completedTasks.length > 0 || archivedCount > 0) && (
         <div className="flex flex-col w-72 shrink-0">
           <div className="flex items-center justify-between mb-3 px-1">
             <h3 className="text-sm font-semibold text-text-tertiary uppercase tracking-wider flex items-center gap-1.5">
@@ -113,6 +123,11 @@ export function BoardView({ project, allTags, sections }: BoardViewProps) {
               {completedEffortSum > 0 && (
                 <span className="text-xs text-amber">
                   ({completedEffortSum})
+                </span>
+              )}
+              {archivedCount > 0 && (
+                <span className="text-[10px] text-text-tertiary ml-1">
+                  +{archivedCount} archived
                 </span>
               )}
             </div>

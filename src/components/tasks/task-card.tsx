@@ -125,21 +125,22 @@ export function TaskCard({
 
           <button
             type="button"
-            className="flex-1 min-w-0 cursor-pointer text-left"
+            className={cn(
+              "flex-1 min-w-0 cursor-pointer text-left relative",
+              task.effort != null && "pb-5",
+            )}
             onClick={() => setExpanded(!expanded)}
           >
-            <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "text-sm font-medium truncate",
-                  isCompleted
-                    ? "line-through text-text-tertiary"
-                    : "text-text-primary",
-                )}
-              >
-                {task.name}
-              </span>
-            </div>
+            <span
+              className={cn(
+                "text-sm font-medium line-clamp-2",
+                isCompleted
+                  ? "line-through text-text-tertiary"
+                  : "text-text-primary",
+              )}
+            >
+              {task.name}
+            </span>
 
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               {deadlineStr && (
@@ -152,11 +153,6 @@ export function TaskCard({
                   )}
                 >
                   {deadlineStr}
-                </span>
-              )}
-              {task.effort != null && (
-                <span className="text-xs font-medium text-amber px-1.5 py-0.5 rounded-full bg-amber/10 border border-amber/20">
-                  {task.effort}
                 </span>
               )}
               {task.tags.map(({ tag }) => (
@@ -176,6 +172,11 @@ export function TaskCard({
                 </span>
               )}
             </div>
+            {task.effort != null && (
+              <span className="absolute bottom-0 right-0 text-xs font-medium text-amber px-1.5 py-0.5 rounded-full bg-amber/10 border border-amber/20">
+                {task.effort}
+              </span>
+            )}
           </button>
 
           {!isDemo && (

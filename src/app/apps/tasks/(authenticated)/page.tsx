@@ -7,7 +7,6 @@ import {
   getTotalTaskCount,
 } from "@/services/tasks/task.service";
 import { getWorkspaces } from "@/services/tasks/workspace.service";
-import { ImportButton } from "./import-button";
 
 export default async function TasksPage() {
   const userId = await getUserIdFromCookie();
@@ -46,15 +45,12 @@ export default async function TasksPage() {
       </p>
 
       {kpiData && (
-        <>
-          <TasksKpiCard
-            completedYesterday={kpiData.completedYesterday}
-            totalTasks={kpiData.totalTasks}
-            mitTask={kpiData.mitTask}
-            nextTasks={kpiData.nextTasks}
-          />
-          <ImportButton />
-        </>
+        <TasksKpiCard
+          completedYesterday={kpiData.completedYesterday}
+          totalTasks={kpiData.totalTasks}
+          mitTask={kpiData.mitTask}
+          nextTasks={kpiData.nextTasks}
+        />
       )}
 
       {!hasWorkspaces && (
