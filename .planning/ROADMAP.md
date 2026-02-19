@@ -11,7 +11,8 @@
 - ✅ **v1.6 Apps Hub Page** — Phase 26 (shipped 2026-02-10)
 - ✅ **v1.7 Apps-first Home + Brand Scraper Overhaul** — Phases 27-30 (shipped 2026-02-11)
 - ✅ **v1.8 Tasks App** — Phases 31-35 (shipped 2026-02-12)
-- 🚧 **v1.9 Site Restructure & Polish** — Phases 36-40 (in progress)
+- ⏸️ **v1.9 Site Restructure & Polish** — Phases 36-42 (deferred — items moved to v2.1+)
+- 🚧 **v2.0 Tasks App Integration** — Phases 43-48 (in progress)
 
 ## Phases
 
@@ -104,100 +105,140 @@
 
 </details>
 
-### v1.9 Site Restructure & Polish (In Progress)
+<details>
+<summary>⏸️ v1.9 Site Restructure & Polish (Phases 36-42) — DEFERRED (items moved to v2.1+)</summary>
 
-**Milestone Goal:** Restructure site navigation around Tools and Apps categories, replace standalone assistant page with popup chatbot, enhance home page sections, fix cross-repo bugs, and polish contact page and UI consistency.
+Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were executed as standalone enhancements outside the v1.9 milestone scope. Remaining v1.9 items (Tools page, chatbot popup, home page enhancements, bug fixes, polish) deferred to v2.1+.
 
-- [ ] **Phase 36: Tools Page & Nav Restructure** — Rename Custom GPTs to Tools, reorder navbar, remove brand scraper from Control Center
-- [ ] **Phase 37: Chatbot Popup Widget** — Replace /assistant page with persistent bottom-right popup chatbot
-- [ ] **Phase 38: Home Page Enhancements** — Hero layout, tech tags, reading time, subtitles, Dev Tools section
-- [ ] **Phase 39: Bug Fixes** — Brand scraper bugs, assistant RAG sync, research assistant API fixes
-- [ ] **Phase 40: Polish** — Contact page cleanup, button styles, FRD links, scraper button height
-- [x] **Phase 40.1: Testing Feedback Fixes** — Envelopes budget editing, envelope detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED) — completed 2026-02-16
+- [ ] Phase 36: Tools Page & Nav Restructure (0/2 plans) — deferred
+- [ ] Phase 37: Chatbot Popup Widget (0/2 plans) — deferred
+- [ ] Phase 38: Home Page Enhancements (0/2 plans) — deferred
+- [ ] Phase 39: Bug Fixes (0/2 plans) — deferred
+- [ ] Phase 40: Polish (0/1 plan) — deferred
+- [x] Phase 40.1: Testing Feedback Fixes (4/4 plans) — completed 2026-02-16
+- [x] Phase 41: Envelopes Enhancements (4/4 plans) — completed
+- [x] Phase 41.1: Testing Feedback Round 2 (4/4 plans) — completed
+- [x] Phase 42: Envelopes Home Redesign, Income Entries & Analytics Enhancement (4/4 plans) — completed
+
+</details>
+
+### v2.0 Tasks App Integration (In Progress)
+
+**Milestone Goal:** Merge the standalone Tasks app (todoist) into the personal-brand Next.js app for unified deployment, native /apps/tasks routing, and direct billing integration — eliminating a separate Cloud Run service while preserving all existing functionality and data.
+
+- [ ] **Phase 43: Prisma & Database Foundation** — Add Prisma to personal-brand, connect to Cloud SQL PostgreSQL, verify schema with existing data
+- [ ] **Phase 44: Server-Side Code Migration** — Migrate server actions, services, Zod schemas, auth integration, and billing wiring
+- [ ] **Phase 45: UI Components & Routing** — Migrate UI components, set up /apps/tasks routes, integrate sidebar
+- [ ] **Phase 46: Landing Page & KPI Dashboard** — Build custom landing page with "Your Tasks at a Glance" card
+- [ ] **Phase 47: Feature Parity & Demo Mode** — Verify all existing features work end-to-end, demo mode functional
+- [ ] **Phase 48: Decommission** — Remove old Tasks service, update apps hub, clean up infrastructure
 
 ## Phase Details
 
-### Phase 36: Tools Page & Nav Restructure
-**Goal**: Visitors navigate a clean site hierarchy where Apps are full applications and Tools are single-function dev utilities, with a streamlined navbar and no duplicate access paths
-**Depends on**: Phase 35 (v1.8 complete)
-**Requirements**: NAV-01, NAV-03, NAV-04
+### Phase 43: Prisma & Database Foundation
+**Goal**: The personal-brand app can read and write to the existing Cloud SQL PostgreSQL database that holds all Tasks data
+**Depends on**: Phase 42 (last completed phase)
+**Requirements**: MIG-01, DB-01, DB-02, DB-03, DB-04
 **Success Criteria** (what must be TRUE):
-  1. Visiting /tools shows a card grid with New Phase Planner, FRD Interviewer, FRD Generator, Research Assistant, and Digital Envelopes — Research and Envelopes no longer appear on /apps
-  2. Navbar displays links in order: Home, Apps, Tools, Building Blocks, Contact, Control Center, Ask My Assistant, Sign in/Account
-  3. Brand scraper link and page are removed from Control Center — users access brand scraper only via /apps
-  4. /custom-gpts redirects to /tools (no broken bookmarks)
+  1. Running `npx prisma db pull` against the Cloud SQL instance produces a schema matching the 6 Tasks models (Workspace, Project, Section, Task, Tag, TaskTag)
+  2. A test server action in the personal-brand app can query the PostgreSQL database and return existing workspace data
+  3. The Cloud Run deployment configuration includes the `--add-cloudsql-instances` flag for the chatbot-assistant Cloud SQL instance
+  4. Existing PostgreSQL data (workspaces, projects, tasks created in the standalone app) is accessible and unchanged after Prisma integration
+**Plans**: 3 plans
+
+Plans:
+- [ ] 43-01-PLAN.md — Install Prisma, configure Cloud SQL connector, set up DATABASE_URL for local and Cloud Run
+- [ ] 43-02-PLAN.md — Copy Tasks Prisma schema, run db pull to validate against existing database, generate Prisma client
+- [ ] 43-03-PLAN.md — Create test query to verify read/write connectivity, update Cloud Run deploy config with Cloud SQL instance
+
+### Phase 44: Server-Side Code Migration
+**Goal**: All Tasks server actions, service logic, and validation schemas execute correctly from the personal-brand codebase with shared Firebase Auth
+**Depends on**: Phase 43 (Prisma client available)
+**Requirements**: MIG-02, MIG-03, MIG-05, MIG-06, RT-04
+**Success Criteria** (what must be TRUE):
+  1. Tasks server actions (workspace, project, section, task, tag CRUD) can be imported and called from the personal-brand app
+  2. Zod validation schemas reject invalid input with the same error messages as the standalone app
+  3. Firebase Auth token verification in Tasks actions uses the same verifyUser() pattern as existing personal-brand actions (no separate auth system)
+  4. Tasks billing calls the personal-brand billing API directly via function import (no HTTP call to an external service)
+  5. All revalidatePath calls use the `/apps/tasks` prefix instead of `/tasks`
+**Plans**: 3 plans
+
+Plans:
+- [ ] 44-01-PLAN.md — Copy and adapt server actions (workspace, project, section, task, tag) with path prefix updates
+- [ ] 44-02-PLAN.md — Copy service layer and Zod validation schemas, wire imports to new file locations
+- [ ] 44-03-PLAN.md — Integrate shared Firebase Auth (verifyUser pattern) and direct billing function calls
+
+### Phase 45: UI Components & Routing
+**Goal**: Users can navigate to /apps/tasks and interact with the full Tasks UI (sidebar, views, forms) inside the personal-brand app shell
+**Depends on**: Phase 44 (server actions available for UI to call)
+**Requirements**: MIG-04, RT-01, RT-02, RT-03, SB-01, SB-02, SB-03
+**Success Criteria** (what must be TRUE):
+  1. Visiting /apps/tasks renders the Tasks application inside the personal-brand layout (shared navbar, footer)
+  2. All Tasks sub-pages work at their new paths: /apps/tasks/[projectId], /apps/tasks/today, /apps/tasks/completed, /apps/tasks/search, /apps/tasks/tags/[tagId]
+  3. The Tasks sidebar (workspaces, projects, smart views, tags) appears in the /apps/tasks layout without a redundant "Tasks" heading
+  4. All sidebar navigation links use /apps/tasks/... paths
+  5. The /apps hub card for Tasks links to /apps/tasks instead of the external tasks.dan-weinbeck.com URL
+**Plans**: 3 plans
+
+Plans:
+- [ ] 45-01-PLAN.md — Copy UI components (TaskCard, TaskForm, SubtaskList, QuickAddModal, board/list views), adapt imports
+- [ ] 45-02-PLAN.md — Set up /apps/tasks route group with layout, page routes for all sub-pages
+- [ ] 45-03-PLAN.md — Integrate sidebar into Tasks layout, update apps hub listing to internal route
+
+### Phase 46: Landing Page & KPI Dashboard
+**Goal**: Authenticated users see a personalized "Your Tasks at a Glance" dashboard when they visit /apps/tasks, with key metrics and their most important tasks surfaced immediately
+**Depends on**: Phase 45 (routing and components in place)
+**Requirements**: LP-01, LP-02, LP-03, LP-04, LP-05, LP-06, LP-07
+**Success Criteria** (what must be TRUE):
+  1. The /apps/tasks landing page displays "Welcome to Tasks" in Playfair Display blue heading with the subtitle below, matching other app title styles
+  2. The "Your Tasks at a Glance" KPI card shows three columns: stats (completed yesterday, total tasks), MIT-tagged task (tan card), and Next-tagged tasks (two tan cards)
+  3. KPI data is fetched live from PostgreSQL for authenticated users
+  4. Unauthenticated users see a sign-in prompt instead of KPI data
 **Plans**: 2 plans
 
 Plans:
-- [ ] 36-01-PLAN.md — Create /tools page, move items off /apps, redirect /custom-gpts
-- [ ] 36-02-PLAN.md — Reorder navbar links, remove brand scraper from Control Center
+- [ ] 46-01-PLAN.md — Build landing page layout with title, subtitle, and KPI card skeleton
+- [ ] 46-02-PLAN.md — Implement KPI data fetching (completed count, total count, MIT task, Next tasks) and unauthenticated state
 
-### Phase 37: Chatbot Popup Widget
-**Goal**: Visitors can ask Dan's AI assistant from any page without navigating away, via a persistent popup that survives page navigation
-**Depends on**: Phase 36 (navbar includes "Ask My Assistant" trigger)
-**Requirements**: NAV-02
+### Phase 47: Feature Parity & Demo Mode
+**Goal**: Every feature that worked in the standalone Tasks app works identically at /apps/tasks, and visitors can try a fully functional demo without signing in
+**Depends on**: Phase 46 (landing page complete, all UI in place)
+**Requirements**: FP-01, FP-02, FP-03, FP-04, FP-05, FP-06, FP-07, FP-08, FP-09, FP-10, DM-01, DM-02, DM-03, DM-04
 **Success Criteria** (what must be TRUE):
-  1. Clicking "Ask My Assistant" in the navbar opens a chatbot widget anchored to the bottom-right of the viewport
-  2. The widget persists across page navigation within the same session (conversation is not lost when changing pages)
-  3. The widget collapses via an X button and can be reopened without losing conversation history
-  4. The standalone /assistant page no longer exists (visiting it redirects or 404s)
+  1. Project detail view renders correctly in both list and board view modes with task CRUD (create, edit, delete, toggle) working from all views
+  2. Subtask support works (create, toggle, delete) and tags can be created, assigned, and filtered
+  3. Effort scoring displays on tasks and updates correctly; Today view filters by deadline; Completed view shows completed tasks
+  4. Search returns matching tasks; Quick-add modal creates tasks from any page; Help tips display correctly
+  5. Demo mode at /apps/tasks/demo loads ~40 realistic sample tasks with all features (subtasks, tags, effort scores) using in-memory data only
+  6. Demo mode shows a banner with sign-up CTA and prevents any actual database writes
+**Plans**: 4 plans
+
+Plans:
+- [ ] 47-01-PLAN.md — Verify project detail views (list + board), task CRUD, subtask support, tag management
+- [ ] 47-02-PLAN.md — Verify effort scoring, Today view, Completed view, Search, Quick-add modal, Help tips
+- [ ] 47-03-PLAN.md — Migrate demo mode components and data to /apps/tasks/demo route
+- [ ] 47-04-PLAN.md — End-to-end verification of all features, fix any integration issues found during testing
+
+### Phase 48: Decommission
+**Goal**: The standalone Tasks Cloud Run service is fully removed and all traffic routes through the personal-brand app at /apps/tasks
+**Depends on**: Phase 47 (all features verified working)
+**Requirements**: DC-01, DC-02, DC-03, DC-04, DC-05
+**Success Criteria** (what must be TRUE):
+  1. The separate Tasks Cloud Run service is deleted from GCP
+  2. The `tasks-deploy-dev` Cloud Build trigger is deleted
+  3. The tasks subdomain DNS record is removed or redirects to /apps/tasks
+  4. The `NEXT_PUBLIC_TASKS_APP_URL` environment variable is removed from the personal-brand service
+  5. The /apps hub page links to /apps/tasks with no reference to the external tasks.dan-weinbeck.com URL
 **Plans**: 2 plans
 
 Plans:
-- [ ] 37-01-PLAN.md — Create ChatWidgetContext, popup shell, adapt ChatInterface for popup mode, wire into layout and navbar
-- [ ] 37-02-PLAN.md — Replace /assistant page with redirect, human verification of full feature
-
-### Phase 38: Home Page Enhancements
-**Goal**: The home page communicates Dan's work more effectively with an improved hero layout, richer card metadata, better section labels, and a new Dev Tools showcase
-**Depends on**: Phase 36 (Tools page must exist for HOME-05 to link to)
-**Requirements**: HOME-01, HOME-02, HOME-03, HOME-04, HOME-05
-**Success Criteria** (what must be TRUE):
-  1. Hero section has a wider text column with the image aligned to the top of the "Dan Weinbeck" heading and the second paragraph flowing below the image
-  2. App cards on both the home page and /apps display technology stack tags (e.g., "Next.js", "Firebase", "Stripe")
-  3. Building block cards on both the home page and /building-blocks show reading time (e.g., "5 min read") below the description and above tags
-  4. The Apps section subtitle no longer says "Sign Up or Sign in" and the Building Blocks subtitle reads "Learn about AI Development with Building Block Tutorials"
-  5. A new "Explore Development Tools" section appears after the Apps grid on the home page, displaying tool cards from the Tools page
-**Plans**: 2 plans
-
-Plans:
-- [ ] 38-01-PLAN.md — Hero layout redesign, section subtitle updates, tech stack tags on app cards
-- [ ] 38-02-PLAN.md — Reading time on building block cards, Dev Tools showcase section
-
-### Phase 39: Bug Fixes
-**Goal**: All reported bugs in brand scraper, AI assistant, and research assistant are resolved so users encounter working tools
-**Depends on**: Phase 36 (NAV-04 removes CC brand scraper, reducing scope of BUG-02 testing)
-**Requirements**: BUG-01, BUG-02, BUG-03, BUG-04, BUG-05
-**Multi-repo note**: BUG-03 requires work in the chatbot-assistant repo (knowledge base sync). BUG-04 and BUG-05 may require work in the research-assistant backend repo.
-**Success Criteria** (what must be TRUE):
-  1. On the brand scraper page (/apps/brand-scraper), entering a valid URL enables the Scrape button immediately
-  2. Brand scraper in Control Center (if still accessible) no longer returns "invalid or expired token" errors — authenticated users can scrape successfully
-  3. The AI assistant returns relevant, contextual responses about Dan's work (not "no repos indexed" errors)
-  4. The research assistant chat endpoint returns search results instead of errors
-  5. The research assistant conversation history endpoint loads past conversations instead of errors
-**Plans**: 2 plans
-
-Plans:
-- [ ] 39-01-PLAN.md — Fix brand scraper Scrape button disabled state and replace static auth tokens with fresh-token callbacks
-- [ ] 39-02-PLAN.md — Add missing Firestore indexes, improve error handling for assistant and research assistant endpoints
-
-### Phase 40: Polish
-**Goal**: Contact page is clean and visually consistent, FRD content links to the real tool, and brand scraper form elements are properly sized
-**Depends on**: Phase 36 (POL-03 needs Tools page to exist for FRD Generator listing)
-**Requirements**: POL-01, POL-02, POL-03, POL-04
-**Success Criteria** (what must be TRUE):
-  1. The Contact page no longer has an "Other ways to contact me" section — only the primary contact methods remain
-  2. All contact page buttons (Email Dan, Copy Email, LinkedIn, etc.) share the same blue style with a glowing gold hover effect
-  3. The FRD building block article links to the actual FRD Generator tool on /tools, and FRD Generator appears as a card on the Tools page
-  4. The brand scraper Scrape button is the same height as the URL text input field
-**Plans**: 1 plan
-
-Plans:
-- [ ] 40-01-PLAN.md — Contact page cleanup, unified button styles, FRD Generator links, scraper button height fix
+- [ ] 48-01-PLAN.md — Delete Tasks Cloud Run service, Cloud Build trigger, and tasks subdomain DNS record
+- [ ] 48-02-PLAN.md — Remove NEXT_PUBLIC_TASKS_APP_URL env var, verify apps hub listing, final smoke test
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
+Phases execute in numeric order: 43 -> 44 -> 45 -> 46 -> 47 -> 48
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -210,72 +251,16 @@ Phases execute in numeric order: 36 -> 37 -> 38 -> 39 -> 40
 | 26 | v1.6 | 1/1 | Complete | 2026-02-10 |
 | 27-30 | v1.7 | 13/13 | Complete | 2026-02-11 |
 | 31-35 | v1.8 | 11/11 | Complete | 2026-02-12 |
-| 36. Tools Page & Nav Restructure | v1.9 | 0/2 | Not started | - |
-| 37. Chatbot Popup Widget | v1.9 | 0/2 | Not started | - |
-| 38. Home Page Enhancements | v1.9 | 0/2 | Not started | - |
-| 39. Bug Fixes | v1.9 | 0/2 | Not started | - |
-| 40. Polish | v1.9 | 0/1 | Not started | - |
-| 40.1 Testing Feedback Fixes | v1.9 | 4/4 | Complete | 2026-02-16 |
+| 36-42 | v1.9 | 16/25 | Deferred | - |
+| 43. Prisma & Database Foundation | v2.0 | 0/3 | Not started | - |
+| 44. Server-Side Code Migration | v2.0 | 0/3 | Not started | - |
+| 45. UI Components & Routing | v2.0 | 0/3 | Not started | - |
+| 46. Landing Page & KPI Dashboard | v2.0 | 0/2 | Not started | - |
+| 47. Feature Parity & Demo Mode | v2.0 | 0/4 | Not started | - |
+| 48. Decommission | v2.0 | 0/2 | Not started | - |
 
-**Total: 9 milestones shipped, 35 phases complete, 70 plans complete | v1.9: 6 phases, all complete**
-
-### Phase 41: Envelopes Enhancements — Fund transfers, analytics redesign, and weekly rollover workflow
-
-**Goal:** Users can transfer budget between envelopes, see enhanced spending analytics with new charts, and rollover-enabled envelopes accumulate unused budget from prior weeks
-**Depends on:** Phase 40
-**Plans:** 4 plans
-
-Plans:
-- [ ] 41-01-PLAN.md — Fund transfer backend: types, Firestore ops, API route, index
-- [ ] 41-02-PLAN.md — Fund transfer UI: TransferModal, home page + detail page integration
-- [ ] 41-03-PLAN.md — Analytics redesign: budget utilization bar chart, spending trend line chart
-- [ ] 41-04-PLAN.md — Rollover workflow: surplus computation, card + detail page display
-
-### Phase 42: Envelopes Home Redesign, Income Entries & Analytics Enhancement
-
-**Goal:** Reorganize the envelopes home page for a more intuitive layout, add the ability to log supplemental income that temporarily boosts weekly spending power, enhance the analytics page with more robust charts, and bring the demo to full feature parity with the real version (same interface and functionality, no persistence, clear demo announcements)
-
-**Depends on:** Phase 41.1
-**Plans:** 4 plans
-
-**Success Criteria** (what must be TRUE):
-  1. The envelopes home page has a reorganized section layout that puts the greeting and primary envelope content first, with KPI metrics and supplementary info below — the layout feels natural for daily budgeting use
-  2. Users can log supplemental/extra income entries (e.g., "Sold speaker — $30") via a form on the home page, and that income increases the effective weekly budget for the current week only — base income/bills KPIs remain unchanged
-  3. Income entries are visible on the home page (showing this week's extra income total) and recorded with amount, description, and date
-  4. The analytics page displays additional charts beyond the current set (budget utilization, spending trend, pivot table, savings) — at minimum: income vs. spending comparison, and spending distribution by envelope (pie/donut chart)
-  5. The demo version (/envelopes/demo) mirrors the real version's interface and functionality — including KPI display, transfer funds, inline budget editing, income entries, and the enhanced analytics — with data stored in-memory only (resets on refresh) and clear demo announcements
-  6. All existing tests pass and new functionality has test coverage
-
-Plans:
-- [x] 42-01-PLAN.md — Income entries data layer: types, Firestore CRUD, API routes, index
-- [x] 42-02-PLAN.md — Home page reorganization, income entry UI, income banner
-- [x] 42-03-PLAN.md — Analytics enhancement: income vs spending chart, spending distribution donut chart
-- [x] 42-04-PLAN.md — Demo feature parity and test coverage
+**Total: 9 milestones shipped, 42 phases through v1.9 | v2.0: 6 phases, 17 plans, not started**
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
 *For current requirements, see `.planning/REQUIREMENTS.md`*
-
-### Phase 41.1: Testing Feedback Round 2 — Assistant accuracy, Envelopes UX, Research Assistant styling (INSERTED)
-
-**Goal:** Fix 8 user-reported bugs and UX issues across AI Assistant (accuracy + chat input cleanup), Envelopes (inline budget editing, transfer modal simplification, button layout reorganization), and Research Assistant (color fix, session history threshold, conversation history loading)
-**Depends on:** Phase 41
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 41.1-01-PLAN.md — Envelopes UX: button layout, inline budget editing, transfer modal simplification
-- [ ] 41.1-02-PLAN.md — AI Assistant: chat input cleanup, knowledge base audit, KB documentation
-- [ ] 41.1-03-PLAN.md — Research Assistant: color fix (remove prose-invert), session history threshold
-- [ ] 41.1-04-PLAN.md — Research Assistant: full conversation history loading from sidebar
-
-### Phase 40.1: Testing Feedback Fixes — Envelopes budget editing and detail page, Research Assistant permissions crash, Billing duplicate user (INSERTED)
-
-**Goal:** Fix 4 user-reported bugs/features: (1) Envelopes budget editing capability, (2) Envelopes envelope detail page with transactions, (3) Research Assistant Firestore permissions crash, (4) Billing duplicate user consolidation. NOTE: Tasks tooltips and view persistence are in the external Tasks app (tasks.dan-weinbeck.com) and are out of scope for this codebase.
-**Depends on:** Phase 40
-**Plans:** 4 plans
-
-Plans:
-- [x] 40.1-01-PLAN.md — Add edit button to EnvelopeCard for budget editing
-- [x] 40.1-02-PLAN.md — Fix Research Assistant permissions crash and token usage display
-- [x] 40.1-03-PLAN.md — Fix billing duplicate user with deduplication and admin consolidation
-- [x] 40.1-04-PLAN.md — Create envelope detail page with filtered transactions
