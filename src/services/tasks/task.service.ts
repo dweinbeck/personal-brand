@@ -177,3 +177,81 @@ export async function searchTasks(userId: string, query: string) {
     orderBy: { updatedAt: "desc" },
   });
 }
+
+export async function getCompletedYesterdayCount(
+  userId: string,
+): Promise<number> {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+
+  return prisma.task.count({
+    where: {
+      userId,
+      status: "COMPLETED",
+      updatedAt: { gte: yesterdayStart, lt: todayStart },
+      parentTaskId: null,
+    },
+  });
+}
+
+export async function getTotalTaskCount(userId: string): Promise<number> {
+  return prisma.task.count({
+    where: {
+      userId,
+      status: "OPEN",
+      parentTaskId: null,
+    },
+  });
+}
+
+export async function getMitTask(
+  userId: string,
+): Promise<{ id: string; name: string; projectName: string | null } | null> {
+  const mitTag = await prisma.tag.findFirst({
+    where: { userId, name: "MIT" },
+  });
+  if (!mitTag) return null;
+
+  const task = await prisma.task.findFirst({
+    where: {
+      userId,
+      status: "OPEN",
+      parentTaskId: null,
+      tags: { some: { tagId: mitTag.id } },
+    },
+    include: { project: { select: { name: true } } },
+    orderBy: { updatedAt: "desc" },
+  });
+  if (!task) return null;
+
+  return { id: task.id, name: task.name, projectName: task.project.name };
+}
+
+export async function getNextTasks(
+  userId: string,
+): Promise<{ id: string; name: string; projectName: string | null }[]> {
+  const nextTag = await prisma.tag.findFirst({
+    where: { userId, name: "Next" },
+  });
+  if (!nextTag) return [];
+
+  const tasks = await prisma.task.findMany({
+    where: {
+      userId,
+      status: "OPEN",
+      parentTaskId: null,
+      tags: { some: { tagId: nextTag.id } },
+    },
+    include: { project: { select: { name: true } } },
+    orderBy: { updatedAt: "desc" },
+    take: 2,
+  });
+
+  return tasks.map((task) => ({
+    id: task.id,
+    name: task.name,
+    projectName: task.project.name,
+  }));
+}
