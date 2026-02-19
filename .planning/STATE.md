@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v2.0 — Tasks App Integration (Phase 47)
+**Current focus:** v2.0 — Tasks App Integration (Phase 48 - Complete)
 
 ## Current Position
 
-Phase: 47 of 48 (Feature Parity & Demo Mode) -- COMPLETE
-Plan: 4 of 4 in current phase
-Status: Phase 47 Complete
-Last activity: 2026-02-19 — Phase 47 complete (all 14 requirements verified)
+Phase: 48 of 48 (Decommission) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase 48 Complete -- v2.0 Tasks App Integration milestone complete
+Last activity: 2026-02-19 — Phase 48 complete (Tasks external service fully decommissioned)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
-- Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 125
+- Total phases completed: 48
+- Total plans completed: 127
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -69,6 +69,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [47-03]: Demo uses purely client-side rendering with no server actions or database access
 - [47-03]: Minimal root layout.tsx passes children through without auth check
 - [47-04]: No code changes needed -- all 14 requirements verified passing via automated code inspection and human manual testing
+- [48-02]: Tasks App row removed from CLAUDE.md Service Map with explanatory note added
+- [48-02]: Service count updated from 4 to 3 in CONFIGURATION-RESILIENCE.md (6 URL configs instead of 12)
 
 ### Roadmap Evolution
 
@@ -87,9 +89,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed Phase 47 (Feature Parity & Demo Mode)
+Stopped at: Completed Phase 48 (Decommission) -- v2.0 Tasks App Integration milestone complete
 Resume file: None
 
 ## Next Step
 
-Phase 48 (Decommission) -- standalone todoist app can be retired.
+v2.0 Tasks App Integration milestone is complete. All 6 phases (43-48) executed. The standalone todoist app can be retired.
