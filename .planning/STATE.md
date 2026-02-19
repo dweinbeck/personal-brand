@@ -5,16 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Phase 42 — Envelopes Home Redesign, Income Entries & Analytics Enhancement
+**Current focus:** v2.0 — Tasks App Integration
 
 ## Current Position
 
-Phase: 42 (Envelopes Home Redesign, Income Entries & Analytics Enhancement)
-Plan: 4 of 4 complete in current phase
-Status: Phase Complete
-Last activity: 2026-02-17 - Completed Phase 42: income entries, home redesign, analytics charts, demo parity
-
-Progress: [##########] 100% — Plan 4 of 4 complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-18 — Milestone v2.0 started
 
 ## Performance Metrics
 

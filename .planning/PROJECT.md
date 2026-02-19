@@ -85,26 +85,19 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-**v1.9 — Site Restructure & Polish**
+**v2.0 — Tasks App Integration**
 
-- [ ] Rename Custom GPTs to "Tools" page with consolidated dev tool cards (New Phase Planner, FRD Interviewer, FRD Generator) plus Research and Envelopes moved here
-- [ ] Replace standalone /assistant page with navbar popup chatbot widget (session-persistent, collapsible)
-- [ ] Reorder navbar: Home, Apps, Tools, Building Blocks, Contact, Control Center, Ask My Assistant, Sign in
-- [ ] Hero layout improvements — widen text column, align image top, reflow paragraph below image
-- [ ] Restore tech stack tags on app cards (home + /apps)
-- [ ] Add reading time to building block cards (home + /building-blocks)
-- [ ] New "Explore Development Tools" section on home page after Apps grid
-- [ ] Fix brand scraper URL input — scrape button stays disabled
-- [ ] Fix brand scraper button height to match text input
-- [ ] Fix brand scraper "invalid or expired token" in Control Center
-- [ ] Remove brand scraper from Control Center (access via /apps only)
-- [ ] Fix AI assistant RAG backend "no repos indexed" — sync knowledge base
-- [ ] Fix research assistant API failures (chat + conversation history endpoints)
-- [ ] FRD building block links to actual FRD Generator tool + listed in Tools page
-- [ ] Remove "Other ways to contact me" section from Contact page
-- [ ] Unify contact page button styles (blue + gold hover)
-- [ ] Remove "Sign up or Sign in" subtitle from Apps grid, rename Building Blocks subtitle
-- [ ] Clean up home page subtitles and section naming
+- [ ] Merge Tasks app source code into personal-brand repo (components, actions, services, Prisma schema)
+- [ ] Add Prisma + Cloud SQL connector for polyglot persistence (Firestore + PostgreSQL)
+- [ ] Tasks sidebar integrated into personal-brand app layout at /apps/tasks (content below "Tasks" heading only)
+- [ ] Tasks landing page with "Welcome to Tasks" title (Playfair Display blue heading), subtitle, and "Your Tasks at a Glance" KPI card
+- [ ] KPI card: 3 columns — stats (completed yesterday, total), MIT-tagged task card (tan), Next-tagged task cards (tan)
+- [ ] All existing Tasks pages functional at /apps/tasks/[...] routes (project detail, board view, today, completed, search, tags)
+- [ ] Demo mode functional at /apps/tasks/demo
+- [ ] Billing integration using existing personal-brand billing system
+- [ ] Update apps hub listing to use internal route instead of external URL
+- [ ] Decommission separate tasks Cloud Run service and Cloud Build trigger
+- [ ] Remove tasks subdomain routing from load balancer
 
 ### Deferred
 
@@ -116,8 +109,12 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Effort badges in board view cards with column totals
 - Demo workspace data preservation after sign-up
 - Guided demo tour
-- Credit balance display in todoist app header
+- Credit balance display in tasks app header
 - Billing history for tasks app charges
+- Tools page & nav restructure (from v1.9 — rename Custom GPTs to Tools, reorder navbar)
+- Chatbot popup widget (from v1.9 — replace /assistant with persistent popup)
+- Home page enhancements (from v1.9 — hero layout, tech tags, reading time, dev tools section)
+- Contact page polish (from v1.9 — remove extra sections, unify button styles)
 
 ### Out of Scope
 
@@ -137,15 +134,15 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Brand scraper UI redesign beyond Brand Card + Assets — current UX is complete for v1.7
 - Per-task billing — discourages natural task creation; weekly flat rate is better UX
 - Feature-tiered access — app is simple enough that partial access feels broken
-- Embedding todoist as pages in personal-brand — different databases and mutation patterns
 - Real-time WebSocket updates for tasks — single-user app, page revalidation sufficient
 - Drag-and-drop task reordering — v2+ enhancement
+- Rewriting Tasks from PostgreSQL to Firestore — PostgreSQL is the right database for relational task data
 
 ## Current State
 
-**Shipped:** v1.8 on 2026-02-12
+**Shipped:** v1.9 on 2026-02-18
 **Live at:** https://dan-weinbeck.com
-**In progress:** v1.9 — Site Restructure & Polish
+**In progress:** v2.0 — Tasks App Integration
 
 Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App integrated via weekly credit gating with effort scoring and demo workspace, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
@@ -168,7 +165,7 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 - Stripe webhook at /api/billing/webhook — signature-verified, idempotent on event ID + session ID
 - Admin billing panel at /control-center/billing — user list, detail, adjust credits, refund usage, edit pricing
 - 5 tool pricing entries: brand_scraper (active, 50 credits), tasks_app (active, 100 credits/week), lesson_60s, bus_text, dave_ramsey (inactive)
-- Todoist app: separate Next.js app (PostgreSQL/Prisma), standalone deploy, effort scoring, help tips, multi-user auth, demo workspace, weekly credit gating via personal-brand billing API
+- Todoist app: currently separate Next.js app (PostgreSQL/Prisma) — being merged into personal-brand in v2.0 for unified deployment and native /apps/tasks routing
 - Stripe secrets via GCP Secret Manager: stripe-secret-key (v4, live), stripe-webhook-secret (v3, live)
 
 ## Constraints
@@ -213,7 +210,8 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | Incremental JSONB event persistence | Events persisted during processing; 200-entry cap prevents bloat | ✓ Good |
 | Fire-and-forget Firestore history writes | Non-blocking scrape flow; history is supplementary | ✓ Good |
 | Dynamic Google Font loading via CSS Font Loading API | Brand Card renders in extracted font; best-effort with system fallback | ✓ Good |
-| Tasks app as separate standalone service | Same multi-repo pattern as brand-scraper; todoist keeps Postgres/Prisma, personal-brand handles billing | ✓ Good — clean service boundary |
+| Tasks app as separate standalone service | Same multi-repo pattern as brand-scraper; todoist keeps Postgres/Prisma, personal-brand handles billing | ⚠️ Revisit — merging into personal-brand in v2.0 for unified deployment |
+| Polyglot persistence (Firestore + PostgreSQL) | Tasks needs relational queries (joins, self-ref FKs, float ordering); Firestore for everything else | — Pending |
 | Toggletip interaction for HelpTip | Click pins tooltip, hover opens with delay; centralized catalog for content | ✓ Good — accessible and maintainable |
 | Nullable Int for effort field | null = unscored (not 0); distinguishes unscored from scored in rollups | ✓ Good — clean semantics |
 | onIdTokenChanged for auth cookie sync | Automatic refresh on token rotation; __session cookie name matches Cloud Run convention | ✓ Good — seamless token lifecycle |
@@ -224,4 +222,4 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | useDemoMode() defaults to false | Guards are no-ops outside /demo tree; zero impact on production /tasks routes | ✓ Good — safe by default |
 
 ---
-*Last updated: 2026-02-15 after v1.9 milestone start*
+*Last updated: 2026-02-18 after v2.0 milestone start*
