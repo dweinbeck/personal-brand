@@ -1,12 +1,37 @@
 import { TasksKpiCard } from "@/components/tasks/TasksKpiCard";
 import { getUserIdFromCookie } from "@/lib/tasks/auth";
+import {
+  getCompletedYesterdayCount,
+  getMitTask,
+  getNextTasks,
+  getTotalTaskCount,
+} from "@/services/tasks/task.service";
 import { getWorkspaces } from "@/services/tasks/workspace.service";
 
 export default async function TasksPage() {
   const userId = await getUserIdFromCookie();
 
-  const workspaces = userId ? await getWorkspaces(userId) : [];
-  const hasWorkspaces = workspaces.length > 0;
+  let hasWorkspaces = false;
+  let kpiData: {
+    completedYesterday: number;
+    totalTasks: number;
+    mitTask: { id: string; name: string; projectName: string | null } | null;
+    nextTasks: { id: string; name: string; projectName: string | null }[];
+  } | null = null;
+
+  if (userId) {
+    const [completedYesterday, totalTasks, mitTask, nextTasks, workspaces] =
+      await Promise.all([
+        getCompletedYesterdayCount(userId),
+        getTotalTaskCount(userId),
+        getMitTask(userId),
+        getNextTasks(userId),
+        getWorkspaces(userId),
+      ]);
+
+    kpiData = { completedYesterday, totalTasks, mitTask, nextTasks };
+    hasWorkspaces = workspaces.length > 0;
+  }
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -19,12 +44,12 @@ export default async function TasksPage() {
           : "Create a workspace in the sidebar to get started."}
       </p>
 
-      {userId && (
+      {kpiData && (
         <TasksKpiCard
-          completedYesterday={0}
-          totalTasks={0}
-          mitTask={null}
-          nextTasks={[]}
+          completedYesterday={kpiData.completedYesterday}
+          totalTasks={kpiData.totalTasks}
+          mitTask={kpiData.mitTask}
+          nextTasks={kpiData.nextTasks}
         />
       )}
 
