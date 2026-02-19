@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v2.0 — Tasks App Integration (Phase 46)
+**Current focus:** v2.0 — Tasks App Integration (Phase 47)
 
 ## Current Position
 
-Phase: 46 of 48 (Landing Page & KPI Dashboard) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase Complete
-Last activity: 2026-02-19 — Plan 46-02 complete (Data Fetching & KPI Wiring)
+Phase: 47 of 48 (Feature Parity & Demo Mode)
+Plan: 1 of 4 in current phase
+Status: Plan 47-01 Complete
+Last activity: 2026-02-19 — Plan 47-01 complete (Feature Parity Verification)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 118
+- Total plans completed: 119
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -61,6 +61,7 @@ Full decision log in PROJECT.md Key Decisions table.
 - [46-02]: KPI functions query only top-level tasks (parentTaskId === null) to avoid counting subtasks
 - [46-02]: Promise.all used to fetch all KPI data + workspaces in parallel for performance
 - [46-02]: Unauthenticated users see title/subtitle only; KPI card conditionally rendered when kpiData exists
+- [47-01]: Removed unnecessary unsafe cast for viewMode - Project type already includes viewMode from Prisma schema
 
 ### Roadmap Evolution
 
@@ -79,9 +80,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 46-02-PLAN.md (Data Fetching & KPI Wiring) -- Phase 46 complete
+Stopped at: Completed 47-01-PLAN.md (Feature Parity Verification)
 Resume file: None
 
 ## Next Step
 
-Phase 46 complete. Next: Phase 47 (Feature Parity & Enhancements).
+Continue Phase 47: Plan 47-02 next.
