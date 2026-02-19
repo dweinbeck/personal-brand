@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 48.1 of 48.1 (Tasks App Testing Feedback)
-Plan: 2 of 5 in current phase
-Status: Executing Phase 48.1 -- Plan 02 complete
-Last activity: 2026-02-19 — Completed 48.1-02 (Dismissible Free Trial Banner)
+Plan: 3 of 5 in current phase
+Status: Executing Phase 48.1 -- Plan 03 complete
+Last activity: 2026-02-19 — Completed 48.1-03 (Effort Scoring Overhaul)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 48
-- Total plans completed: 127
+- Total plans completed: 128
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -73,6 +73,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [48-02]: Service count updated from 4 to 3 in CONFIGURATION-RESILIENCE.md (6 URL configs instead of 12)
 - [48.1-02]: Lazy useState initializer to avoid SSR/hydration mismatch with localStorage
 - [48.1-02]: localStorage key 'tasks-free-trial-dismissed' for dismissal persistence
+- [48.1-03]: Effort schema changed from Fibonacci-only union to z.number().int().positive()
+- [48.1-03]: EFFORT_QUICK_PICKS constant for UI buttons, EFFORT_VALUES kept as backward-compatible alias
+- [48.1-03]: Parent task effort is a manual budget (not auto-summed from subtasks)
 
 ### Roadmap Evolution
 
@@ -92,9 +95,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 48.1-02-PLAN.md
+Stopped at: Completed 48.1-03-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Continue Phase 48.1 with Plan 03 (next in sequence).
+Continue Phase 48.1 with Plan 04 (next in sequence).
