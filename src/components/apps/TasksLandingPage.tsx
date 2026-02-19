@@ -4,13 +4,9 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
-import { clientEnv } from "@/lib/env";
 import { getFirebaseAuth } from "@/lib/firebase-client";
 
 const provider = new GoogleAuthProvider();
-
-const TASKS_URL =
-  clientEnv().NEXT_PUBLIC_TASKS_APP_URL || "https://tasks.dan-weinbeck.com";
 
 const features = [
   {
@@ -105,7 +101,7 @@ export function TasksLandingPage() {
           Full-featured task management with workspaces, projects, sections,
           tags, subtasks, effort scoring, and board views.
         </p>
-        <Button variant="primary" href={TASKS_URL}>
+        <Button variant="primary" href="/apps/tasks">
           Launch App
           <svg
             className="h-4 w-4"
@@ -153,7 +149,7 @@ export function TasksLandingPage() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button variant="primary" href={`${TASKS_URL}/demo`}>
+        <Button variant="primary" href="/apps/tasks/demo">
           Try Demo
         </Button>
         <button
