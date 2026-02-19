@@ -89,7 +89,6 @@ export const clientEnvSchema = z.object({
     isNotNumericProjectId,
     "NEXT_PUBLIC_FIREBASE_PROJECT_ID looks like a GCP project number (purely numeric). Use the Firebase project ID string instead.",
   ),
-  NEXT_PUBLIC_TASKS_APP_URL: z.string().url().optional(),
 });
 
 export type ClientEnv = z.infer<typeof clientEnvSchema>;
@@ -269,8 +268,6 @@ export function clientEnv(): ClientEnv {
         process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",
       NEXT_PUBLIC_FIREBASE_PROJECT_ID:
         process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
-      NEXT_PUBLIC_TASKS_APP_URL:
-        process.env.NEXT_PUBLIC_TASKS_APP_URL || undefined,
     });
   }
   return _clientEnv;

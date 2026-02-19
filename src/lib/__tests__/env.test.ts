@@ -35,14 +35,6 @@ describe("clientEnvSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts optional NEXT_PUBLIC_TASKS_APP_URL", () => {
-    const result = clientEnvSchema.safeParse({
-      ...validClientEnv(),
-      NEXT_PUBLIC_TASKS_APP_URL: "https://tasks.dan-weinbeck.com",
-    });
-    expect(result.success).toBe(true);
-  });
-
   it("rejects missing NEXT_PUBLIC_FIREBASE_API_KEY", () => {
     const result = clientEnvSchema.safeParse({
       ...validClientEnv(),
@@ -67,13 +59,6 @@ describe("clientEnvSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects invalid NEXT_PUBLIC_TASKS_APP_URL", () => {
-    const result = clientEnvSchema.safeParse({
-      ...validClientEnv(),
-      NEXT_PUBLIC_TASKS_APP_URL: "not-a-url",
-    });
-    expect(result.success).toBe(false);
-  });
 });
 
 // ── Placeholder detection ───────────────────────────────────────
