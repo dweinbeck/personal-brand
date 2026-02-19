@@ -243,6 +243,37 @@ for (const check of formatChecks) {
   }
 }
 
+// ── Phase 4b: DATABASE_URL validation ────────────────────────────
+
+console.log(`\n${bold("Phase 4b: Database URL validation")}\n`);
+
+const databaseUrl = process.env.DATABASE_URL;
+const hasCloudRunSecrets = !!(
+  process.env.GITHUB_TOKEN ||
+  process.env.STRIPE_SECRET_KEY ||
+  process.env.CHATBOT_API_KEY
+);
+
+if (databaseUrl) {
+  if (databaseUrl.startsWith("postgresql://")) {
+    log(PASS, "DATABASE_URL present and has valid postgresql:// prefix");
+  } else {
+    hasFailure = true;
+    log(FAIL, "DATABASE_URL must start with postgresql://");
+  }
+} else if (hasCloudRunSecrets) {
+  hasFailure = true;
+  log(
+    FAIL,
+    "DATABASE_URL not set but other Cloud Run secrets are present — required in production",
+  );
+} else {
+  log(
+    WARN,
+    "DATABASE_URL not set (expected in local dev — required in Cloud Run)",
+  );
+}
+
 // ── Phase 5: Service health probes ──────────────────────────────
 
 console.log(`\n${bold("Phase 5: Service health probes")}\n`);
