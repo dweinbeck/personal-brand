@@ -26,10 +26,8 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
   const { user } = useAuth();
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(project.name);
-  const initialViewMode =
-    (project as unknown as { viewMode?: string }).viewMode === "board"
-      ? "board"
-      : "list";
+  const initialViewMode: ViewMode =
+    project.viewMode === "board" ? "board" : "list";
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
 
   async function handleViewModeToggle(mode: ViewMode) {
