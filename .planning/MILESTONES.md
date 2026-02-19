@@ -249,12 +249,32 @@
 
 ---
 
-## v1.8 Tasks App (Shipped: 2026-02-12)
+## v2.0 Tasks App Integration (Shipped: 2026-02-19)
 
-**Phases completed:** 34 phases, 66 plans, 8 tasks
+**Delivered:** Merged the standalone Tasks app (todoist) into the personal-brand Next.js app for unified deployment at /apps/tasks, with Prisma/PostgreSQL polyglot persistence, shared Firebase Auth and billing, personalized KPI dashboard, full feature parity including demo mode, and complete decommission of the separate Cloud Run service.
+
+**Phases completed:** 43-48.1 (7 phases, 22 plans total)
 
 **Key accomplishments:**
-- (none recorded)
+
+- Prisma 6 integrated with Cloud SQL PostgreSQL — polyglot persistence (Firestore + PostgreSQL) without schema changes to existing data
+- Full server-side code migration — 5 Zod schemas, 5 service layers, and all CRUD server actions running from personal-brand codebase
+- Tasks UI with sidebar-based layout at /apps/tasks with all sub-routes (project detail, today, completed, search, tags)
+- "Your Tasks at a Glance" KPI dashboard — live PostgreSQL queries for completed count, total tasks, MIT task, Next tasks
+- Demo mode at /apps/tasks/demo with ~40 realistic sample tasks, client-side only, zero database access
+- Standalone Tasks Cloud Run service decommissioned — Cloud Build trigger deleted, DNS record removed, env var cleaned up
+- Testing feedback polish: effort scoring overhaul (any positive integer, subtask budgeting), drag-and-drop between sections, dismissible trial banner with countdown, bulk sprint plan data import
+
+**Stats:**
+
+- 133 files changed (+15,905 / -368 lines)
+- 7 phases, 22 plans, 28 feature commits
+- 1 day (Feb 19, 2026)
+- Total codebase: 48,431 LOC TypeScript
+
+**Git range:** `fe3812c` → `461a6e8`
+
+**What's next:** Site polish (v1.9 deferred items), real writing content, additional paid tools
 
 ---
 

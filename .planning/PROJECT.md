@@ -82,22 +82,23 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - ✓ Tasks app listed on /apps hub with link to deployed todoist service — v1.8
 - ✓ Client-side demo workspace with ~40 realistic tasks and sign-up CTA — v1.8
 - ✓ Billing access check and effort rollup unit tests — v1.8
+- ✓ Prisma 6 + Cloud SQL PostgreSQL polyglot persistence (Firestore + PostgreSQL) — v2.0
+- ✓ Tasks server actions, Zod schemas, and service layer migrated to personal-brand codebase — v2.0
+- ✓ Tasks UI components and sidebar at /apps/tasks with all sub-routes — v2.0
+- ✓ Tasks landing page with "Your Tasks at a Glance" KPI dashboard — v2.0
+- ✓ Full Tasks feature parity at /apps/tasks (list, board, today, completed, search, tags, subtasks, effort) — v2.0
+- ✓ Demo mode at /apps/tasks/demo with ~40 sample tasks (client-side only) — v2.0
+- ✓ Tasks billing via direct function import (no external HTTP) — v2.0
+- ✓ Apps hub listing uses internal /apps/tasks route — v2.0
+- ✓ Standalone Tasks Cloud Run service decommissioned — v2.0
+- ✓ Effort scoring accepts any positive integer with subtask budgeting — v2.0
+- ✓ Drag-and-drop task reordering between sections (native HTML5 DnD) — v2.0
+- ✓ Dismissible free trial banner with dynamic countdown — v2.0
+- ✓ Bulk sprint plan data import from JSON — v2.0
 
 ### Active
 
-**v2.0 — Tasks App Integration**
-
-- [ ] Merge Tasks app source code into personal-brand repo (components, actions, services, Prisma schema)
-- [ ] Add Prisma + Cloud SQL connector for polyglot persistence (Firestore + PostgreSQL)
-- [ ] Tasks sidebar integrated into personal-brand app layout at /apps/tasks (content below "Tasks" heading only)
-- [ ] Tasks landing page with "Welcome to Tasks" title (Playfair Display blue heading), subtitle, and "Your Tasks at a Glance" KPI card
-- [ ] KPI card: 3 columns — stats (completed yesterday, total), MIT-tagged task card (tan), Next-tagged task cards (tan)
-- [ ] All existing Tasks pages functional at /apps/tasks/[...] routes (project detail, board view, today, completed, search, tags)
-- [ ] Demo mode functional at /apps/tasks/demo
-- [ ] Billing integration using existing personal-brand billing system
-- [ ] Update apps hub listing to use internal route instead of external URL
-- [ ] Decommission separate tasks Cloud Run service and Cloud Build trigger
-- [ ] Remove tasks subdomain routing from load balancer
+(No active milestone — next milestone TBD)
 
 ### Deferred
 
@@ -135,20 +136,19 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 - Per-task billing — discourages natural task creation; weekly flat rate is better UX
 - Feature-tiered access — app is simple enough that partial access feels broken
 - Real-time WebSocket updates for tasks — single-user app, page revalidation sufficient
-- Drag-and-drop task reordering — v2+ enhancement
 - Rewriting Tasks from PostgreSQL to Firestore — PostgreSQL is the right database for relational task data
 
 ## Current State
 
-**Shipped:** v1.9 on 2026-02-18
+**Shipped:** v2.0 on 2026-02-19
 **Live at:** https://dan-weinbeck.com
-**In progress:** v2.0 — Tasks App Integration
+**Next milestone:** TBD
 
-Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App integrated via weekly credit gating with effort scoring and demo workspace, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
+Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App fully integrated at /apps/tasks with KPI dashboard, effort scoring with subtask budgeting, drag-and-drop between sections, demo mode, and bulk data import, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~26,400 LOC TypeScript/TSX/CSS/MDX (estimated after v1.8 — +7,800 net lines from personal-brand repo)
+- **Codebase:** ~48,400 LOC TypeScript/TSX/CSS/MDX (after v2.0 — +15,900 net lines from Tasks integration)
 - **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK + Auth, Stripe, react-markdown, Vitest
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
@@ -165,7 +165,7 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 - Stripe webhook at /api/billing/webhook — signature-verified, idempotent on event ID + session ID
 - Admin billing panel at /control-center/billing — user list, detail, adjust credits, refund usage, edit pricing
 - 5 tool pricing entries: brand_scraper (active, 50 credits), tasks_app (active, 100 credits/week), lesson_60s, bus_text, dave_ramsey (inactive)
-- Todoist app: currently separate Next.js app (PostgreSQL/Prisma) — being merged into personal-brand in v2.0 for unified deployment and native /apps/tasks routing
+- Tasks app: fully integrated into personal-brand at /apps/tasks (merged from standalone todoist in v2.0) — Prisma/PostgreSQL for task data, Firestore for everything else
 - Stripe secrets via GCP Secret Manager: stripe-secret-key (v4, live), stripe-webhook-secret (v3, live)
 
 ## Constraints
@@ -210,8 +210,8 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | Incremental JSONB event persistence | Events persisted during processing; 200-entry cap prevents bloat | ✓ Good |
 | Fire-and-forget Firestore history writes | Non-blocking scrape flow; history is supplementary | ✓ Good |
 | Dynamic Google Font loading via CSS Font Loading API | Brand Card renders in extracted font; best-effort with system fallback | ✓ Good |
-| Tasks app as separate standalone service | Same multi-repo pattern as brand-scraper; todoist keeps Postgres/Prisma, personal-brand handles billing | ⚠️ Revisit — merging into personal-brand in v2.0 for unified deployment |
-| Polyglot persistence (Firestore + PostgreSQL) | Tasks needs relational queries (joins, self-ref FKs, float ordering); Firestore for everything else | — Pending |
+| Tasks app merged into personal-brand (v2.0) | Unified deployment eliminates separate Cloud Run service; shared auth/billing via direct imports | ✓ Good — single deploy, no cross-service auth |
+| Polyglot persistence (Firestore + PostgreSQL) | Tasks needs relational queries (joins, self-ref FKs, float ordering); Firestore for everything else | ✓ Good — clean separation of concerns |
 | Toggletip interaction for HelpTip | Click pins tooltip, hover opens with delay; centralized catalog for content | ✓ Good — accessible and maintainable |
 | Nullable Int for effort field | null = unscored (not 0); distinguishes unscored from scored in rollups | ✓ Good — clean semantics |
 | onIdTokenChanged for auth cookie sync | Automatic refresh on token rotation; __session cookie name matches Cloud Run convention | ✓ Good — seamless token lifecycle |
@@ -222,4 +222,4 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | useDemoMode() defaults to false | Guards are no-ops outside /demo tree; zero impact on production /tasks routes | ✓ Good — safe by default |
 
 ---
-*Last updated: 2026-02-18 after v2.0 milestone start*
+*Last updated: 2026-02-19 after v2.0 milestone*
