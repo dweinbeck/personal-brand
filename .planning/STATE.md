@@ -19,7 +19,7 @@ Last activity: 2026-02-19 — Completed 45-03 (Apps Hub Listing)
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 115
+- Total plans completed: 116
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -50,6 +50,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [45-01]: Tasks UI primitives namespaced under src/components/tasks/ui/ to avoid conflicts with personal-brand UI
 - [45-01]: AuthContext upgraded to onIdTokenChanged with __session cookie for SSR auth
 - [45-01]: Biome noNonNullAssertion, noSvgWithoutTitle, noAutofocus downgraded to warn (todoist patterns)
+- [45-02]: BILLING_URL fallback changed to /billing (internal route, no cross-origin)
+- [45-02]: Tasks layout uses flex h-screen sidebar layout, NOT personal-brand Navbar/Footer
+- [45-02]: External redirect page.tsx replaced with proper Tasks landing page
 - [45-03]: Removed clientEnv import from apps.ts (no other listing used it after Tasks href change)
 - [45-03]: Integrated apps use internal routes (/apps/slug) not external URLs in apps hub listings
 
