@@ -147,9 +147,9 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 **Plans**: 3 plans
 
 Plans:
-- [ ] 43-01-PLAN.md — Install Prisma, configure Cloud SQL connector, set up DATABASE_URL for local and Cloud Run
-- [ ] 43-02-PLAN.md — Copy Tasks Prisma schema, run db pull to validate against existing database, generate Prisma client
-- [ ] 43-03-PLAN.md — Create test query to verify read/write connectivity, update Cloud Run deploy config with Cloud SQL instance
+- [ ] 43-01-PLAN.md — Install Prisma, copy Tasks schema, generate Prisma client, create singleton module
+- [ ] 43-02-PLAN.md — Update Dockerfile for Prisma generation, update cloudbuild.yaml with Cloud SQL instance and DATABASE_URL secret
+- [ ] 43-03-PLAN.md — Create test server action and API route to verify database read connectivity and data integrity
 
 ### Phase 44: Server-Side Code Migration
 **Goal**: All Tasks server actions, service logic, and validation schemas execute correctly from the personal-brand codebase with shared Firebase Auth
