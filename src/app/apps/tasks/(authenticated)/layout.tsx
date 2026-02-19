@@ -64,7 +64,11 @@ export default async function TasksLayout({
                 buyCreditsUrl={process.env.BILLING_URL || "/billing"}
               />
             )}
-            {billing.reason === "free_week" && <FreeWeekBanner />}
+            {billing.reason === "free_week" && (
+              <FreeWeekBanner
+                weekStart={billing.weekStart ?? new Date().toISOString()}
+              />
+            )}
           </div>
           {children}
         </main>
