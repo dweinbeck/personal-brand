@@ -1,17 +1,16 @@
-import { redirect } from "next/navigation";
+import { TasksKpiCard } from "@/components/tasks/TasksKpiCard";
 import { getUserIdFromCookie } from "@/lib/tasks/auth";
 import { getWorkspaces } from "@/services/tasks/workspace.service";
 
 export default async function TasksPage() {
   const userId = await getUserIdFromCookie();
-  if (!userId) redirect("/");
 
-  const workspaces = await getWorkspaces(userId);
+  const workspaces = userId ? await getWorkspaces(userId) : [];
   const hasWorkspaces = workspaces.length > 0;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)] mb-2">
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-primary font-display mb-2">
         Welcome to Tasks
       </h1>
       <p className="text-text-secondary mb-8">
@@ -19,6 +18,15 @@ export default async function TasksPage() {
           ? "Select a project from the sidebar to get started, or create a new one."
           : "Create a workspace in the sidebar to get started."}
       </p>
+
+      {userId && (
+        <TasksKpiCard
+          completedYesterday={0}
+          totalTasks={0}
+          mitTask={null}
+          nextTasks={[]}
+        />
+      )}
 
       {!hasWorkspaces && (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
