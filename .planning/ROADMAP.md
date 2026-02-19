@@ -164,9 +164,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 44-01-PLAN.md — Copy and adapt server actions (workspace, project, section, task, tag) with path prefix updates
-- [ ] 44-02-PLAN.md — Copy service layer and Zod validation schemas, wire imports to new file locations
-- [ ] 44-03-PLAN.md — Integrate shared Firebase Auth (verifyUser pattern) and direct billing function calls
+- [ ] 44-01-PLAN.md — Copy Zod schemas and Prisma service layer (5 schemas + 5 services)
+- [ ] 44-02-PLAN.md — Create auth and billing adapter modules using shared Firebase Admin and direct billing imports
+- [ ] 44-03-PLAN.md — Copy and adapt server actions with updated imports and /apps/tasks path prefix, remove Phase 43 test endpoint
 
 ### Phase 45: UI Components & Routing
 **Goal**: Users can navigate to /apps/tasks and interact with the full Tasks UI (sidebar, views, forms) inside the personal-brand app shell
