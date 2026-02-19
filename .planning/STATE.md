@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 45 of 48 (UI Components & Routing)
-Plan: 1 of 3 in current phase
-Status: Executing
-Last activity: 2026-02-19 — Completed 45-01 (UI Components Copy)
+Plan: 3 of 3 in current phase
+Status: Phase Complete
+Last activity: 2026-02-19 — Completed 45-03 (Apps Hub Listing)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 9 (v1.0 through v1.8)
 - Total phases completed: 42 (including v1.9 partial)
-- Total plans completed: 114
+- Total plans completed: 115
 - Timeline: Jan 18 -> Feb 18, 2026 (32 days)
 
 **v1.8 Velocity:**
@@ -50,6 +50,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [45-01]: Tasks UI primitives namespaced under src/components/tasks/ui/ to avoid conflicts with personal-brand UI
 - [45-01]: AuthContext upgraded to onIdTokenChanged with __session cookie for SSR auth
 - [45-01]: Biome noNonNullAssertion, noSvgWithoutTitle, noAutofocus downgraded to warn (todoist patterns)
+- [45-03]: Removed clientEnv import from apps.ts (no other listing used it after Tasks href change)
+- [45-03]: Integrated apps use internal routes (/apps/slug) not external URLs in apps hub listings
 
 ### Roadmap Evolution
 
@@ -68,9 +70,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 45-01-PLAN.md (UI Components Copy)
+Stopped at: Completed 45-03-PLAN.md (Apps Hub Listing)
 Resume file: None
 
 ## Next Step
 
-Phase 45 Plan 01 (UI Components) complete. Next: Phase 45 Plan 02 (Route Pages).
+Phase 45 (UI Components & Routing) complete. Next: Phase 46 (Landing Page).
