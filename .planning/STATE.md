@@ -51,6 +51,7 @@ None.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 10 | Tasks app: data import, two-line card titles, remove import button, 2-day auto-archive | 2026-02-19 | 5430a9f | [10-tasks-app-retry-data-import-two-line-car](./quick/10-tasks-app-retry-data-import-two-line-car/) |
 
 ## Session Continuity
 
