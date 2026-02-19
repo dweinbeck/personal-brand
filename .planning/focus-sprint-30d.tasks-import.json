@@ -1,0 +1,1561 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-02-19T04:57:33.211165Z",
+  "timezone": "America/Chicago",
+  "target": {
+    "app": "Tasks",
+    "repoTaskModel": {
+      "prismaModel": "Task",
+      "prismaSchemaPath": "prisma/schema.prisma",
+      "allowedEffortValues": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        13
+      ],
+      "subtaskNesting": "one-level (parentTaskId only)"
+    }
+  },
+  "instructionsForClaudeCode": [
+    "Goal: import this plan into the Tasks app as real Workspaces/Projects/Sections/Tasks/Subtasks with effort values.",
+    "Create (or reuse) a workspace named exactly `90 Day Focus Sprint (Days 19–48)` for the signed-in user; if multiple workspaces exist, prefer one that already contains your sprint work, otherwise create a new one.",
+    "Create the Projects listed under `workspace.projects` (if missing) and the Sections listed under each project (if missing).",
+    "Ensure all `tags` in `workspace.tagsToEnsure` exist for the user (create Tag records as needed), then attach tags to tasks (map by tag name → tagId).",
+    "For each task item in `planItems`, create the parent Task first, then create each item in `subtasks` as a Task with `parentTaskId` pointing to the parent (do not nest deeper than one level).",
+    "Set `deadlineAt` to the ISO date provided; set `status` to OPEN; set `description` exactly as provided (it includes repo file paths/acceptance criteria).",
+    "After import, print a summary: workspaceId, each projectId, how many tasks/subtasks created, and any skipped duplicates (by matching on name+deadlineAt within the same project/section)."
+  ],
+  "workspace": {
+    "name": "90 Day Focus Sprint (Days 19–48)",
+    "tagsToEnsure": [
+      {
+        "name": "P0-OperatingLayer",
+        "color": null
+      },
+      {
+        "name": "P1-AgentOps",
+        "color": null
+      },
+      {
+        "name": "P2-Monetization",
+        "color": null
+      },
+      {
+        "name": "P3-Reliability",
+        "color": null
+      },
+      {
+        "name": "P4-Content",
+        "color": null
+      },
+      {
+        "name": "P5-UX",
+        "color": null
+      },
+      {
+        "name": "DeepWork",
+        "color": null
+      },
+      {
+        "name": "Week-1",
+        "color": null
+      },
+      {
+        "name": "Week-2",
+        "color": null
+      },
+      {
+        "name": "Week-3",
+        "color": null
+      },
+      {
+        "name": "Week-4",
+        "color": null
+      },
+      {
+        "name": "Ship",
+        "color": null
+      },
+      {
+        "name": "CI",
+        "color": null
+      },
+      {
+        "name": "Playwright",
+        "color": null
+      },
+      {
+        "name": "Firestore",
+        "color": null
+      },
+      {
+        "name": "Billing",
+        "color": null
+      },
+      {
+        "name": "Docs",
+        "color": null
+      }
+    ],
+    "projects": [
+      {
+        "name": "P0 Operating Layer",
+        "sections": [
+          "Week 1 (Feb 18–Feb 24)",
+          "Week 2 (Feb 25–Mar 3)",
+          "Week 3 (Mar 4–Mar 10)",
+          "Week 4 (Mar 11–Mar 19)"
+        ]
+      },
+      {
+        "name": "P1 AgentOps",
+        "sections": [
+          "Week 1 (Feb 18–Feb 24)",
+          "Week 4 (Mar 11–Mar 19)"
+        ]
+      },
+      {
+        "name": "P2 Monetization",
+        "sections": [
+          "Week 2 (Feb 25–Mar 3)",
+          "Week 3 (Mar 4–Mar 10)",
+          "Week 4 (Mar 11–Mar 19)"
+        ]
+      },
+      {
+        "name": "P3 Reliability + Telemetry",
+        "sections": [
+          "Week 2 (Feb 25–Mar 3)",
+          "Week 3 (Mar 4–Mar 10)",
+          "Week 4 (Mar 11–Mar 19)"
+        ]
+      },
+      {
+        "name": "P4 Content Factory",
+        "sections": [
+          "Week 4 (Mar 11–Mar 19)"
+        ]
+      },
+      {
+        "name": "P5 UX Mobile-First",
+        "sections": [
+          "Week 1 (Feb 18–Feb 24)",
+          "Week 3 (Mar 4–Mar 10)"
+        ]
+      }
+    ]
+  },
+  "planItems": [
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 01: Turn /assistant into a real mobile-first hub (stop redirect)",
+        "description": "Replace the redirect in `src/app/assistant/page.tsx` with a real hub page that routes users to your utilities (Brands, Tasks, Envelopes, Research) and shows placeholders for Recent Activity + Balance + Quick Actions; acceptance: /assistant loads for unauthenticated users, has 4 primary CTAs, and shares the layout conventions used in `src/app/apps/page.tsx`.",
+        "deadlineAt": "2026-02-18",
+        "effort": 5,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-1",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Next.js App Router page patterns for metadata, layout, and client/server components; Look at: src/app/assistant/page.tsx, src/app/apps/page.tsx, src/components/home/*; Do: implement a minimal hub UI with links and stub widgets; Output: a non-redirecting /assistant page that is usable on mobile and passes `npm run build`."
+      },
+      "subtasks": [
+        {
+          "name": "Replace redirect with hub skeleton + metadata",
+          "description": "Update `src/app/assistant/page.tsx` to render a page (no redirect) and set a title/description similar to other routes.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: How metadata is declared in this repo’s Next.js pages; Look at: src/app/apps/page.tsx and other `metadata` exports; Do: add metadata + base layout container for /assistant; Output: a committed page that renders content and builds."
+        },
+        {
+          "name": "Add primary CTAs to Brands/Tasks/Envelopes/Research",
+          "description": "Add 4 large, tap-friendly cards/buttons that link to `/apps/brand-scraper`, `/apps/tasks`, `/envelopes`, and `/tools/research-assistant`.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: How AppCard/Buttons are used for navigation in the codebase; Look at: src/components/apps/AppCard.tsx, src/components/ui/Button.tsx; Do: build CTA cards with consistent styling and icons; Output: 4 working navigation cards on /assistant."
+        },
+        {
+          "name": "Stub widgets: Recent Activity + Credits Balance",
+          "description": "Add placeholder components for Recent Activity (later from Firestore) and Credits Balance (from `/api/billing/me`), but don’t block load if unauthenticated.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1",
+            "Firestore",
+            "Billing"
+          ],
+          "researchInstruction": "Research: How auth-aware client components fetch billing state in this repo; Look at: src/context/AuthContext.tsx, src/lib/billing/api.ts, existing pages that show balance; Do: add a safe client component that fetches balance when signed in; Output: a widget that shows balance when logged in and a sign-in CTA when not."
+        }
+      ]
+    },
+    {
+      "projectName": "P1 AgentOps",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 02: Add GitHub issue/PR templates for agent-driven work (phone-first)",
+        "description": "Create `.github/ISSUE_TEMPLATE/` templates that standardize Specs → Acceptance → Test Plan → Screenshot Pages and add a PR template that forces DoD (tests, screenshots, telemetry note); acceptance: from GitHub mobile you can open an Issue that is fully structured for Claude Code to implement.",
+        "deadlineAt": "2026-02-19",
+        "effort": 3,
+        "tags": [
+          "P1-AgentOps",
+          "Week-1",
+          "Ship"
+        ],
+        "researchInstruction": "Research: GitHub issue and pull request template formats and how Claude Code GitHub Actions consumes issues; Look at: .github/ (new), docs for GitHub issue forms, and your `.planning/*` templates for structure; Do: create an Issue template named `agent-task.yml` and a `pull_request_template.md` with DoD checklist; Output: templates appear in GitHub UI and produce consistent task specs."
+      },
+      "subtasks": [
+        {
+          "name": "Create Issue template: agent-ready spec (YAML form)",
+          "description": "Add `.github/ISSUE_TEMPLATE/agent-task.yml` capturing: Goal, Context, Scope/Non-scope, Acceptance Criteria, Files to touch, Commands to run, Screenshot URLs.",
+          "effort": 2,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: GitHub Issue Forms YAML schema (dropdowns, required fields, markdown blocks); Look at: GitHub docs + your `.planning/REQUIREMENTS.md` for field ideas; Do: write a strict form that produces copy-pastable implementation specs; Output: a new issue form selectable in GitHub 'New issue'."
+        },
+        {
+          "name": "Create Issue template: bugfix + repro + expected",
+          "description": "Add `.github/ISSUE_TEMPLATE/bug.yml` with Repro steps, Expected/Actual, Screenshots, Logs, and Regression test ask.",
+          "effort": 1,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: High-signal bug report templates for Next.js apps; Look at: existing `.planning/TESTING-FEEDBACK.md` patterns; Do: create a bug template that always asks for a failing URL and console output; Output: a bug template that reduces back-and-forth."
+        },
+        {
+          "name": "Add PR template with Definition of Done checklist",
+          "description": "Add `.github/pull_request_template.md` requiring: tests passed, build passed, screenshots attached, telemetry updated (if applicable), and rollback note.",
+          "effort": 1,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: Effective PR checklists for agent-generated code; Look at: repo scripts in package.json and existing patterns in `.planning`; Do: draft a DoD checklist aligned with `npm test`, `npm run build`, and `npm run test:e2e`; Output: PRs have a consistent, reviewable structure."
+        }
+      ]
+    },
+    {
+      "projectName": "P1 AgentOps",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 03: Add CI workflow for tests/lint/build/validate-env on PRs",
+        "description": "Create `.github/workflows/ci.yml` that runs `npm ci`, `npm run lint`, `npm test`, `npm run build`, and `npm run validate-env` on pull requests; acceptance: PRs show green checks and failures are actionable.",
+        "deadlineAt": "2026-02-20",
+        "effort": 5,
+        "tags": [
+          "P1-AgentOps",
+          "Week-1",
+          "CI",
+          "Ship"
+        ],
+        "researchInstruction": "Research: GitHub Actions best practices for Node/Next.js monorepos and caching npm installs; Look at: package.json scripts, scripts/validate-env.ts, and Biome/Vitest config; Do: implement a CI workflow with caching and proper Node version; Output: a PR check that reliably runs in <10 minutes and blocks merges on failure."
+      },
+      "subtasks": [
+        {
+          "name": "Create ci.yml with Node setup + caching + core scripts",
+          "description": "Add workflow triggered on `pull_request` that runs `npm ci` and then `lint/test/build/validate-env` sequentially.",
+          "effort": 3,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1",
+            "CI"
+          ],
+          "researchInstruction": "Research: actions/setup-node cache settings and reliable npm CI patterns; Look at: GitHub Actions docs + your package.json scripts list; Do: write a minimal deterministic pipeline; Output: a CI job that passes on main and catches regressions on PR."
+        },
+        {
+          "name": "Pin Node version and align with local/dev",
+          "description": "Add `.nvmrc` or specify Node version in workflow to match production target and avoid flaky builds.",
+          "effort": 1,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1",
+            "CI"
+          ],
+          "researchInstruction": "Research: What Node version your deployment/runtime expects (Vercel/Cloud Run/etc.); Look at: deployment config and package-lock expectations; Do: choose and pin a Node version for CI and local; Output: consistent builds across environments."
+        },
+        {
+          "name": "Add required status checks documentation (1 README snippet)",
+          "description": "Document in README (or `.planning/PROJECT.md`) which checks must be green before merging and how to run them locally.",
+          "effort": 1,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1",
+            "Docs"
+          ],
+          "researchInstruction": "Research: How contributors/agents should run the same checks locally; Look at: package.json scripts + CI workflow steps; Do: write a short 'How to verify' section; Output: reduced PR churn from missing commands."
+        }
+      ]
+    },
+    {
+      "projectName": "P1 AgentOps",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 04: Add Playwright screenshot workflow that attaches PNGs to PRs",
+        "description": "Create `.github/workflows/screenshots.yml` that runs Playwright against `playwright.config.ts` baseURL and uploads screenshots/reports as artifacts so you can review UI changes from GitHub mobile; acceptance: a PR run produces downloadable screenshots for /assistant, /apps/brand-scraper, /tools/research-assistant, /envelopes, /apps/tasks (logged-out state is fine).",
+        "deadlineAt": "2026-02-21",
+        "effort": 8,
+        "tags": [
+          "P1-AgentOps",
+          "Week-1",
+          "Playwright",
+          "CI",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How Playwright produces screenshot artifacts in CI (reports, attachments) and how to force screenshots on pass; Look at: playwright.config.ts, e2e/*.spec.ts, and GitHub Actions artifact upload steps; Do: add a dedicated Playwright test that captures named screenshots and a workflow that uploads them; Output: PR checks include screenshot artifacts visible in GitHub UI."
+      },
+      "subtasks": [
+        {
+          "name": "Create e2e/smoke-screenshots.spec.ts that captures named screenshots",
+          "description": "Add a Playwright spec that visits key routes and calls `page.screenshot({ path: ... , fullPage: true })` with stable names.",
+          "effort": 5,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1",
+            "Playwright"
+          ],
+          "researchInstruction": "Research: Playwright screenshot APIs and stable selectors/route navigation; Look at: existing e2e/research-assistant.spec.ts and playwright.config.ts; Do: write a new spec that saves screenshots into a predictable folder; Output: repeatable screenshots even when tests pass."
+        },
+        {
+          "name": "Add GitHub Action to run Playwright and upload artifacts",
+          "description": "Create workflow that installs Playwright deps, runs `npm run test:e2e`, and uploads `playwright-report/` plus the screenshots folder.",
+          "effort": 3,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1",
+            "CI",
+            "Playwright"
+          ],
+          "researchInstruction": "Research: Playwright CI dependencies for Ubuntu runners and artifact paths; Look at: Playwright docs + your `test:e2e` script; Do: implement workflow steps including `npx playwright install --with-deps`; Output: a CI run that always uploads artifacts."
+        },
+        {
+          "name": "Document how to view screenshot artifacts from phone",
+          "description": "Add a short note in `.planning/TESTING-REVIEW.md` (or README) explaining where screenshot artifacts appear in a PR run.",
+          "effort": 1,
+          "tags": [
+            "P1-AgentOps",
+            "Week-1",
+            "Docs"
+          ],
+          "researchInstruction": "Research: GitHub mobile UI paths for Actions artifacts; Look at: GitHub docs + your team workflow; Do: write a 5-line instruction; Output: you can reliably review UI changes without opening the site on phone."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 05: Create Artifact Library v0 (private-by-default) with Firestore schema + UI list",
+        "description": "Implement a minimal 'Artifact Library' that stores generated outputs (starting with Brands + Research) privately per user and renders a list/detail UI; acceptance: signed-in users can see their artifacts at a new route (e.g. `/library`), unauthenticated users get a sign-in prompt, and writes/reads use Firestore via `src/lib/firebase.ts` without breaking builds/tests.",
+        "deadlineAt": "2026-02-22",
+        "effort": 13,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-1",
+          "Firestore",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How this repo uses firebase-admin Firestore safely in Next.js server routes and how to model per-user collections; Look at: src/lib/firebase.ts, src/app/api/admin/research-assistant/stats/route.ts, and any existing Firestore helpers; Do: define an `artifacts` collection schema + create list/detail pages + minimal API routes; Output: a working /library page that loads and lists artifacts for the current user."
+      },
+      "subtasks": [
+        {
+          "name": "Define Firestore artifact document shape + indexes",
+          "description": "Define fields: uid, type, title, sourceUrl?, toolKey, createdAt, updatedAt, payloadRef (or inline summary), isPrivate=true, and optional shareTokenRef.",
+          "effort": 5,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: Firestore document modeling for mixed artifact types and efficient listing queries; Look at: patterns in `research_usage_logs` and billing collections; Do: write a small TypeScript type + create/read helpers; Output: a stable schema that supports list-by-user and type filters."
+        },
+        {
+          "name": "Create /library list page with AuthGuard and basic filters",
+          "description": "Add `src/app/library/page.tsx` + client component that lists artifacts (latest first) and filters by type (Brands/Research).",
+          "effort": 5,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: How AuthGuard and AuthContext are used to gate pages and fetch auth tokens; Look at: src/components/auth/AuthGuard.tsx, src/context/AuthContext.tsx; Do: build a list UI that fetches from a new API route using Bearer token; Output: a usable artifact list page on desktop and mobile."
+        },
+        {
+          "name": "Create /api/library endpoints (list + create stub)",
+          "description": "Add `src/app/api/library/route.ts` (GET list, POST create) and ensure errors don’t leak secrets; return JSON with createdAt ISO.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: Next.js route handlers + verifying user auth with bearer tokens in this repo; Look at: src/lib/auth/user.ts and existing /api routes; Do: implement GET/POST with Firestore and good error handling; Output: a secure API that supports the library UI."
+        }
+      ]
+    },
+    {
+      "projectName": "P5 UX Mobile-First",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 06: Mobile usability pass for navigation + key entry points (one-handed)",
+        "description": "Audit and adjust navigation, button sizes, and page padding for /assistant, /apps, /envelopes, /billing so flows are comfortable on phone; acceptance: tap targets ≥44px, no horizontal scroll, and primary CTAs visible above the fold on iPhone-sized viewports.",
+        "deadlineAt": "2026-02-23",
+        "effort": 5,
+        "tags": [
+          "P5-UX",
+          "Week-1",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Mobile accessibility/tap-target guidelines and how your Tailwind components implement spacing; Look at: src/components/ui/*, layouts in src/app/*, and Chrome DevTools mobile emulation; Do: update CSS classes/components to improve mobile ergonomics; Output: a mobile-friendly UX with no obvious layout breaks."
+      },
+      "subtasks": [
+        {
+          "name": "Create a quick mobile checklist + capture 5 screenshots baseline",
+          "description": "Write a short checklist (tap targets, font sizes, scroll) and capture baseline screenshots for /assistant, /apps/brand-scraper, /tools/research-assistant, /envelopes.",
+          "effort": 2,
+          "tags": [
+            "P5-UX",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: Practical mobile QA checklist for web apps; Look at: your pages + Playwright screenshot outputs; Do: write checklist and store in `.planning/`; Output: a repeatable QA artifact you can use weekly."
+        },
+        {
+          "name": "Fix top 3 mobile pain points (spacing, sticky headers, overflow)",
+          "description": "Make small Tailwind changes to reduce overflow and improve CTA visibility on the most-visited pages.",
+          "effort": 3,
+          "tags": [
+            "P5-UX",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: Common Tailwind overflow issues (w-full, max-w, flex shrink) and how to test quickly; Look at: relevant page components and UI primitives; Do: apply minimal CSS fixes and validate on mobile emulation; Output: measurably better first-impression on phone."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 1 (Feb 18–Feb 24)",
+      "task": {
+        "name": "Day 07: Add 'Save to Library' hooks (stubs) in Brands + Research outputs",
+        "description": "Add a visible 'Save to Library' action where Brand Scraper results and Research Assistant responses are shown, wiring to `/api/library` POST (even with minimal payload) and confirming success in UI; acceptance: users can generate at least one Library item from each tool with no console errors.",
+        "deadlineAt": "2026-02-24",
+        "effort": 5,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-1",
+          "Firestore",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Where in the UI each tool renders final outputs and how to add a client-side action that calls an authenticated API route; Look at: Brand: src/components/tools/brand-scraper/*; Research: src/app/tools/research-assistant/* and components; Do: add Save buttons that call /api/library with token and show toast/state; Output: creating artifacts works end-to-end for both tools."
+      },
+      "subtasks": [
+        {
+          "name": "Brands: add Save button when results are available",
+          "description": "In Brand Scraper UI (e.g. `UserBrandScraperPage` or result component), add 'Save to Library' with title + source URL + extracted summary.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: Where Brand Scraper results are stored in component state and how to extract a small summary payload; Look at: src/components/tools/brand-scraper/UserBrandScraperPage.tsx and BrandCard/ScrapeHistory; Do: wire Save button to POST /api/library with minimal payload; Output: a saved artifact appears in /library after saving."
+        },
+        {
+          "name": "Research: add Save button for the latest response/conversation",
+          "description": "In Research Assistant UI, add 'Save to Library' for the current answer (prompt + final output + optional sources).",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: How Research Assistant stores its conversation state and final answer; Look at: src/app/tools/research-assistant/page.tsx and related components/lib; Do: extract the latest message bundle and POST to /api/library; Output: a Research artifact shows up in the library list."
+        },
+        {
+          "name": "Add success/error UI feedback (toast or inline)",
+          "description": "Show 'Saved' confirmation and handle API errors gracefully without breaking the page.",
+          "effort": 1,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-1"
+          ],
+          "researchInstruction": "Research: Existing toast/notification patterns in this repo; Look at: search for 'toast' or UI feedback components; Do: add minimal feedback on save action; Output: users trust that actions completed."
+        }
+      ]
+    },
+    {
+      "projectName": "P2 Monetization",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 08: Expand credit packs beyond MVP and update Billing UI accordingly",
+        "description": "Update `src/lib/billing/types.ts` CREDIT_PACKS and request schema to support multiple pack sizes and reflect them in the Billing page purchase UI; acceptance: users can choose between ≥3 packs and checkout flow still works end-to-end.",
+        "deadlineAt": "2026-02-25",
+        "effort": 3,
+        "tags": [
+          "P2-Monetization",
+          "Week-2",
+          "Billing",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How credit packs are validated and used in checkout + how BillingPage renders purchase options; Look at: src/lib/billing/types.ts, src/app/api/billing/checkout/route.ts, src/components/billing/BillingPage.tsx; Do: add packs (e.g., 500/2000/10000) and update UI + tests; Output: a working multi-pack purchase flow."
+      },
+      "subtasks": [
+        {
+          "name": "Update CREDIT_PACKS + schema + tests for new pack IDs",
+          "description": "Modify `creditPackSchema` and `CREDIT_PACKS` to include new packs, and update vitest tests in `src/lib/billing/__tests__`.",
+          "effort": 2,
+          "tags": [
+            "P2-Monetization",
+            "Week-2",
+            "Billing"
+          ],
+          "researchInstruction": "Research: Zod schema patterns and how tests assert pack validation; Look at: src/lib/billing/__tests__/types.test.ts and types.ts; Do: implement pack ladder and ensure tests pass; Output: updated schema that rejects invalid packs and accepts new ones."
+        },
+        {
+          "name": "Update BillingPage UI to show new options and labels",
+          "description": "Update `src/components/billing/BillingPage.tsx` to render the new packs and show price-per-credit hints.",
+          "effort": 1,
+          "tags": [
+            "P2-Monetization",
+            "Week-2",
+            "Billing"
+          ],
+          "researchInstruction": "Research: How BillingPage currently constructs the pack purchase payload; Look at: src/components/billing/BillingPage.tsx and /api/billing/checkout; Do: update UI + payload pack selection; Output: billing page supports multiple pack purchases."
+        }
+      ]
+    },
+    {
+      "projectName": "P2 Monetization",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 09: Add in-context paywall moments (upgrade prompts at the moment of value)",
+        "description": "Implement consistent upgrade prompts when users hit credit limits or read-only mode inside Brands/Research/Envelopes/Tasks, linking directly to `/billing` with clear copy; acceptance: users see an actionable upgrade CTA exactly when a request is blocked (not a generic pricing link).",
+        "deadlineAt": "2026-02-26",
+        "effort": 5,
+        "tags": [
+          "P2-Monetization",
+          "Week-2",
+          "Billing",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Where each app/tool enforces billing access and how errors propagate to the UI; Look at: Brand: src/app/api/tools/brand-scraper/scrape/route.ts; Research: src/app/api/tools/research-assistant/*; Envelopes: src/lib/envelopes/billing.ts; Tasks: src/lib/tasks/billing.ts; Do: standardize blocked-state handling and add upgrade CTAs; Output: blocked users can immediately navigate to billing and understand why."
+      },
+      "subtasks": [
+        {
+          "name": "Brands: detect 'insufficient credits' errors and show CTA",
+          "description": "In Brand Scraper UI, map billing errors from the scrape POST response into a friendly message + 'Buy credits' button.",
+          "effort": 3,
+          "tags": [
+            "P2-Monetization",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: How Brand Scraper currently parses errors and displays them; Look at: src/components/tools/brand-scraper/UserBrandScraperPage.tsx error handling; Do: add specific handling for 402/insufficient balance; Output: users can recover without guessing."
+        },
+        {
+          "name": "Envelopes/Tasks: ensure read-only banners include clear upgrade CTA",
+          "description": "Update the read-only UI components to include a one-tap link to /billing and explain the access model briefly.",
+          "effort": 2,
+          "tags": [
+            "P2-Monetization",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Where read-only mode is rendered and how billing access is checked; Look at: src/components/envelopes/ReadOnlyBanner.tsx and tasks billing guards; Do: add upgrade CTA + minimal copy; Output: users know how to unlock editing/runs."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 10: Private Share Links v1 for Library items (opt-in, expirable)",
+        "description": "Add optional share links for Library artifacts: user explicitly generates a share token and can revoke it; acceptance: artifact remains private by default, and `/share/[token]` renders a read-only view without requiring auth.",
+        "deadlineAt": "2026-02-27",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-2",
+          "Firestore",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Secure share-link patterns for Firestore-backed content (random tokens, TTL, revocation) in Next.js route handlers; Look at: src/lib/firebase.ts, auth helpers, and existing public pages patterns; Do: implement share-token creation + public read route + revoke; Output: a working opt-in share flow that doesn’t leak private data by default."
+      },
+      "subtasks": [
+        {
+          "name": "Design share token schema (token doc + artifact linkage + TTL)",
+          "description": "Define a `share_tokens` collection with fields: token, artifactId, ownerUid, expiresAt?, revokedAt?, createdAt.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: How to model token-based access in Firestore with efficient lookups; Look at: Firestorm query patterns in billing/research stats code; Do: choose token length/entropy and TTL approach; Output: a schema that supports lookup by token and revocation."
+        },
+        {
+          "name": "Create POST /api/library/[id]/share and DELETE /api/library/share/[token]",
+          "description": "Add routes that verify the owner and then create/revoke tokens; return share URL on create.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Next.js route handler routing patterns and auth verification in this repo; Look at: src/app/api/billing/* and auth helpers in src/lib/auth; Do: implement create/revoke endpoints with proper authorization checks; Output: secure endpoints that only owners can operate."
+        },
+        {
+          "name": "Create /share/[token] public page (read-only artifact viewer)",
+          "description": "Add a page that loads artifact by token server-side and renders a safe view (no edit, no private metadata).",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Safe rendering of user-generated content in a public route; Look at: Next.js server components + any markdown rendering used in repo; Do: implement public viewer with basic styling and error states; Output: share links that work without auth and respect revocation/expiry."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 11: Wire Brand Scraper results into Library (auto-create artifact + better exports)",
+        "description": "When a Brand Scraper job succeeds, create/update a Library artifact record that references jobId, brandJsonUrl, and downloadable ZIP, and add a 'Copy design tokens' export; acceptance: every successful job is discoverable in /library without manual save and has at least one copy/export action.",
+        "deadlineAt": "2026-02-28",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-2",
+          "Firestore",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How Brand Scraper job results are surfaced in UI and how to persist lightweight references to Firestore; Look at: src/components/tools/brand-scraper/BrandCard*.tsx, src/lib/brand-scraper/history.ts, and /api/tools/brand-scraper routes; Do: create a server-side upsert to the Library when job status becomes succeeded; Output: brand artifacts appear in the Library with working download links and token export."
+      },
+      "subtasks": [
+        {
+          "name": "Add 'upsert library artifact' helper for Brand Scraper jobs",
+          "description": "Create a helper (e.g., `src/lib/library/brand.ts`) that upserts an artifact document keyed by (uid, toolKey, externalJobId).",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: Firestore upsert patterns and idempotency keys; Look at: billing toolUsage idempotency patterns + research logs; Do: implement a deterministic doc id or unique index strategy; Output: no duplicate artifacts when users refresh/retry."
+        },
+        {
+          "name": "Trigger upsert when job completes in the Brand Scraper UI flow",
+          "description": "Hook into the point where BrandCard renders success or where job polling reports 'succeeded' and call the library upsert endpoint once.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Where in Brand Scraper UI you can reliably detect a succeeded job; Look at: useJobStatus hook in src/lib/brand-scraper/hooks and BrandCard render path; Do: call a server endpoint to upsert the artifact after success; Output: successful jobs automatically appear in the library."
+        },
+        {
+          "name": "Add 'Copy tokens' export (CSS variables / Tailwind) from result",
+          "description": "Add a UI action that formats colors/fonts into CSS variables or Tailwind config snippet and copies to clipboard.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: How to safely copy text to clipboard and format a token schema; Look at: Brand taxonomy fields in src/lib/brand-scraper/types; Do: create a formatter + copy button; Output: users get immediate reusable output beyond downloads."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 12: Wire Research conversations into Library (save + export markdown/PDF link)",
+        "description": "Create a Library artifact record for Research conversations (prompt + model outputs + final synthesis/export markdown) and add a stable 'Save to Library' action in the Research UI; acceptance: saving creates a Library item that can be exported as markdown from the Library detail view.",
+        "deadlineAt": "2026-03-01",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-2",
+          "Firestore",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How Research Assistant stores conversations/turns and how ExportButton builds markdown; Look at: src/components/tools/research-assistant/ResearchAssistantPage.tsx and ExportButton.tsx, plus /api/tools/research-assistant/conversations routes; Do: create a save flow that stores conversation snapshot + markdown export; Output: research artifacts are searchable/listed and exportable from the library."
+      },
+      "subtasks": [
+        {
+          "name": "Define Research artifact payload (conversation id + turns summary + markdown)",
+          "description": "Choose what to store inline vs by reference (e.g., store markdown + a compact JSON summary, avoid huge raw blobs).",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: Firestore document size limits and best practices for storing chat transcripts; Look at: Firestore limits docs + your existing Research conversation data structures; Do: select a compact payload and store markdown export; Output: artifact saves reliably for long conversations."
+        },
+        {
+          "name": "Add 'Save to Library' button using existing conversation state",
+          "description": "Use the current `useResearchChat` state to assemble export payload and POST to /api/library.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: How useResearchChat exposes loaded exchanges and how to transform them to ExportConversation; Look at: src/lib/hooks/use-research-chat and ResearchAssistantPage.tsx; Do: create payload builder and save action with success state; Output: users can save a conversation without leaving the tool."
+        },
+        {
+          "name": "Add Library detail view action: Export markdown (v1) and PDF (optional)",
+          "description": "In /library detail page, render markdown export as downloadable .md and optionally render a basic PDF later.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: How to trigger downloads in Next.js client and how you’d generate PDFs if needed; Look at: ExportButton markdown function + any existing PDF utilities in repo; Do: implement markdown download; leave PDF as optional follow-up; Output: library artifacts have an obvious export path."
+        }
+      ]
+    },
+    {
+      "projectName": "P3 Reliability + Telemetry",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 13: Add 'Report issue' UX that auto-includes jobId/usageId/context",
+        "description": "Implement a consistent 'Report issue' button on tool result screens that pre-fills context (toolKey, usageId, externalJobId/jobId, timestamp) into a support payload (mailto link or Firestore report doc); acceptance: for Brand Scraper and Research you can generate a report with IDs without copy/paste.",
+        "deadlineAt": "2026-03-02",
+        "effort": 3,
+        "tags": [
+          "P3-Reliability",
+          "Week-2",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to capture usageId/externalJobId in tool UIs and how you want to receive reports (email vs Firestore collection); Look at: Brand Scraper response includes usageId/job_id; Research has conversation IDs and usage logs; CONTACT_EMAIL in src/lib/constants; Do: add report buttons that assemble a compact context block; Output: support reports include all identifiers needed to debug."
+      },
+      "subtasks": [
+        {
+          "name": "Brands: add Report Issue button on BrandCard with usageId + jobId",
+          "description": "Expose the usageId returned from scrape submission and include it alongside jobId in a 'Report Issue' CTA.",
+          "effort": 2,
+          "tags": [
+            "P3-Reliability",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Where usageId is stored after scrape POST and passed to BrandCard components; Look at: Scrape submission handler in UserBrandScraperPage.tsx and BrandCard props; Do: thread usageId through and build report payload; Output: debuggable reports from Brand tool."
+        },
+        {
+          "name": "Research: add Report Issue button for conversation + latest usage log",
+          "description": "Include conversation title/id, tier, last action, and timestamps in a report payload.",
+          "effort": 1,
+          "tags": [
+            "P3-Reliability",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Where conversation state and tier/action live in the Research UI; Look at: ResearchAssistantPage.tsx and useResearchChat hook; Do: assemble a short report block and render a CTA; Output: support reports are actionable for Research tool."
+        }
+      ]
+    },
+    {
+      "projectName": "P3 Reliability + Telemetry",
+      "sectionName": "Week 2 (Feb 25–Mar 3)",
+      "task": {
+        "name": "Day 14: Instrument core funnel events (signup → first run → save → share → purchase)",
+        "description": "Add lightweight event tracking for the core funnel using `src/lib/analytics.ts` plus a Firestore-backed `/api/events` endpoint; acceptance: you can view recent events for a user in Control Center and compute simple conversion rates.",
+        "deadlineAt": "2026-03-03",
+        "effort": 5,
+        "tags": [
+          "P3-Reliability",
+          "Week-2",
+          "Firestore",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Minimal analytics event schemas and safe client→server event logging in Next.js; Look at: src/lib/analytics.ts, src/app/control-center/* patterns, and Firestore usage in admin routes; Do: implement /api/events POST and call it from key UI actions; Output: a reliable event stream you can query for funnel metrics."
+      },
+      "subtasks": [
+        {
+          "name": "Create /api/events POST route (auth required) writing to Firestore",
+          "description": "Add `src/app/api/events/route.ts` that verifies user and writes `{uid,event,properties,createdAt}` to a collection (e.g., `product_events`).",
+          "effort": 3,
+          "tags": [
+            "P3-Reliability",
+            "Week-2",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: How to verify bearer tokens in API routes and write Firestore docs with serverTimestamp; Look at: src/lib/auth/user.ts and other /api route patterns; Do: create a secure event ingestion endpoint; Output: events persist without exposing secrets to client."
+        },
+        {
+          "name": "Update trackEvent() to POST to /api/events (non-blocking)",
+          "description": "Modify `src/lib/analytics.ts` to send events to the server in production while keeping console logging in dev.",
+          "effort": 2,
+          "tags": [
+            "P3-Reliability",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: How to avoid breaking UX with analytics failures (fire-and-forget patterns); Look at: existing comment in src/lib/analytics.ts; Do: implement best-effort POST with try/catch; Output: analytics never blocks user actions."
+        },
+        {
+          "name": "Add event calls in 5 key spots (signup, tool run, save, share, purchase)",
+          "description": "Add `trackEvent()` calls in auth success flow, tool submission handlers, library save/share actions, and billing checkout success page.",
+          "effort": 3,
+          "tags": [
+            "P3-Reliability",
+            "Week-2"
+          ],
+          "researchInstruction": "Research: Where in code each event naturally occurs; Look at: AuthContext, tool pages, library routes, billing success page; Do: wire event calls with useful properties; Output: you can build a funnel from captured data."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 15: Cross-app Action #1: Brand Library item → create Tasks project template",
+        "description": "From a Brand artifact detail view, add a one-click action that creates a new Tasks project with a ready-made checklist/sections based on the brand kit; acceptance: clicking the action results in a new project visible in `/apps/tasks` with tasks populated (one-level subtasks max).",
+        "deadlineAt": "2026-03-04",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-3",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to create Projects/Sections/Tasks via Prisma services and where to add an action button in the Library UI; Look at: src/services/tasks/*.service.ts, src/actions/tasks/*, and the Library detail component you created; Do: implement an authenticated API route that creates a project + tasks from artifact data; Output: a brand artifact can spawn a Tasks project in <5 seconds."
+      },
+      "subtasks": [
+        {
+          "name": "Define the 'Brand Kit project' template (sections + tasks + efforts)",
+          "description": "Write the section/task template (e.g., 'Review', 'Export', 'Implement') and map artifact fields (siteUrl, zip link) into task descriptions.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: Good default task templates for turning a brand kit into execution steps; Look at: Brand artifact schema fields + Task effort levels in src/lib/schemas/tasks/task.ts; Do: write a deterministic template JSON in code; Output: a repeatable template that can be created from any brand artifact."
+        },
+        {
+          "name": "Implement POST /api/library/[id]/actions/create-tasks-project",
+          "description": "Create an API route that verifies user, loads the artifact, finds/creates a workspace, then uses Prisma services to create project/sections/tasks.",
+          "effort": 5,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How to safely use Prisma in Next.js route handlers and reuse existing services; Look at: src/lib/prisma.ts, src/services/tasks/project.service.ts, section.service.ts, task.service.ts; Do: implement transactional creation with error handling and idempotency key; Output: action creates a project once and returns projectId."
+        },
+        {
+          "name": "Add UI button in Library detail view and deep-link to the new project",
+          "description": "Add 'Create Tasks Project' CTA and on success link to `/apps/tasks/[projectId]`.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How the Tasks app routes to a project view; Look at: src/app/apps/tasks/[projectId]/page.tsx; Do: wire action call + navigation; Output: user can immediately start executing tasks created from the artifact."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 16: Cross-app Action #2: Research Library item → create Tasks execution plan",
+        "description": "From a Research artifact, add a one-click action that creates a Tasks project or a new section in an existing project with an execution plan derived from the research brief; acceptance: a saved Research artifact can spawn a structured task list (sections + tasks + subtasks) in Tasks.",
+        "deadlineAt": "2026-03-05",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-3",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to convert a research conversation/brief into an actionable task breakdown and create it in Prisma tasks schema; Look at: Research artifact payload + tasks services in src/services/tasks/*; Do: implement an action route that generates a task plan and creates it; Output: research outputs become actionable tasks without manual copy/paste."
+      },
+      "subtasks": [
+        {
+          "name": "Define a 'Research → Plan' template (sections like Decisions, Experiments, Next Questions)",
+          "description": "Create a deterministic mapping from artifact markdown headings to tasks, with fallback if headings aren’t present.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: Lightweight text-to-structure heuristics for markdown exports; Look at: ExportButton conversationToMarkdown() output format; Do: implement a parser that extracts sections and items; Output: a plan can be created even from messy research text."
+        },
+        {
+          "name": "Implement POST /api/library/[id]/actions/create-tasks-plan",
+          "description": "Create an API route that loads Research artifact, builds plan, and creates a Tasks project/section accordingly.",
+          "effort": 5,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How to share code between actions and keep route handlers small; Look at: brand action route from Day 15 as a pattern; Do: implement and reuse workspace/project lookup logic; Output: plan creation works and returns projectId/sectionId."
+        },
+        {
+          "name": "Add UI CTA + success state on Research artifact detail",
+          "description": "Add CTA and show a link to the created tasks location; log an analytics event.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How to add action buttons in your Library UI consistently; Look at: library components + analytics trackEvent; Do: wire action + event; Output: users see immediate confirmation and next step."
+        }
+      ]
+    },
+    {
+      "projectName": "P3 Reliability + Telemetry",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 17: Build offline eval harness v1 for Brands + Research (25 cases each)",
+        "description": "Create a minimal eval suite that runs against deterministic inputs and checks structural expectations (not perfect output), and wire it into CI or a manual script; acceptance: `npm run eval` (new) outputs pass/fail with a summary and can run in under ~10 minutes.",
+        "deadlineAt": "2026-03-06",
+        "effort": 8,
+        "tags": [
+          "P3-Reliability",
+          "Week-3",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Practical eval patterns for LLM tools (structure checks, golden tests) and where to integrate them in a Next.js repo; Look at: existing vitest setup, e2e tests, and tool route handlers for Brands/Research; Do: create a scripts-based harness with fixtures and assertions; Output: a repeatable eval run that catches regressions before shipping."
+      },
+      "subtasks": [
+        {
+          "name": "Define fixture datasets (URLs for Brands, prompts for Research) and expected schemas",
+          "description": "Create JSON fixtures under `eval/fixtures/` with inputs and expectations (e.g., must have ≥N colors, must include citations section).",
+          "effort": 3,
+          "tags": [
+            "P3-Reliability",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How to design eval expectations that are stable across model variance; Look at: Brand taxonomy schema and Research response structure; Do: write fixture JSON with tolerant checks; Output: fixtures that fail only on real breakage."
+        },
+        {
+          "name": "Implement eval runner script (tsx) that calls internal APIs or services",
+          "description": "Add `scripts/run-evals.ts` that iterates fixtures, calls tool logic (or API endpoints with a test token), and prints a summary table.",
+          "effort": 5,
+          "tags": [
+            "P3-Reliability",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How to run TypeScript scripts with tsx in this repo and authenticate if calling API routes; Look at: existing scripts/*.ts and validate-env patterns; Do: implement runner with timeouts and clear logs; Output: an eval script you can run locally and in CI."
+        },
+        {
+          "name": "Add npm script `eval` and document how to interpret results",
+          "description": "Add `\"eval\": \"tsx scripts/run-evals.ts\"` and a short doc entry describing pass/fail thresholds.",
+          "effort": 1,
+          "tags": [
+            "P3-Reliability",
+            "Week-3",
+            "Docs"
+          ],
+          "researchInstruction": "Research: How to keep eval documentation minimal but usable; Look at: README or `.planning/TESTING-REVIEW.md`; Do: add quick-start steps; Output: future-you can run evals without re-learning the harness."
+        }
+      ]
+    },
+    {
+      "projectName": "P3 Reliability + Telemetry",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 18: Add cost/latency/reliability dashboard in Control Center (per tool)",
+        "description": "Create a Control Center page that summarizes per-tool usage: requests, success/fail/refund rates, average duration (updatedAt-createdAt), credits charged, and cost-to-us estimate; acceptance: you can open one page and see last-7-days stats for Brand Scraper + Research at minimum.",
+        "deadlineAt": "2026-03-07",
+        "effort": 8,
+        "tags": [
+          "P3-Reliability",
+          "Week-3",
+          "Firestore",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How existing admin dashboards query Firestore collections and compute aggregates safely; Look at: src/app/control-center/research-assistant/* and src/app/api/admin/research-assistant/stats/route.ts plus billing collections in src/lib/billing/firestore.ts; Do: build a new admin API route that aggregates billing_tool_usage docs; Output: a Control Center dashboard that highlights reliability and cost hotspots."
+      },
+      "subtasks": [
+        {
+          "name": "Create /api/admin/platform/usage-stats route that aggregates billing_tool_usage",
+          "description": "Implement an admin-verified GET that queries `billing_tool_usage` for last N days and returns computed aggregates by toolKey.",
+          "effort": 5,
+          "tags": [
+            "P3-Reliability",
+            "Week-3",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: Firestore query limits and efficient aggregation approaches (client-side vs server-side); Look at: existing admin verifyAdmin helper and research stats route; Do: implement route with pagination/limits and safe defaults; Output: a JSON response suitable for a dashboard."
+        },
+        {
+          "name": "Create Control Center UI page + component for platform stats",
+          "description": "Add `src/app/control-center/platform/page.tsx` with a table/cards of tool stats and recent failures list.",
+          "effort": 3,
+          "tags": [
+            "P3-Reliability",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How Control Center pages are structured and styled in this repo; Look at: src/app/control-center/research-assistant/page.tsx and components; Do: build a simple UI consuming the new admin endpoint; Output: a scannable dashboard you’ll check daily."
+        }
+      ]
+    },
+    {
+      "projectName": "P3 Reliability + Telemetry",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 19: Strengthen automatic refunds + user-facing messaging for failed tool runs",
+        "description": "Ensure all credit-debiting tool endpoints reliably refund on recoverable failures and surface a clear 'credits refunded' message in UI; acceptance: simulated failures for Brand Scraper submission and Research streaming both end with status=refunded and a friendly UI notice.",
+        "deadlineAt": "2026-03-08",
+        "effort": 5,
+        "tags": [
+          "P3-Reliability",
+          "Week-3",
+          "Billing",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Where credits are debited/marked succeeded/refunded across tools and how to test failure paths safely; Look at: src/lib/billing/firestore.ts, Brand Scraper scrape route, Research finalizeResearchBilling, and any other tool routes; Do: audit failure handling and add refunds + UI notices; Output: users never feel 'charged for nothing' when a run fails."
+      },
+      "subtasks": [
+        {
+          "name": "Audit all endpoints that call debitForToolUse and verify refund paths exist",
+          "description": "Search for `debitForToolUse(` and ensure each try/catch refunds on failure with a reason.",
+          "effort": 2,
+          "tags": [
+            "P3-Reliability",
+            "Week-3",
+            "Billing"
+          ],
+          "researchInstruction": "Research: How to systematically audit repo for billing usage and error paths; Look at: grep/search in repo for debitForToolUse and markUsageSucceeded; Do: create a checklist of endpoints and refund behaviors; Output: no missing refunds remain."
+        },
+        {
+          "name": "Add UI copy for 'credits refunded' and show usageId on error screens",
+          "description": "When tool APIs return a refund outcome, show a confirmation and include usageId for support.",
+          "effort": 2,
+          "tags": [
+            "P3-Reliability",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: Where tool UIs display errors and how to add structured error objects; Look at: Brand Scraper and Research UI components; Do: update error parsing to detect refunds and show confirmation; Output: lower support load and higher trust."
+        },
+        {
+          "name": "Add a small test for refund behavior (unit or integration)",
+          "description": "Add a vitest that mocks Firestore calls and asserts refundUsage is called on thrown errors in at least one route handler.",
+          "effort": 3,
+          "tags": [
+            "P3-Reliability",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How existing billing tests mock Firestore and assert side effects; Look at: src/lib/billing/__tests__ and any existing mocks; Do: write one regression test; Output: refund logic stays intact after refactors."
+        }
+      ]
+    },
+    {
+      "projectName": "P5 UX Mobile-First",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 20: Polish /assistant hub into 'fast win' start screen (recent artifacts + balance + quick actions)",
+        "description": "Upgrade /assistant hub from placeholder to a guided start screen with 'Run a tool' quick actions, recent artifacts list (from /api/library), and balance widget; acceptance: a new user can click one CTA and reach a working flow in <2 taps.",
+        "deadlineAt": "2026-03-09",
+        "effort": 5,
+        "tags": [
+          "P5-UX",
+          "Week-3",
+          "Ship"
+        ],
+        "researchInstruction": "Research: High-converting start-screen patterns for multi-tool web apps and how to fetch recent items efficiently; Look at: /assistant page implementation + /api/library list endpoint + billing/me; Do: add recent artifacts panel + quick actions + empty states; Output: a start screen that reduces user confusion and improves activation."
+      },
+      "subtasks": [
+        {
+          "name": "Add recent artifacts panel with empty state and 'View all' link",
+          "description": "Fetch latest 5 artifacts and render titles/types/timestamps with good empty state.",
+          "effort": 2,
+          "tags": [
+            "P5-UX",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How to format timestamps and list items consistently in your UI; Look at: existing list UIs (e.g., scrape history) and library list page; Do: build a small recent list component; Output: users immediately see continuity across sessions."
+        },
+        {
+          "name": "Add 'Quick Actions' row (Run Brands/Research, Create Task, Open Envelopes)",
+          "description": "Add 4 quick actions that deep-link to the best starting screen for each utility.",
+          "effort": 2,
+          "tags": [
+            "P5-UX",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: Which route within each utility is the best entry point for first-time users; Look at: apps pages + tool pages and any demo routes (envelopes/demo); Do: choose links and label them clearly; Output: fastest path to value from the hub."
+        }
+      ]
+    },
+    {
+      "projectName": "P2 Monetization",
+      "sectionName": "Week 3 (Mar 4–Mar 10)",
+      "task": {
+        "name": "Day 21: Add subscription placeholder (entitlement model + UI stub, no big commitment)",
+        "description": "Define a subscription entitlement model (monthly credits + perks) in code and add a UI stub on /billing describing it, even if checkout is 'coming soon'; acceptance: codebase has a clear place to add subscription later without refactoring packs/tool access.",
+        "deadlineAt": "2026-03-10",
+        "effort": 5,
+        "tags": [
+          "P2-Monetization",
+          "Week-3",
+          "Billing",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to model entitlements in a credits-based system and where to store them (Firestore billing_users vs separate collection); Look at: src/lib/billing/types.ts, src/lib/billing/firestore.ts, and BillingPage UI; Do: add fields/types for subscription state and render it in BillingPage; Output: a clean path to add Stripe subscriptions later."
+      },
+      "subtasks": [
+        {
+          "name": "Extend BillingUser type to include optional subscription fields",
+          "description": "Add fields like `subscriptionStatus`, `subscriptionPlan`, `renewalAt`, `monthlyCredits` to `src/lib/billing/types.ts` and update any parsing.",
+          "effort": 2,
+          "tags": [
+            "P2-Monetization",
+            "Week-3",
+            "Billing"
+          ],
+          "researchInstruction": "Research: How BillingUser is stored and retrieved in Firestore helpers; Look at: src/lib/billing/firestore.ts getBillingMe; Do: update types and ensure backward compatibility; Output: billing/me returns subscription info without breaking existing users."
+        },
+        {
+          "name": "Add BillingPage section describing subscription (stub) + CTA",
+          "description": "Render a card explaining monthly credits and link to a placeholder action (e.g., waitlist form).",
+          "effort": 2,
+          "tags": [
+            "P2-Monetization",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: What copy best sets expectations without overpromising; Look at: BillingPage component layout; Do: add UI with 'coming soon' and capture interest; Output: users understand future option and you can measure demand."
+        },
+        {
+          "name": "Add analytics event: subscription_interest_clicked",
+          "description": "Track when users click the subscription CTA.",
+          "effort": 1,
+          "tags": [
+            "P2-Monetization",
+            "Week-3"
+          ],
+          "researchInstruction": "Research: How trackEvent is wired after Day 14; Look at: src/lib/analytics.ts; Do: emit event with user and context; Output: you can quantify demand for subscription."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 22: Create Micro-App Template (page + billing hook + library hook + telemetry hook)",
+        "description": "Create a reusable template for new utilities that includes: landing/page skeleton, billing guard pattern, 'Save to Library' integration, and trackEvent calls; acceptance: you can scaffold a new tool in <1 hour by copying the template.",
+        "deadlineAt": "2026-03-11",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-4",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: The common patterns across existing tools (auth guard, billing debit, result UI, export) and how to factor them into a template; Look at: Brand Scraper pages/components, Research Assistant pages/components, billing helpers, and your new Library code; Do: create a template folder and a checklist doc for new micro-apps; Output: a repeatable scaffold that cuts new-app dev time significantly."
+      },
+      "subtasks": [
+        {
+          "name": "Write a 'New Micro-App Checklist' in `.planning/`",
+          "description": "Checklist items: routes, API route, billing key, UI states, library save, telemetry events, e2e screenshot pages.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4",
+            "Docs"
+          ],
+          "researchInstruction": "Research: What steps are consistently required for every tool to be production-ready in your system; Look at: existing tools' code + your CI/screenshot workflow; Do: draft a concise checklist; Output: a reliable playbook you follow every time."
+        },
+        {
+          "name": "Create a template component + route skeleton under `src/templates/micro-app/`",
+          "description": "Add a folder with example page, API handler stub, and UI components illustrating success/error/loading states.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How your repo organizes components and route handlers for tools; Look at: src/components/tools/* and src/app/api/tools/*; Do: write a clean starter structure; Output: scaffolding is copy/pasteable with minimal edits."
+        },
+        {
+          "name": "Add an example 'library save' + 'trackEvent' usage inside template",
+          "description": "Include example code for saving an artifact and logging events, using the exact helper functions you built.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: The exact API contract for /api/library and /api/events; Look at: your library/event route handlers; Do: embed example usage; Output: new tools ship with ecosystem hooks by default."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 23: Ship one tiny new utility built from the Micro-App Template (Library-integrated)",
+        "description": "Build and ship a small, easily explainable utility that plugs into the Library on day one (e.g., URL → design tokens JSON), and add it to the Apps list; acceptance: new utility has a landing page, an API route, billing behavior (free or credits), library save, and Playwright screenshot coverage.",
+        "deadlineAt": "2026-03-12",
+        "effort": 8,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-4",
+          "Ship"
+        ],
+        "researchInstruction": "Research: What tiny utility has the highest ecosystem leverage and lowest build risk given your existing code; Look at: src/templates/micro-app/* (from Day 22), src/data/apps.ts, and existing tool route patterns; Do: implement the utility end-to-end and add it to navigation; Output: a new shippable micro-app that proves the factory works."
+      },
+      "subtasks": [
+        {
+          "name": "Pick the utility + define the one-sentence promise + acceptance criteria",
+          "description": "Write a one-paragraph spec and define the output artifact type stored in the Library.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to write a minimal spec that agents can implement quickly; Look at: your Issue template + micro-app checklist; Do: choose scope that fits 1–2 days; Output: a locked spec that avoids scope creep."
+        },
+        {
+          "name": "Implement API route + UI using the template",
+          "description": "Create route(s) under `src/app/api/tools/<new-tool>/` and UI under `src/app/tools/<new-tool>/` or `src/app/apps/<new-app>/` as appropriate.",
+          "effort": 5,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How existing tools choose between /apps and /tools routes and how to structure route handlers; Look at: Brand Scraper and Research Assistant patterns; Do: build API + page + result UI; Output: tool runs successfully and produces an artifact."
+        },
+        {
+          "name": "Add Library save + add to Apps list + add Playwright screenshot coverage",
+          "description": "Wire 'Save to Library', register the app in `src/data/apps.ts`, and add screenshot capture in the e2e screenshot spec.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4",
+            "Playwright"
+          ],
+          "researchInstruction": "Research: How to ensure new features are visible and testable in your CI screenshot workflow; Look at: src/data/apps.ts and e2e/smoke-screenshots.spec.ts; Do: add listing + tests; Output: new utility is discoverable and regression-protected."
+        }
+      ]
+    },
+    {
+      "projectName": "P2 Monetization",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 24: Referral credits v1 (invite link → bonus credits on first purchase)",
+        "description": "Implement a simple referral system: users can generate an invite link; if a new user signs up via that link and later makes their first purchase, both accounts get bonus credits; acceptance: referral attribution is stored privately, bonus is granted once, and events are tracked.",
+        "deadlineAt": "2026-03-13",
+        "effort": 8,
+        "tags": [
+          "P2-Monetization",
+          "Week-4",
+          "Billing",
+          "Firestore",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Referral attribution patterns (cookie/localStorage + server-side verification) and how to grant credits through your existing billing ledger safely; Look at: billing webhook (src/app/api/billing/webhook/route.ts), adminAdjustCredits in src/lib/billing/firestore.ts, and AuthContext/login flow; Do: add referral code capture + persist referredByUid + grant credits on first purchase; Output: a measurable referral loop that doesn’t break billing integrity."
+      },
+      "subtasks": [
+        {
+          "name": "Create referral code model and invite link UI (in /billing or /assistant)",
+          "description": "Add a UI that shows a shareable link like `/signup?ref=<uid>` and copies it to clipboard.",
+          "effort": 3,
+          "tags": [
+            "P2-Monetization",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to generate and safely expose referral identifiers; Look at: AuthContext user.uid + existing CopyButton patterns; Do: implement UI + copy-to-clipboard; Output: users can share a working invite link."
+        },
+        {
+          "name": "Capture ref param on landing/signup and store referredByUid in Firestore user profile",
+          "description": "On first auth session, if a ref param exists, write it once to a profile doc (e.g., `user_profiles/{uid}`) and ignore future changes.",
+          "effort": 3,
+          "tags": [
+            "P2-Monetization",
+            "Week-4",
+            "Firestore"
+          ],
+          "researchInstruction": "Research: How to persist one-time attribution without enabling referral abuse; Look at: Firestore patterns in billing user creation + auth flow; Do: implement one-time write with validation (not self-referral); Output: reliable referral attribution you can trust."
+        },
+        {
+          "name": "Grant bonus credits on first paid purchase (webhook side) and mark granted",
+          "description": "In Stripe webhook handler, after applying purchase, check profile for referredByUid and if not yet granted, call adminAdjustCredits for both users and mark `referralBonusGrantedAt`.",
+          "effort": 5,
+          "tags": [
+            "P2-Monetization",
+            "Week-4",
+            "Billing"
+          ],
+          "researchInstruction": "Research: Where to safely add post-purchase hooks in your webhook flow; Look at: src/app/api/billing/webhook/route.ts and applyPurchaseFromStripe; Do: implement idempotent grant logic keyed on stripeEventId; Output: bonuses happen exactly once even with webhook retries."
+        }
+      ]
+    },
+    {
+      "projectName": "P4 Content Factory",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 25: Content factory setup (reusable templates + screenshot-to-post pipeline)",
+        "description": "Set up a low-friction content pipeline: one reusable 'Shipping Log' template, a 'Building Block' MDX template, and a process that turns Playwright screenshots into posts; acceptance: you can publish a post in <30 minutes without opening an editor-heavy workflow.",
+        "deadlineAt": "2026-03-14",
+        "effort": 5,
+        "tags": [
+          "P4-Content",
+          "Week-4",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How your building-blocks MDX system is structured and how to add new content quickly; Look at: src/app/building-blocks/*, src/content/building-blocks/*, and any content tooling; Do: create templates and a repeatable workflow doc; Output: content production becomes a predictable daily habit."
+      },
+      "subtasks": [
+        {
+          "name": "Create a Building Block MDX template file + authoring checklist",
+          "description": "Add `src/content/building-blocks/_template.mdx` with frontmatter placeholders and a standard section outline.",
+          "effort": 2,
+          "tags": [
+            "P4-Content",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: What frontmatter fields and components your MDX renderer expects; Look at: existing MDX files under src/content/building-blocks; Do: create a template matching your render system; Output: new posts render correctly on first try."
+        },
+        {
+          "name": "Create 'Shipping Log' lightweight format (tweet/thread + short blog)",
+          "description": "Write a 10-line template that includes: what shipped, why it matters, screenshot, link, next up.",
+          "effort": 2,
+          "tags": [
+            "P4-Content",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: High-signal micro-content formats for developer products; Look at: your existing home CTA components + building blocks; Do: create template and save to `.planning/`; Output: you can post daily without thinking."
+        },
+        {
+          "name": "Add a folder/automation plan for screenshot assets from CI",
+          "description": "Decide where to store selected screenshots (repo folder or external) and document the steps to pull them from GitHub artifacts.",
+          "effort": 1,
+          "tags": [
+            "P4-Content",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: The most efficient way to reuse CI screenshots as marketing assets; Look at: GitHub Actions artifacts + your site’s static assets path (public/); Do: document a simple 3-step process; Output: consistent visuals for posts without extra work."
+        }
+      ]
+    },
+    {
+      "projectName": "P4 Content Factory",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 26: Publish one flagship Building Block explaining the Operating Layer (artifacts + actions + private sharing)",
+        "description": "Write and publish a Building Block post that explains your system (Artifacts → Actions → Private Sharing → Billing) and links to the live app routes; acceptance: post appears at `/building-blocks` with screenshots and a clear 'Try it' CTA.",
+        "deadlineAt": "2026-03-15",
+        "effort": 5,
+        "tags": [
+          "P4-Content",
+          "Week-4",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How building blocks are routed and how to add a new MDX article with correct slug and metadata; Look at: src/app/building-blocks/[slug]/page.tsx and existing MDX content patterns; Do: create a new MDX article with diagrams/screenshots and CTAs; Output: a publish-ready asset you can point users to for onboarding."
+      },
+      "subtasks": [
+        {
+          "name": "Draft outline + collect 6 screenshots (assistant, library, share link, tasks action, billing)",
+          "description": "Use your screenshot workflow outputs and capture any missing screens locally.",
+          "effort": 2,
+          "tags": [
+            "P4-Content",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: What screenshots best communicate the end-to-end value quickly; Look at: your live routes + CI screenshot artifacts; Do: collect and name screenshots consistently; Output: assets are ready before writing."
+        },
+        {
+          "name": "Write MDX post and verify it renders locally",
+          "description": "Create new MDX file in `src/content/building-blocks/` and confirm it appears in the list page.",
+          "effort": 3,
+          "tags": [
+            "P4-Content",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How the building blocks index discovers posts (filenames, metadata); Look at: existing MDX files and building blocks list component; Do: write and test render; Output: content ships without broken routes."
+        }
+      ]
+    },
+    {
+      "projectName": "P2 Monetization",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 27: Optimize onboarding to <60s first win (demo artifact + instant-run entry)",
+        "description": "Reduce time-to-first-win by adding a demo path (no auth) and/or prefilled examples that show results instantly, then prompt sign-in to save/share; acceptance: a new visitor can see a real output in <60 seconds and understands why to sign in.",
+        "deadlineAt": "2026-03-16",
+        "effort": 5,
+        "tags": [
+          "P2-Monetization",
+          "Week-4",
+          "Ship"
+        ],
+        "researchInstruction": "Research: Best practices for demo-first onboarding for tools that require auth/credits and how your existing Envelopes demo is implemented; Look at: src/app/envelopes/demo/*, Brand Scraper and Research landing flows, and AuthGuard behavior; Do: add a demo mode or precomputed example and route users into sign-in/save; Output: higher activation and lower bounce without weakening privacy defaults."
+      },
+      "subtasks": [
+        {
+          "name": "Add 'Try a demo' entry point on /assistant and homepage tool cards",
+          "description": "Add a demo CTA that routes to a demo output page or pre-filled tool run.",
+          "effort": 2,
+          "tags": [
+            "P2-Monetization",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: Where to place CTAs for max visibility without clutter; Look at: HeroSection and AppsGrid components + /assistant hub; Do: add demo CTA and tracking event; Output: new users reach value faster."
+        },
+        {
+          "name": "Implement one demo artifact for Brands or Research (precomputed JSON/markdown stored server-side)",
+          "description": "Create a demo artifact stored in code or Firestore and render it without requiring auth; block saving unless logged in.",
+          "effort": 3,
+          "tags": [
+            "P2-Monetization",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to serve demo content safely without exposing private user data; Look at: Envelopes demo provider + your new Library viewer components; Do: create demo content and route; Output: demo shows real output and encourages sign-in."
+        }
+      ]
+    },
+    {
+      "projectName": "P3 Reliability + Telemetry",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 28: Hardening day: fix top 5 issues from logs/feedback and add regressions",
+        "description": "Use telemetry (events, tool usage, error reports) to identify the top reliability and UX blockers, fix them, and add tests/screenshots so they don’t recur; acceptance: failure rate drops and each fix has a regression guard (unit/e2e/screenshot).",
+        "deadlineAt": "2026-03-17",
+        "effort": 8,
+        "tags": [
+          "P3-Reliability",
+          "Week-4",
+          "DeepWork",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to triage production issues efficiently using Firestore logs and CI artifacts; Look at: research_usage_logs, billing_tool_usage, product_events, and your new Report Issue payloads; Do: pick top 5 issues by frequency/impact and fix with regression coverage; Output: measurable improvement in reliability and fewer repeated bugs."
+      },
+      "subtasks": [
+        {
+          "name": "Review logs and create a prioritized bug list (top 5)",
+          "description": "Pull the last 7 days of failures/refunds and identify repeated patterns; write issues in GitHub using the bug template.",
+          "effort": 2,
+          "tags": [
+            "P3-Reliability",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to rank issues by impact (conversion + failure + support burden); Look at: your dashboards and usage logs; Do: create 5 bug tickets with repro steps; Output: a clear, attackable hardening backlog."
+        },
+        {
+          "name": "Fix #1–#3 and add a regression (test or screenshot)",
+          "description": "Ship fixes for the most impactful issues and add minimal automated coverage.",
+          "effort": 5,
+          "tags": [
+            "P3-Reliability",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to choose the smallest regression test that catches the bug; Look at: existing vitest and Playwright harness; Do: implement fixes + tests; Output: issues don’t regress next week."
+        },
+        {
+          "name": "Fix #4–#5 and update docs/playbooks if needed",
+          "description": "Finish remaining fixes and add a short support note if the issue was user-facing.",
+          "effort": 3,
+          "tags": [
+            "P3-Reliability",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: When to document known issues vs code-fix only; Look at: .planning/TESTING-REVIEW.md and any support docs; Do: update docs as appropriate; Output: reduced future confusion."
+        }
+      ]
+    },
+    {
+      "projectName": "P1 AgentOps",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 29: Scale agent pipeline: add Test/QA issue types and enforce screenshot pages list",
+        "description": "Add specialized Issue templates for 'Write tests' and 'QA pass' and update PR template/CI so screenshot pages list is required for UI changes; acceptance: you can open a 'QA Agent' issue from phone and get a PR that includes updated screenshots automatically.",
+        "deadlineAt": "2026-03-18",
+        "effort": 5,
+        "tags": [
+          "P1-AgentOps",
+          "Week-4",
+          "CI",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to encode workflow roles into GitHub templates and how to gate PRs with required fields/checks; Look at: .github/ISSUE_TEMPLATE/*, PR template, and your screenshot workflow; Do: add templates/labels and tighten DoD enforcement; Output: agent work becomes more predictable and reviewable."
+      },
+      "subtasks": [
+        {
+          "name": "Add Issue template: TEST-ONLY (write/expand automated coverage)",
+          "description": "Create `.github/ISSUE_TEMPLATE/test-only.yml` with fields for target files, desired behavior, and which harness to use (vitest vs Playwright).",
+          "effort": 2,
+          "tags": [
+            "P1-AgentOps",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to specify tests so an agent can implement them correctly; Look at: existing tests structure under src/lib/*/__tests__ and e2e/; Do: create a strict template; Output: test tasks are unambiguous."
+        },
+        {
+          "name": "Add Issue template: QA-CHECKLIST (manual QA + screenshot confirmation)",
+          "description": "Create `.github/ISSUE_TEMPLATE/qa.yml` that lists pages to verify, expected states, and artifacts to capture.",
+          "effort": 2,
+          "tags": [
+            "P1-AgentOps",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: What manual checks catch the most regressions in your app; Look at: your mobile checklist + e2e screenshot pages; Do: build QA template; Output: you can delegate QA consistently."
+        },
+        {
+          "name": "Update PR template to require 'Screenshot Pages' and 'How to verify'",
+          "description": "Add required sections to PR template and make missing sections obvious.",
+          "effort": 1,
+          "tags": [
+            "P1-AgentOps",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to structure PR descriptions so you can review quickly on phone; Look at: existing PR template you added on Day 2; Do: tighten required fields; Output: less review time and fewer missed steps."
+        }
+      ]
+    },
+    {
+      "projectName": "P0 Operating Layer",
+      "sectionName": "Week 4 (Mar 11–Mar 19)",
+      "task": {
+        "name": "Day 30: Sprint retro + lock next 30 days based on data (only top 3 priorities)",
+        "description": "Review shipped deliverables, funnel metrics, and reliability stats, then choose the next 3 priorities and turn them into agent-ready GitHub issues + Tasks items; acceptance: you end the day with a ranked backlog and a calendar for the next sprint.",
+        "deadlineAt": "2026-03-19",
+        "effort": 5,
+        "tags": [
+          "P0-OperatingLayer",
+          "Week-4",
+          "Ship"
+        ],
+        "researchInstruction": "Research: How to run a data-driven sprint retro for a solo builder and translate metrics into prioritized work; Look at: your Control Center dashboards, product_events, billing purchases, and refund/failure stats; Do: create a retro doc + decide next 3 goals + open structured issues; Output: a focused next sprint plan that maximizes revenue/retention per hour."
+      },
+      "subtasks": [
+        {
+          "name": "Pull metrics snapshot (activation, time-to-first-win, purchases, failure/refund rates)",
+          "description": "Export numbers from dashboards/logs into a short markdown summary stored in `.planning/`.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: Which metrics best predict product success in your current stage; Look at: event logs + billing + tool usage dashboards; Do: capture baseline numbers with dates; Output: you can compare progress week over week."
+        },
+        {
+          "name": "Write retro: what shipped, what broke, what converted, what to stop doing",
+          "description": "Write a 1-page retro and identify the single biggest bottleneck in your workflow.",
+          "effort": 2,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: Simple retro formats that produce clear decisions; Look at: your daily shipping log and issue history; Do: write and decide; Output: clear corrective actions for next sprint."
+        },
+        {
+          "name": "Create next-sprint backlog: top 3 priorities with agent-ready issues",
+          "description": "Use your issue templates to open top 3 epics + 5 supporting issues, each with acceptance and screenshot pages.",
+          "effort": 3,
+          "tags": [
+            "P0-OperatingLayer",
+            "Week-4"
+          ],
+          "researchInstruction": "Research: How to scope epics into agent-sized tickets; Look at: your issue templates and micro-app checklist; Do: open issues and tag appropriately; Output: Claude Code can start executing immediately."
+        }
+      ]
+    }
+  ]
+}

@@ -13,7 +13,8 @@
     "validate-env": "tsx scripts/validate-env.ts",
     "verify-indexes": "tsx scripts/verify-firestore-indexes.ts",
     "smoke-test": "tsx scripts/smoke-test.ts",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "postinstall": "touch node_modules/.metadata_never_index"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.29",

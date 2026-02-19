@@ -60,9 +60,36 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | | | | |
-| 2 | | | | |
+| 1 | ui | M | Home | The "Free Trial Week" is fine but needs to have an x on the top right so I can dismiss it.  Make it dynamic so that it starts the clock from the day I sign up. Each time I open it, it should have the countdown: " Free trial week. You have X days left in your trial" It should not reappear on the project page after I've dismissed it.| 
+| 2 | bug | H | Project Home | 
 
+I need to be able to edit subtasks - right now all I can do is delete them.  I need to be able to add effort scores from the edit screen and change the sub-task names.  Title: Effort scoring w/ subtasks: keep parent as manual “budget” + show allocation + reconcile when over
+
+Summary
+Implement sprint-style effort scoring where the parent task effort remains a manual estimate (“budget”) even when subtasks have their own effort. Show subtask roll-up as an allocation indicator (e.g., 3/8 allocated) and provide an explicit reconcile action when subtasks exceed the parent.
+
+Behavior: Parent task has an effort score (default manual/budget). Subtasks can each have their own effort score. Adding/editing subtasks does not automatically change the parent effort in manual mode. Show allocation in list + detail: Subtasks total = X, allocated: X / Parent: Y (or X/Y allocated)
+If X < Y: show “Unallocated: (Y - X)” as a hint (non-warning).
+If X > Y: show warning “Subtasks exceed task effort by (X - Y)” + explicit CTAs:
+Update task effort to X
+Keep task effort at Y (acknowledge over-budget)
+Effort input UX
+Show Fibonacci quick-picks (1,2,3,5,8,13…) for speed/ease.
+ALSO provide a number input box for both tasks and subtasks so users can enter non-Fibonacci values.
+Rationale: subtasks should not be forced to Fibonacci just to “add up” to the parent; user can keep parent as Fibonacci while using any numbers for subtasks (or vice versa).
+UI notes
+Task list row (collapsed subtasks): show N subtasks • X/Y allocated.
+Task detail (expanded): show parent effort chip + allocation line; show over-budget warning state with buttons above.
+Acceptance Criteria
+Parent effort remains unchanged when subtasks are added/edited (manual mode).
+Allocation indicator updates immediately as subtasks change.
+Over-budget state appears only when sum(subtask effort) > parent effort and includes both CTAs.
+Fibonacci quick-picks + numeric input box exist for tasks and subtasks.
+Numeric input accepts integers (and optionally decimals if we support them—default to integers unless already decided).
+| 3 | bug | M | Project Home| I need the ability to move tasks from one section to another by simply clicking and dragging them.  This option should always be avialble, I shouldn't need to be in edit mode. |
+| 4 | UI | M | Project Home sidebar | I need an option for "Home" on the sidebar at all times to get back to my welcome page |
+| 5 | UI | M | Sidebar | Get rid of all ? helper icons.  I'll add a demo later.  This goes for everywhere in the app |
+| 6 | UI | H | I have added a file @~/.planning/focus-sprint-30d.tasks-import.json that has all of the tasks and subtasks I need.  Please update my personal tasks list (daniel.weinbeck@gmail.com) so these are here.
 ---
 
 ## 5. Envelopes (`/envelopes`)
@@ -188,62 +215,4 @@
 ## Planning Notes
 
 > Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
-
-### Testing Focus Areas — Multi-Area Feedback Fixes
-
-**Brand Scraper (`/apps/brand-scraper`):**
-- Old entries that were stuck "In Progress" should now show as viewable (with red dot) if >30 min old
-- Submit button should say "Create Profile (X credits)" not "Scrape"
-- History section header should say "Recent Brand Profiles" not "Recent Scrapes"
-- Progress panel should say "Pages being analyzed" not "Pages being scraped"
-- Click a logo thumbnail → lightbox should open with full-size image; click outside or press Escape to close
-- Brand Identity section should show distinct sub-sections: Tagline, Industry badge, Typography list (all fonts, not just first)
-- If zip download fails → should show "Retry Download" button and "or download the JSON instead" hint
-
-**Research Assistant (`/tools/research-assistant`):**
-- Complete a research query → click Reconsider → should NOT get stuck at "Connecting..." forever
-- If connection fails, should show error state instead
-
-**Building Blocks (`/building-blocks/frd` and `/building-blocks/custom-gpt`):**
-- All text should say "Functional Requirements Document (FRD)" — no mentions of "PRD" anywhere
-
-**Envelopes (`/envelopes`) — on dev.dan-weinbeck.com:**
-- Check if data loads properly; if empty, Firestore indexes may need deploying
-
-### Testing Focus Areas — Income Allocation Feature
-
-**Envelopes Home (`/envelopes`):**
-- Log extra income (via "Log Income" button) — IncomeBanner should appear below the envelope grid
-- After logging income, "Allocate Income" button should appear in the action button row
-- Click "Allocate Income" → modal opens with green "Available Income" banner showing correct amount
-- Select an envelope from dropdown, enter amount, submit → envelope card's remaining budget should increase
-- IncomeBanner should now show "Allocated: $X | Unallocated: $X" breakdown
-- KeyMetricsCard "budget" figure should include allocated income
-- Try allocating more than unallocated amount → should show server error "exceeds unallocated income"
-- After allocating all income, "Allocate Income" button should disappear
-- Verify allocations are week-scoped (don't carry over — check next week if possible)
-- NOTE: Firestore index for `envelope_income_allocations` must be deployed first:
-  `firebase deploy --only firestore:indexes --project <id>`
-
-**Todoist (tasks.dan-weinbeck.com):**
-- No question-mark help bubbles should be visible anywhere (sidebar, board toggle, sections, search, tags)
-- Edit a task that has subtasks → subtasks should remain visible below the edit form
-- Switch to Kanban view → refresh the page → should still be in Kanban view (persisted per project)
-  - NOTE: requires `npx prisma db push` in todoist repo first
-
-**Chatbot (chatbot on dan-weinbeck.com):**
-- After re-sync: ask "What projects has Dan built?" → should return correct project names
-  - NOTE: requires calling `POST /admin/sync-repo` after deploying the denylist change
-
-### Testing Focus Areas — Brand Card Logos + Typography Fix
-
-**Brand Scraper Result Card (`/apps/brand-scraper`):**
-- **Logos:** Should render at 128px max height (was 64px). Broken image URLs should show a placeholder icon instead of invisible nothing.
-- **Favicons:** New "Favicons" section should appear below Logos showing detected favicons at 64px max height.
-- **Social Previews:** New "Social Previews" section should show OG images at 96px max height.
-- **Empty state:** If no assets detected at all, shows "No assets detected" instead of "No logos detected".
-- **Lightbox:** Click any asset (logo, favicon, or OG image) → full-size lightbox should still work.
-- **Typography:** Each font entry should render its name **in the actual Google Font** with correct weight. System fonts show in default UI font. Loading/error states shown inline.
-- **Tagline:** Tagline preview should still render in the primary Google Font (unchanged).
-- **Tasks app:** Out of scope — separate repo/service at tasks.dan-weinbeck.com.
 
