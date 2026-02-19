@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "validate-env": "tsx scripts/validate-env.ts",
     "verify-indexes": "tsx scripts/verify-firestore-indexes.ts",
-    "smoke-test": "tsx scripts/smoke-test.ts"
+    "smoke-test": "tsx scripts/smoke-test.ts",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.29",
@@ -21,6 +22,7 @@
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.1.6",
+    "@prisma/client": "^6.19.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
     "ai": "^6.0.71",
@@ -29,6 +31,7 @@
     "firebase": "^12.8.0",
     "firebase-admin": "^13.6.0",
     "next": "16.1.6",
+    "prisma": "^6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
