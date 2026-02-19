@@ -181,9 +181,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 45-01-PLAN.md — Copy UI components (TaskCard, TaskForm, SubtaskList, QuickAddModal, board/list views), adapt imports
-- [ ] 45-02-PLAN.md — Set up /apps/tasks route group with layout, page routes for all sub-pages
-- [ ] 45-03-PLAN.md — Integrate sidebar into Tasks layout, update apps hub listing to internal route
+- [ ] 45-01-PLAN.md — Copy all UI components, Tasks-specific UI primitives, types, and utility libs with adapted imports
+- [ ] 45-02-PLAN.md — Create /apps/tasks route group with layout (sidebar, billing, auth) and all sub-page routes
+- [ ] 45-03-PLAN.md — Update apps hub listing to use internal /apps/tasks route
 
 ### Phase 46: Landing Page & KPI Dashboard
 **Goal**: Authenticated users see a personalized "Your Tasks at a Glance" dashboard when they visit /apps/tasks, with key metrics and their most important tasks surfaced immediately
