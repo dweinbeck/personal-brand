@@ -5,15 +5,16 @@ import {
   updateProjectAction,
   updateProjectViewModeAction,
 } from "@/actions/tasks/project";
+import { assignTaskToSectionAction } from "@/actions/tasks/task";
 import { AddSectionButton } from "@/components/tasks/add-section-button";
 import { AddTaskButton } from "@/components/tasks/add-task-button";
 import { BoardView } from "@/components/tasks/board-view";
 import { SectionHeader } from "@/components/tasks/section-header";
 import { TaskCard } from "@/components/tasks/task-card";
-import { HelpTip } from "@/components/tasks/ui/help-tip";
 import { useAuth } from "@/context/AuthContext";
 import { computeEffortSum } from "@/lib/tasks/effort";
 import type { ProjectWithSections } from "@/lib/tasks/types";
+import { cn } from "@/lib/utils";
 
 interface ProjectViewProps {
   project: ProjectWithSections;
@@ -30,6 +31,21 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
   const initialViewMode: ViewMode =
     project.viewMode === "board" ? "board" : "list";
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
+  const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
+  const [dragOverSection, setDragOverSection] = useState<
+    string | "unsectioned" | null
+  >(null);
+
+  async function handleDrop(e: React.DragEvent, sectionId: string | null) {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (taskId) {
+      const token = await user!.getIdToken();
+      await assignTaskToSectionAction(token, taskId, sectionId);
+    }
+    setDraggingTaskId(null);
+    setDragOverSection(null);
+  }
 
   async function handleViewModeToggle(mode: ViewMode) {
     setViewMode(mode);
@@ -95,7 +111,6 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
         </div>
 
         <div className="flex items-center gap-2 ml-4">
-          <HelpTip tipId="board-view" />
           <div className="flex items-center gap-1 rounded-[var(--radius-button)] border border-border p-0.5">
             <button
               type="button"
@@ -158,26 +173,60 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
       ) : (
         <>
           {/* Unsectioned tasks */}
-          {project.tasks.length > 0 && (
-            <div className="mb-6">
-              {computeEffortSum(project.tasks) > 0 && (
-                <div className="text-xs text-amber mb-2">
-                  {computeEffortSum(project.tasks)} effort
-                </div>
-              )}
-              <div className="space-y-2">
-                {project.tasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    projectId={project.id}
-                    allTags={allTags}
-                    sections={sections}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+          <section
+            aria-label="Unsectioned tasks"
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              setDragOverSection("unsectioned");
+            }}
+            onDragLeave={() => setDragOverSection(null)}
+            onDrop={(e) => handleDrop(e, null)}
+            className={cn(
+              "mb-6 min-h-[40px] rounded-lg transition-colors",
+              dragOverSection === "unsectioned" &&
+                draggingTaskId &&
+                "bg-gold-light/30 ring-2 ring-gold/30 ring-dashed",
+            )}
+          >
+            {project.tasks.length > 0 && (
+              <>
+                {computeEffortSum(project.tasks) > 0 && (
+                  <div className="text-xs text-amber mb-2">
+                    {computeEffortSum(project.tasks)} effort
+                  </div>
+                )}
+                <ul className="space-y-2 list-none p-0 m-0">
+                  {project.tasks.map((task) => (
+                    <li
+                      key={task.id}
+                      draggable
+                      onDragStart={(e) => {
+                        setDraggingTaskId(task.id);
+                        e.dataTransfer.effectAllowed = "move";
+                        e.dataTransfer.setData("text/plain", task.id);
+                      }}
+                      onDragEnd={() => {
+                        setDraggingTaskId(null);
+                        setDragOverSection(null);
+                      }}
+                      className={cn(
+                        "transition-opacity",
+                        draggingTaskId === task.id && "opacity-50",
+                      )}
+                    >
+                      <TaskCard
+                        task={task}
+                        projectId={project.id}
+                        allTags={allTags}
+                        sections={sections}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
 
           <div className="mb-4">
             <AddTaskButton
@@ -195,17 +244,49 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
                 taskCount={section.tasks.length}
                 effortSum={computeEffortSum(section.tasks)}
               />
-              <div className="space-y-2">
+              <ul
+                aria-label={`${section.name} tasks`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  setDragOverSection(section.id);
+                }}
+                onDragLeave={() => setDragOverSection(null)}
+                onDrop={(e) => handleDrop(e, section.id)}
+                className={cn(
+                  "space-y-2 min-h-[40px] rounded-lg transition-colors list-none p-0 m-0",
+                  dragOverSection === section.id &&
+                    draggingTaskId &&
+                    "bg-gold-light/30 ring-2 ring-gold/30 ring-dashed",
+                )}
+              >
                 {section.tasks.map((task) => (
-                  <TaskCard
+                  <li
                     key={task.id}
-                    task={task}
-                    projectId={project.id}
-                    allTags={allTags}
-                    sections={sections}
-                  />
+                    draggable
+                    onDragStart={(e) => {
+                      setDraggingTaskId(task.id);
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", task.id);
+                    }}
+                    onDragEnd={() => {
+                      setDraggingTaskId(null);
+                      setDragOverSection(null);
+                    }}
+                    className={cn(
+                      "transition-opacity",
+                      draggingTaskId === task.id && "opacity-50",
+                    )}
+                  >
+                    <TaskCard
+                      task={task}
+                      projectId={project.id}
+                      allTags={allTags}
+                      sections={sections}
+                    />
+                  </li>
                 ))}
-              </div>
+              </ul>
               <div className="mt-2">
                 <AddTaskButton
                   projectId={project.id}
