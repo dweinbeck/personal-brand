@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 2 of 5 — Capture API & Storage Foundation
-Plan: 1 of 3 — Shared Foundation complete
+Plan: 2 of 3 — Dictation Capture Endpoint complete
 Status: Executing Phase 2 plans
-Last activity: 2026-02-20 — Completed 02-01-PLAN.md (shared foundation modules)
+Last activity: 2026-02-20 — Completed 02-02-PLAN.md (dictation capture endpoint)
 
 ## Performance Metrics
 
@@ -41,6 +41,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [02-01] SHA-256 hash normalization before timingSafeEqual to avoid length-mismatch throws
 - [02-01] API key read from process.env at point of use (not serverEnv()) matching firebase.ts pattern
 - [02-01] Cloud Storage conditionally initialized -- undefined when FIREBASE_STORAGE_BUCKET unset
+- [02-02] crypto.randomUUID() for capture IDs (zero dependencies)
+- [02-02] 202 Accepted status to signal async processing pipeline
+- [02-02] Short error messages (<200 chars) for iPhone Shortcuts display
 
 ### Roadmap Evolution
 
@@ -64,13 +67,14 @@ None.
 |---|-------------|------|--------|-----------|
 | 10 | Tasks app: data import, two-line card titles, remove import button, 2-day auto-archive | 2026-02-19 | 5430a9f | [10-tasks-app-retry-data-import-two-line-car](./quick/10-tasks-app-retry-data-import-two-line-car/) |
 | Phase 02 P01 | 3min | 2 tasks | 6 files |
+| Phase 02 P02 | 2min | 1 task | 2 files |
 
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 02-01-PLAN.md
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Execute 02-02-PLAN.md: Dictation capture endpoint.
+Execute 02-03-PLAN.md: Screenshot capture endpoint.
