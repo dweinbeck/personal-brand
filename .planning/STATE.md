@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Executing Phase 1: TESTING-FEEDBACK.md fixes
+**Current focus:** Phase 1 TESTING-FEEDBACK.md complete -- ready for testing
 
 ## Current Position
 
-Phase: 1 (TESTING-FEEDBACK.md)
-Plan: 1 of 2 in current phase -- COMPLETE
-Status: Executing testing feedback fixes
-Last activity: 2026-02-19 — Completed 01-01: Brand Scraper fixes (no dollar pricing, blank assets, color labels, downloads)
+Phase: 1 (TESTING-FEEDBACK.md) -- COMPLETE
+Plan: 2 of 2 in current phase -- COMPLETE
+Status: All testing feedback fixes shipped
+Last activity: 2026-02-20 — Completed 01-02: Tools page & Building Blocks fixes (FRD links, subtitle, button labels)
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 10 (v1.0 through v2.0)
 - Total phases completed: 48.1
-- Total plans completed: 150
+- Total plans completed: 151
 - Timeline: Jan 18 -> Feb 19, 2026 (33 days)
 
 **v2.0 Velocity:**
@@ -36,6 +36,8 @@ Full decision log in PROJECT.md Key Decisions table.
 
 - [01-01] Hide broken/tiny images entirely instead of showing placeholder icon -- cleaner UX
 - [01-01] Use fetch+blob for JSON download to bypass cross-origin download attribute limitation
+- [01-02] Added type field to ToolListing interface for explicit tool classification rather than URL inference
+- [01-02] Used getToolButtonLabel helper for DRY button label logic across components
 
 ### Roadmap Evolution
 
@@ -59,10 +61,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 01-01-PLAN.md (Brand Scraper fixes)
+Last session: 2026-02-20
+Stopped at: Completed 01-02-PLAN.md (Phase 1 complete)
 Resume file: None
 
 ## Next Step
 
-Execute 01-02-PLAN.md (Tools page and Building Blocks fixes).
+Phase 1 testing feedback complete. Run `/gsd:new-milestone` or manual testing session.
