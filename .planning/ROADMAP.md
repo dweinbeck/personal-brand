@@ -153,7 +153,19 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 
 **Total: 10 milestones (9 shipped + 1 deferred), 48.1 phases, 22 plans in v2.0**
 
-### Phase 1: TESTING-FEEDBACK.md
+### v3.0 GSD Builder OS (Phases 1-5)
+
+| Phase | Plans | Status | Completed |
+|-------|-------|--------|-----------|
+| 1 - Testing Feedback | 2/2 | Complete | 2026-02-20 |
+| 2 - Capture API & Storage Foundation | 0/3 | Not started | - |
+| 3 - LLM Router & Destination Handlers | 0/3 | Not started | - |
+| 4 - Builder Inbox Admin UI & Discord Alerts | 0/3 | Not started | - |
+| 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
+
+**v3.0 Total: 5 phases, 13 plans (2 complete, 11 remaining)**
+
+### Phase 1: Testing Feedback
 
 **Goal:** Address all testing feedback items: Brand Scraper UI/download fixes, Tools page/Building Blocks link corrections
 **Depends on:** Phase 0
@@ -162,6 +174,77 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 Plans:
 - [x] 01-01-PLAN.md — Brand Scraper: remove dollar pricing, fix blank assets, label colors, fix downloads
 - [x] 01-02-PLAN.md — Tools page & Building Blocks: FRD Generator links, subtitle, button labels
+
+### Phase 2: Capture API & Storage Foundation
+
+**Goal:** Build the two capture endpoints (dictation + screenshot) with API key auth, Cloud Storage for screenshots, and Firestore persistence. Async-first: respond to iPhone in <5s, route in background.
+**Depends on:** Phase 1
+**Plans:** 3 plans
+
+Key decisions:
+- API key auth via `X-API-Key` header with `crypto.timingSafeEqual` (Shortcuts can't do OAuth)
+- Proxy upload pattern (screenshots buffer through Next.js API route → Cloud Storage, no direct GCS upload)
+- All new env vars `.optional()` in schema (don't break existing dev workflows)
+- Fire-and-forget async processing (write to Firestore → return 202 → process in background)
+- Firestore for capture persistence (document-oriented, matches contact/billing patterns)
+
+Plans:
+- [ ] 02-01-PLAN.md — API key auth middleware, env vars (GSD_API_KEY, FIREBASE_STORAGE_BUCKET, GITHUB_PAT, DISCORD_WEBHOOK_URL), Firestore capture schema, Cloud Storage setup in firebase.ts
+- [ ] 02-02-PLAN.md — Dictation capture endpoint (POST /api/gsd/capture) with Zod validation, Firestore write, 202 Accepted response
+- [ ] 02-03-PLAN.md — Screenshot capture endpoint (POST /api/gsd/capture/screenshot) with multipart FormData, Cloud Storage upload, next.config.ts body size limit
+
+### Phase 3: LLM Router & Destination Handlers
+
+**Goal:** Add Gemini 2.0 Flash-powered classification that routes captures to GitHub Issues (with @claude comments), Tasks, or Builder Inbox fallback. Confidence threshold gates routing decisions.
+**Depends on:** Phase 2
+**Plans:** 3 plans
+
+Key decisions:
+- `generateText` + `Output.object()` with Zod schema (AI SDK v6 pattern, not deprecated `generateObject`)
+- Confidence threshold (0.7) — below threshold routes to Builder Inbox for manual triage
+- `unknown` category in routing enum gives LLM an explicit escape hatch
+- Separate `GITHUB_PAT` for write operations (don't reuse existing read-only token)
+- Few-shot examples in routing prompt to anchor classification
+- Full LLM response logged alongside capture for audit/tuning
+
+Plans:
+- [ ] 03-01-PLAN.md — LLM routing schema (Zod), classification prompt with few-shot examples, confidence-based routing logic, async processing pipeline
+- [ ] 03-02-PLAN.md — GitHub destination: install @octokit/rest, issue creation, @claude comment posting, label management
+- [ ] 03-03-PLAN.md — Tasks destination (direct service layer import), Builder Inbox fallback persistence, processing status machine (pending → processing → routed/failed)
+
+### Phase 4: Builder Inbox Admin UI & Discord Alerts
+
+**Goal:** Build the admin audit surface in Control Center and Discord notification layer. Enables manual review, re-routing, retry of captures.
+**Depends on:** Phase 3
+**Plans:** 3 plans
+
+Key decisions:
+- Builder Inbox at /control-center/builder-inbox (follows existing billing admin patterns)
+- Client-side fetch + Firebase ID token auth (existing verifyAdmin pattern)
+- Discord alerts are fire-and-forget with 429 retry-after handling
+- Discord is supplementary — never blocks capture processing
+- SWR for data fetching (existing pattern, no WebSockets needed for single-user)
+
+Plans:
+- [ ] 04-01-PLAN.md — Builder Inbox list page with status filters, capture detail page with routing decision/confidence display
+- [ ] 04-02-PLAN.md — Re-route, retry, and convert-to-GitHub/Tasks actions from Inbox detail view
+- [ ] 04-03-PLAN.md — Discord webhook utility (fire-and-forget, 429 retry, embed truncation), alerts on capture processed/routed/failed
+
+### Phase 5: GitHub Actions & iPhone Shortcuts
+
+**Goal:** Set up Claude Code Action workflow for automated issue implementation, and document iPhone Shortcuts configuration for end-to-end capture flow.
+**Depends on:** Phase 3 (needs GitHub integration working)
+**Plans:** 2 plans
+
+Key decisions:
+- Claude Code Action v1 (anthropics/claude-code-action@v1) — stable release
+- Three setup steps: install GitHub App, add ANTHROPIC_API_KEY secret, create workflow YAML
+- Two separate Shortcuts: "GSD Capture" (dictation) and "Send to GSD" (screenshot)
+- Shortcuts hardcode API key + endpoint URL (acceptable for personal use)
+
+Plans:
+- [ ] 05-01-PLAN.md — .github/workflows/claude.yml with issue_comment + issues triggers, setup verification checklist
+- [ ] 05-02-PLAN.md — iPhone Shortcuts documentation: GSD Capture (dictation flow) and Send to GSD (screenshot flow), step-by-step setup
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
