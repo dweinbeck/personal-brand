@@ -8,6 +8,7 @@ import {
 } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import type { ContactFormData } from "@/lib/schemas/contact";
 
 // NOTE: This file uses process.env directly instead of serverEnv() because
@@ -72,6 +73,10 @@ const authApp = getAuthApp();
 
 export const db = app ? getFirestore(app) : undefined;
 export const auth = authApp ? getAuth(authApp) : undefined;
+
+const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
+export const storage =
+  app && storageBucket ? getStorage(app).bucket(storageBucket) : undefined;
 
 export async function saveContactSubmission(
   data: ContactFormData,
