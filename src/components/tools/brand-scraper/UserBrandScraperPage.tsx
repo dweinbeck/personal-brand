@@ -216,8 +216,7 @@ function BrandScraperContent() {
           </span>
           <span className="text-text-tertiary">|</span>
           <span className="text-text-secondary">
-            Cost per profile: <strong>{creditCost} credits</strong> ($
-            {(creditCost / 100).toFixed(2)})
+            Cost per profile: <strong>{creditCost} credits</strong>
           </span>
         </div>
       )}

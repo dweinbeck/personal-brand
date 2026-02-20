@@ -61,7 +61,7 @@ export function BrandCardColors({ palette }: BrandCardColorsProps) {
               )}
             </span>
             {entry.value.role && (
-              <span className="text-[10px] text-text-tertiary">
+              <span className="text-xs text-text-secondary capitalize">
                 {entry.value.role}
               </span>
             )}
