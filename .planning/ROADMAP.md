@@ -161,9 +161,9 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | 2 - Capture API & Storage Foundation | 3/3 | Complete    | 2026-02-20 |
 | 3 - LLM Router & Destination Handlers | 3/3 | Complete | 2026-02-20 |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 3/3 | Complete | 2026-02-20 |
-| 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
+| 5 - GitHub Actions & iPhone Shortcuts | 2/2 | Complete | 2026-02-20 |
 
-**v3.0 Total: 5 phases, 13 plans (5 complete, 8 remaining)**
+**v3.0 Total: 5 phases, 13 plans (13 complete)**
 
 ### Phase 1: Testing Feedback
 
@@ -243,8 +243,8 @@ Key decisions:
 - Shortcuts hardcode API key + endpoint URL (acceptable for personal use)
 
 Plans:
-- [ ] 05-01-PLAN.md — .github/workflows/claude.yml with issue_comment + issues triggers, setup verification checklist
-- [ ] 05-02-PLAN.md — iPhone Shortcuts documentation: GSD Capture (dictation flow) and Send to GSD (screenshot flow), step-by-step setup
+- [x] 05-01-PLAN.md — .github/workflows/claude.yml with issue_comment + issues triggers, setup verification checklist
+- [x] 05-02-PLAN.md — iPhone Shortcuts documentation: GSD Capture (dictation flow) and Send to GSD (screenshot flow), step-by-step setup
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
