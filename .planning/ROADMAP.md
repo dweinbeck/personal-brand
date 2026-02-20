@@ -158,7 +158,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | Phase | Plans | Status | Completed |
 |-------|-------|--------|-----------|
 | 1 - Testing Feedback | 2/2 | Complete | 2026-02-20 |
-| 2 - Capture API & Storage Foundation | 0/3 | Not started | - |
+| 2 - Capture API & Storage Foundation | 2/3 | In Progress | - |
 | 3 - LLM Router & Destination Handlers | 0/3 | Not started | - |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 0/3 | Not started | - |
 | 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
@@ -189,8 +189,8 @@ Key decisions:
 - Firestore for capture persistence (document-oriented, matches contact/billing patterns)
 
 Plans:
-- [ ] 02-01-PLAN.md — API key auth middleware, env vars (GSD_API_KEY, FIREBASE_STORAGE_BUCKET, GITHUB_PAT, DISCORD_WEBHOOK_URL), Firestore capture schema, Cloud Storage setup in firebase.ts
-- [ ] 02-02-PLAN.md — Dictation capture endpoint (POST /api/gsd/capture) with Zod validation, Firestore write, 202 Accepted response
+- [x] 02-01-PLAN.md — API key auth middleware, env vars (GSD_API_KEY, FIREBASE_STORAGE_BUCKET, GITHUB_PAT, DISCORD_WEBHOOK_URL), Firestore capture schema, Cloud Storage setup in firebase.ts
+- [x] 02-02-PLAN.md — Dictation capture endpoint (POST /api/gsd/capture) with Zod validation, Firestore write, 202 Accepted response
 - [ ] 02-03-PLAN.md — Screenshot capture endpoint (POST /api/gsd/capture/screenshot) with multipart FormData, Cloud Storage upload, next.config.ts body size limit
 
 ### Phase 3: LLM Router & Destination Handlers
