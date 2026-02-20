@@ -7,7 +7,7 @@ type BrandCardLogosProps = {
   logos: BrandTaxonomy["assets"];
 };
 
-/** Image with error fallback — renders a placeholder icon when the URL fails. */
+/** Image with error fallback — renders a placeholder icon when the URL fails or loads as a tiny/invisible pixel. */
 function AssetImage({
   src,
   alt,
@@ -21,29 +21,19 @@ function AssetImage({
 }) {
   const [failed, setFailed] = useState(false);
 
+  const handleLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const img = e.currentTarget;
+      // Treat tiny images (tracking pixels, 1x1 spacers) as broken
+      if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+        setFailed(true);
+      }
+    },
+    [],
+  );
+
   if (failed) {
-    return (
-      <div
-        className={`${maxHeightClass} aspect-video flex items-center justify-center rounded-lg border border-dashed border-border bg-gray-50 dark:bg-gray-800 text-text-tertiary`}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          role="img"
-          aria-label="Image unavailable"
-        >
-          <title>Image unavailable</title>
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-          <line x1="3" y1="3" x2="21" y2="21" />
-        </svg>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -58,6 +48,7 @@ function AssetImage({
         loading="lazy"
         alt={alt}
         onError={() => setFailed(true)}
+        onLoad={handleLoad}
         className={`${maxHeightClass} object-contain`}
       />
     </button>

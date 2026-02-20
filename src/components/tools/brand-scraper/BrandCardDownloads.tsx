@@ -15,7 +15,33 @@ export function BrandCardDownloads({
   getIdToken,
 }: BrandCardDownloadsProps) {
   const [downloading, setDownloading] = useState(false);
+  const [jsonDownloading, setJsonDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  /** Download brand JSON via fetch+blob to force a file save dialog (cross-origin URLs ignore the download attribute). */
+  const handleJsonDownload = useCallback(async () => {
+    if (!brandJsonUrl) return;
+    setJsonDownloading(true);
+    setError(null);
+    try {
+      const res = await fetch(brandJsonUrl);
+      if (!res.ok) throw new Error("Download failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "brand.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Fallback: open in new tab if fetch fails (e.g. CORS)
+      window.open(brandJsonUrl, "_blank");
+    } finally {
+      setJsonDownloading(false);
+    }
+  }, [brandJsonUrl]);
 
   const handleZipDownload = useCallback(async () => {
     setDownloading(true);
@@ -35,7 +61,14 @@ export function BrandCardDownloads({
         const body = (await res.json().catch(() => null)) as {
           error?: string;
         } | null;
-        setError(body?.error ?? `Download failed (${res.status})`);
+        const status = res.status;
+        if (status === 403) {
+          setError(
+            "Asset download is temporarily unavailable. Try downloading the Brand JSON instead.",
+          );
+        } else {
+          setError(body?.error ?? `Download failed (${status})`);
+        }
         return;
       }
 
@@ -58,12 +91,12 @@ export function BrandCardDownloads({
       <div className="flex justify-end gap-3">
         {brandJsonUrl && (
           <Button
-            href={brandJsonUrl}
             variant="secondary"
             size="sm"
-            download="brand.json"
+            onClick={handleJsonDownload}
+            disabled={jsonDownloading}
           >
-            Download Brand JSON
+            {jsonDownloading ? "Downloading..." : "Download Brand JSON"}
           </Button>
         )}
         <Button
@@ -83,9 +116,9 @@ export function BrandCardDownloads({
               Retry Download
             </Button>
             {brandJsonUrl && (
-              <span className="text-xs text-text-tertiary">
-                or download the JSON instead
-              </span>
+              <Button variant="ghost" size="sm" onClick={handleJsonDownload}>
+                Download JSON Instead
+              </Button>
             )}
           </div>
         </div>
