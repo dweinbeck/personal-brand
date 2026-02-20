@@ -211,16 +211,28 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
                         setDragOverSection(null);
                       }}
                       className={cn(
-                        "transition-opacity",
+                        "transition-opacity flex items-stretch group/drag",
                         draggingTaskId === task.id && "opacity-50",
                       )}
                     >
+                      <div className="flex items-center pr-1 cursor-grab active:cursor-grabbing opacity-0 group-hover/drag:opacity-100 transition-opacity text-text-tertiary hover:text-gold">
+                        <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
+                          <circle cx="3" cy="4" r="1.5" />
+                          <circle cx="9" cy="4" r="1.5" />
+                          <circle cx="3" cy="10" r="1.5" />
+                          <circle cx="9" cy="10" r="1.5" />
+                          <circle cx="3" cy="16" r="1.5" />
+                          <circle cx="9" cy="16" r="1.5" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
                       <TaskCard
                         task={task}
                         projectId={project.id}
                         allTags={allTags}
                         sections={sections}
                       />
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -274,16 +286,28 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
                       setDragOverSection(null);
                     }}
                     className={cn(
-                      "transition-opacity",
+                      "transition-opacity flex items-stretch group/drag",
                       draggingTaskId === task.id && "opacity-50",
                     )}
                   >
+                    <div className="flex items-center pr-1 cursor-grab active:cursor-grabbing opacity-0 group-hover/drag:opacity-100 transition-opacity text-text-tertiary hover:text-gold">
+                      <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
+                        <circle cx="3" cy="4" r="1.5" />
+                        <circle cx="9" cy="4" r="1.5" />
+                        <circle cx="3" cy="10" r="1.5" />
+                        <circle cx="9" cy="10" r="1.5" />
+                        <circle cx="3" cy="16" r="1.5" />
+                        <circle cx="9" cy="16" r="1.5" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
                     <TaskCard
                       task={task}
                       projectId={project.id}
                       allTags={allTags}
                       sections={sections}
                     />
+                    </div>
                   </li>
                 ))}
               </ul>
