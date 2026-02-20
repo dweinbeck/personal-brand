@@ -158,7 +158,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | Phase | Plans | Status | Completed |
 |-------|-------|--------|-----------|
 | 1 - Testing Feedback | 2/2 | Complete | 2026-02-20 |
-| 2 - Capture API & Storage Foundation | 3/3 | Complete | 2026-02-20 |
+| 2 - Capture API & Storage Foundation | 3/3 | Complete    | 2026-02-20 |
 | 3 - LLM Router & Destination Handlers | 0/3 | Not started | - |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 0/3 | Not started | - |
 | 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
@@ -179,7 +179,7 @@ Plans:
 
 **Goal:** Build the two capture endpoints (dictation + screenshot) with API key auth, Cloud Storage for screenshots, and Firestore persistence. Async-first: respond to iPhone in <5s, route in background.
 **Depends on:** Phase 1
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Key decisions:
 - API key auth via `X-API-Key` header with `crypto.timingSafeEqual` (Shortcuts can't do OAuth)
