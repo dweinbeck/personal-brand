@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CardButtonLabel } from "@/components/ui/CardButtonLabel";
-import { getTools } from "@/data/tools";
+import { getToolButtonLabel, getTools } from "@/data/tools";
 
 const tagColor = "bg-gold-light text-gold-hover border-gold";
 
@@ -43,9 +43,7 @@ export function ToolsShowcase() {
             </p>
 
             <div className="mt-auto pt-5">
-              <CardButtonLabel>
-                {tool.external ? "Open Tool" : "Enter App"}
-              </CardButtonLabel>
+              <CardButtonLabel>{getToolButtonLabel(tool)}</CardButtonLabel>
             </div>
           </Card>
         ))}

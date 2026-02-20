@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Card } from "@/components/ui/Card";
 import { CardButtonLabel } from "@/components/ui/CardButtonLabel";
-import { getTools } from "@/data/tools";
+import { getToolButtonLabel, getTools } from "@/data/tools";
 
 export const metadata: Metadata = {
   title: "Tools",
@@ -18,8 +18,8 @@ export default function ToolsPage() {
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
       <h1 className="text-3xl font-bold text-text-primary">Tools</h1>
       <p className="mt-2 text-text-secondary">
-        Single-function dev utilities and AI-powered tools for analytics,
-        development, and planning.
+        Single-function development utilities and AI-powered tools for
+        analytics, development, and planning.
       </p>
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         {tools.map((tool) => (
@@ -47,9 +47,7 @@ export default function ToolsPage() {
             </p>
 
             <div className="mt-auto pt-5">
-              <CardButtonLabel>
-                {tool.external ? "Open Tool" : "Enter App"}
-              </CardButtonLabel>
+              <CardButtonLabel>{getToolButtonLabel(tool)}</CardButtonLabel>
             </div>
           </Card>
         ))}
