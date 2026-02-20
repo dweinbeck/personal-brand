@@ -153,5 +153,15 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 
 **Total: 10 milestones (9 shipped + 1 deferred), 48.1 phases, 22 plans in v2.0**
 
+### Phase 1: TESTING-FEEDBACK.md
+
+**Goal:** Address all testing feedback items: Brand Scraper UI/download fixes, Tools page/Building Blocks link corrections
+**Depends on:** Phase 0
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Brand Scraper: remove dollar pricing, fix blank assets, label colors, fix downloads
+- [ ] 01-02-PLAN.md — Tools page & Building Blocks: FRD Generator links, subtitle, button labels
+
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
