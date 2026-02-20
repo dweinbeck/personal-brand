@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { generateText, Output } from "ai";
 import { getCapture, updateCaptureStatus } from "./capture";
+import { alertCaptureFailed, alertCaptureRouted } from "./discord";
 import { type RoutingOutput, routingOutputSchema } from "./schemas";
 
 const CONFIDENCE_THRESHOLD = 0.7;
@@ -127,6 +128,14 @@ export async function processCapture(captureId: string): Promise<void> {
       destination,
       destinationRef,
     });
+
+    // Discord alert (fire-and-forget)
+    alertCaptureRouted({
+      type: capture.type,
+      destination,
+      title: routing.title,
+      confidence: routing.confidence,
+    });
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     console.error(`Capture ${captureId} processing failed:`, errorMessage);
@@ -139,5 +148,12 @@ export async function processCapture(captureId: string): Promise<void> {
     } catch (updateErr) {
       console.error(`Failed to update capture ${captureId} status:`, updateErr);
     }
+
+    // Discord alert for failure (fire-and-forget)
+    alertCaptureFailed({
+      type: "unknown",
+      error: errorMessage,
+      captureId,
+    });
   }
 }

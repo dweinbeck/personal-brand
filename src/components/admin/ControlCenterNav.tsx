@@ -8,6 +8,11 @@ const navLinks = [
   { name: "Dashboard", href: "/control-center", exact: true },
   { name: "Content Editor", href: "/control-center/content", exact: false },
   { name: "Billing", href: "/control-center/billing", exact: false },
+  {
+    name: "Builder Inbox",
+    href: "/control-center/builder-inbox",
+    exact: false,
+  },
 ];
 
 export function ControlCenterNav() {
