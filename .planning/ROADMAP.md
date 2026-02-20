@@ -162,9 +162,9 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | 3 - LLM Router & Destination Handlers | 3/3 | Complete | 2026-02-20 |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 3/3 | Complete | 2026-02-20 |
 | 5 - GitHub Actions & iPhone Shortcuts | 2/2 | Complete | 2026-02-20 |
-| 6 - Wire Reroute Destination Handlers | 0/1 | Pending | - |
+| 6 - Wire Reroute Destination Handlers | 1/1 | Complete | 2026-02-20 |
 
-**v3.0 Total: 6 phases, 14 plans (13 complete)**
+**v3.0 Total: 6 phases, 14 plans (14 complete)**
 
 ### Phase 1: Testing Feedback
 
@@ -255,7 +255,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md — Import and call destination handlers in reroute endpoint, handle errors
+- [x] 06-01-PLAN.md — Import and call destination handlers in reroute endpoint, handle errors
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*

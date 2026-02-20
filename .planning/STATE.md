@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v3.0 GSD Builder OS — LLM Router & Destination Handlers
+**Current focus:** v3.0 GSD Builder OS — Wire Reroute Destination Handlers
 
 ## Current Position
 
-Phase: 3 of 5 — LLM Router & Destination Handlers
-Plan: 0 of 3 — Ready to plan
-Status: Phase 2 complete, ready to plan Phase 3
-Last activity: 2026-02-20 — Phase 2 verified and complete (3/3 plans, 27/27 must-haves)
+Phase: 6 of 6 — Wire Reroute Destination Handlers
+Plan: 1 of 1 — Complete
+Status: Phase 6 plan 01 complete
+Last activity: 2026-02-20 — Phase 6 plan 01 executed (2/2 tasks, reroute endpoint wired to real handlers)
 
 ## Performance Metrics
 
@@ -47,6 +47,8 @@ Full decision log in PROJECT.md Key Decisions table.
 - [02-03] Case-insensitive form field lookup (screenshot/Screenshot) for iPhone Shortcuts compatibility
 - [02-03] HEIC and WebP accepted as valid image types alongside PNG/JPEG
 - [02-03] Context validation failure is non-blocking -- screenshot is the primary payload
+- [06-01] Cast capture to Record<string, unknown> to access routingResult not in TS interface
+- [06-01] Construct minimal RoutingOutput with confidence 1.0 for captures without prior LLM classification
 
 ### Roadmap Evolution
 
@@ -76,9 +78,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Phase 2 complete, verified 27/27 must-haves
+Stopped at: Completed 06-01-PLAN.md (wire reroute destination handlers)
 Resume file: None
 
 ## Next Step
 
-Plan Phase 3: LLM Router & Destination Handlers (3 plans). Adds Gemini-powered classification that routes captures to GitHub Issues, Tasks, or Builder Inbox.
+Phase 6 plan 01 complete. Check ROADMAP.md for remaining plans in Phase 6 or next phase.
