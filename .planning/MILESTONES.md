@@ -278,3 +278,36 @@
 
 ---
 
+
+## v3.0 GSD Builder OS (Shipped: 2026-02-20)
+
+**Delivered:** Turned the iPhone Action Button into a universal capture device that routes dictated requests and screenshots into GitHub Issues, Tasks, or a Builder Inbox — with Gemini 2.0 Flash-powered LLM routing, Discord alerts, a full admin UI for audit and re-routing, and Claude Code Action for automated issue implementation.
+
+**Phases completed:** 1-6 (6 phases, 14 plans total)
+
+**Key accomplishments:**
+
+- Capture API with API key auth (SHA-256 timing-safe), dictation and screenshot endpoints responding in <5s for iPhone Shortcuts
+- Gemini 2.0 Flash LLM router with confidence thresholding (0.7), few-shot classification, and async fire-and-forget processing
+- GitHub destination handler with Octokit issue creation, label management, and @claude comments for AI-assisted implementation
+- Builder Inbox admin UI in Control Center with status filters, capture detail view, re-route and retry actions
+- Discord webhook alerts (fire-and-forget, 429 retry-after) on capture routing and failures
+- Claude Code Action GitHub Actions workflow for automated issue processing
+- iPhone Shortcuts documentation for GSD Capture (dictation) and Send to GSD (screenshot) flows
+
+**Stats:**
+
+- 81 files changed (+8,866 / -1,360 lines)
+- 6 phases, 14 plans
+- 2 days (Feb 19-20, 2026)
+- Total codebase: ~52,570 LOC TypeScript
+
+**Git range:** `58ea4cd` → `4062e60`
+
+**Known tech debt:**
+- 4 phases (1, 3, 4, 5) missing formal VERIFICATION.md (process debt, not functional gaps)
+
+**What's next:** Site polish (v1.9 deferred items), real writing content, additional paid tools
+
+---
+

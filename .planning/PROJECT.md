@@ -98,20 +98,18 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ### Active
 
-#### Current Milestone: v3.0 GSD Builder OS
+(No active milestone — planning next)
 
-**Goal:** Turn the iPhone Action Button into a universal capture device that routes dictated requests and screenshots into GitHub Issues, Tasks, or a Builder Inbox — with LLM-powered routing, Discord alerts, and an admin UI to audit everything.
-
-**Target features:**
-- iPhone Action Button dictation capture (API key auth, <10s response)
-- Screenshot ingest via Share Sheet (multipart upload to Cloud Storage)
-- LLM-based request router (GitHub Issue / Task / Note / Automation)
-- GitHub issue creation with automatic @claude comments on every issue
-- Tasks creation via existing Tasks service (default project: "Inbox")
-- Builder Inbox admin UI in Control Center (list, detail, retry, convert)
-- Discord webhook alerts for async notifications
-- GitHub Actions workflow for Claude Code (@claude trigger)
-- iPhone Shortcuts documentation (GSD Capture + Send to GSD)
+#### Shipped in v3.0:
+- ✓ iPhone Action Button dictation capture (API key auth, <5s response) — v3.0
+- ✓ Screenshot ingest via Share Sheet (multipart upload to Cloud Storage) — v3.0
+- ✓ LLM-based request router with Gemini 2.0 Flash (GitHub Issue / Task / Inbox) — v3.0
+- ✓ GitHub issue creation with automatic @claude comments — v3.0
+- ✓ Tasks creation via direct service layer import — v3.0
+- ✓ Builder Inbox admin UI in Control Center (list, detail, retry, re-route) — v3.0
+- ✓ Discord webhook alerts for async notifications — v3.0
+- ✓ GitHub Actions workflow for Claude Code (@claude trigger) — v3.0
+- ✓ iPhone Shortcuts documentation (GSD Capture + Send to GSD) — v3.0
 
 ### Deferred
 
@@ -153,15 +151,15 @@ Visitors can understand who Dan is and see proof of his work within 60 seconds o
 
 ## Current State
 
-**Shipped:** v2.0 on 2026-02-19
+**Shipped:** v3.0 on 2026-02-20
 **Live at:** https://dan-weinbeck.com
-**Current milestone:** v3.0 GSD Builder OS
+**Current milestone:** Planning next
 
-Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App fully integrated at /apps/tasks with KPI dashboard, effort scoring with subtask budgeting, drag-and-drop between sections, demo mode, and bulk data import, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor and brand scraper admin tools, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), and production deployment on GCP Cloud Run.
+Complete personal brand site with apps-first Home page, fully functional Brand Scraper (live progress, Brand Card, assets page, user history), Tasks App fully integrated at /apps/tasks with KPI dashboard, effort scoring with subtask budgeting, drag-and-drop between sections, demo mode, and bulk data import, career accomplishments with company logos, AI assistant powered by external FastAPI RAG backend with citation and confidence UI, Control Center with content editor, brand scraper admin tools, and Builder Inbox for capture audit/re-routing, Custom GPTs public page, billing/credits system with live Stripe payments (ledger-based Firestore credits, Firebase Auth, admin billing panel), GSD Builder OS capture system (iPhone dictation + screenshot → LLM router → GitHub Issues / Tasks / Inbox with Discord alerts), and production deployment on GCP Cloud Run.
 
 ## Context
 
-- **Codebase:** ~48,400 LOC TypeScript/TSX/CSS/MDX (after v2.0 — +15,900 net lines from Tasks integration)
+- **Codebase:** ~52,570 LOC TypeScript/TSX/CSS/MDX (after v3.0 — +7,500 net lines from GSD Builder OS)
 - **Tech stack:** Next.js 16, Tailwind v4, Biome v2.3, Motion v12, Firebase Admin SDK + Auth, Stripe, react-markdown, Vitest
 - **Hosting:** GCP Cloud Run with custom domain and auto-provisioned SSL
 - **GitHub profile:** https://github.com/dweinbeck
@@ -233,6 +231,14 @@ Complete personal brand site with apps-first Home page, fully functional Brand S
 | Mirror checkEnvelopeAccess pattern for tasks billing | Same free-week → paid-week → debit flow; proven pattern from brand scraper | ✓ Good — consistent billing UX |
 | Read-only demo components (not shared mutation components) | Demo route is fully client-side with zero server dependencies | ✓ Good — clean isolation |
 | useDemoMode() defaults to false | Guards are no-ops outside /demo tree; zero impact on production /tasks routes | ✓ Good — safe by default |
+| API key auth with SHA-256 timing-safe comparison | iPhone Shortcuts can't do OAuth; timing-safe prevents side-channel attacks | ✓ Good — secure + simple |
+| Fire-and-forget async processing for captures | Write to Firestore → return 202 → process in background; keeps iPhone response <5s | ✓ Good — fast UX |
+| Gemini 2.0 Flash for LLM routing | Fast, cheap, sufficient for classification; confidence threshold (0.7) gates decisions | ✓ Good — right model for task |
+| `generateText` + `Output.object()` with Zod schema | AI SDK v6 pattern; avoids deprecated `generateObject` | ✓ Good — forward-compatible |
+| Dynamic imports for destination handlers | Lazy-loads `routeToGitHub`/`routeToTask`; each handler fails independently | ✓ Good — resilient |
+| Discord fire-and-forget with 429 retry-after | Supplementary alerts never block capture processing | ✓ Good — non-blocking |
+| Builder Inbox at /control-center/builder-inbox | Follows existing billing admin patterns; SWR for data fetching | ✓ Good — consistent UX |
+| Minimal RoutingOutput for unclassified captures | Captures without prior LLM classification still route via manual re-route | ✓ Good — handles edge case |
 
 ---
-*Last updated: 2026-02-20 after v3.0 milestone start*
+*Last updated: 2026-02-20 after v3.0 milestone complete*
