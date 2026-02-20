@@ -159,7 +159,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 |-------|-------|--------|-----------|
 | 1 - Testing Feedback | 2/2 | Complete | 2026-02-20 |
 | 2 - Capture API & Storage Foundation | 3/3 | Complete    | 2026-02-20 |
-| 3 - LLM Router & Destination Handlers | 0/3 | Not started | - |
+| 3 - LLM Router & Destination Handlers | 3/3 | Complete | 2026-02-20 |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 0/3 | Not started | - |
 | 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
 
@@ -208,9 +208,9 @@ Key decisions:
 - Full LLM response logged alongside capture for audit/tuning
 
 Plans:
-- [ ] 03-01-PLAN.md — LLM routing schema (Zod), classification prompt with few-shot examples, confidence-based routing logic, async processing pipeline
-- [ ] 03-02-PLAN.md — GitHub destination: install @octokit/rest, issue creation, @claude comment posting, label management
-- [ ] 03-03-PLAN.md — Tasks destination (direct service layer import), Builder Inbox fallback persistence, processing status machine (pending → processing → routed/failed)
+- [x] 03-01-PLAN.md — LLM routing schema (Zod), classification prompt with few-shot examples, confidence-based routing logic, async processing pipeline
+- [x] 03-02-PLAN.md — GitHub destination: install @octokit/rest, issue creation, label management
+- [x] 03-03-PLAN.md — Tasks destination (direct service layer import), Builder Inbox fallback persistence, processing status machine (pending → processing → routed/failed)
 
 ### Phase 4: Builder Inbox Admin UI & Discord Alerts
 
