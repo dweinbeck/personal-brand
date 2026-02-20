@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** v3.0 GSD Builder OS — Capture API & Storage Foundation
+**Current focus:** v3.0 GSD Builder OS — LLM Router & Destination Handlers
 
 ## Current Position
 
-Phase: 2 of 5 — Capture API & Storage Foundation
-Plan: 3 of 3 — Screenshot Capture Endpoint complete
-Status: Phase 2 complete
-Last activity: 2026-02-20 — Completed 02-03-PLAN.md (screenshot capture endpoint)
+Phase: 3 of 5 — LLM Router & Destination Handlers
+Plan: 0 of 3 — Ready to plan
+Status: Phase 2 complete, ready to plan Phase 3
+Last activity: 2026-02-20 — Phase 2 verified and complete (3/3 plans, 27/27 must-haves)
 
 ## Performance Metrics
 
@@ -76,9 +76,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 02-03-PLAN.md
+Stopped at: Phase 2 complete, verified 27/27 must-haves
 Resume file: None
 
 ## Next Step
 
-Phase 2 complete. Execute Phase 3: LLM Routing Pipeline.
+Plan Phase 3: LLM Router & Destination Handlers (3 plans). Adds Gemini-powered classification that routes captures to GitHub Issues, Tasks, or Builder Inbox.
