@@ -160,7 +160,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | 1 - Testing Feedback | 2/2 | Complete | 2026-02-20 |
 | 2 - Capture API & Storage Foundation | 3/3 | Complete    | 2026-02-20 |
 | 3 - LLM Router & Destination Handlers | 3/3 | Complete | 2026-02-20 |
-| 4 - Builder Inbox Admin UI & Discord Alerts | 0/3 | Not started | - |
+| 4 - Builder Inbox Admin UI & Discord Alerts | 3/3 | Complete | 2026-02-20 |
 | 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
 
 **v3.0 Total: 5 phases, 13 plans (5 complete, 8 remaining)**
@@ -226,9 +226,9 @@ Key decisions:
 - SWR for data fetching (existing pattern, no WebSockets needed for single-user)
 
 Plans:
-- [ ] 04-01-PLAN.md — Builder Inbox list page with status filters, capture detail page with routing decision/confidence display
-- [ ] 04-02-PLAN.md — Re-route, retry, and convert-to-GitHub/Tasks actions from Inbox detail view
-- [ ] 04-03-PLAN.md — Discord webhook utility (fire-and-forget, 429 retry, embed truncation), alerts on capture processed/routed/failed
+- [x] 04-01-PLAN.md — Builder Inbox list page with status filters, capture detail page with routing decision/confidence display
+- [x] 04-02-PLAN.md — Re-route, retry actions from Inbox detail view
+- [x] 04-03-PLAN.md — Discord webhook utility (fire-and-forget, 429 retry, embed truncation), alerts on capture routed/failed
 
 ### Phase 5: GitHub Actions & iPhone Shortcuts
 
