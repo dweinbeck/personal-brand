@@ -211,3 +211,24 @@
 
 > Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
 
+### Phase 1 Testing Feedback Fixes — What to Test
+
+**Brand Scraper (`/apps/brand-scraper`):**
+- Run a scrape and verify the credits display shows ONLY "X credits" — no dollar amounts like "($0.50)"
+- Scrape `transparent.partners` or similar site — verify no blank rectangles for broken/tiny images
+- Check that color palette entries show role labels (primary, secondary, accent) when available
+- Click "Download Brand JSON" — should trigger a file save dialog, NOT open in a new browser tab
+- Click "Download Assets (zip)" — if it 403s, should show a helpful error with a "Download JSON Instead" fallback button
+
+**Tools Page (`/tools`):**
+- Verify subtitle reads "Single-function development utilities..." (not "dev")
+- New Phase Planner and FRD Interviewer cards should show "Open Custom GPT" button
+- FRD Generator card should show "Open App" button and link to `dev.dan-weinbeck.com/tools/frd-generator`
+
+**Home Page (`/`) — ToolsShowcase section:**
+- Same button label checks as Tools page (Open Custom GPT / Open App)
+
+**Building Blocks (`/building-blocks`):**
+- Open the FRD article and verify the FRD Generator link points to `dev.dan-weinbeck.com/tools/frd-generator`
+- Check both the full and fast versions of the article
+
