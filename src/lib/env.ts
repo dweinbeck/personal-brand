@@ -184,6 +184,41 @@ const serverEnvBaseSchema = z.object({
       "GOOGLE_GENERATIVE_AI_API_KEY looks like a placeholder",
     )
     .optional(),
+
+  // Builder OS capture API
+  GSD_API_KEY: z
+    .string()
+    .min(1)
+    .refine(isNotPlaceholder, "GSD_API_KEY looks like a placeholder")
+    .optional(),
+
+  FIREBASE_STORAGE_BUCKET: z
+    .string()
+    .min(1)
+    .refine(
+      isNotPlaceholder,
+      "FIREBASE_STORAGE_BUCKET looks like a placeholder",
+    )
+    .optional(),
+
+  GITHUB_PAT: z
+    .string()
+    .min(1)
+    .refine(isNotPlaceholder, "GITHUB_PAT looks like a placeholder")
+    .refine(
+      (val) => val.startsWith("ghp_") || val.startsWith("github_pat_"),
+      "GITHUB_PAT must start with 'ghp_' or 'github_pat_'",
+    )
+    .optional(),
+
+  DISCORD_WEBHOOK_URL: z
+    .string()
+    .url("DISCORD_WEBHOOK_URL must be a valid URL")
+    .refine(
+      (val) => val.includes("discord.com/api/webhooks/"),
+      "DISCORD_WEBHOOK_URL must be a Discord webhook URL",
+    )
+    .optional(),
 });
 
 // Cross-field validation: FIREBASE_PROJECT_ID must match NEXT_PUBLIC_FIREBASE_PROJECT_ID
@@ -292,6 +327,10 @@ export function serverEnv(): ServerEnv {
       GOOGLE_GENERATIVE_AI_API_KEY: optionalEnv(
         process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       ),
+      GSD_API_KEY: optionalEnv(process.env.GSD_API_KEY),
+      FIREBASE_STORAGE_BUCKET: optionalEnv(process.env.FIREBASE_STORAGE_BUCKET),
+      GITHUB_PAT: optionalEnv(process.env.GITHUB_PAT),
+      DISCORD_WEBHOOK_URL: optionalEnv(process.env.DISCORD_WEBHOOK_URL),
     });
   }
   return _serverEnv;
@@ -326,6 +365,10 @@ export function validateServerEnv(): ValidationResult {
     GOOGLE_GENERATIVE_AI_API_KEY: optionalEnv(
       process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     ),
+    GSD_API_KEY: optionalEnv(process.env.GSD_API_KEY),
+    FIREBASE_STORAGE_BUCKET: optionalEnv(process.env.FIREBASE_STORAGE_BUCKET),
+    GITHUB_PAT: optionalEnv(process.env.GITHUB_PAT),
+    DISCORD_WEBHOOK_URL: optionalEnv(process.env.DISCORD_WEBHOOK_URL),
   });
 
   if (!parsed.success) {
