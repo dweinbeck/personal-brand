@@ -153,7 +153,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 
 **Total: 10 milestones (9 shipped + 1 deferred), 48.1 phases, 22 plans in v2.0**
 
-### v3.0 GSD Builder OS (Phases 1-5)
+### v3.0 GSD Builder OS (Phases 1-6)
 
 | Phase | Plans | Status | Completed |
 |-------|-------|--------|-----------|
@@ -162,8 +162,9 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | 3 - LLM Router & Destination Handlers | 3/3 | Complete | 2026-02-20 |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 3/3 | Complete | 2026-02-20 |
 | 5 - GitHub Actions & iPhone Shortcuts | 2/2 | Complete | 2026-02-20 |
+| 6 - Wire Reroute Destination Handlers | 0/1 | Pending | - |
 
-**v3.0 Total: 5 phases, 13 plans (13 complete)**
+**v3.0 Total: 6 phases, 14 plans (13 complete)**
 
 ### Phase 1: Testing Feedback
 
@@ -245,6 +246,16 @@ Key decisions:
 Plans:
 - [x] 05-01-PLAN.md — .github/workflows/claude.yml with issue_comment + issues triggers, setup verification checklist
 - [x] 05-02-PLAN.md — iPhone Shortcuts documentation: GSD Capture (dictation flow) and Send to GSD (screenshot flow), step-by-step setup
+
+### Phase 6: Wire Reroute Destination Handlers
+
+**Goal:** Fix the reroute endpoint to actually execute destination handlers (routeToGitHub/routeToTask) instead of only marking status in Firestore. Completes the manual re-route flow end-to-end.
+**Depends on:** Phase 4
+**Gap Closure:** Closes INBOX-REROUTE (partial), reroute→destination integration gap, and "Builder Inbox → Manual Re-Route" flow gap from v3.0 audit.
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — Import and call destination handlers in reroute endpoint, handle errors
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
