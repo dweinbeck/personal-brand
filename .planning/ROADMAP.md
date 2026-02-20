@@ -158,12 +158,12 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | Phase | Plans | Status | Completed |
 |-------|-------|--------|-----------|
 | 1 - Testing Feedback | 2/2 | Complete | 2026-02-20 |
-| 2 - Capture API & Storage Foundation | 2/3 | In Progress | - |
+| 2 - Capture API & Storage Foundation | 3/3 | Complete | 2026-02-20 |
 | 3 - LLM Router & Destination Handlers | 0/3 | Not started | - |
 | 4 - Builder Inbox Admin UI & Discord Alerts | 0/3 | Not started | - |
 | 5 - GitHub Actions & iPhone Shortcuts | 0/2 | Not started | - |
 
-**v3.0 Total: 5 phases, 13 plans (2 complete, 11 remaining)**
+**v3.0 Total: 5 phases, 13 plans (5 complete, 8 remaining)**
 
 ### Phase 1: Testing Feedback
 
@@ -191,7 +191,7 @@ Key decisions:
 Plans:
 - [x] 02-01-PLAN.md — API key auth middleware, env vars (GSD_API_KEY, FIREBASE_STORAGE_BUCKET, GITHUB_PAT, DISCORD_WEBHOOK_URL), Firestore capture schema, Cloud Storage setup in firebase.ts
 - [x] 02-02-PLAN.md — Dictation capture endpoint (POST /api/gsd/capture) with Zod validation, Firestore write, 202 Accepted response
-- [ ] 02-03-PLAN.md — Screenshot capture endpoint (POST /api/gsd/capture/screenshot) with multipart FormData, Cloud Storage upload, next.config.ts body size limit
+- [x] 02-03-PLAN.md — Screenshot capture endpoint (POST /api/gsd/capture/screenshot) with multipart FormData, Cloud Storage upload, next.config.ts body size limit
 
 ### Phase 3: LLM Router & Destination Handlers
 

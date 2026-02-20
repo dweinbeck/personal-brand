@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 2 of 5 — Capture API & Storage Foundation
-Plan: 2 of 3 — Dictation Capture Endpoint complete
-Status: Executing Phase 2 plans
-Last activity: 2026-02-20 — Completed 02-02-PLAN.md (dictation capture endpoint)
+Plan: 3 of 3 — Screenshot Capture Endpoint complete
+Status: Phase 2 complete
+Last activity: 2026-02-20 — Completed 02-03-PLAN.md (screenshot capture endpoint)
 
 ## Performance Metrics
 
@@ -44,6 +44,9 @@ Full decision log in PROJECT.md Key Decisions table.
 - [02-02] crypto.randomUUID() for capture IDs (zero dependencies)
 - [02-02] 202 Accepted status to signal async processing pipeline
 - [02-02] Short error messages (<200 chars) for iPhone Shortcuts display
+- [02-03] Case-insensitive form field lookup (screenshot/Screenshot) for iPhone Shortcuts compatibility
+- [02-03] HEIC and WebP accepted as valid image types alongside PNG/JPEG
+- [02-03] Context validation failure is non-blocking -- screenshot is the primary payload
 
 ### Roadmap Evolution
 
@@ -68,13 +71,14 @@ None.
 | 10 | Tasks app: data import, two-line card titles, remove import button, 2-day auto-archive | 2026-02-19 | 5430a9f | [10-tasks-app-retry-data-import-two-line-car](./quick/10-tasks-app-retry-data-import-two-line-car/) |
 | Phase 02 P01 | 3min | 2 tasks | 6 files |
 | Phase 02 P02 | 2min | 1 task | 2 files |
+| Phase 02 P03 | 4min | 2 tasks | 3 files |
 
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 02-02-PLAN.md
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
 
 ## Next Step
 
-Execute 02-03-PLAN.md: Screenshot capture endpoint.
+Phase 2 complete. Execute Phase 3: LLM Routing Pipeline.
