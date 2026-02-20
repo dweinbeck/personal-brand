@@ -68,3 +68,56 @@ export async function updateCaptureStatus(
       updatedAt: FieldValue.serverTimestamp(),
     });
 }
+
+/**
+ * Read a capture document by ID.
+ * Returns the document data or null if not found.
+ */
+export async function getCapture(
+  id: string,
+): Promise<(CaptureInput & { status: string; context?: string }) | null> {
+  const doc = await capturesCol().doc(id).get();
+  if (!doc.exists) return null;
+  return doc.data() as CaptureInput & { status: string; context?: string };
+}
+
+/**
+ * List captures with optional status filter, ordered by creation time descending.
+ * Used by Builder Inbox admin UI (Phase 4).
+ */
+export async function getAllCaptures(options?: {
+  status?: string;
+  limit?: number;
+}): Promise<Array<Record<string, unknown>>> {
+  const maxResults = options?.limit ?? 50;
+  let query = capturesCol().orderBy("createdAt", "desc").limit(maxResults);
+
+  if (options?.status) {
+    query = capturesCol()
+      .where("status", "==", options.status)
+      .orderBy("createdAt", "desc")
+      .limit(maxResults);
+  }
+
+  const snapshot = await query.get();
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
+/**
+ * Get counts of captures by status.
+ * Used by Builder Inbox dashboard.
+ */
+export async function getCaptureCounts(): Promise<Record<string, number>> {
+  const statuses = ["pending", "processing", "routed", "failed"];
+  const counts: Record<string, number> = {};
+
+  for (const status of statuses) {
+    const snapshot = await capturesCol()
+      .where("status", "==", status)
+      .count()
+      .get();
+    counts[status] = snapshot.data().count;
+  }
+
+  return counts;
+}

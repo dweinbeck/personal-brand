@@ -1,5 +1,6 @@
 import { apiKeyUnauthorizedResponse, verifyApiKey } from "@/lib/auth/api-key";
 import { saveCapture } from "@/lib/gsd/capture";
+import { processCapture } from "@/lib/gsd/router";
 import { screenshotCaptureSchema } from "@/lib/gsd/schemas";
 import { uploadScreenshot } from "@/lib/gsd/storage";
 
@@ -85,8 +86,8 @@ export async function POST(request: Request) {
     return Response.json({ error: "Failed to save capture." }, { status: 500 });
   }
 
-  // 9. Async processing placeholder (Phase 3 will add LLM routing here)
-  // processCapture(captureId).catch(console.error);
+  // 9. Fire-and-forget async processing (LLM classification + routing)
+  processCapture(captureId).catch(console.error);
 
   // 10. Respond immediately
   return Response.json({ status: "queued", id: captureId }, { status: 202 });
