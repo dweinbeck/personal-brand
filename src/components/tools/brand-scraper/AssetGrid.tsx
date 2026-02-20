@@ -1,7 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { AssetManifestEntry } from "@/lib/brand-scraper/types";
+
+/** Minimum size in bytes to display an asset — smaller files are typically tracking pixels or empty placeholders. */
+const MIN_ASSET_SIZE_BYTES = 100;
 
 /** Check if the content type is an image that browsers can render. */
 function isImageType(contentType: string): boolean {
@@ -59,6 +62,24 @@ function getFileTypeLabel(contentType: string): string {
 
 function AssetCard({ asset }: { asset: AssetManifestEntry }) {
   const isImage = isImageType(asset.content_type);
+  const [hidden, setHidden] = useState(false);
+
+  /** Hide the card when the image fails to load. */
+  const handleError = useCallback(() => setHidden(true), []);
+
+  /** Hide the card when the loaded image is a tiny invisible pixel (1x1 spacers, tracking pixels). */
+  const handleLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const img = e.currentTarget;
+      if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+        setHidden(true);
+      }
+    },
+    [],
+  );
+
+  // Don't render anything for broken/invisible images
+  if (hidden) return null;
 
   return (
     <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
@@ -69,6 +90,8 @@ function AssetCard({ asset }: { asset: AssetManifestEntry }) {
           src={asset.signed_url}
           alt={asset.filename}
           loading="lazy"
+          onError={handleError}
+          onLoad={handleLoad}
           className="h-40 w-full object-contain bg-gray-50 p-2"
         />
       ) : (
@@ -142,22 +165,32 @@ function AssetCard({ asset }: { asset: AssetManifestEntry }) {
 }
 
 export function AssetGrid({ assets }: { assets: AssetManifestEntry[] }) {
+  // Pre-filter assets: drop extremely small files that are almost certainly tracking pixels / empty placeholders
+  const filteredAssets = useMemo(
+    () =>
+      assets.filter(
+        (a) =>
+          a.size_bytes >= MIN_ASSET_SIZE_BYTES || !isImageType(a.content_type),
+      ),
+    [assets],
+  );
+
   // Group assets by category
   const grouped = useMemo(() => {
     const groups: Record<string, AssetManifestEntry[]> = {};
-    for (const asset of assets) {
+    for (const asset of filteredAssets) {
       const cat = asset.category;
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(asset);
     }
     return Object.entries(groups);
-  }, [assets]);
+  }, [filteredAssets]);
 
   // If only one category, skip the section headers
   if (grouped.length === 1) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {assets.map((asset) => (
+        {filteredAssets.map((asset) => (
           <AssetCard
             key={`${asset.category}-${asset.filename}`}
             asset={asset}
