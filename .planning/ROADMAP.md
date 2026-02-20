@@ -160,7 +160,7 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Brand Scraper: remove dollar pricing, fix blank assets, label colors, fix downloads
+- [x] 01-01-PLAN.md — Brand Scraper: remove dollar pricing, fix blank assets, label colors, fix downloads
 - [ ] 01-02-PLAN.md — Tools page & Building Blocks: FRD Generator links, subtitle, button labels
 
 ---
