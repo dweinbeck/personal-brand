@@ -6,6 +6,41 @@ import type { AssetManifestEntry } from "@/lib/brand-scraper/types";
 /** Minimum size in bytes to display an asset — smaller files are typically tracking pixels or empty placeholders. */
 const MIN_ASSET_SIZE_BYTES = 100;
 
+/** Sample size for canvas-based visibility check — small for performance. */
+const VISIBILITY_SAMPLE_SIZE = 64;
+
+/** Minimum alpha value to consider a pixel "visible" (0–255 scale). */
+const MIN_VISIBLE_ALPHA = 10;
+
+/**
+ * Check whether an image has any visible pixels by drawing it to a small canvas
+ * and scanning the alpha channel. Returns false for fully transparent images
+ * (spacers, invisible overlays, transparent placeholders).
+ *
+ * Wrapped in try/catch — returns true (assume visible) if CORS blocks pixel access.
+ */
+function hasVisiblePixels(img: HTMLImageElement): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    const w = Math.min(img.naturalWidth, VISIBILITY_SAMPLE_SIZE);
+    const h = Math.min(img.naturalHeight, VISIBILITY_SAMPLE_SIZE);
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return true;
+    ctx.drawImage(img, 0, 0, w, h);
+    const { data } = ctx.getImageData(0, 0, w, h);
+    // Every 4th byte is the alpha channel — if any pixel exceeds threshold, image is visible
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i] > MIN_VISIBLE_ALPHA) return true;
+    }
+    return false;
+  } catch {
+    // CORS or SecurityError — can't inspect pixels, assume visible
+    return true;
+  }
+}
+
 /** Check if the content type is an image that browsers can render. */
 function isImageType(contentType: string): boolean {
   return contentType.startsWith("image/");
@@ -67,11 +102,16 @@ function AssetCard({ asset }: { asset: AssetManifestEntry }) {
   /** Hide the card when the image fails to load. */
   const handleError = useCallback(() => setHidden(true), []);
 
-  /** Hide the card when the loaded image is a tiny invisible pixel (1x1 spacers, tracking pixels). */
+  /** Hide the card when the loaded image is a tiny invisible pixel or fully transparent. */
   const handleLoad = useCallback(
     (e: React.SyntheticEvent<HTMLImageElement>) => {
       const img = e.currentTarget;
       if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+        setHidden(true);
+        return;
+      }
+      // Canvas-based check: hide images that are 100% transparent (spacers, invisible overlays)
+      if (!hasVisiblePixels(img)) {
         setHidden(true);
       }
     },
@@ -90,6 +130,7 @@ function AssetCard({ asset }: { asset: AssetManifestEntry }) {
           src={asset.signed_url}
           alt={asset.filename}
           loading="lazy"
+          crossOrigin="anonymous"
           onError={handleError}
           onLoad={handleLoad}
           className="h-40 w-full object-contain bg-gray-50 p-2"

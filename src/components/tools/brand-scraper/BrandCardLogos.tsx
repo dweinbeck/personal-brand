@@ -3,6 +3,37 @@
 import { useCallback, useEffect, useState } from "react";
 import type { BrandTaxonomy } from "@/lib/brand-scraper/types";
 
+/** Sample size for canvas-based visibility check. */
+const VISIBILITY_SAMPLE_SIZE = 64;
+
+/** Minimum alpha value to consider a pixel "visible" (0–255 scale). */
+const MIN_VISIBLE_ALPHA = 10;
+
+/**
+ * Check whether an image has any visible pixels by drawing it to a small canvas
+ * and scanning the alpha channel. Returns false for fully transparent images.
+ * Returns true (assume visible) if CORS blocks pixel access.
+ */
+function hasVisiblePixels(img: HTMLImageElement): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    const w = Math.min(img.naturalWidth, VISIBILITY_SAMPLE_SIZE);
+    const h = Math.min(img.naturalHeight, VISIBILITY_SAMPLE_SIZE);
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return true;
+    ctx.drawImage(img, 0, 0, w, h);
+    const { data } = ctx.getImageData(0, 0, w, h);
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i] > MIN_VISIBLE_ALPHA) return true;
+    }
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 type BrandCardLogosProps = {
   logos: BrandTaxonomy["assets"];
 };
@@ -27,6 +58,11 @@ function AssetImage({
       // Treat tiny images (tracking pixels, 1x1 spacers) as broken
       if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
         setFailed(true);
+        return;
+      }
+      // Canvas-based check: hide fully transparent images
+      if (!hasVisiblePixels(img)) {
+        setFailed(true);
       }
     },
     [],
@@ -46,6 +82,7 @@ function AssetImage({
       <img
         src={src}
         loading="lazy"
+        crossOrigin="anonymous"
         alt={alt}
         onError={() => setFailed(true)}
         onLoad={handleLoad}
