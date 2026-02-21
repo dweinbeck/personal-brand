@@ -201,16 +201,6 @@ const serverEnvBaseSchema = z.object({
     )
     .optional(),
 
-  GITHUB_PAT: z
-    .string()
-    .min(1)
-    .refine(isNotPlaceholder, "GITHUB_PAT looks like a placeholder")
-    .refine(
-      (val) => val.startsWith("ghp_") || val.startsWith("github_pat_"),
-      "GITHUB_PAT must start with 'ghp_' or 'github_pat_'",
-    )
-    .optional(),
-
   DISCORD_WEBHOOK_URL: z
     .string()
     .url("DISCORD_WEBHOOK_URL must be a valid URL")
@@ -342,7 +332,6 @@ export function serverEnv(): ServerEnv {
       ),
       GSD_API_KEY: optionalEnv(process.env.GSD_API_KEY),
       FIREBASE_STORAGE_BUCKET: optionalEnv(process.env.FIREBASE_STORAGE_BUCKET),
-      GITHUB_PAT: optionalEnv(process.env.GITHUB_PAT),
       DISCORD_WEBHOOK_URL: optionalEnv(process.env.DISCORD_WEBHOOK_URL),
       GSD_GITHUB_REPO: optionalEnv(process.env.GSD_GITHUB_REPO),
       GSD_TASKS_USER_ID: optionalEnv(process.env.GSD_TASKS_USER_ID),
@@ -383,7 +372,6 @@ export function validateServerEnv(): ValidationResult {
     ),
     GSD_API_KEY: optionalEnv(process.env.GSD_API_KEY),
     FIREBASE_STORAGE_BUCKET: optionalEnv(process.env.FIREBASE_STORAGE_BUCKET),
-    GITHUB_PAT: optionalEnv(process.env.GITHUB_PAT),
     DISCORD_WEBHOOK_URL: optionalEnv(process.env.DISCORD_WEBHOOK_URL),
     GSD_GITHUB_REPO: optionalEnv(process.env.GSD_GITHUB_REPO),
     GSD_TASKS_USER_ID: optionalEnv(process.env.GSD_TASKS_USER_ID),

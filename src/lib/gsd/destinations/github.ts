@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import { serverEnv } from "@/lib/env";
 import type { RoutingOutput } from "../schemas";
 
 /**
@@ -6,12 +7,14 @@ import type { RoutingOutput } from "../schemas";
  * Returns the issue HTML URL.
  */
 export async function routeToGitHub(routing: RoutingOutput): Promise<string> {
-  const token = process.env.GITHUB_PAT;
+  const token = serverEnv().GITHUB_TOKEN;
   if (!token) {
-    throw new Error("GITHUB_PAT not configured. Cannot create GitHub issues.");
+    throw new Error(
+      "GITHUB_TOKEN not configured. Cannot create GitHub issues.",
+    );
   }
 
-  const repo = process.env.GSD_GITHUB_REPO;
+  const repo = serverEnv().GSD_GITHUB_REPO;
   if (!repo) {
     throw new Error(
       "GSD_GITHUB_REPO not configured. Set to 'owner/repo' format.",

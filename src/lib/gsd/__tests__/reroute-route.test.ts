@@ -213,21 +213,21 @@ describe("POST /api/admin/builder-inbox/[id]/reroute", () => {
 
   // Test 5: Destination handler failure (500)
   it("returns 500 and marks capture as failed when handler throws", async () => {
-    mockRouteToGitHub.mockRejectedValue(new Error("GITHUB_PAT not configured"));
+    mockRouteToGitHub.mockRejectedValue(new Error("GITHUB_TOKEN not configured"));
     const { request, params } = makeRequest({ destination: "github_issue" });
 
     const res = await POST(request, { params });
     const data = await res.json();
 
     expect(res.status).toBe(500);
-    expect(data.error).toBe("GITHUB_PAT not configured");
+    expect(data.error).toBe("GITHUB_TOKEN not configured");
     expect(mockUpdateCaptureStatus).toHaveBeenCalledWith("capture-123", {
       status: "failed",
-      error: "GITHUB_PAT not configured",
+      error: "GITHUB_TOKEN not configured",
     });
     expect(mockAlertCaptureFailed).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: "GITHUB_PAT not configured",
+        error: "GITHUB_TOKEN not configured",
         captureId: "capture-123",
       }),
     );
