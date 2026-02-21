@@ -33,18 +33,23 @@ export interface CaptureInput {
 export async function saveCapture(input: CaptureInput): Promise<void> {
   const now = FieldValue.serverTimestamp();
 
-  await capturesCol()
-    .doc(input.id)
-    .set({
-      ...input,
-      status: "pending",
-      routingResult: null,
-      destination: null,
-      destinationRef: null,
-      error: null,
-      createdAt: now,
-      updatedAt: now,
-    });
+  // Strip undefined values — Firestore rejects them
+  const data: Record<string, unknown> = {
+    id: input.id,
+    type: input.type,
+    status: "pending",
+    routingResult: null,
+    destination: null,
+    destinationRef: null,
+    error: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+  if (input.transcript !== undefined) data.transcript = input.transcript;
+  if (input.screenshotUrl !== undefined) data.screenshotUrl = input.screenshotUrl;
+  if (input.context !== undefined) data.context = input.context;
+
+  await capturesCol().doc(input.id).set(data);
 }
 
 /**
