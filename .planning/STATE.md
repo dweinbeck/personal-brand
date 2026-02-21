@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 Phase: 2 — Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
 Plan: All 3 plans complete (P01-P03)
 Status: Phase 2 complete, pending manual testing
-Last activity: 2026-02-21 - Completed 02-03: Company name display
+Last activity: 2026-02-21 - Completed quick task 12: Show transfer source/destination in envelope transactions
 
 ## Performance Metrics
 
