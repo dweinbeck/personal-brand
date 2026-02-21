@@ -55,10 +55,28 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-
+| 1 | bug | H| AssetsGrid | I still can't download the assets.  This is what I get: curl 'https://dev.dan-weinbeck.com/api/tools/brand-scraper/jobs/zBLzPe7HhuBuCX1Rg-VWK/assets/zip' \
+  -X 'POST' \
+  -H 'accept: */*' \
+  -H 'accept-language: en-US,en;q=0.9,es-ES;q=0.8,es;q=0.7' \
+  -H 'authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImY1MzMwMzNhMTMzYWQyM2EyYzlhZGNmYzE4YzRlM2E3MWFmYWY2MjkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiRGFuaWVsIFdlaW5iZWNrIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pwMkE5bC1XQUYtbTVraHdGdEsxc3Iyd3FTVy1ab3ZhWEM1T3J3NXhmUVZETzhGZz1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9wZXJzb25hbC1icmFuZC1kZXYtNDg3MTE0IiwiYXVkIjoicGVyc29uYWwtYnJhbmQtZGV2LTQ4NzExNCIsImF1dGhfdGltZSI6MTc3MTI4MTA3OCwidXNlcl9pZCI6IkxiYjRINzlkMnpVQVZKaW43NjByTHF4dXd0MzMiLCJzdWIiOiJMYmI0SDc5ZDJ6VUFWSmluNzYwckxxeHV3dDMzIiwiaWF0IjoxNzcxNzAxNzA5LCJleHAiOjE3NzE3MDUzMDksImVtYWlsIjoiZGFuaWVsLndlaW5iZWNrQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTE1NzY0MDc2NjI2MDk0NzAzNjI1Il0sImVtYWlsIjpbImRhbmllbC53ZWluYmVja0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.lRciXFpSHtdtnUB1f_om3YmKZQvM5rnM4Sar51KiDCUr1ommfDwEb3vJ12ZHrHZAHsB4LVcPS4XA_dnyjlBCj5oH_Pq9PXXACDh6EiOA_a6LfU8BXXYQ5ledzTZhCkYXxbw1IJxTffVDVP8DmUuqM4blmhzB0ccZNyNi7LKPKF1g-E3ISVEEDI3H9nK0SkZJPRup4nuqhFpDobf6uZMSP6OL3IkvqDsS02DA2heQAuxCLKz82rVQmSc-PVqb2RBz4yfm5GIDDUAyEOolWxw9nWS0VPry1rdeGrj_he5LAGdHdWsfHVWrNQvK0ZwHSuITn46M7OAVlgj72G4UPgPGlw' \
+  -H 'cache-control: no-cache' \
+  -H 'content-length: 0' \
+  -b '__session=eyJhbGciOiJSUzI1NiIsImtpZCI6ImY1MzMwMzNhMTMzYWQyM2EyYzlhZGNmYzE4YzRlM2E3MWFmYWY2MjkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiRGFuaWVsIFdlaW5iZWNrIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pwMkE5bC1XQUYtbTVraHdGdEsxc3Iyd3FTVy1ab3ZhWEM1T3J3NXhmUVZETzhGZz1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9wZXJzb25hbC1icmFuZC1kZXYtNDg3MTE0IiwiYXVkIjoicGVyc29uYWwtYnJhbmQtZGV2LTQ4NzExNCIsImF1dGhfdGltZSI6MTc3MTI4MTA3OCwidXNlcl9pZCI6IkxiYjRINzlkMnpVQVZKaW43NjByTHF4dXd0MzMiLCJzdWIiOiJMYmI0SDc5ZDJ6VUFWSmluNzYwckxxeHV3dDMzIiwiaWF0IjoxNzcxNzAxNzA5LCJleHAiOjE3NzE3MDUzMDksImVtYWlsIjoiZGFuaWVsLndlaW5iZWNrQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTE1NzY0MDc2NjI2MDk0NzAzNjI1Il0sImVtYWlsIjpbImRhbmllbC53ZWluYmVja0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.lRciXFpSHtdtnUB1f_om3YmKZQvM5rnM4Sar51KiDCUr1ommfDwEb3vJ12ZHrHZAHsB4LVcPS4XA_dnyjlBCj5oH_Pq9PXXACDh6EiOA_a6LfU8BXXYQ5ledzTZhCkYXxbw1IJxTffVDVP8DmUuqM4blmhzB0ccZNyNi7LKPKF1g-E3ISVEEDI3H9nK0SkZJPRup4nuqhFpDobf6uZMSP6OL3IkvqDsS02DA2heQAuxCLKz82rVQmSc-PVqb2RBz4yfm5GIDDUAyEOolWxw9nWS0VPry1rdeGrj_he5LAGdHdWsfHVWrNQvK0ZwHSuITn46M7OAVlgj72G4UPgPGlw' \
+  -H 'origin: https://dev.dan-weinbeck.com' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://dev.dan-weinbeck.com/apps/brand-scraper' \
+  -H 'sec-ch-ua: "Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36' |
+| 2 | bug | M | AssetsGrid | It's not labelling the secondary color.  For most brands, there should be a primary, secondary, accent, and text |
+| 3 | feature | M | BrandCard | The tool should be able to extract the company name from the website and use that for the Brand's title instead of the url.  For instance, for Transparent.Partners it should actually return Transparent Partners as they company name and display it. |
+| 4 | bug | H | The scraper isn't doing it accurately.  For 3m.com, for example, their main color is red.  Why is it not returning red as a color (it's the primary color).  | S
 ---
 
 ## 4. Tasks (`/apps/tasks`)
