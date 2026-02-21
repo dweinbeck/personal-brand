@@ -3,9 +3,14 @@
 type BrandCardHeaderProps = {
   favicon?: string;
   hostname: string;
+  displayName?: string;
 };
 
-export function BrandCardHeader({ favicon, hostname }: BrandCardHeaderProps) {
+export function BrandCardHeader({
+  favicon,
+  hostname,
+  displayName,
+}: BrandCardHeaderProps) {
   return (
     <div className="bg-gray-100 dark:bg-gray-800 border-b border-border px-3 py-2 flex items-center gap-3">
       {/* Traffic-light dots */}
@@ -45,7 +50,9 @@ export function BrandCardHeader({ favicon, hostname }: BrandCardHeaderProps) {
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
         )}
-        <span className="text-sm text-text-secondary truncate">{hostname}</span>
+        <span className="text-sm text-text-secondary truncate">
+          {displayName ?? hostname}
+        </span>
       </div>
     </div>
   );

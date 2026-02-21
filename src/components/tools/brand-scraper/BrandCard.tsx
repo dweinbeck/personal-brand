@@ -1,5 +1,6 @@
 "use client";
 
+import { getBrandDisplayName } from "@/lib/brand-scraper/display-name";
 import type { BrandTaxonomy } from "@/lib/brand-scraper/types";
 import { BrandCardColors } from "./BrandCardColors";
 import { BrandCardDescription } from "./BrandCardDescription";
@@ -28,10 +29,18 @@ export function BrandCard({
   }
 
   const favicon = result.assets?.favicons?.[0]?.value?.url;
+  const displayName = getBrandDisplayName(
+    result.identity,
+    result.source.site_url,
+  );
 
   return (
     <div className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden">
-      <BrandCardHeader favicon={favicon} hostname={hostname} />
+      <BrandCardHeader
+        favicon={favicon}
+        hostname={hostname}
+        displayName={displayName}
+      />
       <div className="p-6 space-y-6">
         <BrandCardLogos logos={result.assets} />
         <BrandCardColors palette={result.color} />

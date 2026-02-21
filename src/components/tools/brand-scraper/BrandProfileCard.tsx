@@ -3,6 +3,7 @@
 import { format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
+import { getBrandDisplayName } from "@/lib/brand-scraper/display-name";
 import type { BrandTaxonomy } from "@/lib/brand-scraper/types";
 import { brandTaxonomySchema } from "@/lib/brand-scraper/types";
 
@@ -21,15 +22,6 @@ type JobData = {
   status: string;
   result?: BrandTaxonomy;
 };
-
-/** Safely extract hostname from a URL string. */
-function getHostname(urlStr: string): string {
-  try {
-    return new URL(urlStr).hostname;
-  } catch {
-    return urlStr;
-  }
-}
 
 function SkeletonCard() {
   return (
@@ -100,8 +92,8 @@ export function BrandProfileCard({
 
   if (loading) return <SkeletonCard />;
 
-  const hostname = getHostname(siteUrl);
   const result = jobData?.result;
+  const displayName = getBrandDisplayName(result?.identity, siteUrl);
   const colors = result?.color?.palette?.slice(0, 5) ?? [];
   const fonts = result?.typography?.font_families?.slice(0, 2) ?? [];
   const logos = result?.assets?.logos ?? [];
@@ -151,20 +143,20 @@ export function BrandProfileCard({
           {displayImage ? (
             <img
               src={displayImage}
-              alt={`${hostname} logo`}
+              alt={`${displayName} logo`}
               className="h-full w-full object-contain"
               loading="lazy"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
                 const parent = (e.target as HTMLImageElement).parentElement;
                 if (parent) {
-                  parent.innerHTML = `<span class="text-xs font-bold text-text-tertiary">${hostname.charAt(0).toUpperCase()}</span>`;
+                  parent.innerHTML = `<span class="text-xs font-bold text-text-tertiary">${displayName.charAt(0).toUpperCase()}</span>`;
                 }
               }}
             />
           ) : (
             <span className="text-xs font-bold text-text-tertiary">
-              {hostname.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </span>
           )}
         </div>
@@ -175,9 +167,9 @@ export function BrandProfileCard({
         )}
       </div>
 
-      {/* Hostname */}
+      {/* Brand name */}
       <p className="text-sm font-semibold text-text-primary truncate mb-2">
-        {hostname}
+        {displayName}
       </p>
 
       {/* Color Palette Preview */}
