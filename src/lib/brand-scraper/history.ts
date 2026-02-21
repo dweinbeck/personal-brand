@@ -69,6 +69,28 @@ export async function updateHistoryStatus({
 }
 
 /**
+ * Delete a history entry by uid + jobId.
+ * Verifies ownership before deleting — throws if not found or uid mismatch.
+ */
+export async function deleteHistoryEntry({
+  uid,
+  jobId,
+}: {
+  uid: string;
+  jobId: string;
+}): Promise<void> {
+  const docId = `${uid}_${jobId}`;
+  const ref = historyCol().doc(docId);
+
+  const snap = await ref.get();
+  if (!snap.exists || snap.data()?.uid !== uid) {
+    throw new Error("History entry not found.");
+  }
+
+  await ref.delete();
+}
+
+/**
  * Retrieve a user's scrape history sorted newest-first.
  * Firestore Timestamps are converted to ISO strings for JSON serialization.
  */
