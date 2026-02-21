@@ -142,6 +142,8 @@ export const brandTaxonomySchema = z
       .object({
         tagline: z.string().optional(),
         industry_guess: z.string().optional(),
+        company_name: z.string().optional(),
+        site_name: z.string().optional(),
       })
       .passthrough()
       .optional(),
