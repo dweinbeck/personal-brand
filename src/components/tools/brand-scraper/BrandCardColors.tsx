@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getColorName } from "@/lib/brand-scraper/colors";
 import type { BrandTaxonomy } from "@/lib/brand-scraper/types";
 
 type BrandCardColorsProps = {
@@ -12,6 +13,7 @@ function inferRole(index: number): string {
   if (index === 0) return "Primary";
   if (index === 1) return "Secondary";
   if (index === 2) return "Accent";
+  if (index === 3) return "Text";
   return "";
 }
 
@@ -51,6 +53,7 @@ export function BrandCardColors({ palette }: BrandCardColorsProps) {
       <div className="flex flex-wrap gap-3">
         {entries.map((entry, index) => {
           const role = entry.value.role || inferRole(index);
+          const colorName = getColorName(entry.value.hex);
           return (
             <button
               key={entry.value.hex}
@@ -63,6 +66,9 @@ export function BrandCardColors({ palette }: BrandCardColorsProps) {
                 style={{ backgroundColor: entry.value.hex }}
                 aria-hidden="true"
               />
+              <span className="text-xs text-text-primary font-medium">
+                {colorName}
+              </span>
               <span className="font-mono text-xs text-text-secondary">
                 {copiedHex === entry.value.hex ? (
                   <span className="text-emerald-600">Copied!</span>
