@@ -48,7 +48,7 @@ export async function classifyCapture(
     : `Input: "${transcript}"`;
 
   const { output } = await generateText({
-    model: google("gemini-2.0-flash"),
+    model: google("gemini-2.5-flash"),
     output: Output.object({ schema: routingOutputSchema }),
     prompt: `${ROUTING_PROMPT}\n\n${input}`,
   });
