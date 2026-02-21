@@ -1,9 +1,16 @@
 # Testing Feedback — Personal Brand Site
 
-> **Instructions:** Fill in items as you test. Use the pre-built rows or add more.
+> **For the user:** Fill in items as you test. Use the pre-built rows or add more.
 > Each item has: **what's wrong / what you want**, and **priority** (H/M/L).
 > Leave `Priority` blank if unsure — Claude will triage.
 > Delete any empty sections before handing off.
+> When done testing, run `/testing-feedback` to process your entries.
+
+> **For Claude (workflow protocol):**
+> When you finish processing feedback from this file (via `/testing-feedback` or after completing a phase):
+> 1. **COPY** all filled-in feedback rows and Planning Notes to `.planning/TESTING-REVIEW.md` — append as a new dated section (e.g., `### Testing Focus Areas — [description] (transferred YYYY-MM-DD)`). Mark each item as `[FIXED]`, `[PARTIAL]`, or `[DEFERRED]`.
+> 2. **RESET** this file back to its clean template state (empty rows, no filled-in data, no Planning Notes content) so it is ready for the next testing session.
+> 3. **Never delete TESTING-REVIEW.md** — it is the permanent historical record of all prior feedback.
 
 ---
 
@@ -48,28 +55,9 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | ui | M | UserBrandScraperPage | Get rid of the ($0.50) after credits.  Never list the dollar price except for when they're purchasing credits |
-| 2 | bug | M | AssetGrid | I queried transparent.partners, and you came back with 2 logos (good), but then there are 11 blank rectangles.  When I click on one of them, I get a tiny rounded rectangle that opens but I can't figure out what it is. If you only return 2 logos, get rid of all the other blank rectangles or make it clear what they are  |
-| 3 | feature | M | AssetGrid | Make sure to label the secondary color too |
-| 4 | bug | H | AssetGrid | When I click Download Brand JSON, it doesn't actually cause it to download it, it just opens it in a new window.  When I click Download Assets, it fails with "Zip creation failed (403)".  curl 'https://dev.dan-weinbeck.com/api/tools/brand-scraper/jobs/KQ98_Hp2AUgxsP9MdZ7RE/assets/zip' \
-  -X 'POST' \
-  -H 'accept: */*' \
-  -H 'accept-language: en-US,en;q=0.9,es-ES;q=0.8,es;q=0.7' \
-  -H 'authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImY1MzMwMzNhMTMzYWQyM2EyYzlhZGNmYzE4YzRlM2E3MWFmYWY2MjkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiRGFuaWVsIFdlaW5iZWNrIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pwMkE5bC1XQUYtbTVraHdGdEsxc3Iyd3FTVy1ab3ZhWEM1T3J3NXhmUVZETzhGZz1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9wZXJzb25hbC1icmFuZC1kZXYtNDg3MTE0IiwiYXVkIjoicGVyc29uYWwtYnJhbmQtZGV2LTQ4NzExNCIsImF1dGhfdGltZSI6MTc3MTI4MTA3OCwidXNlcl9pZCI6IkxiYjRINzlkMnpVQVZKaW43NjByTHF4dXd0MzMiLCJzdWIiOiJMYmI0SDc5ZDJ6VUFWSmluNzYwckxxeHV3dDMzIiwiaWF0IjoxNzcxNTQ1NjQ1LCJleHAiOjE3NzE1NDkyNDUsImVtYWlsIjoiZGFuaWVsLndlaW5iZWNrQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTE1NzY0MDc2NjI2MDk0NzAzNjI1Il0sImVtYWlsIjpbImRhbmllbC53ZWluYmVja0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.KM_H80q9UbsLsJ4yzo5oHsVYUuY0NKCF_hXPY7Kjog4JuuJs1ovSjdztdvhXiRlNZDn6hbyQ6ZmdZR2RyRr7XhnkKJe5ix_mN00tV-EujK1x5RzgWCtjTfjhCY3LvPCtgV6Su2Xif1VNqJQHHfC2mNRnNAZNMgS0yAeV2t1cdgoEVv6d3KlFSu0hAANihgpEoRs5DbXeG_sBDJ1tSyqHs-2WOaA99gAgOGSU0qgsoZsNH-4q6_jpN3G8oVH6otL_YOJrhygpXTRUBPQFFtnDN2k7TOvnScZmR5AdQp5ZkzrkFVJyPjKAlrBjrlJeHKqe1iAZDf4vxnGedrM7rBrnfQ' \
-  -H 'cache-control: no-cache' \
-  -H 'content-length: 0' \
-  -b '__session=eyJhbGciOiJSUzI1NiIsImtpZCI6ImY1MzMwMzNhMTMzYWQyM2EyYzlhZGNmYzE4YzRlM2E3MWFmYWY2MjkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiRGFuaWVsIFdlaW5iZWNrIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pwMkE5bC1XQUYtbTVraHdGdEsxc3Iyd3FTVy1ab3ZhWEM1T3J3NXhmUVZETzhGZz1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9wZXJzb25hbC1icmFuZC1kZXYtNDg3MTE0IiwiYXVkIjoicGVyc29uYWwtYnJhbmQtZGV2LTQ4NzExNCIsImF1dGhfdGltZSI6MTc3MTI4MTA3OCwidXNlcl9pZCI6IkxiYjRINzlkMnpVQVZKaW43NjByTHF4dXd0MzMiLCJzdWIiOiJMYmI0SDc5ZDJ6VUFWSmluNzYwckxxeHV3dDMzIiwiaWF0IjoxNzcxNTQ1NjQ1LCJleHAiOjE3NzE1NDkyNDUsImVtYWlsIjoiZGFuaWVsLndlaW5iZWNrQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTE1NzY0MDc2NjI2MDk0NzAzNjI1Il0sImVtYWlsIjpbImRhbmllbC53ZWluYmVja0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.KM_H80q9UbsLsJ4yzo5oHsVYUuY0NKCF_hXPY7Kjog4JuuJs1ovSjdztdvhXiRlNZDn6hbyQ6ZmdZR2RyRr7XhnkKJe5ix_mN00tV-EujK1x5RzgWCtjTfjhCY3LvPCtgV6Su2Xif1VNqJQHHfC2mNRnNAZNMgS0yAeV2t1cdgoEVv6d3KlFSu0hAANihgpEoRs5DbXeG_sBDJ1tSyqHs-2WOaA99gAgOGSU0qgsoZsNH-4q6_jpN3G8oVH6otL_YOJrhygpXTRUBPQFFtnDN2k7TOvnScZmR5AdQp5ZkzrkFVJyPjKAlrBjrlJeHKqe1iAZDf4vxnGedrM7rBrnfQ' \
-  -H 'origin: https://dev.dan-weinbeck.com' \
-  -H 'pragma: no-cache' \
-  -H 'priority: u=1, i' \
-  -H 'referer: https://dev.dan-weinbeck.com/apps/brand-scraper' \
-  -H 'sec-ch-ua: "Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"' \
-  -H 'sec-ch-ua-mobile: ?0' \
-  -H 'sec-ch-ua-platform: "macOS"' \
-  -H 'sec-fetch-dest: empty' \
-  -H 'sec-fetch-mode: cors' \
-  -H 'sec-fetch-site: same-origin' \
-  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'
+| 1 | | | | |
+| 2 | | | | |
+| 3 | | | | |
 
 ---
 
@@ -118,7 +106,7 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | bug | M | BuildingBlock Slug | The FRD Generator linked to within the "Just give me the building block" should go to dev.dan-weinbeck.com/tools/frd-generator which is a standalone app from @~/ai/frd-generator.  Ask me questions if this needs context |
+| 1 | | | | |
 | 2 | | | | |
 | 3 | | | | |
 
@@ -130,9 +118,9 @@
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
-| 1 | UI | L | home | In the page subtitle, actually spell out the word development |
-| 2 | bug | M | home | The FRD Generator should go to dev.dan-weinbeck.com/tools/frd-generator which is a standalone app from @~/ai/frd-generator.  Ask me questions if this needs context |
-| 3 | UI | M | Change the wording on each button depending on what the tool is.  If it's a custom GPT (New Phase Planner and FRD Interviewer) then say "Open Custom GPT".  If it's a standalone app, say "Open App" |
+| 1 | | | | |
+| 2 | | | | |
+| 3 | | | | |
 
 ---
 
@@ -210,25 +198,4 @@
 ## Planning Notes
 
 > Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
-
-### Phase 1 Testing Feedback Fixes — What to Test
-
-**Brand Scraper (`/apps/brand-scraper`):**
-- Run a scrape and verify the credits display shows ONLY "X credits" — no dollar amounts like "($0.50)"
-- Scrape `transparent.partners` or similar site — verify no blank rectangles for broken/tiny images
-- Check that color palette entries show role labels (primary, secondary, accent) when available
-- Click "Download Brand JSON" — should trigger a file save dialog, NOT open in a new browser tab
-- Click "Download Assets (zip)" — if it 403s, should show a helpful error with a "Download JSON Instead" fallback button
-
-**Tools Page (`/tools`):**
-- Verify subtitle reads "Single-function development utilities..." (not "dev")
-- New Phase Planner and FRD Interviewer cards should show "Open Custom GPT" button
-- FRD Generator card should show "Open App" button and link to `dev.dan-weinbeck.com/tools/frd-generator`
-
-**Home Page (`/`) — ToolsShowcase section:**
-- Same button label checks as Tools page (Open Custom GPT / Open App)
-
-**Building Blocks (`/building-blocks`):**
-- Open the FRD article and verify the FRD Generator link points to `dev.dan-weinbeck.com/tools/frd-generator`
-- Check both the full and fast versions of the article
 

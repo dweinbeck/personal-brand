@@ -64,3 +64,23 @@
 - **Typography:** Each font entry should render its name **in the actual Google Font** with correct weight. System fonts show in default UI font. Loading/error states shown inline.
 - **Tagline:** Tagline preview should still render in the primary Google Font (unchanged).
 - **Tasks app:** Out of scope — separate repo/service at tasks.dan-weinbeck.com.
+
+### Testing Focus Areas — Phase 1 Feedback Fixes (transferred 2026-02-20)
+
+**Brand Scraper (`/apps/brand-scraper`):**
+- [FIXED] Remove "($0.50)" after credits — only show credit values, no dollar amounts
+- [FIXED] Blank rectangles in AssetGrid — grid now filters out broken/tiny images, renders only valid assets
+- [FIXED] Label secondary colors — role labels (primary, secondary, accent) displayed for all colors
+- [FIXED] Download Brand JSON — uses fetch+blob to trigger save dialog instead of opening in new tab
+- [GRACEFUL FALLBACK] Download Assets ZIP 403 — shows user-friendly error with "Try downloading the Brand JSON instead" message (403 is server-side/infra, not UI)
+
+**Tools Page (`/tools`):**
+- [FIXED] Subtitle spells out "development" (not "dev")
+- [FIXED] FRD Generator links to `dev.dan-weinbeck.com/tools/frd-generator`
+- [FIXED] Button labels vary by type — "Open Custom GPT" for GPTs, "Open App" for standalone apps
+
+**Home Page (`/`) — ToolsShowcase section:**
+- [FIXED] Same button label logic applied via shared `getToolButtonLabel()` function
+
+**Building Blocks (`/building-blocks`):**
+- [FIXED] FRD Generator links in both `frd.mdx` and `_frd-fast.mdx` point to `dev.dan-weinbeck.com/tools/frd-generator`
