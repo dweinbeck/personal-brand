@@ -150,12 +150,13 @@ describe("POST /api/admin/builder-inbox/[id]/reroute", () => {
       status: "routed",
       destination: "github_issue",
       destinationRef: "https://github.com/owner/repo/issues/42",
+      error: null,
     });
     expect(mockAlertCaptureRouted).toHaveBeenCalled();
   });
 
-  // Test 2: Successful reroute to Tasks
-  it("routes to Tasks and returns real task ID", async () => {
+  // Test 2: Successful reroute to Tasks (no projectId — uses Inbox default)
+  it("routes to Tasks without projectId (Inbox default)", async () => {
     const { request, params } = makeRequest({ destination: "task" });
 
     const res = await POST(request, { params });
@@ -168,12 +169,50 @@ describe("POST /api/admin/builder-inbox/[id]/reroute", () => {
 
     expect(mockRouteToTask).toHaveBeenCalledWith(
       expect.objectContaining({ category: "task" }),
+      undefined,
     );
     expect(mockUpdateCaptureStatus).toHaveBeenCalledWith("capture-123", {
       status: "routed",
       destination: "task",
       destinationRef: "task-id-123",
+      error: null,
     });
+  });
+
+  // Test 2b: Reroute to Tasks with explicit projectId
+  it("passes explicit projectId to routeToTask", async () => {
+    const { request, params } = makeRequest({
+      destination: "task",
+      projectId: "proj-abc-123",
+    });
+
+    const res = await POST(request, { params });
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.status).toBe("rerouted");
+
+    expect(mockRouteToTask).toHaveBeenCalledWith(
+      expect.objectContaining({ category: "task" }),
+      "proj-abc-123",
+    );
+  });
+
+  // Test 2c: projectId is ignored for non-task destinations
+  it("ignores projectId for non-task destinations", async () => {
+    const { request, params } = makeRequest({
+      destination: "github_issue",
+      projectId: "proj-abc-123",
+    });
+
+    const res = await POST(request, { params });
+    await res.json();
+
+    expect(res.status).toBe(200);
+    expect(mockRouteToGitHub).toHaveBeenCalledWith(
+      expect.objectContaining({ category: "github_issue" }),
+    );
+    expect(mockRouteToTask).not.toHaveBeenCalled();
   });
 
   // Test 3: Reroute to Inbox (no handler)
@@ -194,6 +233,7 @@ describe("POST /api/admin/builder-inbox/[id]/reroute", () => {
       status: "routed",
       destination: "inbox",
       destinationRef: "inbox",
+      error: null,
     });
   });
 
@@ -213,7 +253,9 @@ describe("POST /api/admin/builder-inbox/[id]/reroute", () => {
 
   // Test 5: Destination handler failure (500)
   it("returns 500 and marks capture as failed when handler throws", async () => {
-    mockRouteToGitHub.mockRejectedValue(new Error("GITHUB_TOKEN not configured"));
+    mockRouteToGitHub.mockRejectedValue(
+      new Error("GITHUB_TOKEN not configured"),
+    );
     const { request, params } = makeRequest({ destination: "github_issue" });
 
     const res = await POST(request, { params });
@@ -291,5 +333,31 @@ describe("POST /api/admin/builder-inbox/[id]/reroute", () => {
     expect(res.status).toBe(400);
     expect(data.error).toBeDefined();
     expect(mockGetCapture).not.toHaveBeenCalled();
+  });
+
+  // Test 10: Successful reroute clears stale error field
+  it("clears error field on successful reroute (regression: stale errors)", async () => {
+    // Simulate a capture that previously failed (has stored error)
+    mockGetCapture.mockResolvedValue(
+      makeCaptureDoc({
+        status: "failed",
+        error: "GITHUB_TOKEN not configured",
+      }),
+    );
+    const { request, params } = makeRequest({ destination: "inbox" });
+
+    const res = await POST(request, { params });
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.status).toBe("rerouted");
+
+    // Verify the error field is explicitly set to null
+    expect(mockUpdateCaptureStatus).toHaveBeenCalledWith("capture-123", {
+      status: "routed",
+      destination: "inbox",
+      destinationRef: "inbox",
+      error: null,
+    });
   });
 });

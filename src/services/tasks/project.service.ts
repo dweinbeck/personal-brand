@@ -100,6 +100,46 @@ export async function updateProjectViewMode(
   });
 }
 
+const INBOX_PROJECT_NAME = "Inbox";
+
+/**
+ * Find an existing project named "Inbox" for the user, or create one
+ * in the user's first workspace. Used as the default landing zone for
+ * auto-routed GSD captures.
+ */
+export async function getOrCreateInboxProject(
+  userId: string,
+): Promise<{ id: string; name: string }> {
+  const existing = await prisma.project.findFirst({
+    where: {
+      name: INBOX_PROJECT_NAME,
+      workspace: { userId },
+    },
+    select: { id: true, name: true },
+  });
+
+  if (existing) return existing;
+
+  // No Inbox project yet — create one in the first workspace
+  const firstWorkspace = await prisma.workspace.findFirst({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true },
+  });
+
+  if (!firstWorkspace) {
+    throw new Error("Cannot create Inbox project: user has no workspaces.");
+  }
+
+  return prisma.project.create({
+    data: {
+      workspaceId: firstWorkspace.id,
+      name: INBOX_PROJECT_NAME,
+    },
+    select: { id: true, name: true },
+  });
+}
+
 export async function deleteProject(userId: string, id: string) {
   const existing = await prisma.project.findUnique({
     where: { id },

@@ -221,7 +221,6 @@ const serverEnvBaseSchema = z.object({
     .optional(),
 
   GSD_TASKS_USER_ID: z.string().min(1).optional(),
-  GSD_TASKS_PROJECT_ID: z.string().min(1).optional(),
 });
 
 // Cross-field validation: FIREBASE_PROJECT_ID must match NEXT_PUBLIC_FIREBASE_PROJECT_ID
@@ -335,7 +334,6 @@ export function serverEnv(): ServerEnv {
       DISCORD_WEBHOOK_URL: optionalEnv(process.env.DISCORD_WEBHOOK_URL),
       GSD_GITHUB_REPO: optionalEnv(process.env.GSD_GITHUB_REPO),
       GSD_TASKS_USER_ID: optionalEnv(process.env.GSD_TASKS_USER_ID),
-      GSD_TASKS_PROJECT_ID: optionalEnv(process.env.GSD_TASKS_PROJECT_ID),
     });
   }
   return _serverEnv;
@@ -375,7 +373,6 @@ export function validateServerEnv(): ValidationResult {
     DISCORD_WEBHOOK_URL: optionalEnv(process.env.DISCORD_WEBHOOK_URL),
     GSD_GITHUB_REPO: optionalEnv(process.env.GSD_GITHUB_REPO),
     GSD_TASKS_USER_ID: optionalEnv(process.env.GSD_TASKS_USER_ID),
-    GSD_TASKS_PROJECT_ID: optionalEnv(process.env.GSD_TASKS_PROJECT_ID),
   });
 
   if (!parsed.success) {
