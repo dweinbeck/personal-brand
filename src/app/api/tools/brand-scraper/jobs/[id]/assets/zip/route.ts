@@ -1,6 +1,6 @@
 import { unauthorizedResponse, verifyUser } from "@/lib/auth/user";
-
-const BRAND_SCRAPER_API_URL = process.env.BRAND_SCRAPER_API_URL;
+import { getIdentityToken } from "@/lib/brand-scraper/client";
+import { serverEnv } from "@/lib/env";
 
 /**
  * POST /api/tools/brand-scraper/jobs/{id}/assets/zip
@@ -22,6 +22,8 @@ export async function POST(
 
   const { id } = await params;
 
+  const BRAND_SCRAPER_API_URL = serverEnv().BRAND_SCRAPER_API_URL;
+
   if (!BRAND_SCRAPER_API_URL) {
     return Response.json(
       { error: "Brand scraper service not configured." },
@@ -31,10 +33,17 @@ export async function POST(
 
   try {
     // Step 1: Request zip creation from the scraper service
+    const authHeaders: Record<string, string> = {};
+    const idToken = await getIdentityToken(BRAND_SCRAPER_API_URL);
+    if (idToken) {
+      authHeaders.Authorization = `Bearer ${idToken}`;
+    }
+
     const createRes = await fetch(
       `${BRAND_SCRAPER_API_URL}/jobs/${id}/assets/zip`,
       {
         method: "POST",
+        headers: authHeaders,
         signal: AbortSignal.timeout(60_000),
       },
     );

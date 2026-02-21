@@ -10,7 +10,9 @@ import { serverEnv } from "@/lib/env";
  * Fetches a GCP identity token for server-to-server authentication.
  * Uses the metadata server on Cloud Run, returns null locally.
  */
-async function getIdentityToken(audience: string): Promise<string | null> {
+export async function getIdentityToken(
+  audience: string,
+): Promise<string | null> {
   const metadataUrl = `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${encodeURIComponent(audience)}`;
   try {
     const res = await fetch(metadataUrl, {
