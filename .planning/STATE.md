@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 Phase: 2 — Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
 Plan: All 3 plans complete (P01-P03)
 Status: Phase 2 complete, pending manual testing
-Last activity: 2026-02-21 - Completed quick task 12: Show transfer source/destination in envelope transactions
+Last activity: 2026-02-21 - Completed quick task 13: Add new envelope creation outside edit mode and fix allocation input
 
 ## Performance Metrics
 
@@ -64,11 +64,12 @@ None.
 | Phase 02 P02 | 5min | 2 tasks | 3 files |
 | Phase 02 P03 | 9min | 2 tasks | 5 files |
 | 12 | Show transfer source/destination in envelope transactions | 2026-02-21 | b2167aa | [12-show-transfer-source-destination-in-enve](./quick/12-show-transfer-source-destination-in-enve/) |
+| 13 | Add envelope creation outside edit mode, fix allocation input cursor jumping | 2026-02-21 | b13784d | [13-add-new-envelope-creation-and-fix-re-all](./quick/13-add-new-envelope-creation-and-fix-re-all/) |
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed quick task 12 (Show transfer source/destination in transactions)
+Stopped at: Completed quick task 13 (Add envelope creation outside edit mode, fix allocation input)
 Resume file: None
 
 ## Next Step
