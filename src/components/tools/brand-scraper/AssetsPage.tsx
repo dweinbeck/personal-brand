@@ -69,7 +69,8 @@ function AssetsPageContent({ jobId }: { jobId: string }) {
     fetchJob();
   }, [jobId, token]);
 
-  // Zip download handler — gets fresh token to handle expiry
+  // Zip download handler — gets fresh token to handle expiry.
+  // The API now streams the zip content directly (proxied from GCS).
   const handleZipDownload = useCallback(async () => {
     setDownloading(true);
     setDownloadError(null);
@@ -87,20 +88,27 @@ function AssetsPageContent({ jobId }: { jobId: string }) {
       });
 
       if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        setDownloadError(body?.error ?? `Download failed (${res.status})`);
+        const contentType = res.headers.get("Content-Type") ?? "";
+        if (contentType.includes("application/json")) {
+          const body = (await res.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          setDownloadError(body?.error ?? `Download failed (${res.status})`);
+        } else {
+          setDownloadError(`Download failed (${res.status})`);
+        }
         return;
       }
 
-      const data = (await res.json()) as { zip_url: string };
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = data.zip_url;
-      a.download = "brand-assets.zip";
+      a.href = url;
+      a.download = `brand-assets-${jobId}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch {
       setDownloadError("An unexpected error occurred.");
     } finally {

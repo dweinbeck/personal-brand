@@ -37,6 +37,7 @@ Full decision log in PROJECT.md Key Decisions table. Cleared after v3.0 archive.
 ### Roadmap Evolution
 
 - v3.0 GSD Builder OS shipped 2026-02-20 (6 phases, 14 plans)
+- Phase 1 added: Brand Scraper bug fixes and UI improvements
 
 ### Pending Todos
 

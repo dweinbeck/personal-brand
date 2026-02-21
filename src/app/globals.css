@@ -52,6 +52,13 @@ body {
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
 
+/* Standard white input backgrounds */
+input,
+textarea,
+select {
+  background-color: #ffffff;
+}
+
 /* Glass utility */
 .glass {
   background: rgba(255, 255, 255, 0.8);

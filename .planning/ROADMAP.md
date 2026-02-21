@@ -167,5 +167,14 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 
 </details>
 
+### Phase 1: Brand Scraper bug fixes and UI improvements
+
+**Goal:** [To be planned]
+**Depends on:** Phase 0
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 1 to break down)
+
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*

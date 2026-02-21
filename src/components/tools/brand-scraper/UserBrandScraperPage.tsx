@@ -14,7 +14,7 @@ import {
   type ScrapeJobSubmission,
 } from "@/lib/brand-scraper/types";
 import { BrandCard } from "./BrandCard";
-import { ScrapeHistory } from "./ScrapeHistory";
+import { BrandProfileCards } from "./BrandProfileCards";
 import { ScrapeProgressPanel } from "./ScrapeProgressPanel";
 
 const API_BASE = "/api/tools/brand-scraper";
@@ -205,22 +205,6 @@ function BrandScraperContent() {
         Extract colors, fonts, logos, and assets from any website.
       </p>
 
-      {/* Balance + cost info */}
-      {!billingLoading && billing && (
-        <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
-          <span className="text-text-secondary">
-            Balance:{" "}
-            <strong className="text-primary">
-              {billing.balanceCredits.toLocaleString()} credits
-            </strong>
-          </span>
-          <span className="text-text-tertiary">|</span>
-          <span className="text-text-secondary">
-            Cost per profile: <strong>{creditCost} credits</strong>
-          </span>
-        </div>
-      )}
-
       {/* Insufficient credits warning */}
       {!billingLoading && billing && !hasEnough && !jobId && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-6 text-sm text-amber-800">
@@ -288,7 +272,7 @@ function BrandScraperContent() {
                   : `Create Profile (${creditCost} credits)`}
             </Button>
           </form>
-          <ScrapeHistory onViewResults={handleViewResults} />
+          <BrandProfileCards onViewResults={handleViewResults} />
         </>
       )}
 

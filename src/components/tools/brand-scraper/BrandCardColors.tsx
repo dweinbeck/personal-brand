@@ -7,6 +7,14 @@ type BrandCardColorsProps = {
   palette?: BrandTaxonomy["color"];
 };
 
+/** Infer a role label from palette position when the scraper doesn't provide one. */
+function inferRole(index: number): string {
+  if (index === 0) return "Primary";
+  if (index === 1) return "Secondary";
+  if (index === 2) return "Accent";
+  return "";
+}
+
 export function BrandCardColors({ palette }: BrandCardColorsProps) {
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
 
@@ -41,32 +49,35 @@ export function BrandCardColors({ palette }: BrandCardColorsProps) {
         Color Palette
       </h3>
       <div className="flex flex-wrap gap-3">
-        {entries.map((entry) => (
-          <button
-            key={entry.value.hex}
-            type="button"
-            onClick={() => handleCopy(entry.value.hex)}
-            className="flex flex-col items-center gap-1.5 group"
-          >
-            <span
-              className="w-12 h-12 rounded-lg border border-border shadow-sm transition-transform group-hover:scale-110"
-              style={{ backgroundColor: entry.value.hex }}
-              aria-hidden="true"
-            />
-            <span className="font-mono text-xs text-text-secondary">
-              {copiedHex === entry.value.hex ? (
-                <span className="text-emerald-600">Copied!</span>
-              ) : (
-                entry.value.hex
-              )}
-            </span>
-            {entry.value.role && (
-              <span className="text-xs text-text-secondary capitalize">
-                {entry.value.role}
+        {entries.map((entry, index) => {
+          const role = entry.value.role || inferRole(index);
+          return (
+            <button
+              key={entry.value.hex}
+              type="button"
+              onClick={() => handleCopy(entry.value.hex)}
+              className="flex flex-col items-center gap-1.5 group"
+            >
+              <span
+                className="w-12 h-12 rounded-lg border border-border shadow-sm transition-transform group-hover:scale-110"
+                style={{ backgroundColor: entry.value.hex }}
+                aria-hidden="true"
+              />
+              <span className="font-mono text-xs text-text-secondary">
+                {copiedHex === entry.value.hex ? (
+                  <span className="text-emerald-600">Copied!</span>
+                ) : (
+                  entry.value.hex
+                )}
               </span>
-            )}
-          </button>
-        ))}
+              {role && (
+                <span className="text-xs text-text-secondary capitalize">
+                  {role}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -9,6 +9,19 @@ type BrandCardDownloadsProps = {
   getIdToken: () => Promise<string>;
 };
 
+/** Trigger a browser file download from a fetch Response. */
+async function downloadFromResponse(res: Response, fallbackName: string) {
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fallbackName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export function BrandCardDownloads({
   brandJsonUrl,
   jobId,
@@ -18,31 +31,32 @@ export function BrandCardDownloads({
   const [jsonDownloading, setJsonDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /** Download brand JSON via fetch+blob to force a file save dialog (cross-origin URLs ignore the download attribute). */
+  /** Download brand JSON via our server-side proxy to avoid CORS issues. */
   const handleJsonDownload = useCallback(async () => {
-    if (!brandJsonUrl) return;
     setJsonDownloading(true);
     setError(null);
     try {
-      const res = await fetch(brandJsonUrl);
-      if (!res.ok) throw new Error("Download failed");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "brand.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const freshToken = await getIdToken();
+      const res = await fetch(
+        `/api/tools/brand-scraper/jobs/${jobId}/download/json`,
+        { headers: { Authorization: `Bearer ${freshToken}` } },
+      );
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setError(body?.error ?? `Download failed (${res.status})`);
+        return;
+      }
+      await downloadFromResponse(res, `brand-${jobId}.json`);
     } catch {
-      // Fallback: open in new tab if fetch fails (e.g. CORS)
-      window.open(brandJsonUrl, "_blank");
+      setError("An unexpected error occurred downloading JSON.");
     } finally {
       setJsonDownloading(false);
     }
-  }, [brandJsonUrl]);
+  }, [jobId, getIdToken]);
 
+  /** Download assets ZIP via our server-side proxy. */
   const handleZipDownload = useCallback(async () => {
     setDownloading(true);
     setError(null);
@@ -58,27 +72,27 @@ export function BrandCardDownloads({
       );
 
       if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        const status = res.status;
-        if (status === 403) {
-          setError(
-            "Asset download is temporarily unavailable. Try downloading the Brand JSON instead.",
-          );
+        // Check if the response is JSON (error) or binary (success sent as non-200)
+        const contentType = res.headers.get("Content-Type") ?? "";
+        if (contentType.includes("application/json")) {
+          const body = (await res.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          const status = res.status;
+          if (status === 403) {
+            setError(
+              "Asset download is temporarily unavailable. Try downloading the Brand JSON instead.",
+            );
+          } else {
+            setError(body?.error ?? `Download failed (${status})`);
+          }
         } else {
-          setError(body?.error ?? `Download failed (${status})`);
+          setError(`Download failed (${res.status})`);
         }
         return;
       }
 
-      const data = (await res.json()) as { zip_url: string };
-      const a = document.createElement("a");
-      a.href = data.zip_url;
-      a.download = "brand-assets.zip";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      await downloadFromResponse(res, `brand-assets-${jobId}.zip`);
     } catch {
       setError("An unexpected error occurred.");
     } finally {

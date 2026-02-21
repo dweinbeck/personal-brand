@@ -78,7 +78,9 @@ export function JobStatusIndicator({
           {label}
         </span>
         {isPolling && (
-          <span className="text-xs text-text-tertiary">Polling...</span>
+          <span className="text-xs text-text-tertiary">
+            Checking for updates...
+          </span>
         )}
       </div>
       {isTimedOut && (
