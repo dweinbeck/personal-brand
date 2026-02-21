@@ -52,6 +52,7 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 10 | Tasks app: data import, two-line card titles, remove import button, 2-day auto-archive | 2026-02-19 | 5430a9f | [10-tasks-app-retry-data-import-two-line-car](./quick/10-tasks-app-retry-data-import-two-line-car/) |
+| 11 | Brand scraper: Remove Brands button, card delete with X overlay, transparent logo preference | 2026-02-20 | 34a7a0f | [11-add-remove-brands-button-with-card-delet](./quick/11-add-remove-brands-button-with-card-delet/) |
 | Phase 02 P01 | 3min | 2 tasks | 6 files |
 | Phase 02 P02 | 2min | 1 task | 2 files |
 | Phase 02 P03 | 4min | 2 tasks | 3 files |
@@ -59,7 +60,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: v3.0 milestone archived
+Stopped at: Completed quick-11 (Remove Brands button)
 Resume file: None
 
 ## Next Step
