@@ -36,6 +36,16 @@ This project uses **trunk-based development**:
 - Push to `master` after each completed phase
 - Feature branches only for experimental/risky changes
 
+### Deployment Order (MANDATORY)
+
+**NEVER push directly to `master` for deployment.** Always deploy to staging first:
+
+1. **Push `dev` to `origin/dev`** → triggers Cloud Build on `personal-brand-dev-487114` (staging)
+2. **Wait for staging build to succeed** and user to verify at `dev.dan-weinbeck.com`
+3. **Only after user approves staging** → merge `dev` into `master` and push to `origin/master` (production)
+
+Pushing to `master` without first deploying and testing on `dev` is **forbidden**. No exceptions.
+
 ---
 
 ## Documentation Triggers (Project-Specific)
