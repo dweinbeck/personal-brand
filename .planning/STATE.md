@@ -63,11 +63,12 @@ None.
 | Phase 02 P03 | 4min | 2 tasks | 3 files |
 | Phase 02 P02 | 5min | 2 tasks | 3 files |
 | Phase 02 P03 | 9min | 2 tasks | 5 files |
+| 12 | Show transfer source/destination in envelope transactions | 2026-02-21 | b2167aa | [12-show-transfer-source-destination-in-enve](./quick/12-show-transfer-source-destination-in-enve/) |
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 02-03-PLAN.md (Company name display)
+Stopped at: Completed quick task 12 (Show transfer source/destination in transactions)
 Resume file: None
 
 ## Next Step
