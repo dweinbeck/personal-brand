@@ -176,5 +176,17 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 Plans:
 - [ ] TBD (run /gsd:plan-phase 1 to break down)
 
+### Phase 2: Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
+
+**Goal:** Fix ZIP asset downloads (auth), add human-readable color names, show company names instead of hostnames. Color accuracy deferred (external scraper issue).
+**Depends on:** Phase 1
+**Requirements:** [ASSET-DOWNLOAD, COLOR-LABELS, COLOR-ACCURACY, COMPANY-NAME]
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Fix ZIP download auth (add identity token to proxy route)
+- [ ] 02-02-PLAN.md — Add color names and expand role labels (color-namer library)
+- [ ] 02-03-PLAN.md — Company name display with schema extension and fallback chain
+
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
