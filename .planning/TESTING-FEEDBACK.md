@@ -51,7 +51,7 @@
 ## 3. Brand Scraper (`/apps/brand-scraper`)
 
 > Pages: listing, `/[jobId]` detail, `/[jobId]/assets`
-> Components: UserBrandScraperPage, BrandCard, BrandCardHeader, BrandCardColors, BrandCardLogos, BrandCardDescription, BrandCardDownloads, ScrapeProgressPanel, ScrapeHistory, AssetGrid, AssetsPage
+> Components: UserBrandScraperPage, BrandCard, BrandCardHeader, BrandCardColors, BrandCardLogos, BrandCardDescription, BrandCardDownloads, ScrapeProgressPanel, BrandProfileCards, BrandProfileCard, AssetGrid, AssetsPage
 
 | # | Type | Priority | Where | Description |
 |---|------|----------|-------|-------------|
@@ -198,4 +198,21 @@
 ## Planning Notes
 
 > Use this section for bigger-picture observations, architectural concerns, or ideas that don't fit a single bug/UI row.
+
+### Phase 1 Testing Focus — Brand Scraper Bug Fixes & UI Improvements
+
+**Test after deploying to dev.** Changes need deployment since they include new API routes.
+
+1. **Downloads** (`/apps/brand-scraper` → scrape a site → results page):
+   - Click "Download Brand JSON" → should trigger a real file download (not open in new tab)
+   - Click "Download Assets" → should trigger ZIP file download
+   - Also test from the `/[jobId]/assets` page — same ZIP download button
+2. **Color labels** (results page → Color Palette section):
+   - First color should show "Primary", second "Secondary", third "Accent"
+   - If the scraper already provides role labels, those should take precedence
+3. **Credits removed**: Verify the "Balance: X credits" and "Cost per profile: 50 credits" line is gone from the brand scraper page
+4. **Status text**: During a scrape, the status area should say "Checking for updates..." instead of "Polling..."
+5. **White inputs**: All input boxes across the site should have white backgrounds (check brand scraper URL input, contact form, AI assistant input, etc.)
+6. **Brand profile cards**: After the URL input, there should be a gold divider line, then "Your Brand Profiles" heading, then a 3-wide card grid showing each past brand scrape with its logo, color swatches, font names, and date
+7. **Item 4 (3M scraper accuracy)**: This is an external scraper service issue — not fixable from this codebase. If you want this investigated, file it against the brand-scraper service repo.
 

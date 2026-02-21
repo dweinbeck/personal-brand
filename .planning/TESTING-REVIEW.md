@@ -84,3 +84,16 @@
 
 **Building Blocks (`/building-blocks`):**
 - [FIXED] FRD Generator links in both `frd.mdx` and `_frd-fast.mdx` point to `dev.dan-weinbeck.com/tools/frd-generator`
+
+---
+
+### Testing Focus Areas — Brand Scraper Bug Fixes & UI Improvements (transferred 2026-02-20)
+
+**Brand Scraper (`/apps/brand-scraper`):**
+- [FIXED] #1 (ui/L): ScrapeProgressPanel status text — changed "Polling..." to "Checking for updates..."
+- [FIXED] #2 (bug/H): Download buttons — created server-side proxy routes for JSON and ZIP downloads to bypass CORS on GCS signed URLs
+- [FIXED] #3 (bug/H): Color role labels — infer Primary/Secondary/Accent from palette position when scraper doesn't provide roles
+- [DEFERRED] #4 (bug/H): 3M.com scraper accuracy — external scraper service issue, not fixable from this codebase
+- [FIXED] #5 (ui/L): White input box backgrounds — added global CSS rule for all input/textarea/select elements
+- [FIXED] #6 (ui/M): Brand profile cards — replaced history list with 3-wide card grid showing logo, colors, fonts, date
+- [FIXED] #7 (ui/H): Credits display removed — balance/cost info no longer shown on brand scraper page
