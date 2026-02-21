@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { formatCents } from "@/lib/envelopes/format";
 
 type DonorAllocationRowProps = {
@@ -18,18 +19,34 @@ export function DonorAllocationRow({
   error,
 }: DonorAllocationRowProps) {
   const maxDollars = remainingCents / 100;
-  const displayValue =
-    allocationCents > 0 ? (allocationCents / 100).toFixed(2) : "";
+
+  const [localValue, setLocalValue] = useState<string>(
+    allocationCents > 0 ? (allocationCents / 100).toFixed(2) : "",
+  );
+  const lastEmittedCents = useRef(allocationCents);
+
+  useEffect(() => {
+    if (allocationCents !== lastEmittedCents.current) {
+      setLocalValue(
+        allocationCents > 0 ? (allocationCents / 100).toFixed(2) : "",
+      );
+      lastEmittedCents.current = allocationCents;
+    }
+  }, [allocationCents]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value;
+    setLocalValue(raw);
     if (raw === "") {
+      lastEmittedCents.current = 0;
       onAllocationChange(0);
       return;
     }
     const parsed = Number.parseFloat(raw);
     if (Number.isNaN(parsed) || parsed < 0) return;
-    onAllocationChange(Math.round(parsed * 100));
+    const cents = Math.round(parsed * 100);
+    lastEmittedCents.current = cents;
+    onAllocationChange(cents);
   }
 
   return (
@@ -48,7 +65,7 @@ export function DonorAllocationRow({
           step="0.01"
           min="0"
           max={maxDollars}
-          value={displayValue}
+          value={localValue}
           onChange={handleChange}
           placeholder="0.00"
           aria-label={`Allocate from ${envelopeTitle}`}
