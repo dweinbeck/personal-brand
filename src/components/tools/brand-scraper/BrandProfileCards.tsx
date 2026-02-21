@@ -35,13 +35,45 @@ export function BrandProfileCards({ onViewResults }: BrandProfileCardsProps) {
     [token],
   );
 
-  const { data } = useSWR<{ entries: ScrapeHistoryEntry[] } | null>(
+  const [removingMode, setRemovingMode] = useState(false);
+
+  const { data, mutate } = useSWR<{ entries: ScrapeHistoryEntry[] } | null>(
     token ? "/api/tools/brand-scraper/history" : null,
     fetcher,
     { revalidateOnFocus: false },
   );
 
   const entries = data?.entries ?? [];
+
+  // Auto-exit removing mode when list becomes empty
+  useEffect(() => {
+    if (removingMode && entries.length === 0) {
+      setRemovingMode(false);
+    }
+  }, [removingMode, entries.length]);
+
+  const handleDelete = useCallback(
+    async (jobId: string) => {
+      try {
+        const token = await getIdToken();
+        const res = await fetch("/api/tools/brand-scraper/history", {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ jobId }),
+        });
+        if (res.ok) {
+          await mutate();
+        }
+      } catch {
+        // Silently fail — user can retry
+      }
+    },
+    [getIdToken, mutate],
+  );
+
   if (entries.length === 0) return null;
 
   return (
@@ -49,10 +81,23 @@ export function BrandProfileCards({ onViewResults }: BrandProfileCardsProps) {
       {/* Gold divider matching home page style */}
       <hr className="border-t border-gold/40" />
 
-      {/* Section title */}
-      <h2 className="text-lg font-semibold text-text-primary text-center mt-6 mb-6 font-display">
-        Your Brand Profiles
-      </h2>
+      {/* Section title with remove toggle */}
+      <div className="flex items-center justify-between mt-6 mb-6">
+        <h2 className="text-lg font-semibold text-text-primary font-display">
+          Your Brand Profiles
+        </h2>
+        <button
+          type="button"
+          onClick={() => setRemovingMode((prev) => !prev)}
+          className={`text-sm transition-colors ${
+            removingMode
+              ? "text-gold hover:text-gold/80"
+              : "text-text-tertiary hover:text-red-500"
+          }`}
+        >
+          {removingMode ? "Done" : "Remove Brands"}
+        </button>
+      </div>
 
       {/* 3-wide card grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -65,6 +110,8 @@ export function BrandProfileCards({ onViewResults }: BrandProfileCardsProps) {
             createdAt={entry.createdAt}
             getIdToken={getIdToken}
             onViewResults={onViewResults}
+            removingMode={removingMode}
+            onDelete={handleDelete}
           />
         ))}
       </div>

@@ -13,6 +13,8 @@ type BrandProfileCardProps = {
   createdAt: string;
   getIdToken: () => Promise<string>;
   onViewResults: (jobId: string) => void;
+  removingMode?: boolean;
+  onDelete?: (jobId: string) => void;
 };
 
 type JobData = {
@@ -51,6 +53,8 @@ export function BrandProfileCard({
   createdAt,
   getIdToken,
   onViewResults,
+  removingMode,
+  onDelete,
 }: BrandProfileCardProps) {
   const [jobData, setJobData] = useState<JobData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,17 +104,47 @@ export function BrandProfileCard({
   const result = jobData?.result;
   const colors = result?.color?.palette?.slice(0, 5) ?? [];
   const fonts = result?.typography?.font_families?.slice(0, 2) ?? [];
-  const favicon = result?.assets?.favicons?.[0]?.value?.url;
-  const logo = result?.assets?.logos?.[0]?.value?.url;
-  const displayImage = logo || favicon;
+  const logos = result?.assets?.logos ?? [];
+  const favicons = result?.assets?.favicons ?? [];
+  const isTransparentFormat = (entry: {
+    value: { format?: string; url: string };
+  }) => {
+    const fmt = entry.value.format?.toLowerCase() ?? "";
+    const url = entry.value.url.toLowerCase();
+    return (
+      fmt === "png" ||
+      fmt === "svg" ||
+      url.endsWith(".png") ||
+      url.endsWith(".svg")
+    );
+  };
+  const transparentLogo = logos.find(isTransparentFormat);
+  const displayImage =
+    transparentLogo?.value?.url ??
+    logos[0]?.value?.url ??
+    favicons[0]?.value?.url;
   const isFailed = status === "failed";
 
   return (
     <Card
       variant="clickable"
-      className="p-4 cursor-pointer group"
-      onClick={() => onViewResults(jobId)}
+      className={`p-4 cursor-pointer group relative ${removingMode ? "ring-1 ring-red-300" : ""}`}
+      onClick={() => !removingMode && onViewResults(jobId)}
     >
+      {/* Delete overlay button */}
+      {removingMode && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete?.(jobId);
+          }}
+          className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+        >
+          <span className="text-sm font-bold leading-none">&times;</span>
+        </button>
+      )}
+
       {/* Logo / Favicon */}
       <div className="flex items-start justify-between mb-3">
         <div className="h-10 w-10 rounded-lg border border-border bg-gray-50 flex items-center justify-center overflow-hidden shrink-0">
