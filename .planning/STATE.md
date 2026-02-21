@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 1 — Brand Scraper bug fixes and UI improvements
-Plan: All 6 plans complete (P01-P06)
-Status: Phase 1 executed, pending manual testing
-Last activity: 2026-02-21 - Completed quick task 11: Add Remove Brands button with card deletion X overlay and prefer transparent-background logos for profile cards
+Phase: 2 — Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
+Plan: 2 of 3 complete (P01-P02)
+Status: Executing phase 2
+Last activity: 2026-02-21 - Completed 02-02: Color labels and names
 
 ## Performance Metrics
 
@@ -33,11 +33,14 @@ Last activity: 2026-02-21 - Completed quick task 11: Add Remove Brands button wi
 ### Decisions
 
 Full decision log in PROJECT.md Key Decisions table. Cleared after v3.0 archive.
+- [Phase 02 P01]: Used serverEnv() instead of top-level process.env for ZIP route consistency
+- [Phase 02]: Used color-namer basic list (147 names) for recognizable hex-to-name mapping
 
 ### Roadmap Evolution
 
 - v3.0 GSD Builder OS shipped 2026-02-20 (6 phases, 14 plans)
 - Phase 1 added: Brand Scraper bug fixes and UI improvements
+- Phase 2 added: Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
 
 ### Pending Todos
 
@@ -56,11 +59,12 @@ None.
 | Phase 02 P01 | 3min | 2 tasks | 6 files |
 | Phase 02 P02 | 2min | 1 task | 2 files |
 | Phase 02 P03 | 4min | 2 tasks | 3 files |
+| Phase 02 P02 | 5min | 2 tasks | 3 files |
 
 ## Session Continuity
 
-Last session: 2026-02-20
-Stopped at: Completed quick-11 (Remove Brands button)
+Last session: 2026-02-21
+Stopped at: Completed 02-02-PLAN.md (Color labels and names)
 Resume file: None
 
 ## Next Step
