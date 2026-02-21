@@ -335,6 +335,7 @@ export function EnvelopesHomePage() {
                 onClick={() => {
                   setIsEditing(!isEditing);
                   setDeletingId(null);
+                  setIsCreating(false);
                   setIsAddingTransaction(false);
                   setIsAddingIncome(false);
                 }}
@@ -480,6 +481,39 @@ export function EnvelopesHomePage() {
             <CreateEnvelopeCard onClick={() => setIsCreating(true)} />
           ))}
       </EnvelopeCardGrid>
+
+      {/* 7b. Create envelope (non-edit mode) */}
+      {!isReadOnly && !isEditing && (
+        <div className="mt-4">
+          {isProfileMissing ? (
+            <Card variant="default" className="min-h-[180px]">
+              <div className="flex flex-col items-center justify-center h-full py-6 text-center">
+                <p className="text-sm text-text-secondary mb-3">
+                  Complete your budget setup to start creating envelopes
+                </p>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setWizardOpen(true)}
+                >
+                  Set Up Budget
+                </Button>
+              </div>
+            </Card>
+          ) : isCreating ? (
+            <Card variant="default" className="min-h-[180px]">
+              <EnvelopeForm
+                mode="create"
+                onSubmit={handleCreate}
+                onCancel={() => setIsCreating(false)}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          ) : (
+            <CreateEnvelopeCard onClick={() => setIsCreating(true)} />
+          )}
+        </div>
+      )}
 
       {/* 8. Income banner */}
       {incomeEntries.length > 0 && (
