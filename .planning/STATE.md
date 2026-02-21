@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 Phase: 1 — Brand Scraper bug fixes and UI improvements
 Plan: All 6 plans complete (P01-P06)
 Status: Phase 1 executed, pending manual testing
-Last activity: 2026-02-20 — Phase 1 executed (6 plans, 14 files changed)
+Last activity: 2026-02-21 - Completed quick task 11: Add Remove Brands button with card deletion X overlay and prefer transparent-background logos for profile cards
 
 ## Performance Metrics
 
