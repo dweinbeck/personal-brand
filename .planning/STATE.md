@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 2 — Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
-Plan: 2 of 3 complete (P01-P02)
-Status: Executing phase 2
-Last activity: 2026-02-21 - Completed 02-02: Color labels and names
+Plan: All 3 plans complete (P01-P03)
+Status: Phase 2 complete, pending manual testing
+Last activity: 2026-02-21 - Completed 02-03: Company name display
 
 ## Performance Metrics
 
@@ -35,6 +35,8 @@ Last activity: 2026-02-21 - Completed 02-02: Color labels and names
 Full decision log in PROJECT.md Key Decisions table. Cleared after v3.0 archive.
 - [Phase 02 P01]: Used serverEnv() instead of top-level process.env for ZIP route consistency
 - [Phase 02]: Used color-namer basic list (147 names) for recognizable hex-to-name mapping
+- [Phase 02 P03]: Display name fallback chain: company_name > site_name > formatted hostname
+- [Phase 02 P03]: Short hostname parts (<=3 chars) not title-cased to avoid incorrect capitalization
 
 ### Roadmap Evolution
 
@@ -60,11 +62,12 @@ None.
 | Phase 02 P02 | 2min | 1 task | 2 files |
 | Phase 02 P03 | 4min | 2 tasks | 3 files |
 | Phase 02 P02 | 5min | 2 tasks | 3 files |
+| Phase 02 P03 | 9min | 2 tasks | 5 files |
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 02-02-PLAN.md (Color labels and names)
+Stopped at: Completed 02-03-PLAN.md (Company name display)
 Resume file: None
 
 ## Next Step

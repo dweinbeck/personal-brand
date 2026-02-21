@@ -184,9 +184,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Fix ZIP download auth (add identity token to proxy route)
-- [ ] 02-02-PLAN.md — Add color names and expand role labels (color-namer library)
-- [ ] 02-03-PLAN.md — Company name display with schema extension and fallback chain
+- [x] 02-01-PLAN.md — Fix ZIP download auth (add identity token to proxy route)
+- [x] 02-02-PLAN.md — Add color names and expand role labels (color-namer library)
+- [x] 02-03-PLAN.md — Company name display with schema extension and fallback chain
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
