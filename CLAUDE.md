@@ -29,22 +29,27 @@ npm run dev                                  # Local dev server (port 3000)
 
 ---
 
-## Git Workflow Override
+## Git Workflow
 
-This project uses **trunk-based development**:
-- Commit directly to `master` for most changes
-- Push to `master` after each completed phase
+This project uses **trunk-based development with a staging gate**:
+- No long-lived feature branches — work happens on `master` and `dev`
 - Feature branches only for experimental/risky changes
+- All deployments flow through `dev` (staging) before reaching `master` (production)
+
+### Branch Model
+
+| Branch | Purpose | Deploys To |
+|--------|---------|------------|
+| `master` | Production code | `dan-weinbeck.com` via Cloud Build (`personal-brand-486314`) |
+| `dev` | Staging/verification | `dev.dan-weinbeck.com` via Cloud Build (`personal-brand-dev-487114`) |
 
 ### Deployment Order (MANDATORY)
 
-**NEVER push directly to `master` for deployment.** Always deploy to staging first:
-
-1. **Push `dev` to `origin/dev`** → triggers Cloud Build on `personal-brand-dev-487114` (staging)
+1. **Commit work to `dev`** and push to `origin/dev` → triggers staging build
 2. **Wait for staging build to succeed** and user to verify at `dev.dan-weinbeck.com`
-3. **Only after user approves staging** → merge `dev` into `master` and push to `origin/master` (production)
+3. **Only after user approves staging** → merge `dev` into `master` and push to `origin/master`
 
-Pushing to `master` without first deploying and testing on `dev` is **forbidden**. No exceptions.
+**Pushing to `master` without first deploying and testing on `dev` is forbidden. No exceptions.**
 
 ---
 
