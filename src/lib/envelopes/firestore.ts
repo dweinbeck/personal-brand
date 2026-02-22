@@ -850,6 +850,11 @@ export async function createTransfer(
 
 /**
  * Lists transfers for a user within a given week range, ordered by createdAt descending.
+ *
+ * NOTE: orderBy is done in JS rather than Firestore to avoid requiring a 3-field
+ * composite index (userId + weekStart range + createdAt). The existing 2-field
+ * index (userId ASC, weekStart ASC) handles the where clauses; JS sorts the
+ * (typically small) result set by createdAt descending.
  */
 export async function listTransfersForWeek(
   userId: string,
@@ -860,13 +865,21 @@ export async function listTransfersForWeek(
     .where("userId", "==", userId)
     .where("weekStart", ">=", weekStart)
     .where("weekStart", "<=", weekEnd)
-    .orderBy("createdAt", "desc")
     .get();
 
-  return snap.docs.map((doc) => ({
+  const transfers = snap.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   })) as EnvelopeTransfer[];
+
+  // Sort by createdAt descending (newest first) in JS
+  transfers.sort((a, b) => {
+    const aTime = a.createdAt?.toDate?.() ?? new Date(0);
+    const bTime = b.createdAt?.toDate?.() ?? new Date(0);
+    return bTime.getTime() - aTime.getTime();
+  });
+
+  return transfers;
 }
 
 // ---------------------------------------------------------------------------
