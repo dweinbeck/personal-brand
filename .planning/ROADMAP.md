@@ -152,8 +152,9 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 | 36-42 | v1.9 | 16/25 | Deferred | - |
 | 43-48.1 | v2.0 | 22/22 | Complete | 2026-02-19 |
 | 1-6 | v3.0 | 14/14 | Complete | 2026-02-20 |
+| 1-2 | Post-v3.0 | 4/4 | Complete | 2026-02-21 |
 
-**Total: 11 milestones (10 shipped + 1 deferred)**
+**Total: 11 milestones shipped + 1 deferred + post-v3.0 fixes**
 
 <details>
 <summary>✅ v3.0 GSD Builder OS (Phases 1-6) — SHIPPED 2026-02-20</summary>
@@ -167,26 +168,13 @@ Note: v1.9 phases 36-40 were never started. Phase 40.1, 41, 41.1, and 42 were ex
 
 </details>
 
-### Phase 1: Brand Scraper bug fixes and UI improvements
+<details>
+<summary>✅ Post-v3.0 Brand Scraper Fixes (Phases 1-2) — COMPLETED 2026-02-21</summary>
 
-**Goal:** [To be planned]
-**Depends on:** Phase 0
-**Plans:** 0 plans
+- [x] Phase 1: Brand Scraper Bug Fixes & UI Improvements (1/1 plan) — download proxies, color labels, credits removal, status text, white inputs, brand profile cards
+- [x] Phase 2: Fix Brand Scraper: Asset Downloads, Color Labels & Company Names (3/3 plans) — ZIP auth, color-namer, company name fallback chain
 
-Plans:
-- [ ] TBD (run /gsd:plan-phase 1 to break down)
-
-### Phase 2: Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
-
-**Goal:** Fix ZIP asset downloads (auth), add human-readable color names, show company names instead of hostnames. Color accuracy deferred (external scraper issue).
-**Depends on:** Phase 1
-**Requirements:** [ASSET-DOWNLOAD, COLOR-LABELS, COLOR-ACCURACY, COMPANY-NAME]
-**Plans:** 3 plans
-
-Plans:
-- [x] 02-01-PLAN.md — Fix ZIP download auth (add identity token to proxy route)
-- [x] 02-02-PLAN.md — Add color names and expand role labels (color-namer library)
-- [x] 02-03-PLAN.md — Company name display with schema extension and fallback chain
+</details>
 
 ---
 *For milestone details, see `.planning/milestones/v[X.Y]-ROADMAP.md`*
