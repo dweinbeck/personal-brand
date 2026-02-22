@@ -5,6 +5,17 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
+interface WorkspaceProject {
+  id: string;
+  name: string;
+}
+
+interface WorkspaceWithProjects {
+  id: string;
+  name: string;
+  projects: WorkspaceProject[];
+}
+
 interface CaptureDetail {
   id: string;
   type: "dictation" | "screenshot";
@@ -45,6 +56,14 @@ export function CaptureDetailPage({ captureId }: { captureId: string }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
+  // Project picker state (lazy-loaded)
+  const [showProjectPicker, setShowProjectPicker] = useState(false);
+  const [workspaces, setWorkspaces] = useState<WorkspaceWithProjects[] | null>(
+    null,
+  );
+  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [projectsLoading, setProjectsLoading] = useState(false);
+
   const fetchCapture = useCallback(async () => {
     if (!user) return;
     setLoading(true);
@@ -71,6 +90,35 @@ export function CaptureDetailPage({ captureId }: { captureId: string }) {
     fetchCapture();
   }, [fetchCapture]);
 
+  async function fetchProjects() {
+    if (!user || workspaces) return; // already loaded
+    setProjectsLoading(true);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/admin/builder-inbox/projects", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to load projects.");
+      const data = await res.json();
+      const ws: WorkspaceWithProjects[] = data.workspaces;
+      setWorkspaces(ws);
+
+      // Pre-select "Inbox" project if it exists, otherwise first project
+      const allProjects = ws.flatMap((w) => w.projects);
+      const inbox = allProjects.find((p) => p.name === "Inbox");
+      setSelectedProjectId(inbox?.id ?? allProjects[0]?.id ?? "");
+    } catch {
+      setActionMessage("Failed to load projects.");
+    } finally {
+      setProjectsLoading(false);
+    }
+  }
+
+  async function handleTaskPickerOpen() {
+    setShowProjectPicker(true);
+    await fetchProjects();
+  }
+
   async function handleRetry() {
     if (!user) return;
     setActionLoading(true);
@@ -83,7 +131,10 @@ export function CaptureDetailPage({ captureId }: { captureId: string }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error("Retry failed.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? `Retry failed (${res.status}).`);
+      }
 
       setActionMessage("Retry queued. Refresh in a few seconds.");
       setTimeout(() => fetchCapture(), 3000);
@@ -94,25 +145,32 @@ export function CaptureDetailPage({ captureId }: { captureId: string }) {
     }
   }
 
-  async function handleReroute(destination: string) {
+  async function handleReroute(destination: string, projectId?: string) {
     if (!user) return;
     setActionLoading(true);
     setActionMessage(null);
 
     try {
       const token = await user.getIdToken();
+      const body: Record<string, string> = { destination };
+      if (projectId) body.projectId = projectId;
+
       const res = await fetch(`/api/admin/builder-inbox/${captureId}/reroute`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ destination }),
+        body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error("Re-route failed.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? `Re-route failed (${res.status}).`);
+      }
 
       setActionMessage(`Re-routed to ${destination}.`);
+      setShowProjectPicker(false);
       fetchCapture();
     } catch (err) {
       setActionMessage(err instanceof Error ? err.message : "Action failed.");
@@ -334,14 +392,57 @@ export function CaptureDetailPage({ captureId }: { captureId: string }) {
             >
               Route to GitHub
             </button>
-            <button
-              type="button"
-              onClick={() => handleReroute("task")}
-              disabled={actionLoading}
-              className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-text-secondary hover:bg-gray-50 disabled:opacity-50"
-            >
-              Route to Tasks
-            </button>
+            {!showProjectPicker ? (
+              <button
+                type="button"
+                onClick={handleTaskPickerOpen}
+                disabled={actionLoading}
+                className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-text-secondary hover:bg-gray-50 disabled:opacity-50"
+              >
+                Route to Tasks
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                {projectsLoading ? (
+                  <span className="text-sm text-text-tertiary">
+                    Loading projects...
+                  </span>
+                ) : (
+                  <>
+                    <select
+                      value={selectedProjectId}
+                      onChange={(e) => setSelectedProjectId(e.target.value)}
+                      className="px-2 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    >
+                      {workspaces?.map((w) => (
+                        <optgroup key={w.id} label={w.name}>
+                          {w.projects.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => handleReroute("task", selectedProjectId)}
+                      disabled={actionLoading || !selectedProjectId}
+                      className="px-3 py-1.5 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {actionLoading ? "Routing..." : "Confirm"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowProjectPicker(false)}
+                      className="px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-text-secondary hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
             <button
               type="button"
               onClick={() => handleReroute("inbox")}

@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 import { envelopeFetch } from "@/lib/envelopes/api";
-import { useEnvelopes, useTransactions } from "@/lib/envelopes/hooks";
+import {
+  useEnvelopes,
+  useTransactions,
+  useTransfers,
+} from "@/lib/envelopes/hooks";
 import { getWeekRange } from "@/lib/envelopes/week-math";
 import { type OverageContext, OverageModal } from "./OverageModal";
 import { ReadOnlyBanner } from "./ReadOnlyBanner";
@@ -44,6 +48,12 @@ export function TransactionsPage() {
     isLoading: envLoading,
     mutate: mutateEnvelopes,
   } = useEnvelopes();
+
+  const {
+    data: transferData,
+    error: transferError,
+    isLoading: transferLoading,
+  } = useTransfers(weekStartStr, weekEndStr);
 
   const isReadOnly = txData?.billing?.mode === "readonly";
 
@@ -176,7 +186,7 @@ export function TransactionsPage() {
   }
 
   // -- Loading state --
-  if (txLoading || envLoading) {
+  if (txLoading || envLoading || transferLoading) {
     return (
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
         <p className="text-center text-text-secondary">
@@ -187,7 +197,7 @@ export function TransactionsPage() {
   }
 
   // -- Error state --
-  if (txError || envError) {
+  if (txError || envError || transferError) {
     return (
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
@@ -210,6 +220,7 @@ export function TransactionsPage() {
   }
 
   const transactions = txData?.transactions ?? [];
+  const transfers = transferData?.transfers ?? [];
   const envelopes = (envData?.envelopes ?? []).map((e) => ({
     id: e.id,
     title: e.title,
@@ -248,6 +259,7 @@ export function TransactionsPage() {
 
       <TransactionList
         transactions={transactions}
+        transfers={transfers}
         envelopes={envelopes}
         onUpdate={handleUpdate}
         onDelete={handleDelete}

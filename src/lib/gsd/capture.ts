@@ -46,7 +46,8 @@ export async function saveCapture(input: CaptureInput): Promise<void> {
     updatedAt: now,
   };
   if (input.transcript !== undefined) data.transcript = input.transcript;
-  if (input.screenshotUrl !== undefined) data.screenshotUrl = input.screenshotUrl;
+  if (input.screenshotUrl !== undefined)
+    data.screenshotUrl = input.screenshotUrl;
   if (input.context !== undefined) data.context = input.context;
 
   await capturesCol().doc(input.id).set(data);
@@ -63,7 +64,7 @@ export async function updateCaptureStatus(
     routingResult?: Record<string, unknown>;
     destination?: string;
     destinationRef?: string;
-    error?: string;
+    error?: string | null;
   },
 ): Promise<void> {
   await capturesCol()

@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Visitors can understand who Dan is and see proof of his work within 60 seconds
-**Current focus:** Planning next milestone
+**Current focus:** Between milestones — all phases complete
 
 ## Current Position
 
-Phase: 2 — Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
-Plan: All 3 plans complete (P01-P03)
-Status: Phase 2 complete, pending manual testing
-Last activity: 2026-02-21 - Completed 02-03: Company name display
+Phase: All phases complete (1-2)
+Plan: All plans complete (Phase 1: 1/1, Phase 2: 3/3)
+Status: Ready for next milestone
+Last activity: 2026-02-21 - Completed quick task 13: Add new envelope creation outside edit mode and fix allocation input
 
 ## Performance Metrics
 
 **Cumulative:**
 - Total milestones shipped: 11 (v1.0 through v3.0)
 - Total phases completed: 54.1
-- Total plans completed: 165
+- Total plans completed: 169
 - Timeline: Jan 18 -> Feb 20, 2026 (34 days)
 
 **v3.0 Velocity:**
@@ -41,8 +41,7 @@ Full decision log in PROJECT.md Key Decisions table. Cleared after v3.0 archive.
 ### Roadmap Evolution
 
 - v3.0 GSD Builder OS shipped 2026-02-20 (6 phases, 14 plans)
-- Phase 1 added: Brand Scraper bug fixes and UI improvements
-- Phase 2 added: Fix Brand Scraper: asset downloads, color accuracy, color labels, and company name extraction
+- Post-v3.0 Brand Scraper fixes completed 2026-02-21 (2 phases, 4 plans)
 
 ### Pending Todos
 
@@ -63,11 +62,13 @@ None.
 | Phase 02 P03 | 4min | 2 tasks | 3 files |
 | Phase 02 P02 | 5min | 2 tasks | 3 files |
 | Phase 02 P03 | 9min | 2 tasks | 5 files |
+| 12 | Show transfer source/destination in envelope transactions | 2026-02-21 | b2167aa | [12-show-transfer-source-destination-in-enve](./quick/12-show-transfer-source-destination-in-enve/) |
+| 13 | Add envelope creation outside edit mode, fix allocation input cursor jumping | 2026-02-21 | b13784d | [13-add-new-envelope-creation-and-fix-re-all](./quick/13-add-new-envelope-creation-and-fix-re-all/) |
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 02-03-PLAN.md (Company name display)
+Last session: 2026-02-22
+Stopped at: Cleaned up planning docs — all phases complete, debug sessions archived
 Resume file: None
 
 ## Next Step

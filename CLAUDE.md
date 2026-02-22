@@ -29,12 +29,27 @@ npm run dev                                  # Local dev server (port 3000)
 
 ---
 
-## Git Workflow Override
+## Git Workflow
 
-This project uses **trunk-based development**:
-- Commit directly to `master` for most changes
-- Push to `master` after each completed phase
+This project uses **trunk-based development with a staging gate**:
+- No long-lived feature branches — work happens on `master` and `dev`
 - Feature branches only for experimental/risky changes
+- All deployments flow through `dev` (staging) before reaching `master` (production)
+
+### Branch Model
+
+| Branch | Purpose | Deploys To |
+|--------|---------|------------|
+| `master` | Production code | `dan-weinbeck.com` via Cloud Build (`personal-brand-486314`) |
+| `dev` | Staging/verification | `dev.dan-weinbeck.com` via Cloud Build (`personal-brand-dev-487114`) |
+
+### Deployment Order (MANDATORY)
+
+1. **Commit work to `dev`** and push to `origin/dev` → triggers staging build
+2. **Wait for staging build to succeed** and user to verify at `dev.dan-weinbeck.com`
+3. **Only after user approves staging** → merge `dev` into `master` and push to `origin/master`
+
+**Pushing to `master` without first deploying and testing on `dev` is forbidden. No exceptions.**
 
 ---
 
@@ -102,14 +117,73 @@ This app coordinates with external services.
 | 6 | Firestore indexes not deployed to target env | 500 "requires an index" | `npm run verify-indexes` |
 | 7 | Database not created for service | Connection refused | Run migrations BEFORE deploy |
 | 8 | Cookie auth across subdomains | Blank page, auth mismatch | Cookie domain: `.dan-weinbeck.com` |
+| 9 | Env var in code but missing from `cloudbuild.yaml` | `undefined` at runtime, feature silently broken | `grep VAR_NAME cloudbuild.yaml` |
+| 10 | Secret in `cloudbuild.yaml` but not created in Secret Manager | Deploy fails or var is empty | `gcloud secrets describe NAME --project=<id>` |
+| 11 | Secret exists in prod but not dev (or vice versa) | Works in one env, breaks in other | Check BOTH projects before deploy |
+
+### Env Var Safety System (Automated)
+
+The project has automated tooling to prevent the #1 recurring deployment failure: env vars in code but missing from `cloudbuild.yaml`.
+
+| Tool | Command | Purpose |
+|------|---------|---------|
+| Deploy audit | `npm run audit-env-deploy` | Cross-references `process.env.*` in src/ against cloudbuild.yaml |
+| Add env var | `/add-env-var VAR_NAME` | Walks through all 6 provisioning steps automatically |
+
+**Rules:**
+- **Never add `process.env.*` without running `/add-env-var`** — it ensures .env.local.example, env.ts, validate-env.ts, and cloudbuild.yaml are all updated.
+- **Run `npm run audit-env-deploy` before every deploy** — it's integrated into `/pre-deploy` and `/deploy`.
+- The audit exits non-zero if any required var is missing from cloudbuild.yaml.
+- Allowlisted vars (runtime-provided like `NODE_ENV`, `K_SERVICE`; local-only like `FIREBASE_CLIENT_EMAIL`) are auto-skipped.
+- Vars with code fallbacks (like `BILLING_URL`) show as WARN, not FAIL.
+
+### New Env Var Provisioning Checklist (MANDATORY)
+
+When ANY code change introduces a new `process.env.*` reference, ALL of these must happen before the change is considered complete. **`validate-env` passing locally does NOT mean the var will work in Cloud Run.**
+
+| # | Step | Who | Verification |
+|---|------|-----|-------------|
+| 1 | Add to `.env.local.example` with description | Claude | `grep VAR_NAME .env.local.example` |
+| 2 | Add to `src/lib/env.ts` Zod schema (if validated) | Claude | Build passes |
+| 3 | Add to `scripts/validate-env.ts` (if format-checked) | Claude | Script includes var |
+| 4 | Add to `cloudbuild.yaml` `--set-secrets` or `--set-env-vars` | Claude | `grep VAR_NAME cloudbuild.yaml` |
+| 5 | Create secret in GCP Secret Manager for **dev** (`personal-brand-dev-487114`) | **User** | `gcloud secrets describe SECRET_NAME --project=personal-brand-dev-487114` |
+| 6 | Create secret in GCP Secret Manager for **prod** (`personal-brand-486314`) | **User** | `gcloud secrets describe SECRET_NAME --project=personal-brand-486314` |
+
+**Step 4 is the #1 missed step.** The var exists locally and in `.env.local.example`, but Cloud Run never receives it because `cloudbuild.yaml` wasn't updated.
+
+**Steps 5-6 require user action.** Claude MUST surface these as explicit action items with the exact `gcloud` commands. Never assume secrets exist — always tell the user to verify.
+
+Example user action item format:
+```
+ACTION REQUIRED: Create these secrets in GCP Secret Manager:
+
+# Dev environment
+gcloud secrets create my-new-secret --project=personal-brand-dev-487114
+echo -n "actual-value" | gcloud secrets versions add my-new-secret --data-file=- --project=personal-brand-dev-487114
+
+# Prod environment
+gcloud secrets create my-new-secret --project=personal-brand-486314
+echo -n "actual-value" | gcloud secrets versions add my-new-secret --data-file=- --project=personal-brand-486314
+```
+
+### cloudbuild.yaml ↔ Code Audit
+
+Before any deploy, cross-reference these two sources. Every `process.env.*` used at runtime must appear in one of:
+- `cloudbuild.yaml --set-env-vars` (for non-secret config)
+- `cloudbuild.yaml --set-secrets` (for secrets from Secret Manager)
+- Built into the Docker image via `--build-arg` (for `NEXT_PUBLIC_*` vars)
+
+If a var is in code but NOT in `cloudbuild.yaml`, Cloud Run will receive `undefined` — even if `validate-env` passes locally.
 
 ### Infrastructure Validation Protocol
 
 Before every deploy, run in order:
 1. `npm test && npm run lint && npm run build` (code quality)
-2. `npm run validate-env` (config syntax + semantics)
-3. `npm run verify-indexes -- --project <id>` (Firestore indexes)
-4. After deploy: `npm run smoke-test` (service connectivity)
+2. `npm run audit-env-deploy` (code ↔ cloudbuild.yaml cross-reference)
+3. `npm run validate-env` (config syntax + semantics — local only)
+4. `npm run verify-indexes -- --project <id>` (Firestore indexes)
+5. After deploy: `npm run smoke-test` (service connectivity)
 
 When adding a new external service, follow `docs/NEW-SERVICE-CHECKLIST.md`.
 
@@ -120,6 +194,8 @@ Run `npm run validate-env` before any PR/commit that touches:
 - `src/lib/firebase.ts` (Firebase config)
 - Any file referencing `process.env`
 - Any service URL usage
+
+**Remember:** `validate-env` only validates your local `.env.local`. It cannot verify that secrets exist in GCP Secret Manager or that `cloudbuild.yaml` includes them.
 
 ---
 

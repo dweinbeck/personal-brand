@@ -6,6 +6,7 @@ import type { RoutingCategory, RoutingOutput } from "@/lib/gsd/schemas";
 
 const rerouteSchema = z.object({
   destination: z.enum(["github_issue", "task", "inbox"]),
+  projectId: z.string().min(1).optional(),
 });
 
 export async function POST(
@@ -32,7 +33,7 @@ export async function POST(
     );
   }
 
-  const { destination } = parsed.data;
+  const { destination, projectId } = parsed.data;
 
   // Load the full capture document
   const capture = await getCapture(id);
@@ -80,7 +81,7 @@ export async function POST(
       }
       case "task": {
         const { routeToTask } = await import("@/lib/gsd/destinations/tasks");
-        destinationRef = await routeToTask(routingOutput);
+        destinationRef = await routeToTask(routingOutput, projectId);
         break;
       }
       default:
@@ -92,6 +93,7 @@ export async function POST(
       status: "routed",
       destination,
       destinationRef,
+      error: null,
     });
 
     // Discord alert (fire-and-forget)
