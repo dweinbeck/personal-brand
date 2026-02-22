@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useChatWidget } from "@/context/ChatWidgetContext";
 import { ADMIN_EMAIL } from "@/lib/constants";
@@ -22,13 +22,7 @@ export function NavLinks() {
   const { user } = useAuth();
   const { isOpen: widgetOpen, toggle: toggleWidget } = useChatWidget();
 
-  const links = useMemo(() => {
-    const result = [...baseLinks];
-    if (user?.email === ADMIN_EMAIL) {
-      result.push({ name: "Control Center", href: "/control-center" });
-    }
-    return result;
-  }, [user]);
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -39,7 +33,7 @@ export function NavLinks() {
     <>
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center gap-1" aria-label="Main">
-        {links.map((link) => (
+        {baseLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
@@ -65,6 +59,19 @@ export function NavLinks() {
         >
           Ask My Assistant
         </button>
+        {isAdmin && (
+          <Link
+            href="/control-center"
+            className={clsx(
+              "px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
+              isActive("/control-center")
+                ? "bg-primary text-white font-bold shadow-sm border border-gold"
+                : "text-text-secondary hover:text-primary hover:bg-gold-light",
+            )}
+          >
+            Control Center
+          </Link>
+        )}
       </nav>
 
       {/* Mobile hamburger button */}
@@ -107,7 +114,7 @@ export function NavLinks() {
         )}
       >
         <nav className="flex flex-col px-4 py-2" aria-label="Mobile">
-          {links.map((link) => (
+          {baseLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -137,6 +144,20 @@ export function NavLinks() {
           >
             Ask My Assistant
           </button>
+          {isAdmin && (
+            <Link
+              href="/control-center"
+              onClick={() => setMobileOpen(false)}
+              className={clsx(
+                "px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+                isActive("/control-center")
+                  ? "text-primary bg-gold-light border-l-2 border-gold"
+                  : "text-text-secondary hover:text-primary hover:bg-gold-light",
+              )}
+            >
+              Control Center
+            </Link>
+          )}
         </nav>
       </div>
     </>
